@@ -126,6 +126,7 @@ const KIND_BY_EXTENSION = {
   // as .docx.
   '.zip': 'zip-export',
   '.xlsx': 'excel-to-markdown',
+  '.pptx': 'powerpoint-to-markdown',
 };
 
 function kindFor(name) {
@@ -165,6 +166,10 @@ async function push() {
 
     if (kind === 'excel-to-markdown') {
       fail(`${name}: an .xlsx is read in the browser. Convert it at ${HOST}/excel-to-markdown and push the Markdown.`);
+    }
+
+    if (kind === 'powerpoint-to-markdown') {
+      fail(`${name}: a .pptx is read in the browser. Convert it at ${HOST}/powerpoint-to-markdown and push the Markdown.`);
     }
 
     return { name, kind, markdown: readFileSync(file, 'utf8') };

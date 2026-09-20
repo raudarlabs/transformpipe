@@ -600,6 +600,45 @@ export const pages: Content['pages'] = {
         'Come aprire una cartella di lavoro Excel senza comprare Excel, cosa significano davvero #### e le date a cinque cifre, e come fare di ogni foglio una tabella.',
     },
   },
+  'how-to-pptx': {
+    label: 'Aprire un file .pptx',
+    title: 'Come aprire un file .pptx',
+    lede: 'Aprirlo è facile. Leggerlo senza aver assistito alla presentazione è la parte in cui nulla aiuta.',
+    sections: [
+      {
+        heading: 'Che cos’è',
+        body: [
+          'Un `.pptx` è un archivio zip di XML, costruito come un `.docx` o un `.xlsx`: un file per diapositiva, uno per pagina di note e le immagini accanto. Il vecchio `.ppt` è tutt’altro — un formato binario precedente al 2007, che quasi tutto ciò che apre un `.pptx` sa comunque convertire.',
+        ],
+      },
+      {
+        heading: 'Senza comprare PowerPoint',
+        body: [
+          'Google Slides lo importa da File, Apri. LibreOffice Impress lo apre su qualsiasi sistema desktop ed è gratuito. Keynote lo apre su un Mac, e la versione web di PowerPoint lo legge senza licenza a pagamento.',
+          'Su un Mac basta premere la barra spaziatrice sul file nel Finder per vedere tutte le diapositive senza aprire nulla.',
+        ],
+      },
+      {
+        heading: 'Dove sono le note del relatore',
+        body: [
+          'Sotto la diapositiva, in un riquadro che la maggior parte dei programmi tiene nascosto: Visualizza, poi Note, sia in PowerPoint sia in Google Slides. È lì che il ragionamento sta scritto per esteso, mentre la diapositiva sopra è solo il riassunto che qualcuno ha letto ad alta voce.',
+          'L’esportazione in PDF le elimina, a meno di scegliere il layout con le pagine delle note: ecco perché a una presentazione che gira in PDF manca così spesso la metà che la spiegava.',
+        ],
+      },
+      {
+        heading: 'Dalla presentazione al documento',
+        body: [
+          'Di solito si ricopia a mano il testo di ogni diapositiva, e così le note si perdono perché nel frattempo non sono nemmeno sullo schermo. Convertire il file direttamente dà una sezione per diapositiva, nell’ordine di presentazione, con elenchi, tabelle e note ancora attaccati alla diapositiva da cui vengono.',
+        ],
+      },
+    ],
+    action: 'Convertire un .pptx in Markdown',
+    seo: {
+      title: 'Come aprire un file .pptx — TransformPipe',
+      description:
+        'Come aprire un file PowerPoint senza PowerPoint, dove si nascondono le note del relatore e come trasformare un’intera presentazione in un documento leggibile.',
+    },
+  },
   'how-to-zip': {
     label: 'Aprire uno .zip di esportazione',
     title: 'Come aprire uno .zip esportato da Notion, Confluence o Obsidian',

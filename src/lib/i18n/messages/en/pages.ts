@@ -607,6 +607,45 @@ export const pages: Content['pages'] = {
         'How to open an Excel workbook without buying Excel, what #### and five-digit dates actually mean, and how to turn every sheet into a Markdown table.',
     },
   },
+  'how-to-pptx': {
+    label: 'Open a .pptx file',
+    title: 'How to open a .pptx file',
+    lede: 'Opening it is easy. Reading it without sitting through the presentation is the part nothing helps with.',
+    sections: [
+      {
+        heading: 'What it is',
+        body: [
+          'A `.pptx` is a zip archive of XML, the same construction as a `.docx` or an `.xlsx`: one file per slide, one per set of speaker notes, and the pictures beside them. The older `.ppt` is a different thing entirely — a binary format from before 2007, which most of what opens a `.pptx` will also convert.',
+        ],
+      },
+      {
+        heading: 'Without buying PowerPoint',
+        body: [
+          'Google Slides imports one through File, Open. LibreOffice Impress opens one on any desktop system and is free. Keynote opens one on a Mac, and Microsoft’s own web version of PowerPoint reads one without a paid licence.',
+          'On a Mac, pressing space on the file in Finder shows every slide without opening anything at all.',
+        ],
+      },
+      {
+        heading: 'Where the speaker notes are',
+        body: [
+          'Under the slide, in a pane most viewers hide by default: View, then Notes, in PowerPoint and in Google Slides alike. They are usually where the argument is written down in sentences, the slide above being the summary somebody read out.',
+          'Exporting a deck to PDF drops them unless you choose the notes-pages layout, which is why a deck passed around as a PDF is so often missing the half that explained it.',
+        ],
+      },
+      {
+        heading: 'Getting a deck into a document',
+        body: [
+          'The usual route is copying each slide’s text out by hand, which loses the notes because they are not on screen while you do it. Converting the file directly gives you a section per slide, in the order the deck plays, with the bullets, the tables and the notes still attached to the slide they belong to.',
+        ],
+      },
+    ],
+    action: 'Convert a .pptx file to Markdown',
+    seo: {
+      title: 'How to open a .pptx file — TransformPipe',
+      description:
+        'How to open a PowerPoint file without buying PowerPoint, where the speaker notes hide, and how to turn a whole deck into a document you can read.',
+    },
+  },
   'how-to-zip': {
     label: 'Open an export .zip',
     title: 'How to open a .zip export from Notion, Confluence or Obsidian',

@@ -93,6 +93,260 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-20',
+    title: 'Plain text that looks like markup stays plain text',
+    body:
+      'Two ways a converted .txt — and now a slide — could lose a word. `[XX] min` came out as a '
+      + 'formula in italics with "min" stranded outside it, because `\\[` is both an escaped '
+      + 'square bracket and LaTeX’s opening display delimiter; it now has to contain an operator '
+      + 'or a command to be read as maths. And a word in angle brackets was read as an HTML tag '
+      + 'and removed on the way through. Both are escaped now, so the text renders as it was '
+      + 'typed.',
+  },
+  {
+    date: '2026-09-20',
+    title: 'A deck becomes a document, notes and all',
+    slug: 'powerpoint-to-markdown',
+    body:
+      'PowerPoint is the tenth conversion. A .pptx goes in and one document comes out: a section '
+      + 'per slide, in the order the deck plays, bullets still nested and tables still tables — '
+      + 'and the speaker notes underneath each one, which are the half of a deck nobody outside '
+      + 'the room has ever been able to read.',
+    detail: {
+      en: {
+        description:
+          'A PowerPoint deck converts to one document: a section per slide, in playing order, with bullets, tables and the speaker notes kept.',
+        keywords:
+          'powerpoint to markdown, pptx to markdown, convert a deck to text, extract speaker notes from powerpoint, pptx converter',
+        body: `Nine conversions here read a document. This one reads a performance.
+
+## A slide is a section
+
+Every slide becomes a section under its own heading, and the sections come in the order the deck
+plays. That is not the order the files inside it are numbered in: a slide dragged to the front
+keeps the name it was given when it was made, so the running order is read from the
+presentation's own list of slides instead.
+
+Bullets keep their nesting, however deep it goes. A numbered list stays numbered. Tables stay
+tables — with the merged cells that every slide-drawn table is full of unpicked, rather than left
+behind as columns of nothing. Links keep the addresses behind them.
+
+## The notes come with it
+
+The notes pane is where the argument is usually written, in sentences, by somebody who knew the
+slide above it was only the summary they were going to read out. It is also the first thing lost
+when a deck is passed on: exporting to PDF drops it, copying the slides out by hand never sees
+it, and every other converter treats a deck as the thing on screen.
+
+Here each slide's notes follow that slide's own section, quoted and labelled, still attached to
+the slide they belong to.
+
+## When a slide has no title
+
+A deck exported from Google Slides or Keynote often has no title placeholders at all — every
+shape on the slide is just a text box somebody drew. Where that happens, a first line short
+enough to be a heading is treated as one, which is the difference between a contents list of
+forty real titles and one that reads "Slide 2, Slide 3, Slide 4".
+
+## What it does not read
+
+Charts and SmartArt. A chart's numbers live in a spreadsheet embedded in the file and SmartArt's
+words in a separate diagram part, and both would arrive as a shapeless list with none of the
+arrangement that made them worth drawing. A slide that is only a diagram keeps its heading and
+its notes and says so plainly, which is honest about what was there.
+
+It runs in the browser, like every other conversion here. The deck is not uploaded.`,
+      },
+      de: {
+        description:
+          'Ein PowerPoint-Foliensatz wird zu einem Dokument: ein Abschnitt je Folie, in Vortragsreihenfolge, mit Aufzählungen, Tabellen und Notizen.',
+        keywords:
+          'powerpoint in markdown, pptx in markdown umwandeln, foliensatz als text, notizen aus powerpoint extrahieren, pptx konverter',
+        body: `Neun Konvertierungen hier lesen ein Dokument. Diese liest einen Vortrag.
+
+## Eine Folie ist ein Abschnitt
+
+Jede Folie wird ein Abschnitt unter ihrer eigenen Überschrift, und die Abschnitte stehen in der
+Reihenfolge, in der der Foliensatz abläuft. Das ist nicht die Reihenfolge, in der die Dateien
+darin nummeriert sind: eine nach vorn gezogene Folie behält den Namen, den sie bei ihrer
+Entstehung bekam — die Vortragsreihenfolge wird deshalb aus der Folienliste der Präsentation
+selbst gelesen.
+
+Aufzählungen behalten ihre Verschachtelung, so tief sie auch geht. Eine nummerierte Liste bleibt
+nummeriert. Tabellen bleiben Tabellen — mit den verbundenen Zellen, von denen jede auf einer
+Folie gezeichnete Tabelle voll ist, aufgelöst statt als Spalten aus nichts zurückgelassen. Links
+behalten ihre Adressen.
+
+## Die Notizen kommen mit
+
+Im Notizenbereich steht üblicherweise der Gedankengang, in ganzen Sätzen, von jemandem, der
+wusste, dass die Folie darüber nur die Zusammenfassung zum Vorlesen war. Er ist zugleich das
+Erste, was verlorengeht, wenn ein Foliensatz weitergereicht wird: der PDF-Export lässt ihn
+fallen, beim Herauskopieren der Folien bekommt man ihn nie zu sehen, und jeder andere Konverter
+hält einen Foliensatz für das, was auf dem Bildschirm steht.
+
+Hier folgen die Notizen jeder Folie ihrem eigenen Abschnitt, zitiert und benannt, weiterhin bei
+der Folie, zu der sie gehören.
+
+## Wenn eine Folie keinen Titel hat
+
+Ein aus Google Slides oder Keynote exportierter Foliensatz hat oft gar keine Titelplatzhalter —
+jedes Element auf der Folie ist nur ein gezeichnetes Textfeld. Wo das der Fall ist, wird eine
+erste Zeile, die kurz genug für eine Überschrift ist, als eine solche behandelt. Das ist der
+Unterschied zwischen einem Inhaltsverzeichnis mit vierzig echten Titeln und einem, in dem
+„Folie 2, Folie 3, Folie 4“ steht.
+
+## Was nicht gelesen wird
+
+Diagramme und SmartArt. Die Zahlen eines Diagramms liegen in einer in der Datei eingebetteten
+Tabelle, die Worte von SmartArt in einem eigenen Diagrammteil, und beides käme als formlose
+Liste an, ohne die Anordnung, die das Zeichnen überhaupt lohnend machte. Eine Folie, die nur
+eine Grafik ist, behält ihre Überschrift und ihre Notizen und sagt es offen.
+
+Läuft im Browser, wie jede andere Konvertierung hier. Der Foliensatz wird nicht hochgeladen.`,
+      },
+      fr: {
+        description:
+          'Un diaporama PowerPoint devient un document : une section par diapositive, dans l’ordre de présentation, puces, tableaux et notes conservés.',
+        keywords:
+          'powerpoint vers markdown, convertir pptx en markdown, diaporama en texte, extraire les notes du présentateur, convertisseur pptx',
+        body: `Neuf conversions ici lisent un document. Celle-ci lit une présentation.
+
+## Une diapositive est une section
+
+Chaque diapositive devient une section sous son propre titre, et les sections arrivent dans
+l’ordre où le diaporama se déroule. Ce n’est pas l’ordre de numérotation des fichiers qu’il
+contient : une diapositive déplacée en tête garde le nom reçu à sa création, si bien que l’ordre
+de passage est lu dans la liste des diapositives de la présentation elle-même.
+
+Les puces gardent leur imbrication, aussi profonde soit-elle. Une liste numérotée reste
+numérotée. Les tableaux restent des tableaux — les cellules fusionnées dont tout tableau dessiné
+sur une diapositive est plein étant défusionnées plutôt que laissées en colonnes vides. Les liens
+conservent leurs adresses.
+
+## Les notes suivent
+
+Le volet de notes est là où le raisonnement est généralement écrit, en phrases, par quelqu’un qui
+savait que la diapositive au-dessus n’en était que le résumé lu à voix haute. C’est aussi la
+première chose perdue quand un diaporama est transmis : l’export PDF la supprime, la recopie
+manuelle des diapositives ne la voit jamais, et tous les autres convertisseurs prennent un
+diaporama pour ce qui s’affiche à l’écran.
+
+Ici, les notes de chaque diapositive suivent sa propre section, citées et annoncées, toujours
+rattachées à la diapositive dont elles viennent.
+
+## Quand une diapositive n’a pas de titre
+
+Un diaporama exporté de Google Slides ou de Keynote n’a souvent aucun espace réservé au titre —
+chaque élément de la diapositive n’est qu’une zone de texte dessinée. Dans ce cas, une première
+ligne assez courte pour être un titre en devient un : c’est la différence entre un sommaire de
+quarante vrais titres et un sommaire qui annonce « Diapositive 2, Diapositive 3 ».
+
+## Ce qui n’est pas lu
+
+Les graphiques et les SmartArt. Les chiffres d’un graphique vivent dans un classeur intégré au
+fichier et les mots d’un SmartArt dans une partie séparée, et les deux arriveraient en liste
+informe, privés de l’agencement qui justifiait de les dessiner. Une diapositive qui n’est qu’un
+schéma garde son titre et ses notes, et le dit franchement.
+
+La conversion a lieu dans le navigateur, comme toutes les autres. Le diaporama n’est pas
+téléversé.`,
+      },
+      es: {
+        description:
+          'Una presentación de PowerPoint se convierte en un documento: una sección por diapositiva, en orden de presentación, con viñetas, tablas y notas.',
+        keywords:
+          'powerpoint a markdown, convertir pptx a markdown, presentación a texto, extraer notas del orador de powerpoint, conversor pptx',
+        body: `Nueve conversiones aquí leen un documento. Esta lee una exposición.
+
+## Una diapositiva es una sección
+
+Cada diapositiva pasa a ser una sección con su propio título, y las secciones llegan en el orden
+en que la presentación se expone. No es el orden en que están numerados los archivos que
+contiene: una diapositiva arrastrada al principio conserva el nombre que recibió al crearse, de
+modo que el orden de exposición se lee de la propia lista de diapositivas de la presentación.
+
+Las viñetas conservan su anidamiento, por profundo que sea. Una lista numerada sigue numerada.
+Las tablas siguen siendo tablas — con las celdas combinadas de las que está llena cualquier tabla
+dibujada en una diapositiva deshechas, en lugar de quedar como columnas de nada. Los enlaces
+mantienen sus direcciones.
+
+## Las notas vienen con ella
+
+El panel de notas es donde suele estar escrito el razonamiento, en frases, por alguien que sabía
+que la diapositiva de arriba era solo el resumen que iba a leer en voz alta. Es también lo
+primero que se pierde cuando una presentación se pasa a otros: exportar a PDF lo descarta, copiar
+las diapositivas a mano nunca llega a verlo, y cualquier otro conversor toma una presentación por
+lo que aparece en pantalla.
+
+Aquí las notas de cada diapositiva siguen a su propia sección, citadas y anunciadas, todavía
+unidas a la diapositiva de la que salieron.
+
+## Cuando una diapositiva no tiene título
+
+Una presentación exportada de Google Slides o de Keynote a menudo no tiene ningún marcador de
+título: cada forma de la diapositiva es solo un cuadro de texto dibujado. Cuando ocurre, una
+primera línea lo bastante corta para ser un título se trata como tal, que es la diferencia entre
+un índice con cuarenta títulos reales y uno que dice «Diapositiva 2, Diapositiva 3».
+
+## Lo que no lee
+
+Los gráficos y los SmartArt. Los números de un gráfico viven en un libro incrustado en el archivo
+y las palabras de un SmartArt en una parte de diagrama aparte, y ambos llegarían como una lista
+informe, sin la disposición que justificaba dibujarlos. Una diapositiva que es solo un esquema
+conserva su título y sus notas y lo dice sin rodeos.
+
+Se convierte en el navegador, como todo lo demás aquí. La presentación no se sube.`,
+      },
+      it: {
+        description:
+          'Una presentazione PowerPoint diventa un documento: una sezione per diapositiva, nell’ordine di presentazione, con elenchi, tabelle e note.',
+        keywords:
+          'powerpoint in markdown, convertire pptx in markdown, presentazione in testo, estrarre le note del relatore da powerpoint, convertitore pptx',
+        body: `Nove conversioni qui leggono un documento. Questa legge una presentazione.
+
+## Una diapositiva è una sezione
+
+Ogni diapositiva diventa una sezione sotto il proprio titolo, e le sezioni arrivano nell’ordine in
+cui la presentazione si svolge. Non è l’ordine di numerazione dei file che contiene: una
+diapositiva trascinata in testa mantiene il nome ricevuto alla creazione, e l’ordine di
+esposizione viene quindi letto dall’elenco delle diapositive della presentazione stessa.
+
+Gli elenchi puntati mantengono l’annidamento, per quanto profondo. Un elenco numerato resta
+numerato. Le tabelle restano tabelle — con le celle unite di cui è piena ogni tabella disegnata su
+una diapositiva sciolte, invece che lasciate come colonne di nulla. I collegamenti mantengono i
+loro indirizzi.
+
+## Le note vengono con lei
+
+Il riquadro delle note è dove di solito il ragionamento è scritto per esteso, da qualcuno che
+sapeva che la diapositiva sopra era solo il riassunto da leggere ad alta voce. È anche la prima
+cosa che si perde quando una presentazione passa di mano: l’esportazione in PDF la elimina,
+ricopiare le diapositive a mano non la vede mai, e ogni altro convertitore scambia una
+presentazione per ciò che appare sullo schermo.
+
+Qui le note di ciascuna diapositiva seguono la sua sezione, citate e annunciate, ancora attaccate
+alla diapositiva da cui vengono.
+
+## Quando una diapositiva non ha titolo
+
+Una presentazione esportata da Google Slides o da Keynote spesso non ha alcun segnaposto per il
+titolo: ogni forma sulla diapositiva è soltanto una casella di testo disegnata. In quel caso una
+prima riga abbastanza breve da essere un titolo viene trattata come tale, ed è la differenza fra
+un indice con quaranta titoli veri e uno che recita «Diapositiva 2, Diapositiva 3».
+
+## Che cosa non legge
+
+I grafici e gli SmartArt. I numeri di un grafico vivono in una cartella di lavoro incorporata nel
+file e le parole di uno SmartArt in una parte a sé, ed entrambi arriverebbero come un elenco
+informe, privi della disposizione che rendeva sensato disegnarli. Una diapositiva che è solo uno
+schema conserva il titolo e le note e lo dice apertamente.
+
+Converte nel browser, come tutto il resto qui. La presentazione non viene caricata.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-20',
     title: 'A document says what is wrong with it',
     slug: 'document-check',
     body:

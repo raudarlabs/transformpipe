@@ -45,9 +45,10 @@ page and address:
 | [Obsidian vault → Markdown](https://transformpipe.com/obsidian-to-markdown) | `.zip` (the vault folder, zipped) | `.md` |
 | [Word → Markdown](https://transformpipe.com/word-to-markdown) | `.docx` | `.md` |
 | [Excel → Markdown table](https://transformpipe.com/excel-to-markdown) | `.xlsx` | `.md` |
+| [PowerPoint → Markdown](https://transformpipe.com/powerpoint-to-markdown) | `.pptx` | `.md` (a section per slide, speaker notes kept) |
 
 They all normalise to Markdown, which is what a document is stored, previewed, shared and reached
-by a script as — one shape rather than nine. Any document can then be handed over as Markdown,
+by a script as — one shape rather than ten. Any document can then be handed over as Markdown,
 HTML, plain text, Word, or printed to PDF. `shared/conversions.ts` is the single list; the header menu, the
 screens, the history chips, the badges and the prerendered pages all read it, so a new conversion is
 an entry there plus a converter.
@@ -210,7 +211,7 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 
 | | |
 | --- | --- |
-| `POST /api/v1/documents` | Markdown as the body (`?name=`) or JSON `{name, markdown}`; `?share=link\|people` publishes it in the same call; `?kind=html-to-markdown\|csv-to-markdown\|json-to-markdown\|word-to-markdown\|notion-to-markdown\|confluence-to-markdown\|obsidian-to-markdown\|text-to-markdown\|excel-to-markdown` converts the body first — for Word, Notion, Confluence, Obsidian and Excel, post the file itself (`.docx`, `.zip` or `.xlsx`) as the body; `?replaces=<id>` links it to an earlier document as a new version, opt-in |
+| `POST /api/v1/documents` | Markdown as the body (`?name=`) or JSON `{name, markdown}`; `?share=link\|people` publishes it in the same call; `?kind=html-to-markdown\|csv-to-markdown\|json-to-markdown\|word-to-markdown\|notion-to-markdown\|confluence-to-markdown\|obsidian-to-markdown\|text-to-markdown\|excel-to-markdown\|powerpoint-to-markdown` converts the body first — for Word, Notion, Confluence, Obsidian, Excel and PowerPoint, post the file itself (`.docx`, `.zip`, `.xlsx` or `.pptx`) as the body; `?replaces=<id>` links it to an earlier document as a new version, opt-in |
 | `GET /api/v1/documents` | the newest 500; `?q=` searches content as well as name, ranked by relevance |
 | `GET /api/v1/documents/:id` | metadata and the source |
 | `GET /api/v1/documents/:id.html` | the standalone document, `?theme=dark` optional |

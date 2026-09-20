@@ -131,6 +131,19 @@ export const conversions: Content['conversions'] = {
         'Turn plain text into Markdown without its own characters being misread as formatting — asterisks, underscores and line wraps preserved. Converts in your browser; nothing is uploaded.',
     },
   },
+  'powerpoint-to-markdown': {
+    label: 'PowerPoint → Markdown',
+    short: 'PPTX → MD',
+    title: 'PowerPoint to Markdown',
+    blurb:
+      'Upload a .pptx and get one section per slide, in the order the deck plays — with the speaker notes, which are the half of a deck nobody outside the room ever reads.',
+    hint: 'Upload a .pptx. Every slide becomes a section under its own title, bullets stay bullets and tables stay tables, and the notes pane comes with each one.',
+    seo: {
+      title: 'PowerPoint to Markdown converter — TransformPipe',
+      description:
+        'Turn a PowerPoint .pptx into Markdown: a section per slide, bullets, tables and the speaker notes kept. Converts in your browser; nothing is uploaded.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown table',
     short: 'XLSX → MD',

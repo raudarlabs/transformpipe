@@ -129,6 +129,19 @@ export const conversions: Content['conversions'] = {
         'Convertir du texte brut en Markdown sans que ses propres caractères soient pris pour de la mise en forme — astérisques, tirets bas et retours à la ligne conservés. Conversion locale, rien n’est téléversé.',
     },
   },
+  'powerpoint-to-markdown': {
+    label: 'PowerPoint → Markdown',
+    short: 'PPTX → MD',
+    title: 'PowerPoint vers Markdown',
+    blurb:
+      'Déposez un .pptx et obtenez une section par diapositive, dans l’ordre de présentation — avec les notes du présentateur, soit la moitié d’un diaporama que personne ne lit en dehors de la salle.',
+    hint: 'Déposez un .pptx. Chaque diapositive devient une section sous son propre titre, les puces restent des puces et les tableaux des tableaux ; les notes suivent chacune d’elles.',
+    seo: {
+      title: 'Convertir PowerPoint en Markdown — TransformPipe',
+      description:
+        'Convertir un .pptx PowerPoint en Markdown : une section par diapositive, puces, tableaux et notes du présentateur conservés. Conversion locale, rien n’est téléversé.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tableau Markdown',
     short: 'XLSX → MD',

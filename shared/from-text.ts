@@ -24,12 +24,33 @@ function escapeLeadingMarker(line: string): string {
     .replace(/^(\s*)(\d+)([.)])(\s|$)/, '$1$2\\$3$4');
 }
 
-function escapeLine(line: string): string {
+/**
+ * One line of plain text, with everything Markdown would have noticed escaped.
+ *
+ * Exported because plain text arrives from more than a `.txt` file: the words on a PowerPoint
+ * slide are typed into a box that has never heard of Markdown either, and an asterisk on a slide
+ * has to survive the conversion for the same reason one in a text file does.
+ */
+export function escapeMarkdownLine(line: string): string {
   // Backslash first, and only once — every other escape below adds backslashes of its own, and
   // re-running this after them would double-escape those rather than the text's own.
   const backslashed = line.replace(/\\/g, '\\\\');
 
-  return escapeLeadingMarker(backslashed.replace(INLINE_METACHARACTERS, '\\$1'));
+  return escapeLeadingMarker(
+    backslashed
+      .replace(INLINE_METACHARACTERS, '\\$1')
+      /*
+       * The two characters Markdown hands straight to HTML.
+       *
+       * Markdown allows raw HTML, so `<b>` typed in a text file is a tag — it renders as nothing
+       * and then the sanitiser removes it, which is a word disappearing rather than a word being
+       * formatted. `&` matters only where it begins an entity, and `<` only where a tag could
+       * start; escaping either one everywhere would fill an ordinary sentence with `&amp;` for
+       * nothing.
+       */
+      .replace(/&(?=(?:[a-zA-Z][a-zA-Z0-9]*|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;')
+      .replace(/<(?=[a-zA-Z/!?])/g, '&lt;')
+  );
 }
 
 export function textToMarkdown(text: string): string {
@@ -40,7 +61,7 @@ export function textToMarkdown(text: string): string {
     .map((paragraph) =>
       paragraph
         .split('\n')
-        .map(escapeLine)
+        .map(escapeMarkdownLine)
         // A backslash at the end of a line is a hard break in CommonMark — visible in the source,
         // unlike the two-trailing-spaces convention, which an editor's "trim trailing whitespace"
         // deletes without anyone noticing the paragraph it used to be five separate lines quietly

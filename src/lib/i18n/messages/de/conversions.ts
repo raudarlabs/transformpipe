@@ -133,6 +133,19 @@ export const conversions: Content['conversions'] = {
         'Reintext in Markdown umwandeln, ohne dass eigene Zeichen als Formatierung missverstanden werden — Sternchen, Unterstriche und Zeilenumbrüche bleiben erhalten. Läuft im Browser; nichts wird hochgeladen.',
     },
   },
+  'powerpoint-to-markdown': {
+    label: 'PowerPoint → Markdown',
+    short: 'PPTX → MD',
+    title: 'PowerPoint in Markdown',
+    blurb:
+      'Eine .pptx hochladen und pro Folie einen Abschnitt erhalten, in der Reihenfolge der Präsentation — samt Notizen, also der Hälfte eines Foliensatzes, die außerhalb des Raums niemand zu lesen bekommt.',
+    hint: 'Eine .pptx hochladen. Jede Folie wird ein Abschnitt unter ihrem eigenen Titel, Aufzählungen bleiben Aufzählungen und Tabellen bleiben Tabellen — die Notizen kommen zu jeder Folie mit.',
+    seo: {
+      title: 'PowerPoint in Markdown umwandeln — TransformPipe',
+      description:
+        'Eine PowerPoint-.pptx in Markdown umwandeln: ein Abschnitt je Folie, mit Aufzählungen, Tabellen und Notizen. Läuft im Browser; nichts wird hochgeladen.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown-Tabelle',
     short: 'XLSX → MD',

@@ -85,6 +85,23 @@ function looksLikeMath(tex: string): boolean {
   return !/[A-Za-z]{3}/.test(bare);
 }
 
+/**
+ * Whether there is anything mathematical in here at all, for the one delimiter that is ambiguous.
+ *
+ * `\\[` is two things at once: LaTeX's display-maths opener, and CommonMark's way of writing a
+ * literal `[`. That is not a theoretical clash — it is what `from-text.ts` emits for every square
+ * bracket it escapes, so a slide or a text file saying `[XX] min` arrived as a formula reading
+ * *XX*, in a serif italic, with the word "min" left outside it.
+ *
+ * `looksLikeMath` cannot settle it: it asks whether this is prose, and `XX` is not prose. So this
+ * asks the opposite question — is there an operator, a command or a brace, anything a formula has
+ * that a bracketed label does not. Only the bracket pair needs it; `$…$` and `\\( … \\)` are
+ * written by people who meant maths, and requiring an operator there would refuse a bare `$x$`.
+ */
+function hasMathematics(tex: string): boolean {
+  return /\\[a-zA-Z]|[\^_=+<>/*{}]/.test(tex);
+}
+
 /*
  * The footnotes collected while one document is being parsed.
  *
@@ -307,7 +324,9 @@ marked.use({
       tokenizer(src: string) {
         const match = /^\\\[([\s\S]+?)\\\]/.exec(src);
 
-        if (!match || !looksLikeMath(match[1])) return undefined;
+        if (!match || !looksLikeMath(match[1]) || !hasMathematics(match[1])) {
+          return undefined;
+        }
 
         return { type: 'mathBracket', raw: match[0], text: match[1].trim() };
       },

@@ -30,7 +30,8 @@ export type ConversionId =
   | 'confluence-to-markdown'
   | 'obsidian-to-markdown'
   | 'text-to-markdown'
-  | 'excel-to-markdown';
+  | 'excel-to-markdown'
+  | 'powerpoint-to-markdown';
 
 export interface Conversion {
   id: ConversionId;
@@ -104,6 +105,12 @@ export const CONVERSIONS: Conversion[] = [
     to: 'markdown',
     path: '/word-to-markdown',
     extensions: ['.docx'],
+  },
+  {
+    id: 'powerpoint-to-markdown',
+    to: 'markdown',
+    path: '/powerpoint-to-markdown',
+    extensions: ['.pptx'],
   },
   {
     id: 'excel-to-markdown',

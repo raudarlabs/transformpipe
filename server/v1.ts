@@ -280,9 +280,10 @@ v1.post('/documents', async (c) => {
   let docx: ArrayBuffer | null = null;
 
   /*
-   * Word, Notion, Confluence and Excel all arrive as bytes rather than text — each is a zip (an
-   * .xlsx included) or, for Word, XML inside one — so all four read the body as an ArrayBuffer
-   * instead of text, and share the same size check below before any of them reaches a parser.
+   * Word, Notion, Confluence, Excel and PowerPoint all arrive as bytes rather than text — each is
+   * a zip (an .xlsx and a .pptx included) or, for Word, XML inside one — so all of them read the
+   * body as an ArrayBuffer instead of text, and share the same size check below before any of them
+   * reaches a parser.
    */
   const BINARY_KINDS = new Set<ConversionId>([
     'word-to-markdown',
@@ -290,6 +291,7 @@ v1.post('/documents', async (c) => {
     'confluence-to-markdown',
     'obsidian-to-markdown',
     'excel-to-markdown',
+    'powerpoint-to-markdown',
   ]);
 
   /*
@@ -466,6 +468,22 @@ v1.post('/documents', async (c) => {
     } catch (cause) {
       return c.json(
         { error: cause instanceof Error ? cause.message : 'That is not a readable .zip' },
+        400
+      );
+    }
+  }
+
+  if (docx && kind === 'powerpoint-to-markdown') {
+    try {
+      const { powerpointToMarkdown } = await import('../shared/from-powerpoint.js');
+
+      markdown = await powerpointToMarkdown(
+        new Uint8Array(docx),
+        (name || 'document').replace(/\.[^.]+$/, '')
+      );
+    } catch (cause) {
+      return c.json(
+        { error: cause instanceof Error ? cause.message : 'That is not a readable .pptx' },
         400
       );
     }

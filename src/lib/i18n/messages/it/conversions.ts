@@ -126,6 +126,19 @@ export const conversions: Content['conversions'] = {
         'Trasforma testo semplice in Markdown senza che i suoi caratteri vengano letti come formattazione — asterischi, trattini bassi e a capo conservati. Converte nel browser, senza caricare nulla.',
     },
   },
+  'powerpoint-to-markdown': {
+    label: 'PowerPoint → Markdown',
+    short: 'PPTX → MD',
+    title: 'Da PowerPoint a Markdown',
+    blurb:
+      'Carica un .pptx e ottieni una sezione per diapositiva, nell’ordine in cui vengono presentate — con le note del relatore, cioè la metà di una presentazione che fuori dalla sala nessuno legge.',
+    hint: 'Carica un .pptx. Ogni diapositiva diventa una sezione sotto il proprio titolo, gli elenchi restano elenchi e le tabelle restano tabelle; le note seguono ciascuna di esse.',
+    seo: {
+      title: 'Da PowerPoint a Markdown — TransformPipe',
+      description:
+        'Trasforma un .pptx di PowerPoint in Markdown: una sezione per diapositiva, con elenchi, tabelle e note del relatore. Converte nel browser, senza caricare nulla.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabella Markdown',
     short: 'XLSX → MD',

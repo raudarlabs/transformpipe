@@ -131,6 +131,19 @@ export const conversions: Content['conversions'] = {
         'Convierte texto plano en Markdown sin que sus propios caracteres se interpreten como formato — asteriscos, guiones bajos y saltos de línea se conservan. Convierte en tu navegador; nada se sube.',
     },
   },
+  'powerpoint-to-markdown': {
+    label: 'PowerPoint → Markdown',
+    short: 'PPTX → MD',
+    title: 'PowerPoint a Markdown',
+    blurb:
+      'Sube un .pptx y obtén una sección por diapositiva, en el orden en que se presentan — con las notas del orador, que son la mitad de una presentación que nadie llega a leer fuera de la sala.',
+    hint: 'Sube un .pptx. Cada diapositiva pasa a ser una sección con su propio título, las viñetas siguen siendo viñetas y las tablas, tablas; las notas acompañan a cada una.',
+    seo: {
+      title: 'Convertir PowerPoint a Markdown — TransformPipe',
+      description:
+        'Convierte un .pptx de PowerPoint en Markdown: una sección por diapositiva, con viñetas, tablas y las notas del orador. Convierte en tu navegador; nada se sube.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabla Markdown',
     short: 'XLSX → MD',

@@ -117,6 +117,16 @@ export async function convertFile(
       };
     }
 
+    case 'powerpoint-to-markdown': {
+      const { powerpointToMarkdown } = await import('@shared/from-powerpoint');
+      const markdown = await powerpointToMarkdown(
+        new Uint8Array(await file.arrayBuffer()),
+        renamed(file.name, '')
+      );
+
+      return { markdown, name: renamed(file.name, '.md'), kind: id };
+    }
+
     case 'notion-to-markdown': {
       const { notionZipToMarkdown } = await import('@shared/from-notion');
       const markdown = await notionZipToMarkdown(new Uint8Array(await file.arrayBuffer()));

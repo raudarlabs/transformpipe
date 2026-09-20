@@ -28,6 +28,7 @@ export type StaticPageId =
   | 'how-to-json'
   | 'how-to-txt'
   | 'how-to-xlsx'
+  | 'how-to-pptx'
   | 'how-to-zip'
   | 'how-to-assistant';
 
@@ -145,6 +146,12 @@ export const STATIC_PAGES: StaticPage[] = [
   { id: 'how-to-json', path: '/how-to/open-json', group: 'how-to', action: '/json-to-markdown' },
   { id: 'how-to-txt', path: '/how-to/open-txt', group: 'how-to', action: '/text-to-markdown' },
   { id: 'how-to-xlsx', path: '/how-to/open-xlsx', group: 'how-to', action: '/excel-to-markdown' },
+  {
+    id: 'how-to-pptx',
+    path: '/how-to/open-pptx',
+    group: 'how-to',
+    action: '/powerpoint-to-markdown',
+  },
   {
     id: 'how-to-zip',
     path: '/how-to/open-zip',

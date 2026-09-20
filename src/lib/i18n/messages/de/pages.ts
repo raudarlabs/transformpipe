@@ -609,6 +609,45 @@ export const pages: Content['pages'] = {
         'Wie man eine Excel-Arbeitsmappe ohne Excel öffnet, was #### und fünfstellige Datumswerte bedeuten und wie aus jedem Blatt eine Markdown-Tabelle wird.',
     },
   },
+  'how-to-pptx': {
+    label: 'Eine .pptx öffnen',
+    title: 'Wie man eine .pptx-Datei öffnet',
+    lede: 'Das Öffnen ist einfach. Sie zu lesen, ohne den Vortrag zu besuchen, ist der Teil, bei dem nichts hilft.',
+    sections: [
+      {
+        heading: 'Was sie ist',
+        body: [
+          'Eine `.pptx` ist ein Zip-Archiv aus XML, genauso gebaut wie eine `.docx` oder eine `.xlsx`: eine Datei je Folie, eine je Notizenseite, die Bilder daneben. Das ältere `.ppt` ist etwas ganz anderes — ein Binärformat von vor 2007, das die meisten Programme, die eine `.pptx` öffnen, ebenfalls umwandeln können.',
+        ],
+      },
+      {
+        heading: 'Ohne PowerPoint zu kaufen',
+        body: [
+          'Google Slides importiert sie über Datei, Öffnen. LibreOffice Impress öffnet sie auf jedem Desktop-System und ist kostenlos. Keynote öffnet sie auf dem Mac, und Microsofts eigene Web-Version von PowerPoint liest sie ohne bezahlte Lizenz.',
+          'Auf dem Mac genügt die Leertaste im Finder, um alle Folien zu sehen, ohne überhaupt etwas zu öffnen.',
+        ],
+      },
+      {
+        heading: 'Wo die Notizen stecken',
+        body: [
+          'Unter der Folie, in einem Bereich, den die meisten Programme zunächst ausblenden: Ansicht, dann Notizen — in PowerPoint wie in Google Slides. Dort steht der Gedankengang üblicherweise in ganzen Sätzen, während die Folie darüber nur die Zusammenfassung ist, die jemand vorgelesen hat.',
+          'Beim Export als PDF gehen sie verloren, sofern man nicht das Layout mit Notizenseiten wählt — weshalb einem als PDF herumgereichten Foliensatz so oft die Hälfte fehlt, die ihn erklärt hat.',
+        ],
+      },
+      {
+        heading: 'Vom Foliensatz zum Dokument',
+        body: [
+          'Der übliche Weg ist, den Text jeder Folie von Hand herauszukopieren — dabei gehen die Notizen verloren, weil sie währenddessen gar nicht zu sehen sind. Wandelt man die Datei direkt um, entsteht ein Abschnitt je Folie in der Reihenfolge der Präsentation, mit Aufzählungen, Tabellen und Notizen weiterhin bei der Folie, zu der sie gehören.',
+        ],
+      },
+    ],
+    action: 'Eine .pptx in Markdown umwandeln',
+    seo: {
+      title: 'Wie man eine .pptx-Datei öffnet — TransformPipe',
+      description:
+        'Wie man eine PowerPoint-Datei ohne PowerPoint öffnet, wo sich die Notizen verstecken und wie aus einem ganzen Foliensatz ein lesbares Dokument wird.',
+    },
+  },
   'how-to-zip': {
     label: 'Einen .zip-Export öffnen',
     title: 'Wie man einen .zip-Export aus Notion, Confluence oder Obsidian öffnet',

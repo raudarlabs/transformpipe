@@ -83,6 +83,7 @@ const BINARY_CONVERSIONS = new Set<ConversionId>([
   'confluence-to-markdown',
   'obsidian-to-markdown',
   'excel-to-markdown',
+  'powerpoint-to-markdown',
 ]);
 
 interface ConverterPageProps {

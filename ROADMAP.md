@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 20 September 2026.** Next up: **PowerPoint → Markdown**.
+**Updated 20 September 2026.** Next up: **EPUB → Markdown**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,15 +14,13 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **PowerPoint → Markdown** — one slide, one section, speaker notes kept
-      · `.pptx` is a zip of XML and `fflate` is already a dependency
+- [ ] **EPUB → Markdown** — a book as one document with its own contents
+      · zip plus XHTML, and `htmlToMarkdown()` exists
 
 ## Next, in order
 
 ### Formats, going in
 
-- [ ] **EPUB → Markdown** — a book as one document with its own contents
-      · zip plus XHTML, and `htmlToMarkdown()` exists
 - [ ] **ODT and RTF → Markdown** — LibreOffice and Google Docs exports
       · two in a week, because ODT is a zip of XML and RTF is small
 - [ ] **Evernote → Markdown** — an `.enex` export, notes merged
@@ -41,6 +39,20 @@ of it. "I have the Markdown, I need it in Confluence" still has no good answer o
       · zip, XHTML, a manifest — the inverse of EPUB in
 - [ ] **Markdown → Word, properly** — styles a Word user can edit
       · the `.docx` export exists; this is the week it stops looking like converted HTML
+
+### Comparing
+
+The first thing here that is not a conversion, and the reason it gets a heading of its own rather
+than a line in the list below: everything above turns one file into another file, and this turns
+two files into an answer. Hiding the one strategic bet in a list about storage is how it gets lost.
+
+- [ ] **Code compare** — two versions of code side by side, in the browser, with no account
+      · `diff` and the highlighter are already dependencies; `VersionDiff` moves onto the shared
+      core rather than a second copy of it
+- [ ] **A comparison with an address** — the diff saved as a document, and `tp_compare` handing it
+      to an assistant
+      · sharing, versions and the Word export already exist, and so does the MCP server — which is
+      the way in to VS Code, Cursor and SSMS without writing an extension for any of them
 
 ### The pull request, and the link
 
@@ -88,6 +100,9 @@ says otherwise.
 
 ### 20 September
 
+- [x] **PowerPoint → Markdown** — a slide is a section, in the order the deck plays, and the
+      speaker notes come with it. Bullets keep their nesting, tables lose their merged-cell
+      padding, and a slide that is only a picture says so
 - [x] **A document check** — a tab beside the preview with a count on it: dead anchors, two
       headings sharing one, empty headings, pictures with no alt text, links with nothing to click.
       Each carries its line, and nothing is rewritten

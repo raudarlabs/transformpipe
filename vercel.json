@@ -124,6 +124,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/powerpoint-to-markdown",
+      "destination": "/index.html"
+    },
+    {
       "source": "/how-to/:page",
       "destination": "/index.html"
     },

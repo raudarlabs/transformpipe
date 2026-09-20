@@ -55,23 +55,27 @@ export async function refuseIfItUnpacksTooFar(bytes: Uint8Array): Promise<void> 
   });
 }
 
-/** Every entry in the archive matching `extension`, as text — skips directories and empty files. */
-export async function readZipTextFiles(
+/**
+ * The archive's entries whose path `wanted` accepts, as text, keyed by that path.
+ *
+ * For the formats where which file matters rather than which extension: a `.pptx` is a zip whose
+ * every part is `.xml`, and the four it is read through — the presentation, its relationships, the
+ * slides and their notes — are told apart by where they sit and by nothing else.
+ *
+ * The filter reads the central directory's own `originalSize` before anything is decompressed,
+ * which is what makes the size check a check rather than a post-mortem. It also skips unpacking
+ * every entry that would be thrown away afterwards.
+ */
+export async function readZipTextEntries(
   bytes: Uint8Array,
-  extension: string
-): Promise<ZipPage[]> {
+  wanted: (path: string) => boolean
+): Promise<Map<string, string>> {
   const { unzipSync, strFromU8 } = await import('fflate');
 
   let files: Record<string, Uint8Array>;
   let unpacked = 0;
 
   try {
-    /*
-     * The filter reads the central directory's own `originalSize` before anything is decompressed,
-     * which is what makes this a check rather than a post-mortem. It also skips unpacking every
-     * entry that is thrown away two lines below — the extension match was already happening, just
-     * after the work instead of before it.
-     */
     files = unzipSync(bytes, {
       filter: (file) => {
         unpacked += file.originalSize ?? 0;
@@ -80,7 +84,7 @@ export async function readZipTextFiles(
           throw new Error('it unpacks to more than this app will read at once');
         }
 
-        return file.name.toLowerCase().endsWith(extension) && file.size > 0;
+        return file.size > 0 && wanted(file.name);
       },
     });
   } catch (cause) {
@@ -89,12 +93,29 @@ export async function readZipTextFiles(
     );
   }
 
-  return Object.entries(files)
-    .filter(([path, data]) => path.toLowerCase().endsWith(extension) && data.length > 0)
-    // A stable order matters: it decides the order pages appear in the merged document, and the
-    // path is the only thing here that does not change between two exports of the same space.
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([path, data]) => ({ path, text: strFromU8(data) }));
+  return new Map(
+    Object.entries(files)
+      .filter(([path, data]) => data.length > 0 && wanted(path))
+      .map(([path, data]) => [path, strFromU8(data)])
+  );
+}
+
+/** Every entry in the archive matching `extension`, as text — skips directories and empty files. */
+export async function readZipTextFiles(
+  bytes: Uint8Array,
+  extension: string
+): Promise<ZipPage[]> {
+  const files = await readZipTextEntries(bytes, (path) =>
+    path.toLowerCase().endsWith(extension)
+  );
+
+  return (
+    [...files.entries()]
+      // A stable order matters: it decides the order pages appear in the merged document, and the
+      // path is the only thing here that does not change between two exports of the same space.
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([path, text]) => ({ path, text }))
+  );
 }
 
 /**
