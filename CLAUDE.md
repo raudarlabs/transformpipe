@@ -121,3 +121,14 @@ existing German articles, the rest follow the same logic:
   two thirds the English length, a description of 100-165 characters, no `# ` H1 in the body, no
   dead internal links, at most four mentions of the product's own name, and no orphan — something
   has to link to the new article or nobody reaches it.
+
+## The roadmap is a file, and it is ticked in the same commit
+
+`ROADMAP.md` at the root is the plan and the ledger both. An item moves from **Next** to
+**Shipped** in the commit that ships it — alongside the changelog entry, not after it — and the
+date line at the top moves with it.
+
+The two lists answer different questions and neither replaces the other: `src/lib/changelog.ts`
+tells somebody using TransformPipe what changed, `ROADMAP.md` says what is coming and what came of
+what was promised. A roadmap nobody updates is a document people stop believing, which is why the
+first version of this one — twenty-six weeks of plan and no record — was rewritten.
