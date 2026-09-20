@@ -112,7 +112,28 @@ async function draw(source: string, theme: Theme): Promise<string | null> {
   const key = keyFor(source, theme);
 
   try {
-    const mermaid = await mermaidFor(theme);
+    let mermaid: Awaited<ReturnType<typeof mermaidFor>>;
+
+    /*
+     * Two failures that look the same and are not.
+     *
+     * A megabyte of mermaid arriving over a network fails the way networks fail — once, for no
+     * lasting reason. A fence that does not parse fails the same way every time. Caching both as
+     * "this one cannot be drawn" meant a single lost chunk left that diagram blank for the rest of
+     * the session, however many times the document was retyped: a feature that worked, and then
+     * did not, for no reason anybody could see.
+     *
+     * So a load that fails is forgotten — the import is dropped so the next attempt fetches again,
+     * and nothing is written to the cache.
+     */
+    try {
+      mermaid = await mermaidFor(theme);
+    } catch {
+      loading = null;
+
+      return null;
+    }
+
     const { svg } = await mermaid.render(`md-diagram-${(count += 1)}`, source);
     /* Mermaid sanitises labels; this sanitises mermaid. The file leaves the browser after this. */
     const clean = DOMPurify.sanitize(svg, {

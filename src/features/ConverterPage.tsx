@@ -13,11 +13,14 @@ import {
   RotateCcw,
   Save,
   Share2,
+  ShieldCheck,
   Sparkles,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import { DocStats } from '@/components/DocStats';
+import { checkDocument } from '@shared/check';
+import { DocumentCheck } from '@/components/DocumentCheck';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { Hint } from '@/components/Hint';
 import { ScrollToTop } from '@/components/ScrollToTop';
@@ -116,7 +119,15 @@ export function ConverterPage({
   /** What this conversion is called and says, in the reader's language. */
   const words = content.conversions[conversion.id];
   const [isCopied, setIsCopied] = useState(false);
-  const [tab, setTab] = useState<'preview' | 'source' | 'summary'>('preview');
+  const [tab, setTab] = useState<'preview' | 'source' | 'summary' | 'check'>(
+    'preview'
+  );
+
+  /* The same parse the panel makes, so the badge and the list can never disagree. */
+  const problems = useMemo(
+    () => (doc ? checkDocument(doc.markdown).length : 0),
+    [doc]
+  );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const previewFrame = useRef<HTMLDivElement>(null);
@@ -598,7 +609,9 @@ export function ConverterPage({
 
       <Tabs
         value={tab}
-        onValueChange={(value) => setTab(value as 'preview' | 'source' | 'summary')}
+        onValueChange={(value) =>
+          setTab(value as 'preview' | 'source' | 'summary' | 'check')
+        }
         className="flex flex-col gap-4"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -616,6 +629,22 @@ export function ConverterPage({
             <TabsTrigger value="summary">
               <Sparkles className="size-4" />
               {t('converter.tab.summary')}
+            </TabsTrigger>
+            {/*
+              * The count is on the tab, not behind it.
+              *
+              * A check nobody opens is a check nobody has, and the whole point of this one is that
+              * a person who was not looking for problems learns there are some. The number is the
+              * cheapest way to say so, and it costs a parse the page has already paid for.
+              */}
+            <TabsTrigger value="check">
+              <ShieldCheck className="size-4" />
+              {t('converter.tab.check')}
+              {problems > 0 && (
+                <span className="ml-1 rounded-full bg-surface-chips px-1.5 py-px text-ink-secondary text-xxs">
+                  {problems}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -664,6 +693,10 @@ export function ConverterPage({
           >
             {source}
           </CodeBlock>
+        </TabsContent>
+
+        <TabsContent value="check" className="outline-none">
+          <DocumentCheck markdown={doc.markdown} />
         </TabsContent>
 
         <TabsContent value="summary" className="outline-none">

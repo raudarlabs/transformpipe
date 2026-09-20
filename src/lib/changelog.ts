@@ -92,6 +92,58 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-20',
+    title: 'A document says what is wrong with it',
+    slug: 'document-check',
+    body:
+      'A fourth tab beside the preview, with a count on it: links to sections that are not there, '
+      + 'two headings competing for one anchor, a heading with no words, a picture with no alt '
+      + 'text, a link with nothing to click. Each one carries the line it is on. Nothing is '
+      + 'changed for you.',
+    detail: {
+      en: {
+        description:
+          'The converter now reports dead anchors, duplicate headings, empty headings and pictures '
+          + 'without alt text, each with the line it is on.',
+        keywords:
+          'markdown link checker, check markdown anchors, missing alt text markdown, '
+          + 'duplicate heading anchors, validate markdown document',
+        body: `Converting a document faithfully is one question. Whether the document works is
+another, and it is the one people ask next.
+
+## What it looks for
+
+- **A link to a section that is not here.** The commonest of them, because a heading gets
+  reworded and the link that pointed at it does not.
+- **Two headings with the same name.** The second quietly becomes \`…-1\`, so one of the two is
+  unreachable by the anchor anybody would guess.
+- **A heading with no words** — an entry in the contents that says nothing.
+- **A picture with no alt text**, which is invisible to a screen reader and to anyone whose
+  images did not load.
+- **A link with nothing to click**, and **a link that goes nowhere**.
+
+Each finding carries the line it is on, so the fix is one edit in the source you are looking at.
+
+## Nothing is rewritten
+
+Not as a limitation — as the point. A checker that quietly repairs what it finds is one nobody
+can hand a document they care about, and every one of these is a single edit a person can make
+better than a rule can. So it reports, and stops.
+
+## The anchors it checks against are the real ones
+
+The document is read through the same parser that renders it, which is the only way the list of
+anchors is the list the document actually has. A link inside a code fence is not a link, and no
+amount of pattern matching over the source can tell the difference.
+
+Both spellings count. This renderer prefixes an anchor with \`doc-\`, because a bare
+\`id="title"\` shadows \`document.title\` and a browser's sanitiser drops exactly those — but
+nobody writes links that way. A document written anywhere else says \`[Setup](#setup)\`, and that
+is treated as pointing at the heading it obviously points at.`,
+      },
+    },
+  },
+  {
     date: '2026-09-19',
     title: 'The things people actually write in Markdown',
     slug: 'markdown-people-write',

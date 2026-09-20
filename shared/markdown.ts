@@ -404,7 +404,7 @@ function escapeHtml(value: string): string {
  * sanitiser drops exactly those while a server-side parser keeps them. The prefix removes the
  * hazard, which is also what keeps both renderers producing the same document.
  */
-function slugify(text: string, used: Map<string, number>): string {
+export function slugify(text: string, used: Map<string, number>): string {
   const base =
     text
       .toLowerCase()

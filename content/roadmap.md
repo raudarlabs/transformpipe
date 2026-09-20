@@ -51,6 +51,9 @@ endpoint shipped, and `/api/v1` has accepted them ever since.
   what this is.
 - **Share on X, Reddit and LinkedIn** at the foot of every article — three plain links, no SDK, so
   nothing loads until a reader clicks.
+- **A document check**: a tab beside the preview, with a count on it — dead anchors, two headings
+  sharing one, empty headings, pictures with no alt text, links with nothing to click. Each one
+  carries its line, and nothing is rewritten.
 - **Code is highlighted** in every fence that names a language — six colours from the document's
   own palette, following the theme, inside the exported file rather than in a stylesheet somebody
   has to keep.
@@ -94,23 +97,17 @@ The rule that came out of this: submit early in a week and ship something else w
 
 ## Next, in order
 
-Seventeen weeks. The first is the last of the ones that improve every conversion at once rather
-than adding an eleventh.
-
-### The document itself
-
-| Week | Ships | Notes |
-| --- | --- | --- |
-| 1 | **A document check** — dead links, duplicate anchors, empty headings, images with no alt text | A panel beside the preview. Nothing is rewritten without being asked |
+Sixteen weeks. The block that improved every conversion at once rather than adding an eleventh is
+done; what follows is formats.
 
 ### Formats, going in
 
 | Week | Ships | Notes |
 | --- | --- | --- |
-| 2 | **PowerPoint → Markdown** — one slide, one section, speaker notes kept | `.pptx` is a zip of XML; `fflate` is already here |
-| 3 | **EPUB → Markdown** — a book as one document with its own contents | Zip plus XHTML, and `htmlToMarkdown()` exists |
-| 4 | **ODT and RTF → Markdown** — LibreOffice and Google Docs exports | Two in a week because ODT is a zip of XML and RTF is small |
-| 5 | **Evernote → Markdown** — an `.enex` export, notes merged | The one format here with a user base actively looking for the door |
+| 1 | **PowerPoint → Markdown** — one slide, one section, speaker notes kept | `.pptx` is a zip of XML; `fflate` is already here |
+| 2 | **EPUB → Markdown** — a book as one document with its own contents | Zip plus XHTML, and `htmlToMarkdown()` exists |
+| 3 | **ODT and RTF → Markdown** — LibreOffice and Google Docs exports | Two in a week because ODT is a zip of XML and RTF is small |
+| 4 | **Evernote → Markdown** — an `.enex` export, notes merged | The one format here with a user base actively looking for the door |
 
 ### Formats, going out
 
@@ -119,28 +116,28 @@ it. "I have the Markdown, I need it in Confluence" still has no good answer on t
 
 | Week | Ships | Notes |
 | --- | --- | --- |
-| 6 | **Markdown → Confluence storage format** | XHTML with Confluence's own macro elements. A renderer, not a filter |
-| 7 | **Markdown → Jira wiki markup**, and **→ Slack mrkdwn** | Line-level transforms of the token stream; they share a week |
-| 8 | **Markdown → EPUB** | Zip, XHTML, a manifest — the inverse of week 3 |
-| 9 | **Markdown → Word, properly** — styles a Word user can edit | The `.docx` export exists; this is the week it stops looking like converted HTML |
+| 5 | **Markdown → Confluence storage format** | XHTML with Confluence's own macro elements. A renderer, not a filter |
+| 6 | **Markdown → Jira wiki markup**, and **→ Slack mrkdwn** | Line-level transforms of the token stream; they share a week |
+| 7 | **Markdown → EPUB** | Zip, XHTML, a manifest — the inverse of week 2 |
+| 8 | **Markdown → Word, properly** — styles a Word user can edit | The `.docx` export exists; this is the week it stops looking like converted HTML |
 
 ### The pull request, and the link
 
 | Week | Ships | Notes |
 | --- | --- | --- |
-| 10 | **The GitHub App**: install once, and every pull request touching Markdown gets a rendered link per changed file | App registration, `pull_request` webhook, installation tokens. The heaviest single item left |
-| 11 | **The same app, useful**: a check run rather than a comment thread, and the Marketplace listing | Comments pile up on a long review; a check run updates in place |
-| 12 | **A password on a shared link** | Hash on the row, one gate before the render — server-side, since the shared page has no scripts |
-| 13 | **An expiry date, and a view count** | Two columns and a sweep. Answers "is this link still live" without asking anybody |
+| 9 | **The GitHub App**: install once, and every pull request touching Markdown gets a rendered link per changed file | App registration, `pull_request` webhook, installation tokens. The heaviest single item left |
+| 10 | **The same app, useful**: a check run rather than a comment thread, and the Marketplace listing | Comments pile up on a long review; a check run updates in place |
+| 11 | **A password on a shared link** | Hash on the row, one gate before the render — server-side, since the shared page has no scripts |
+| 12 | **An expiry date, and a view count** | Two columns and a sweep. Answers "is this link still live" without asking anybody |
 
 ### The desk
 
 | Week | Ships | Notes |
 | --- | --- | --- |
-| 14 | **A chosen address** instead of a token, and **a QR code** for it | Collision handling is the feature; the QR is an afternoon |
-| 15 | **The shared page grows up**: contents, a print stylesheet, its own preview image | The image is the interesting half — a per-document card drawn the way the blog covers are |
-| 16 | **Tags in the history**, filterable beside the existing chips | The chip plumbing exists; this adds a source of chips |
-| 17 | **A trash**: deletes recoverable for thirty days, and **drop a folder** to get a zip back | `deleted_at` rather than a delete, and one honest sentence in the privacy page |
+| 13 | **A chosen address** instead of a token, and **a QR code** for it | Collision handling is the feature; the QR is an afternoon |
+| 14 | **The shared page grows up**: contents, a print stylesheet, its own preview image | The image is the interesting half — a per-document card drawn the way the blog covers are |
+| 15 | **Tags in the history**, filterable beside the existing chips | The chip plumbing exists; this adds a source of chips |
+| 16 | **A trash**: deletes recoverable for thirty days, and **drop a folder** to get a zip back | `deleted_at` rather than a delete, and one honest sentence in the privacy page |
 
 ---
 
