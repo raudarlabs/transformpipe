@@ -2,16 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/about",
-      "destination": "/support",
-      "permanent": true
-    },
-    {
-      "source": "/:locale(de|fr|es|it)/about",
-      "destination": "/:locale/support",
-      "permanent": true
-    },
-    {
       "source": "/contact",
       "destination": "/support",
       "permanent": true
@@ -145,6 +135,10 @@
     },
     {
       "source": "/how-to/:page",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
       "destination": "/index.html"
     },
     {

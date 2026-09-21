@@ -93,6 +93,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'There is a page that says what this is',
+    body:
+      'There was not one. `/about` was a permanent redirect to the support page, and what it '
+      + 'redirected to sat underneath a form about a broken file — so the page that says what '
+      + 'TransformPipe is, how it works and who builds it did not exist at the address anybody '
+      + 'would type. It does now, in five languages, and it describes fifteen conversions rather '
+      + 'than the five it still claimed.',
+  },
+  {
+    date: '2026-09-21',
     title: 'A conversion’s name no longer breaks after its arrow',
     body:
       'The blocks under the dropzone, and the list of conversions in the footer, put the arrow at '

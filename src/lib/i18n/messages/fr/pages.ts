@@ -13,40 +13,46 @@ import type { Content } from '../../content';
 export const pages: Content['pages'] = {
   about: {
     label: 'À propos',
-    title: 'À propos de TransformPipe',
-    lede: 'Un convertisseur qui fait le travail dans votre navigateur et ne se met pas en travers.',
+    title: 'Ce qu’est TransformPipe',
+    lede: 'Un convertisseur de documents qui fait le travail dans votre navigateur, et vous laisse tranquille.',
     sections: [
       {
-        heading: 'Ce que c’est',
+        heading: 'Ce qu’il fait',
         body: [
-          'TransformPipe transforme des documents en d’autres documents. Du Markdown en page HTML finie, et du HTML, des fichiers Word, des tableurs et du JSON en Markdown. Déposez un fichier, voyez ce qu’il est devenu, emportez-le en Markdown, en HTML, en texte brut ou en PDF.',
-          'Tout se ramène au Markdown, parce que le Markdown est un format qui se lit, qui se compare ligne à ligne, et qui se garde vingt ans sans posséder l’outil qui l’a produit.',
+          'Quinze conversions. Un fichier Word, un diaporama, un tableur, un livre EPUB, un fichier OpenDocument ou en texte enrichi, un export Evernote, une page HTML enregistrée, un CSV, une réponse JSON, ou l’archive que Notion, Confluence et Obsidian produisent à l’export — chacun devient du Markdown. Et le Markdown devient une page HTML finie, un fichier Word, du texte brut, ou quelque chose d’imprimable.',
+          'Tout se normalise en Markdown, parce que le Markdown est un format qui se lit sans l’outil qui l’a produit, se compare dans une pull request, et s’ouvrira encore dans vingt ans.',
         ],
       },
       {
-        heading: 'Pourquoi de cette manière',
+        heading: 'Il tourne dans votre navigateur',
         body: [
-          'La conversion tourne dans votre navigateur. Déconnecté, aucun fichier n’est envoyé où que ce soit — il n’y a pas de téléversement à qui faire confiance, parce qu’il n’y a pas de téléversement. Connectez-vous et le Markdown est conservé dans votre compte pour qu’un document vous suive sur une autre machine, et il reste privé jusqu’à ce que vous le partagiez.',
-          'Le HTML exporté est un seul fichier, ses styles à l’intérieur. Il ne demande rien au réseau, ce qui veut dire qu’il s’ouvrira dans cinq ans sur un portable sans connexion exactement comme aujourd’hui.',
+          'Déconnecté, aucun fichier n’est envoyé nulle part. Il n’y a pas de téléversement à qui faire confiance parce qu’il n’y a pas de téléversement : la conversion se fait sur votre machine — c’est pourquoi une page derrière l’authentification de votre entreprise se convertit aussi facilement qu’une page publique.',
+          'Connectez-vous et le Markdown reste dans votre compte, si bien qu’un document vous suit sur une autre machine. Il reste privé jusqu’à ce que vous le partagiez, et un lien partagé se révoque.',
         ],
       },
       {
-        heading: 'Au-delà de l’application',
+        heading: 'Ce qui en sort est un seul fichier',
         body: [
-          'Les mêmes conversions sont accessibles depuis un terminal, depuis une pull request et depuis un assistant : il y a une API publique, un client en ligne de commande sans dépendances, une GitHub Action qui publie le Markdown qu’une pull request a modifié, et un serveur MCP pour qu’un modèle puisse convertir et partager des documents en votre nom. La documentation couvre tout cela.',
+          'Le HTML exporté porte en lui ses styles, ses images, ses diagrammes et ses formules. Il ne demande rien au réseau — et c’est exactement ce qui fait qu’il s’ouvrira dans cinq ans sur un portable sans connexion comme il s’ouvre aujourd’hui, et qu’on peut l’envoyer à quelqu’un qui l’ouvrira une fois sans plus jamais y penser.',
+        ],
+      },
+      {
+        heading: 'Et pas seulement dans le navigateur',
+        body: [
+          'Les mêmes conversions atteignent un terminal, une pull request, un onglet et une conversation : une API publique, un client en ligne de commande sans dépendances, une GitHub Action qui publie le Markdown qu’une pull request modifie, une extension de navigateur qui convertit la page que vous lisez, et un serveur MCP pour qu’un assistant convertisse et partage en votre nom. Un seul jeu de convertisseurs derrière tout cela, pour qu’un tableau sorte pareil d’où qu’on l’ait demandé.',
         ],
       },
       {
         heading: 'Qui le construit',
         body: [
-          'TransformPipe est réalisé par Raudar Labs.',
+          'TransformPipe est construit par Raudar Labs. Le code source est public et sous licence MIT : la conversion à laquelle vous faites confiance, vous pouvez la lire.',
         ],
       },
     ],
     seo: {
-      title: 'À propos de TransformPipe',
+      title: 'Ce qu’est TransformPipe — un convertisseur qui tourne dans le navigateur',
       description:
-        'TransformPipe convertit vos documents en Markdown et inversement — dix formats, dans votre navigateur, avec une API, une CLI, une GitHub Action et un serveur MCP. Par Raudar Labs.',
+        'TransformPipe convertit quinze formats en Markdown et inversement, dans le navigateur et sans téléversement. Avec une API, un CLI, une Action, une extension et un serveur MCP.',
     },
   },
   support: {

@@ -113,18 +113,16 @@ const PRIVACY_UPDATED = '2026-09-17';
 export const STORE_URL: string | null = null;
 
 export const STATIC_PAGES: StaticPage[] = [
-  {
-    id: 'support',
-    path: '/support',
-    group: 'company',
-    also: 'about',
-    /*
-     * About's sections used to open this page, from when it was Contact and the two answered the
-     * same question from different ends. On a support page they would push the thing somebody came
-     * for below the fold, so they run after it: what to do first, then who is doing it.
-     */
-    alsoAfter: true,
-  },
+  /*
+   * About has its own address again.
+   *
+   * It was folded into the support page — `also: 'about'`, printed after it — from when the two
+   * answered the same question from different ends, and `/about` was a permanent redirect to
+   * `/support`. Which meant the one page that says what this is and who makes it did not exist
+   * at the address everybody types, and what was there sat below a form about a broken file.
+   */
+  { id: 'about', path: '/about', group: 'company' },
+  { id: 'support', path: '/support', group: 'company' },
   {
     id: 'extension',
     path: '/extension',

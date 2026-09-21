@@ -19,40 +19,46 @@ import type { Content } from '../../content';
 export const pages: Content['pages'] = {
   about: {
     label: 'About',
-    title: 'About TransformPipe',
-    lede: 'A converter that does the work in your browser and stays out of the way.',
+    title: 'What TransformPipe is',
+    lede: 'A document converter that does the work in your browser, and stays out of the way.',
     sections: [
       {
-        heading: 'What it is',
+        heading: 'What it does',
         body: [
-          'TransformPipe turns documents into other documents. Markdown into a finished HTML page, and HTML, Word files, spreadsheets and JSON into Markdown. Drop a file, see what it became, take it away as Markdown, HTML, plain text or a PDF.',
-          'Everything normalises to Markdown, because Markdown is a format you can read, diff, and keep for twenty years without owning the tool that made it.',
+          'Fifteen conversions. A Word file, a slide deck, a spreadsheet, an EPUB book, an OpenDocument or rich text file, an Evernote export, a page of saved HTML, a CSV, a JSON response, or the zip that Notion, Confluence and Obsidian hand you when you export — each of them becomes Markdown. And Markdown becomes a finished HTML page, a Word file, plain text, or something you can print.',
+          'Everything normalises to Markdown, because Markdown is a format you can read without the tool that made it, diff in a pull request, and still open in twenty years.',
         ],
       },
       {
-        heading: 'Why it works this way',
+        heading: 'It runs in your browser',
         body: [
-          'The conversion runs in your browser. Signed out, no file is sent anywhere — there is no upload to trust, because there is no upload. Sign in and the Markdown is kept in your account so a document follows you to another machine, and it stays private until you share it.',
-          'The exported HTML is one file with its styles inline. It asks the network for nothing, which means it opens the same on a laptop with no connection in five years as it does today.',
+          'Signed out, no file is sent anywhere. There is no upload to trust because there is no upload: the conversion happens on your own machine, which is why a page behind your company login converts as easily as one that is public.',
+          'Sign in and the Markdown is kept in your account, so a document follows you to another machine. It stays private until you share it, and a shared link can be revoked.',
         ],
       },
       {
-        heading: 'Beyond the app',
+        heading: 'What comes out is one file',
         body: [
-          'The same conversions are reachable from a terminal, from a pull request, and from an assistant: there is a public API, a dependency-free command-line client, a GitHub Action that publishes the Markdown a pull request changed, and an MCP server so a model can convert and share documents on your behalf. The documentation covers all of it.',
+          'The exported HTML has its styles, its pictures, its diagrams and its formulas inside it. It asks the network for nothing, which is what makes it open the same on a laptop with no connection in five years as it does today — and what makes it safe to email to somebody who will open it once and never think about it again.',
+        ],
+      },
+      {
+        heading: 'And not only in the browser',
+        body: [
+          'The same conversions reach a terminal, a pull request, a browser tab and a conversation: a public API, a command-line client with no dependencies, a GitHub Action that publishes the Markdown a pull request changed, a browser extension that converts the page you are reading, and an MCP server so an assistant can convert and share on your behalf. One set of converters behind all of them, so a table comes out the same wherever you asked.',
         ],
       },
       {
         heading: 'Who builds it',
         body: [
-          'TransformPipe is built by Raudar Labs.',
+          'TransformPipe is built by Raudar Labs. The source is public and MIT licensed, which means the conversion you are trusting is one you can read.',
         ],
       },
     ],
     seo: {
-      title: 'About TransformPipe',
+      title: 'What TransformPipe is — a document converter that runs in your browser',
       description:
-        'TransformPipe converts documents to Markdown and back — ten formats, in your browser, with an API, a CLI, a GitHub Action and an MCP server. Built by Raudar Labs.',
+        'TransformPipe converts fifteen formats to Markdown and back, in your browser with nothing uploaded. An API, a CLI, a GitHub Action, an extension and an MCP server too.',
     },
   },
   support: {
