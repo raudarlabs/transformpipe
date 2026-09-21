@@ -357,7 +357,7 @@ const SHOTS = [
     surface: 'viewer.html?doc=shot',
     size: { width: 1180, height: 780 },
     handoff: true,
-    caption: 'Eleven formats, converted in your browser',
+    caption: 'Twelve formats, converted in your browser',
     blurb: 'Word, slides, spreadsheets, HTML, CSV, JSON and more. Nothing is uploaded.',
   },
   {

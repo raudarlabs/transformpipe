@@ -37,10 +37,10 @@ which are localised with it.
 >
 > **A file on your machine, converted without uploading it.**
 >
-> Drop in a Word document and it comes back as Markdown. So does a slide deck, a spreadsheet, a
-> page of saved HTML, or the zip that Notion, Confluence and Obsidian produce when you export.
-> Eleven conversions in all, every one of them running in your browser: nothing is uploaded, and
-> none of it needs a network connection.
+> Drop in a Word document and it comes back as Markdown. So does a slide deck, a spreadsheet, an
+> EPUB book, a page of saved HTML, or the zip that Notion, Confluence and Obsidian produce when
+> you export. Twelve conversions in all, every one of them running in your browser: nothing is
+> uploaded, and none of it needs a network connection.
 >
 > **Why it reads pages better than a copy and paste**
 >
@@ -69,8 +69,8 @@ words it as excessive keywords, and it was — a comma-separated run of formats 
 box rather than for a person.
 
 It was also wrong. This extension has never converted a PDF and has never converted an EPUB; the
-eleven conversions take `.md`, `.html`, `.txt`, `.csv`, `.tsv`, `.json`, `.docx`, `.xlsx`, `.pptx`
-and the `.zip` from Notion, Confluence or Obsidian. Two of the seven formats in that list did not exist
+twelve conversions take `.md`, `.html`, `.txt`, `.csv`, `.tsv`, `.json`, `.docx`, `.xlsx`,
+`.pptx`, `.epub` and the `.zip` from Notion, Confluence or Obsidian. Two of the seven formats in that list did not exist
 here. Had a reviewer installed it and looked for the PDF option, the rejection would have been the
 worse kind.
 
@@ -307,7 +307,7 @@ that a store actually enforces.
 
 **What is in it that 1.0.0 does not have** is most of a fortnight, and almost all of it reaches
 the extension through `shared/`: diagrams drawn rather than printed, formulas typeset, code
-coloured, six more pieces of Markdown syntax understood, PowerPoint as an eleventh conversion,
+coloured, six more pieces of Markdown syntax understood, PowerPoint and EPUB as the eleventh and twelfth conversions,
 the pictures inside an export carried into the document, and a document check. From the
 extension's own side: it reads what the screen shows rather than what the markup claims —
 hidden routes, shadow DOM, typed form values, preformatted blocks kept preformatted, a side

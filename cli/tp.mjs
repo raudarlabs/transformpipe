@@ -127,6 +127,7 @@ const KIND_BY_EXTENSION = {
   '.zip': 'zip-export',
   '.xlsx': 'excel-to-markdown',
   '.pptx': 'powerpoint-to-markdown',
+  '.epub': 'epub-to-markdown',
 };
 
 function kindFor(name) {
@@ -170,6 +171,10 @@ async function push() {
 
     if (kind === 'powerpoint-to-markdown') {
       fail(`${name}: a .pptx is read in the browser. Convert it at ${HOST}/powerpoint-to-markdown and push the Markdown.`);
+    }
+
+    if (kind === 'epub-to-markdown') {
+      fail(`${name}: an .epub is read in the browser. Convert it at ${HOST}/epub-to-markdown and push the Markdown.`);
     }
 
     return { name, kind, markdown: readFileSync(file, 'utf8') };

@@ -84,6 +84,7 @@ const BINARY_CONVERSIONS = new Set<ConversionId>([
   'obsidian-to-markdown',
   'excel-to-markdown',
   'powerpoint-to-markdown',
+  'epub-to-markdown',
 ]);
 
 interface ConverterPageProps {

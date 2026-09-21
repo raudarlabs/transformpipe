@@ -146,6 +146,19 @@ export const conversions: Content['conversions'] = {
         'Eine PowerPoint-.pptx in Markdown umwandeln: ein Abschnitt je Folie, mit Aufzählungen, Tabellen und Notizen. Läuft im Browser; nichts wird hochgeladen.',
     },
   },
+  'epub-to-markdown': {
+    label: 'EPUB → Markdown',
+    short: 'EPUB → MD',
+    title: 'Ein EPUB-Buch in Markdown',
+    blurb:
+      'Eine .epub hochladen und das ganze Buch als ein Dokument erhalten — die Kapitel in Lesereihenfolge, unter den Titeln aus dem Inhaltsverzeichnis, mit den Bildern darin.',
+    hint: 'Eine .epub hochladen. Die Lesereihenfolge stammt aus der Spine des Buchs und nicht aus den Dateinamen; jedes Kapitel wird ein Abschnitt.',
+    seo: {
+      title: 'EPUB in Markdown umwandeln — TransformPipe',
+      description:
+        'Ein EPUB-Buch in ein Markdown-Dokument umwandeln: Kapitel in Lesereihenfolge, Inhaltsverzeichnis und Bilder inbegriffen. Läuft im Browser; nichts wird hochgeladen.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown-Tabelle',
     short: 'XLSX → MD',

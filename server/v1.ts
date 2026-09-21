@@ -292,6 +292,7 @@ v1.post('/documents', async (c) => {
     'obsidian-to-markdown',
     'excel-to-markdown',
     'powerpoint-to-markdown',
+    'epub-to-markdown',
   ]);
 
   /*
@@ -474,6 +475,22 @@ v1.post('/documents', async (c) => {
     } catch (cause) {
       return c.json(
         { error: cause instanceof Error ? cause.message : 'That is not a readable .zip' },
+        400
+      );
+    }
+  }
+
+  if (docx && kind === 'epub-to-markdown') {
+    try {
+      const { epubToMarkdown } = await import('../shared/from-epub.js');
+
+      markdown = await epubToMarkdown(
+        new Uint8Array(docx),
+        (name || 'document').replace(/\.[^.]+$/, '')
+      );
+    } catch (cause) {
+      return c.json(
+        { error: cause instanceof Error ? cause.message : 'That is not a readable .epub' },
         400
       );
     }

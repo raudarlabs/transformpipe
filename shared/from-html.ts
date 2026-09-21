@@ -160,7 +160,15 @@ export function htmlToMarkdown(html: string): string {
   const body = html
     // A saved page carries the whole browser chrome with it; the article is what was wanted.
     .replace(STRIP, '')
-    .replace(/<!--[\s\S]*?-->/g, '');
+    .replace(/<!--[\s\S]*?-->/g, '')
+    /*
+     * The XML declaration and the doctype, which are not text and are not tags either — so an
+     * HTML parser hands them straight through as content. Invisible on a web page, which is why
+     * this went unnoticed, and the first line of every chapter of an EPUB, which is XHTML: a
+     * converted book opened with `<?xml version='1.0' encoding='utf-8'?>` above its title.
+     */
+    .replace(/<\?xml\b[\s\S]*?\?>/gi, '')
+    .replace(/<!DOCTYPE\b[^>]*>/gi, '');
 
   return (
     tidyTables(

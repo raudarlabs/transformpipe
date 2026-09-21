@@ -646,6 +646,44 @@ export const pages: Content['pages'] = {
         'How to open a PowerPoint file without buying PowerPoint, where the speaker notes hide, and how to turn a whole deck into a document you can read.',
     },
   },
+  'how-to-epub': {
+    label: 'Open an .epub file',
+    title: 'How to open an .epub file',
+    lede: 'Every reading device opens one. Getting the words out of it is the part that is awkward.',
+    sections: [
+      {
+        heading: 'What it is',
+        body: [
+          'An `.epub` is a zip archive of XHTML — a web page per chapter, a stylesheet, the pictures, and a package file that lists them and states the order they are read in. It is the open format the whole industry agreed on, which is why a Kindle’s `.azw3` and `.mobi` are the odd ones out rather than the standard.',
+        ],
+      },
+      {
+        heading: 'Reading one',
+        body: [
+          'Apple Books opens one on a Mac, an iPhone or an iPad, and Microsoft Edge opens one on Windows with no install at all. Calibre is the free desktop reader that also converts between formats, and Thorium is the one to reach for if you want a reading system that follows the spec closely.',
+          'A Kindle does not read `.epub` directly, but Amazon’s Send to Kindle accepts one and converts it on the way.',
+        ],
+      },
+      {
+        heading: 'Why renaming it to .zip nearly works',
+        body: [
+          'Because it is one. Unzip an `.epub` and every chapter is there as a file you can open in a browser. What you will not get is the order: the files are commonly named `index_split_030.xhtml`, `index_split_002.xhtml` and so on, and those numbers are whatever the tool that made the book happened to write. The reading order lives in the package file’s spine, and nothing else states it.',
+        ],
+      },
+      {
+        heading: 'Getting a book into a document',
+        body: [
+          'Converting it directly gives you one Markdown document: the chapters in the order the spine puts them, under the titles the book’s own contents gives them, the pictures carried inside the file, and the links between chapters reduced to their words, because a merged document has nowhere for them to land.',
+        ],
+      },
+    ],
+    action: 'Convert an .epub file to Markdown',
+    seo: {
+      title: 'How to open an .epub file — TransformPipe',
+      description:
+        'How to open an EPUB book on any device, why unzipping one loses the chapter order, and how to turn a whole book into a document you can search and edit.',
+    },
+  },
   'how-to-zip': {
     label: 'Open an export .zip',
     title: 'How to open a .zip export from Notion, Confluence or Obsidian',

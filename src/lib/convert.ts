@@ -127,6 +127,16 @@ export async function convertFile(
       return { markdown, name: renamed(file.name, '.md'), kind: id };
     }
 
+    case 'epub-to-markdown': {
+      const { epubToMarkdown } = await import('@shared/from-epub');
+      const markdown = await epubToMarkdown(
+        new Uint8Array(await file.arrayBuffer()),
+        renamed(file.name, '')
+      );
+
+      return { markdown, name: renamed(file.name, '.md'), kind: id };
+    }
+
     case 'notion-to-markdown': {
       const { notionZipToMarkdown } = await import('@shared/from-notion');
       const markdown = await notionZipToMarkdown(new Uint8Array(await file.arrayBuffer()));

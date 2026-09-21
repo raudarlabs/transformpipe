@@ -64,7 +64,7 @@ function fold(value: string): string {
 /**
  * Everything this app can do, in one list, opened with ⌘K.
  *
- * The bar at the top of the screen holds eleven conversions behind a menu, three destinations and
+ * The bar at the top of the screen holds twelve conversions behind a menu, three destinations and
  * nineteen pages behind a footer — which is a reasonable header and a slow way to get anywhere once
  * you know what you want. This is the fast way: type two letters of it.
  *
@@ -165,7 +165,7 @@ export function CommandPalette({
 
     /*
      * With nothing typed, the documents are cut to five and the rest of the list follows whole. A
-     * palette that opened on forty file names would bury the eleven conversions under them.
+     * palette that opened on forty file names would bury the twelve conversions under them.
      */
     const documents_ = found.filter((command) =>
       command.key.startsWith('document:')

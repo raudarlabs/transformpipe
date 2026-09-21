@@ -1,6 +1,18 @@
 import { markdownTable } from './from-table.js';
+import {
+  attribute,
+  blocks,
+  decodeXml,
+  elements,
+  openingTag,
+} from './xml.js';
 import { escapeMarkdownLine } from './from-text.js';
-import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
+import {
+  embedPictures,
+  pictureBudget,
+  pictureFinder,
+  resolveInArchive,
+} from './pictures.js';
 import {
   buildTocDocument,
   readZipPictures,
@@ -45,60 +57,6 @@ const FURNITURE = new Set(['sldNum', 'dt', 'ftr']);
 
 const TITLE_PLACEHOLDERS = new Set(['title', 'ctrTitle']);
 
-/**
- * Every `<tag …>…</tag>` in document order, with its attributes and its inner XML.
- *
- * The alternation is not decoration: `<a:tc vMerge="1"/>` is a real thing in a real table, and a
- * pattern that only knows the two-tag spelling reads that empty self-closing cell as the start of
- * the *next* cell and swallows its text. Matching the self-closing form first, and dropping it —
- * a tag with no content has none to report — keeps a row's cells lined up with its columns.
- *
- * These tags never nest inside themselves in this format, which is what makes a lazy match safe.
- */
-function elements(xml: string, tag: string): { attributes: string; inner: string }[] {
-  const pattern = new RegExp(
-    `<${tag}(?:\\s[^>]*?)?/>|<${tag}(\\s[^>]*)?>([\\s\\S]*?)</${tag}>`,
-    'g'
-  );
-  const found: { attributes: string; inner: string }[] = [];
-
-  for (const match of xml.matchAll(pattern)) {
-    if (match[2] === undefined) continue;
-
-    found.push({ attributes: match[1] ?? '', inner: match[2] });
-  }
-
-  return found;
-}
-
-/** The same, when only the contents matter. */
-function blocks(xml: string, tag: string): string[] {
-  return elements(xml, tag).map((one) => one.inner);
-}
-
-/** The opening tag of the first `<tag …>` or `<tag …/>`, for reading its attributes. */
-function openingTag(xml: string, tag: string): string | null {
-  return new RegExp(`<${tag}(?:\\s[^>]*)?/?>`).exec(xml)?.[0] ?? null;
-}
-
-function attribute(tag: string | null, name: string): string | null {
-  if (!tag) return null;
-
-  return new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1] ?? null;
-}
-
-function decode(text: string): string {
-  return text
-    .replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, code: string) => String.fromCodePoint(parseInt(code, 16)))
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    // Last, so that an `&amp;lt;` in the source stays the text `&lt;` rather than becoming a `<`.
-    .replace(/&amp;/g, '&');
-}
-
 interface Run {
   text: string;
   bold: boolean;
@@ -127,7 +85,7 @@ function runsIn(paragraph: string, links: Map<string, string>): Run[] {
       continue;
     }
 
-    const text = blocks(inner, 'a:t').map(decode).join('');
+    const text = blocks(inner, 'a:t').map(decodeXml).join('');
 
     if (!text) continue;
 
@@ -334,7 +292,7 @@ function renderSlide(
       if (media && !placed.has(media)) {
         placed.add(media);
 
-        const alt = decode(attribute(openingTag(inner, 'p:cNvPr'), 'descr') ?? '').trim();
+        const alt = decodeXml(attribute(openingTag(inner, 'p:cNvPr'), 'descr') ?? '').trim();
 
         parts.push(`![${escapeMarkdownLine(alt)}](${media})`);
       }
@@ -432,26 +390,11 @@ function relationships(xml: string | undefined, base: string): Map<string, strin
 
     found.set(
       id,
-      attribute(tag, 'TargetMode') === 'External' ? decode(target) : resolve(base, decode(target))
+      attribute(tag, 'TargetMode') === 'External' ? decodeXml(target) : resolveInArchive(base, target)
     );
   }
 
   return found;
-}
-
-/** A relationship target as a path inside the archive. */
-function resolve(base: string, target: string): string {
-  if (/^[a-z]+:/i.test(target)) return target;
-  if (target.startsWith('/')) return target.slice(1);
-
-  const parts = base.split('/').filter(Boolean);
-
-  for (const step of target.split('/')) {
-    if (step === '..') parts.pop();
-    else if (step !== '.') parts.push(step);
-  }
-
-  return parts.join('/');
 }
 
 export async function powerpointToMarkdown(bytes: Uint8Array, title: string): Promise<string> {

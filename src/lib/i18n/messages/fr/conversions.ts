@@ -142,6 +142,19 @@ export const conversions: Content['conversions'] = {
         'Convertir un .pptx PowerPoint en Markdown : une section par diapositive, puces, tableaux et notes du présentateur conservés. Conversion locale, rien n’est téléversé.',
     },
   },
+  'epub-to-markdown': {
+    label: 'EPUB → Markdown',
+    short: 'EPUB → MD',
+    title: 'Un livre EPUB vers Markdown',
+    blurb:
+      'Déposez un .epub et obtenez le livre entier en un document — les chapitres dans l’ordre de lecture, sous les titres du sommaire, images comprises.',
+    hint: 'Déposez un .epub. L’ordre de lecture vient de la spine du livre et non des noms de fichiers ; chaque chapitre devient une section.',
+    seo: {
+      title: 'Convertir un EPUB en Markdown — TransformPipe',
+      description:
+        'Convertir un livre EPUB en un document Markdown : chapitres dans l’ordre de lecture, sommaire conservé, images incluses. Conversion locale, rien n’est téléversé.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tableau Markdown',
     short: 'XLSX → MD',

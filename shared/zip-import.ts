@@ -157,13 +157,29 @@ export function withoutDuplicateTitle(markdown: string, title: string): string {
     return markdown;
   }
 
-  const heading = lines[first].match(/^#\s+(.*)$/);
+  const heading = lines[first].match(/^#+\s+(.*)$/);
 
-  if (heading && heading[1].trim().toLowerCase() === title.toLowerCase()) {
+  if (heading && plainly(heading[1]) && plainly(heading[1]) === plainly(title)) {
     return lines.slice(first + 1).join('\n');
   }
 
   return markdown;
+}
+
+/**
+ * A heading reduced to the words in it, for comparing one against another.
+ *
+ * A chapter of a book routinely opens with its own title set in bold — `# **PROLOGUE**` under a
+ * contents entry that says `PROLOGUE` — and trailing spaces survive the conversion from XHTML.
+ * Comparing the two as written called them different and printed the title twice. Emphasis,
+ * code marks and spacing are not part of what a heading says.
+ */
+function plainly(heading: string): string {
+  return heading
+    .replace(/[*_`~]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
 
 export interface TocPage {
@@ -177,10 +193,18 @@ export interface TocPage {
  * `src/lib/merge.ts`. Kept here rather than imported from there: that module is the browser app's
  * own merge feature, and this file has to run on the server too.
  */
-export function buildTocDocument(title: string, pages: TocPage[]): string {
+export function buildTocDocument(
+  title: string,
+  pages: TocPage[],
+  /** One line under the title, before the contents — a book's author, and nothing else so far. */
+  lede?: string
+): string {
   const toc = pages.map((page) => `- ${page.title}`).join('\n');
 
   const sections = pages.map((page) => page.markdown.trim());
 
-  return [`# ${title}\n\n${toc}`, ...sections].join('\n\n---\n\n');
+  return [
+    [`# ${title}`, lede, toc].filter(Boolean).join('\n\n'),
+    ...sections,
+  ].join('\n\n---\n\n');
 }

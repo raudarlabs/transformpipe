@@ -93,6 +93,163 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'A book, as one document',
+    slug: 'epub-to-markdown',
+    body:
+      'EPUB is the twelfth conversion. A .epub goes in and the whole book comes out as one '
+      + 'document: a section per chapter, in the order the book is read rather than the order its '
+      + 'files are numbered, under the titles the contents gives them, with the pictures inside '
+      + 'and the links between chapters reduced to their words.',
+    detail: {
+      en: {
+        description:
+          'An EPUB book converts to one Markdown document: a section per chapter, in the order the spine gives, with the contents, the pictures and the author kept.',
+        keywords:
+          'epub to markdown, convert epub to text, extract text from epub, epub converter online, ebook to markdown',
+        body: `Renaming an \`.epub\` to \`.zip\` almost works. It is a zip, and every chapter is inside it as XHTML you can open in a browser. What you do not get is the book.
+
+## The order is not in the file names
+
+Open a real one and the chapters are called \`index_split_030.xhtml\`, \`index_split_002.xhtml\`, \`index_split_017.xhtml\`, in that order inside the archive. Those numbers are whatever the tool that built the book happened to write; sorting them shuffles a novel.
+
+The reading order is stated once, in the package document's spine, and nothing else states it. That is where this reads it from — the same lesson a slide deck taught, where a slide dragged to the front keeps the file name it was made with.
+
+## The titles are the ones the book gives
+
+A chapter's name comes from the book's own table of contents: the \`nav\` document in EPUB 3, the NCX in EPUB 2, both still in the wild. That label is what a reader sees in their own reading system, and it beats anything derived from the markup. Where a book gives none, the chapter's first heading is used, and its \`<title>\` after that.
+
+## What is dropped, and why
+
+**The cover.** It is the jacket, not a page, and it would spend a quarter of the picture allowance saying what the title already says.
+
+**The address half of every internal link.** A footnote marker, a cross-reference, a return arrow — each points at a file that is a section of this document now. The words survive; there is nowhere for the address to land. Notion and Confluence exports have been treated the same way since they arrived.
+
+## What comes through
+
+The prose, the headings, the verse and the block quotes, the tables, and the pictures — carried inside the document as their own bytes rather than left in the archive. The author's name goes under the title, out of the book's own metadata.
+
+A trilogy of about two and a half million characters converts in under half a second, in the browser. The book is not uploaded.`,
+      },
+      de: {
+        description:
+          'Ein EPUB wird zu einem Markdown-Dokument: ein Abschnitt je Kapitel, in der Reihenfolge der Spine, mit Inhaltsverzeichnis, Bildern und Autor.',
+        keywords:
+          'epub in markdown, epub in text umwandeln, text aus epub extrahieren, epub konverter online, ebook in markdown',
+        body: `Eine \`.epub\` in \`.zip\` umzubenennen funktioniert fast. Sie ist eine, und jedes Kapitel liegt darin als XHTML, das sich im Browser öffnen lässt. Was man nicht bekommt, ist das Buch.
+
+## Die Reihenfolge steht nicht in den Dateinamen
+
+Öffnet man ein echtes, heißen die Kapitel \`index_split_030.xhtml\`, \`index_split_002.xhtml\`, \`index_split_017.xhtml\`, in genau dieser Reihenfolge im Archiv. Diese Zahlen sind nur das, was das erzeugende Programm geschrieben hat; sortiert man danach, ist der Roman durcheinander.
+
+Die Lesereihenfolge wird genau einmal festgelegt, in der Spine der Paketdatei, und sonst nirgends. Von dort wird sie hier gelesen — dieselbe Lehre wie beim Foliensatz, wo eine nach vorn gezogene Folie den Namen behält, unter dem sie entstand.
+
+## Die Titel sind die des Buchs
+
+Der Name eines Kapitels kommt aus dem Inhaltsverzeichnis des Buchs: dem \`nav\`-Dokument bei EPUB 3, der NCX bei EPUB 2 — beides ist weiterhin verbreitet. Diese Beschriftung sieht der Leser auch in seinem eigenen Leseprogramm, und sie ist besser als alles aus dem Markup Abgeleitete. Fehlt sie, wird die erste Überschrift des Kapitels genommen, danach sein \`<title>\`.
+
+## Was wegfällt, und warum
+
+**Das Cover.** Es ist der Schutzumschlag und keine Seite, und es würde ein Viertel des Bildbudgets dafür ausgeben, das zu sagen, was der Titel schon sagt.
+
+**Die Adresshälfte jedes internen Links.** Eine Fußnotenmarke, ein Querverweis, ein Rücksprungpfeil — jeder zeigt auf eine Datei, die jetzt ein Abschnitt dieses Dokuments ist. Die Worte bleiben; für die Adresse gibt es kein Ziel mehr. Notion- und Confluence-Exporte werden seit jeher genauso behandelt.
+
+## Was ankommt
+
+Der Text, die Überschriften, Verse und Zitatblöcke, die Tabellen und die Bilder — als eigene Bytes im Dokument statt im Archiv zurückgelassen. Der Name des Autors steht unter dem Titel, aus den Metadaten des Buchs.
+
+Eine Trilogie von rund zweieinhalb Millionen Zeichen wird in weniger als einer halben Sekunde umgewandelt, im Browser. Das Buch wird nicht hochgeladen.`,
+      },
+      fr: {
+        description:
+          'Un livre EPUB devient un document Markdown : une section par chapitre, dans l’ordre de la spine, avec le sommaire, les images et l’auteur.',
+        keywords:
+          'epub vers markdown, convertir epub en texte, extraire le texte d’un epub, convertisseur epub en ligne, ebook vers markdown',
+        body: `Renommer un \`.epub\` en \`.zip\` marche presque. C’en est un, et chaque chapitre s’y trouve en XHTML ouvrable dans un navigateur. Ce que vous n’obtenez pas, c’est le livre.
+
+## L’ordre n’est pas dans les noms de fichiers
+
+Ouvrez-en un vrai : les chapitres s’appellent \`index_split_030.xhtml\`, \`index_split_002.xhtml\`, \`index_split_017.xhtml\`, dans cet ordre à l’intérieur de l’archive. Ces numéros sont ce que l’outil de fabrication a écrit ; trier dessus mélange un roman.
+
+L’ordre de lecture est énoncé une fois, dans la spine du fichier de paquet, et nulle part ailleurs. C’est là qu’il est lu ici — la leçon qu’avait déjà donnée un diaporama, où une diapositive déplacée en tête garde le nom reçu à sa création.
+
+## Les titres sont ceux du livre
+
+Le nom d’un chapitre vient du sommaire du livre : le document \`nav\` en EPUB 3, le NCX en EPUB 2, tous deux encore courants. Cette étiquette est celle que le lecteur voit dans sa propre liseuse, et elle vaut mieux que tout ce qu’on pourrait déduire du balisage. À défaut, on prend le premier titre du chapitre, puis son \`<title>\`.
+
+## Ce qui est écarté, et pourquoi
+
+**La couverture.** C’est la jaquette et non une page, et elle dépenserait un quart de l’allocation d’images pour dire ce que le titre dit déjà.
+
+**La moitié « adresse » de chaque lien interne.** Un appel de note, un renvoi, une flèche de retour : chacun pointe vers un fichier qui est désormais une section de ce document. Les mots survivent ; l’adresse n’a plus où atterrir. Les exports Notion et Confluence sont traités ainsi depuis leur arrivée.
+
+## Ce qui passe
+
+La prose, les titres, les vers et les citations, les tableaux et les images — portées dans le document comme leurs propres octets plutôt que laissées dans l’archive. Le nom de l’auteur se place sous le titre, depuis les métadonnées du livre.
+
+Une trilogie d’environ deux millions et demi de caractères se convertit en moins d’une demi-seconde, dans le navigateur. Le livre n’est pas téléversé.`,
+      },
+      es: {
+        description:
+          'Un libro EPUB se convierte en un documento Markdown: una sección por capítulo, en el orden de la spine, con índice, imágenes y autor.',
+        keywords:
+          'epub a markdown, convertir epub a texto, extraer texto de un epub, conversor epub en línea, ebook a markdown',
+        body: `Renombrar un \`.epub\` a \`.zip\` casi funciona. Lo es, y cada capítulo está dentro como XHTML que se abre en un navegador. Lo que no obtienes es el libro.
+
+## El orden no está en los nombres de archivo
+
+Abre uno de verdad: los capítulos se llaman \`index_split_030.xhtml\`, \`index_split_002.xhtml\`, \`index_split_017.xhtml\`, en ese orden dentro del archivo. Esos números son lo que escribió la herramienta que hizo el libro; ordenar por ellos baraja una novela.
+
+El orden de lectura se declara una sola vez, en la spine del archivo de paquete, y en ningún otro sitio. De ahí se lee aquí, la misma lección que dejó una presentación, donde una diapositiva arrastrada al principio conserva el nombre con el que se creó.
+
+## Los títulos son los del libro
+
+El nombre de un capítulo sale del índice del propio libro: el documento \`nav\` en EPUB 3, el NCX en EPUB 2, ambos todavía en circulación. Esa etiqueta es la que el lector ve en su propio lector, y vale más que cualquier cosa deducida del marcado. Si no la hay, se usa el primer encabezado del capítulo y después su \`<title>\`.
+
+## Qué se descarta, y por qué
+
+**La portada.** Es la sobrecubierta, no una página, y gastaría una cuarta parte de la asignación de imágenes en decir lo que el título ya dice.
+
+**La mitad «dirección» de cada enlace interno.** Una llamada de nota, una referencia cruzada, una flecha de vuelta: cada una apunta a un archivo que ahora es una sección de este documento. Las palabras sobreviven; la dirección no tiene dónde aterrizar. Las exportaciones de Notion y Confluence se tratan así desde que llegaron.
+
+## Qué pasa entero
+
+La prosa, los encabezados, los versos y las citas, las tablas y las imágenes, llevadas dentro del documento como sus propios bytes en lugar de quedarse en el archivo. El nombre del autor va bajo el título, sacado de los metadatos del libro.
+
+Una trilogía de unos dos millones y medio de caracteres se convierte en menos de medio segundo, en el navegador. El libro no se sube.`,
+      },
+      it: {
+        description:
+          'Un libro EPUB diventa un documento Markdown: una sezione per capitolo, nell’ordine della spine, con indice, immagini e autore.',
+        keywords:
+          'epub in markdown, convertire epub in testo, estrarre testo da un epub, convertitore epub online, ebook in markdown',
+        body: `Rinominare un \`.epub\` in \`.zip\` quasi funziona. Lo è, e ogni capitolo è lì dentro come XHTML apribile in un browser. Quello che non ottieni è il libro.
+
+## L’ordine non sta nei nomi dei file
+
+Aprine uno vero: i capitoli si chiamano \`index_split_030.xhtml\`, \`index_split_002.xhtml\`, \`index_split_017.xhtml\`, in quest’ordine dentro l’archivio. Quei numeri sono ciò che ha scritto lo strumento che ha prodotto il libro; ordinarli mescola un romanzo.
+
+L’ordine di lettura è dichiarato una volta sola, nella spine del file di pacchetto, e da nessun’altra parte. È da lì che viene letto qui — la stessa lezione di una presentazione, dove una diapositiva trascinata in testa mantiene il nome con cui è nata.
+
+## I titoli sono quelli del libro
+
+Il nome di un capitolo viene dall’indice del libro stesso: il documento \`nav\` in EPUB 3, l’NCX in EPUB 2, entrambi ancora diffusi. Quell’etichetta è ciò che il lettore vede nel proprio lettore, e vale più di qualsiasi cosa dedotta dal markup. Dove manca, si usa la prima intestazione del capitolo e poi il suo \`<title>\`.
+
+## Che cosa viene lasciato fuori, e perché
+
+**La copertina.** È la sovraccoperta, non una pagina, e spenderebbe un quarto dell’assegnazione per le immagini per dire ciò che il titolo dice già.
+
+**La metà «indirizzo» di ogni collegamento interno.** Un richiamo di nota, un rimando, una freccia di ritorno: ognuno punta a un file che ora è una sezione di questo documento. Le parole restano; l’indirizzo non ha più dove atterrare. Le esportazioni di Notion e Confluence sono trattate così da quando sono arrivate.
+
+## Che cosa arriva
+
+La prosa, le intestazioni, i versi e le citazioni, le tabelle e le immagini — portate dentro il documento come byte propri invece che lasciate nell’archivio. Il nome dell’autore va sotto il titolo, dai metadati del libro.
+
+Una trilogia di circa due milioni e mezzo di caratteri si converte in meno di mezzo secondo, nel browser. Il libro non viene caricato.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-21',
     version: '2.1.0',
     title: 'Everything a document is made of',
     body:

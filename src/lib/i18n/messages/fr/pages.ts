@@ -640,6 +640,44 @@ export const pages: Content['pages'] = {
         'Comment ouvrir un fichier PowerPoint sans PowerPoint, où se cachent les notes du présentateur, et comment transformer tout un diaporama en document lisible.',
     },
   },
+  'how-to-epub': {
+    label: 'Ouvrir un fichier .epub',
+    title: 'Comment ouvrir un fichier .epub',
+    lede: 'Toutes les liseuses l’ouvrent. C’est en extraire le texte qui devient pénible.',
+    sections: [
+      {
+        heading: 'Ce que c’est',
+        body: [
+          'Un `.epub` est une archive zip de XHTML — une page web par chapitre, une feuille de style, les images, et un fichier de paquet qui les énumère et fixe l’ordre de lecture. C’est le format ouvert sur lequel toute l’industrie s’est accordée ; les `.azw3` et `.mobi` du Kindle sont l’exception, pas la norme.',
+        ],
+      },
+      {
+        heading: 'Pour le lire',
+        body: [
+          'Apple Books l’ouvre sur Mac, iPhone et iPad, et Microsoft Edge l’ouvre sous Windows sans rien installer. Calibre est le lecteur de bureau gratuit qui convertit aussi entre formats, et Thorium celui à choisir pour un système de lecture qui suit la spécification de près.',
+          'Une Kindle ne lit pas l’`.epub` directement, mais le service « Envoyer vers Kindle » d’Amazon l’accepte et le convertit au passage.',
+        ],
+      },
+      {
+        heading: 'Pourquoi le renommer en .zip marche presque',
+        body: [
+          'Parce que c’en est un. Décompressez un `.epub` et chaque chapitre est là, ouvrable dans un navigateur. Ce que vous n’aurez pas, c’est l’ordre : les fichiers s’appellent souvent `index_split_030.xhtml`, `index_split_002.xhtml`, et ces numéros ne sont que ce que l’outil de fabrication a écrit. L’ordre de lecture est dans la spine du fichier de paquet, et nulle part ailleurs.',
+        ],
+      },
+      {
+        heading: 'Du livre au document',
+        body: [
+          'Le convertir directement donne un document Markdown : les chapitres dans l’ordre de la spine, sous les titres du sommaire du livre, les images portées dans le fichier, et les renvois d’un chapitre à l’autre réduits à leurs mots, faute de destination dans un document fusionné.',
+        ],
+      },
+    ],
+    action: 'Convertir un .epub en Markdown',
+    seo: {
+      title: 'Comment ouvrir un fichier .epub — TransformPipe',
+      description:
+        'Comment ouvrir un EPUB sur n’importe quel appareil, pourquoi le décompresser fait perdre l’ordre des chapitres, et comment transformer un livre en document.',
+    },
+  },
   'how-to-zip': {
     label: 'Ouvrir un export .zip',
     title: 'Comment ouvrir un export .zip de Notion, Confluence ou Obsidian',

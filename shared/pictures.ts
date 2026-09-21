@@ -101,7 +101,8 @@ function weight(bytes: number): number {
  * Markdown's inline image, with the optional title and the optional angle brackets around the
  * address that CommonMark allows and Notion occasionally writes.
  */
-const PICTURE = /!\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*"|\s+'[^']*')?\s*\)/g;
+const PICTURE =
+  /!\[((?:\\.|[^\][])*)\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*"|\s+'[^']*')?\s*\)/g;
 
 /** An address that already points at something, and is nobody's file inside an archive. */
 const ELSEWHERE = /^(?:https?:|mailto:|tel:|#|\/\/)/i;

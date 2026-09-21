@@ -139,6 +139,19 @@ export const conversions: Content['conversions'] = {
         'Trasforma un .pptx di PowerPoint in Markdown: una sezione per diapositiva, con elenchi, tabelle e note del relatore. Converte nel browser, senza caricare nulla.',
     },
   },
+  'epub-to-markdown': {
+    label: 'EPUB → Markdown',
+    short: 'EPUB → MD',
+    title: 'Da un libro EPUB a Markdown',
+    blurb:
+      'Carica un .epub e ottieni tutto il libro in un documento: i capitoli nell’ordine in cui si leggono, con i titoli dell’indice e le immagini dentro.',
+    hint: 'Carica un .epub. L’ordine di lettura viene dalla spine del libro e non dai nomi dei file; ogni capitolo diventa una sezione.',
+    seo: {
+      title: 'Da EPUB a Markdown — TransformPipe',
+      description:
+        'Trasforma un libro EPUB in un documento Markdown: capitoli in ordine di lettura, indice conservato e immagini incluse. Converte nel browser, senza caricare nulla.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabella Markdown',
     short: 'XLSX → MD',

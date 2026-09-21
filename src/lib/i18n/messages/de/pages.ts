@@ -648,6 +648,44 @@ export const pages: Content['pages'] = {
         'Wie man eine PowerPoint-Datei ohne PowerPoint öffnet, wo sich die Notizen verstecken und wie aus einem ganzen Foliensatz ein lesbares Dokument wird.',
     },
   },
+  'how-to-epub': {
+    label: 'Eine .epub öffnen',
+    title: 'Wie man eine .epub-Datei öffnet',
+    lede: 'Öffnen kann sie jedes Lesegerät. Umständlich wird es erst, wenn man den Text herausbekommen will.',
+    sections: [
+      {
+        heading: 'Was sie ist',
+        body: [
+          'Eine `.epub` ist ein Zip-Archiv aus XHTML — eine Webseite je Kapitel, ein Stylesheet, die Bilder und eine Paketdatei, die alles auflistet und die Lesereihenfolge festlegt. Es ist das offene Format, auf das sich die ganze Branche geeinigt hat; `.azw3` und `.mobi` vom Kindle sind die Ausnahme, nicht der Standard.',
+        ],
+      },
+      {
+        heading: 'Zum Lesen',
+        body: [
+          'Apple Books öffnet sie auf dem Mac, dem iPhone und dem iPad, Microsoft Edge unter Windows ganz ohne Installation. Calibre ist das kostenlose Desktop-Programm, das zusätzlich zwischen Formaten umwandelt, und Thorium empfiehlt sich, wenn man ein Leseprogramm will, das sich eng an die Spezifikation hält.',
+          'Ein Kindle liest `.epub` nicht direkt, aber Amazons „An Kindle senden“ nimmt eine an und wandelt sie unterwegs um.',
+        ],
+      },
+      {
+        heading: 'Warum Umbenennen in .zip fast funktioniert',
+        body: [
+          'Weil sie eine ist. Entpackt man eine `.epub`, liegt jedes Kapitel als Datei da, die sich im Browser öffnen lässt. Was fehlt, ist die Reihenfolge: die Dateien heißen häufig `index_split_030.xhtml`, `index_split_002.xhtml` und so weiter, und diese Zahlen sind nur das, was das erzeugende Programm gerade geschrieben hat. Die Lesereihenfolge steht in der Spine der Paketdatei und sonst nirgends.',
+        ],
+      },
+      {
+        heading: 'Vom Buch zum Dokument',
+        body: [
+          'Wandelt man sie direkt um, entsteht ein Markdown-Dokument: die Kapitel in der Reihenfolge der Spine, unter den Titeln aus dem Inhaltsverzeichnis des Buchs, mit den Bildern in der Datei und mit Querverweisen, von denen nur die Worte bleiben — denn in einem zusammengeführten Dokument haben sie kein Ziel mehr.',
+        ],
+      },
+    ],
+    action: 'Eine .epub in Markdown umwandeln',
+    seo: {
+      title: 'Wie man eine .epub-Datei öffnet — TransformPipe',
+      description:
+        'Wie man ein EPUB auf jedem Gerät öffnet, warum beim Entpacken die Kapitelreihenfolge verlorengeht und wie aus einem Buch ein durchsuchbares Dokument wird.',
+    },
+  },
   'how-to-zip': {
     label: 'Einen .zip-Export öffnen',
     title: 'Wie man einen .zip-Export aus Notion, Confluence oder Obsidian öffnet',

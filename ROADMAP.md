@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 21 September 2026.** Next up: **EPUB → Markdown**.
+**Updated 21 September 2026.** Next up: **what survives an export, and what does not**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,18 +14,11 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **EPUB → Markdown** — a book as one document with its own contents
-      · zip plus XHTML, and `htmlToMarkdown()` exists
-
-## Next, in order
-
-### What comes out of an export
-
-What is left of it after the pictures: the half that is content rather than code.
-
 - [ ] **What survives an export, and what does not** — one comparison page per source
       · content, not code: a Notion database already comes out as a Markdown table and nobody
       has been told
+
+## Next, in order
 
 ### Formats, going in
 
@@ -36,7 +29,7 @@ What is left of it after the pictures: the half that is content rather than code
 
 ### Formats, going out
 
-The half nobody does well: ten conversions read *into* Markdown and almost nothing writes back out
+The half nobody does well: eleven conversions read *into* Markdown and almost nothing writes back out
 of it. "I have the Markdown, I need it in Confluence" still has no good answer on the internet.
 
 - [ ] **Markdown → Confluence storage format**
@@ -113,6 +106,9 @@ says otherwise.
 
 ### 21 September
 
+- [x] **EPUB → Markdown** — a book as one document: a chapter is a section, in the order the
+      spine gives rather than the order the files are numbered, under the titles the book's own
+      contents gives them, with the pictures inside and the cross-references reduced to words
 - [x] **2.1.0** — tagged, released on GitHub, and in the Chrome Web Store's queue. The version the
       extension had never had: everything below the 19th plus everything above it
 - [x] **Pictures survive an export** — images in a Notion, Confluence, Obsidian or PowerPoint

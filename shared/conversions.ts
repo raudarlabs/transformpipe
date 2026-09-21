@@ -31,7 +31,8 @@ export type ConversionId =
   | 'obsidian-to-markdown'
   | 'text-to-markdown'
   | 'excel-to-markdown'
-  | 'powerpoint-to-markdown';
+  | 'powerpoint-to-markdown'
+  | 'epub-to-markdown';
 
 export interface Conversion {
   id: ConversionId;
@@ -111,6 +112,12 @@ export const CONVERSIONS: Conversion[] = [
     to: 'markdown',
     path: '/powerpoint-to-markdown',
     extensions: ['.pptx'],
+  },
+  {
+    id: 'epub-to-markdown',
+    to: 'markdown',
+    path: '/epub-to-markdown',
+    extensions: ['.epub'],
   },
   {
     id: 'excel-to-markdown',

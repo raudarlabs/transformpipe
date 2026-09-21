@@ -639,6 +639,44 @@ export const pages: Content['pages'] = {
         'Come aprire un file PowerPoint senza PowerPoint, dove si nascondono le note del relatore e come trasformare un’intera presentazione in un documento leggibile.',
     },
   },
+  'how-to-epub': {
+    label: 'Aprire un file .epub',
+    title: 'Come aprire un file .epub',
+    lede: 'Qualsiasi lettore lo apre. È tirarne fuori il testo che diventa scomodo.',
+    sections: [
+      {
+        heading: 'Che cos’è',
+        body: [
+          'Un `.epub` è un archivio zip di XHTML: una pagina web per capitolo, un foglio di stile, le immagini e un file di pacchetto che li elenca e stabilisce l’ordine di lettura. È il formato aperto su cui si è accordata tutta l’industria; gli `.azw3` e `.mobi` del Kindle sono l’eccezione, non lo standard.',
+        ],
+      },
+      {
+        heading: 'Per leggerlo',
+        body: [
+          'Apple Books lo apre su Mac, iPhone e iPad, e Microsoft Edge lo apre su Windows senza installare nulla. Calibre è il lettore desktop gratuito che converte anche fra formati, e Thorium è quello da scegliere se si vuole un sistema di lettura fedele alle specifiche.',
+          'Un Kindle non legge l’`.epub` direttamente, ma il servizio «Invia a Kindle» di Amazon lo accetta e lo converte per strada.',
+        ],
+      },
+      {
+        heading: 'Perché rinominarlo in .zip quasi funziona',
+        body: [
+          'Perché lo è. Estrai un `.epub` e ogni capitolo è lì, apribile in un browser. Quello che non avrai è l’ordine: i file si chiamano spesso `index_split_030.xhtml`, `index_split_002.xhtml`, e quei numeri sono soltanto ciò che ha scritto lo strumento che ha prodotto il libro. L’ordine di lettura sta nella spine del file di pacchetto, e non lo dichiara nient’altro.',
+        ],
+      },
+      {
+        heading: 'Dal libro al documento',
+        body: [
+          'Convertirlo direttamente dà un documento Markdown: i capitoli nell’ordine della spine, sotto i titoli dell’indice del libro, con le immagini dentro il file e i rimandi fra capitoli ridotti alle loro parole, perché in un documento unito non hanno più dove atterrare.',
+        ],
+      },
+    ],
+    action: 'Convertire un .epub in Markdown',
+    seo: {
+      title: 'Come aprire un file .epub — TransformPipe',
+      description:
+        'Come aprire un EPUB su qualsiasi dispositivo, perché estraendolo si perde l’ordine dei capitoli e come trasformare un libro intero in un documento.',
+    },
+  },
   'how-to-zip': {
     label: 'Aprire uno .zip di esportazione',
     title: 'Come aprire uno .zip esportato da Notion, Confluence o Obsidian',
