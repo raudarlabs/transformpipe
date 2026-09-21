@@ -389,3 +389,7 @@ Parce que le fait d’être un titre est stocké comme une référence de style,
 ### Passer par le HTML vaut-il mieux que convertir directement en Markdown ?
 
 Généralement oui, et c’est ce que recommandent les auteurs de mammoth. Le HTML a un élément pour presque tout ce que contient un `.docx` : la première étape ne perd donc presque rien, et la seconde prend ensuite une décision claire sur ce que Markdown ne sait pas exprimer. Convertir en un seul saut revient à laisser ces décisions se prendre en silence, au fond du lecteur, là où vous ne pouvez ni les voir ni les changer.
+
+### Est-ce que tout cela vaut pour une présentation PowerPoint ?
+
+En partie seulement. Un `.pptx` est le même genre d'archive zip de parties XML, mais une diapositive est une surface de formes positionnées et non un flux de paragraphes stylés : la question difficile passe de « quel style était-ce » à « dans quel ordre faut-il lire tout cela » — et les notes du présentateur, qui forment une partie distincte du fichier, sont ce que la plupart des voies perdent. [Convertir PowerPoint en Markdown](/blog/convert-powerpoint-to-markdown) parcourt les six voies et ce que chacune laisse tomber.

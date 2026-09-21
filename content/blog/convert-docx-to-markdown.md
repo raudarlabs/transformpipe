@@ -389,3 +389,7 @@ Because heading-ness is stored as a style reference, not as a property of the te
 ### Is going through HTML better than converting straight to Markdown?
 
 Usually, yes, and it is what mammoth's authors recommend. HTML has an element for nearly everything a `.docx` contains, so the first step loses almost nothing, and the second step then makes one clear decision about what Markdown cannot express. Converting in a single hop means those decisions are taken silently, deep inside the reader, where you cannot see or change them.
+
+### Does any of this apply to a PowerPoint deck?
+
+Only partly. A `.pptx` is the same kind of zip of XML parts, but a slide is a canvas of positioned shapes rather than a stream of styled paragraphs, so the hard question moves from "which style was this" to "in what order should these be read" — and the speaker notes, which are a separate part of the file, are what most routes lose. [Converting PowerPoint to Markdown](/blog/convert-powerpoint-to-markdown) goes through the six routes and what each one drops.

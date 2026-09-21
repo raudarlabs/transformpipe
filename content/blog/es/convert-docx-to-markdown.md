@@ -622,3 +622,12 @@ todo lo que contiene un `.docx`, así que el primer paso casi no pierde nada, y 
 entonces una sola decisión clara sobre lo que Markdown no puede expresar. Convertir de un solo
 salto significa que esas decisiones se toman en silencio, en el fondo del lector, donde no las
 puedes ver ni cambiar.
+
+### ¿Algo de esto vale para una presentación de PowerPoint?
+
+Solo en parte. Un `.pptx` es el mismo tipo de zip de partes XML, pero una diapositiva es un lienzo
+de formas colocadas y no un flujo de párrafos con estilos, así que la pregunta difícil pasa de
+«qué estilo era este» a «en qué orden hay que leer esto» — y las notas del orador, que son una
+parte aparte del archivo, son lo que pierden casi todos los caminos.
+[Convertir PowerPoint a Markdown](/blog/convert-powerpoint-to-markdown) repasa los seis caminos y
+lo que deja fuera cada uno.

@@ -389,3 +389,7 @@ Perché l'essere-intestazione è memorizzato come riferimento a uno stile, non c
 ### Passare per HTML è meglio che convertire direttamente in Markdown?
 
 Di solito sì, ed è quello che raccomandano gli autori di mammoth. HTML ha un elemento per quasi tutto quello che un `.docx` contiene, quindi il primo passaggio non perde quasi niente, e il secondo passaggio prende poi una decisione chiara su cosa Markdown non può esprimere. Convertire in un solo salto significa che quelle decisioni vengono prese in silenzio, in profondità dentro il lettore, dove non puoi vederle né cambiarle.
+
+### Qualcosa di tutto questo vale per una presentazione PowerPoint?
+
+Solo in parte. Un `.pptx` è lo stesso tipo di zip di parti XML, ma una diapositiva è una superficie di forme posizionate e non un flusso di paragrafi con stili: la domanda difficile passa da “quale stile era questo” a “in che ordine va letto tutto ciò” — e le note del relatore, che sono una parte a sé del file, sono ciò che quasi tutte le strade perdono. [Convertire PowerPoint in Markdown](/blog/convert-powerpoint-to-markdown) percorre le sei strade e dice che cosa lascia indietro ciascuna.

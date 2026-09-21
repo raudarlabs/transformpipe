@@ -389,3 +389,7 @@ Weil Überschrift-Sein als Stilverweis gespeichert ist, nicht als Eigenschaft de
 ### Ist der Weg über HTML besser als direkt nach Markdown zu konvertieren?
 
 Meist ja, und es ist, was mammoths Autoren empfehlen. HTML hat ein Element für fast alles, was in einer `.docx` steckt, der erste Schritt verliert also fast nichts, und der zweite Schritt trifft dann eine klare Entscheidung darüber, was Markdown nicht ausdrücken kann. In einem einzigen Sprung zu konvertieren heißt, dass diese Entscheidungen lautlos getroffen werden, tief im Leser, wo Sie sie nicht sehen und nicht ändern können.
+
+### Gilt davon etwas für eine PowerPoint-Präsentation?
+
+Nur teilweise. Eine `.pptx` ist dasselbe ZIP aus XML-Teilen, doch eine Folie ist eine Fläche mit positionierten Formen und kein Strom formatierter Absätze. Die schwierige Frage verschiebt sich damit von „welche Formatvorlage war das“ zu „in welcher Reihenfolge ist das zu lesen“ — und die Sprechernotizen, ein eigener Teil der Datei, gehen auf den meisten Wegen verloren. [PowerPoint in Markdown umwandeln](/blog/convert-powerpoint-to-markdown) geht die sechs Wege durch und sagt, was jeder davon fallen lässt.
