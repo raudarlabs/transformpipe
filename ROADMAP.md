@@ -83,11 +83,16 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 
 | | State |
 | --- | --- |
-| Chrome Web Store | **2.1.0 submitted 21 September**, with the screenshots redrawn. 1.0.0 was published that morning — 2.0.0 was built on the 19th and never went to Chrome, which is why the next number is 2.1.0 |
-| Firefox Add-ons | 2.0.0 submitted 19 September with source and `BUILD.md` — 0 errors, 26 warnings, all from mermaid's own dependencies. 2.1.0 and its source archive are built and go up once that one clears |
+| Chrome Web Store | **2.2.0**, which replaced 2.1.0 in the queue the same day it went up. 1.0.0 was published on the morning of the 21st; 2.0.0 was built on the 19th and never sent |
+| Firefox Add-ons | 2.0.0 submitted 19 September with source and `BUILD.md` — 0 errors, 26 warnings, all from mermaid's own dependencies. 2.2.0 and its source archive follow it |
 | GitHub Marketplace, for the Action | `branding` is in `action.yml`; the listing itself has not been made |
 
 The rule that came out of this: submit early in a week and ship something else while it sits.
+
+And the exception, taken once on 21 September: a package under review is replaced rather than
+left to clear when what is in it is broken for most people. 2.1.0 saved a page with none of the
+site's stylesheets in it, on any page whose CSS arrives by `<link>`. A restarted review is
+cheaper than a fortnight of that on the shelf.
 
 And the one from 21 September: **the screenshots are part of the listing.** `check-store.mjs` was
 written after the 1.0.0 rejection to stop this repository naming a format it does not convert, and
@@ -103,6 +108,14 @@ says otherwise.
 
 ### 21 September
 
+- [x] **2.2.0** — EPUB, the three mobile fixes, and a saved page that keeps the site's
+      stylesheets. Replaced 2.1.0 in the Chrome queue the same day
+- [x] **A saved page keeps the site's own stylesheets** — every linked stylesheet was inlined
+      correctly and then overwritten with an unrelated `<style>` from elsewhere in the page,
+      because the two lists were paired by position after the list had grown
+- [x] **Three things that only went wrong on a phone** — fullscreen threw on an iPhone rather
+      than working, four tabs took the page sideways, and a dialog taller than the screen could
+      not be scrolled
 - [x] **What survives an export, and what does not** — not the new comparison pages this said,
       because six already existed and said the opposite of what is now true. Thirty-five
       corrections across five languages instead: "nothing carries binary attachments across in a

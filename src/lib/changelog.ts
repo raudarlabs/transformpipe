@@ -93,6 +93,18 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    version: '2.2.0',
+    title: 'EPUB, and a phone that works',
+    body:
+      'A book is the twelfth conversion: a chapter is a section, in the order the book is read '
+      + 'rather than the order its files are numbered. Reading a document full screen now works '
+      + 'on an iPhone, where it had never worked at all; the tabs above a converted document stop '
+      + 'taking the page sideways; and a dialog taller than a phone held sideways can be '
+      + 'scrolled. For the extension, a saved page keeps the site’s own stylesheets — 2.1.0 was '
+      + 'replaced in the store rather than left to clear review, because it did not.',
+  },
+  {
+    date: '2026-09-21',
     title: 'A saved page keeps the site’s own stylesheets',
     body:
       'Saving a page as it looks could produce a file with none of the site’s styling in it — the '

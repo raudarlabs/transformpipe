@@ -298,18 +298,21 @@ which one a bug report means.
 
 | | |
 | --- | --- |
-| **Chrome Web Store** | 1.0.0 rejected 18 September, listing rewritten, and the store shows **1.0.0 published on 21 September**. 2.0.0 was built but never went to Chrome |
-| **Firefox Add-ons** | 2.0.0 submitted 19 September, with the source archive and `BUILD.md` |
+| **Chrome Web Store** | 1.0.0 rejected 18 September, listing rewritten, and **1.0.0 published on 21 September**. 2.0.0 was built and never sent. 2.1.0 went up on the 21st and was replaced the same day by **2.2.0** |
+| **Firefox Add-ons** | 2.0.0 submitted 19 September with the source archive and `BUILD.md`; 2.2.0 follows it |
 
-So the next Chrome package is the first the store will have seen since the rename, and it is
-**2.1.0** — a version above anything either store holds, which is the only rule about the number
-that a store actually enforces.
+2.1.0 was replaced rather than left to clear review, which is the opposite of the rule further
+down and was the right call once. A snapshot of any page whose CSS arrives by `<link>` — which is
+most pages — came out with none of the site's styling in it, and *Save the page as it looks* is
+one of the three things this extension does. A fortnight of that sitting in the store costs more
+than a restarted review does.
 
 **What is in it that 1.0.0 does not have** is most of a fortnight, and almost all of it reaches
 the extension through `shared/`: diagrams drawn rather than printed, formulas typeset, code
-coloured, six more pieces of Markdown syntax understood, PowerPoint and EPUB as the eleventh and twelfth conversions,
-the pictures inside an export carried into the document, and a document check. From the
-extension's own side: it reads what the screen shows rather than what the markup claims —
-hidden routes, shadow DOM, typed form values, preformatted blocks kept preformatted, a side
-panel that follows a route change rather than only a page load, and a fail-safe that refuses to
-hand back an emptied page.
+coloured, six more pieces of Markdown syntax understood, PowerPoint and EPUB as the eleventh and
+twelfth conversions, the pictures inside an export carried into the document, and a document
+check. From the extension's own side: it reads what the screen shows rather than what the markup
+claims — hidden routes, shadow DOM, typed form values, preformatted blocks kept preformatted, a
+side panel that follows a route change rather than only a page load, and a fail-safe that refuses
+to hand back an emptied page. And from 2.2.0, a saved page keeps the site's own stylesheets,
+which 2.1.0 did not.
