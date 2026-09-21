@@ -19,12 +19,23 @@ const EMBEDDED_FILE = /\.(png|jpe?g|gif|svg|webp|bmp|pdf|mp3|mp4|wav|mov)$/i;
  * point at. The words are what survives, which is the same call this app already made for Notion's
  * internal links.
  */
-export function rewriteWikilinks(markdown: string): string {
+export function rewriteWikilinks(
+  markdown: string,
+  hasPicture?: (name: string) => boolean
+): string {
   return markdown.replace(WIKILINK, (whole, target: string, shown?: string) => {
     const text = (shown ?? target).trim();
+    const embed = whole.startsWith('!') && EMBEDDED_FILE.test(target);
 
-    /* An embedded image or other attachment has no file to carry over into a merged document. */
-    return whole.startsWith('!') && EMBEDDED_FILE.test(target) ? `*${text}*` : text;
+    if (!embed) return text;
+
+    /*
+     * An embed whose file is in the archive becomes an ordinary Markdown image, which is all this
+     * does: the bytes are put in later, by `pictures.ts`, in one place for every importer. A note
+     * pasted on its own has no archive behind it and no `hasPicture` — there the attachment has
+     * nothing to carry over, and the words are what survives.
+     */
+    return hasPicture?.(target.trim()) ? `![${text}](${target.trim()})` : `*${text}*`;
   });
 }
 

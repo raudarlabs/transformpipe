@@ -21,15 +21,8 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ### What comes out of an export
 
-First in this list rather than further down it, because it is the only section here that makes
-conversions already shipped work properly instead of adding another one beside them.
+What is left of it after the pictures: the half that is content rather than code.
 
-- [ ] **Pictures survive an export** — images in a Notion, Confluence, Obsidian or PowerPoint
-      archive embedded in the document, and Word's kept rather than dropped
-      · the first complaint in both ecosystems, and `keepDataImages: false` in `from-html.ts`
-      means mammoth already hands us every Word image and we delete it
-      · embedded, not uploaded: every conversion page promises the file stays in the browser, so
-      blob storage is for an explicit save into an account and nothing else
 - [ ] **What survives an export, and what does not** — one comparison page per source
       · content, not code: a Notion database already comes out as a Markdown table and nobody
       has been told
@@ -112,6 +105,16 @@ The rule that came out of this: submit early in a week and ship something else w
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 21 September
+
+- [x] **Pictures survive an export** — images in a Notion, Confluence, Obsidian or PowerPoint
+      archive are carried into the document, and Word's are kept instead of thrown away after
+      `mammoth` had already handed them over. Embedded rather than uploaded, because the file
+      stays in the browser; half of a document's 4 MB between them, and a picture that does not
+      fit keeps the link it had
+- [x] **The formats that are coming say so** — the four next in this file, as blocks under the
+      dropzone that disappear on their own the day the format ships
 
 ### 20 September
 

@@ -1,6 +1,8 @@
 import { delimitedToMarkdown } from './from-table.js';
+import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   buildTocDocument,
+  readZipPictures,
   readZipTextFiles,
   withoutDuplicateTitle,
   type TocPage,
@@ -47,9 +49,10 @@ function dropInternalLinks(markdown: string): string {
 }
 
 export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
-  const [pages, tables] = await Promise.all([
+  const [pages, tables, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipTextFiles(bytes, '.csv'),
+    readZipPictures(bytes),
   ]);
 
   if (pages.length === 0 && tables.length === 0) {
@@ -58,14 +61,24 @@ export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
     );
   }
 
+  /*
+   * Notion puts a page's images in a folder beside it named after the page, and links to them
+   * relatively and URL-encoded. So every link resolves against the folder the page itself sits
+   * in — which is the one thing `%20` in a path is a sign of and a merged document destroys.
+   */
+  const budget = pictureBudget();
+
   const tocPages: TocPage[] = [
     ...pages.map((page) => {
       const title = titleFromFileName(page.path);
+      const folder = page.path.split('/').slice(0, -1).join('/');
+      const body = embedPictures(
+        dropInternalLinks(withoutDuplicateTitle(page.text, title)),
+        pictureFinder(pictures, folder),
+        budget
+      );
 
-      return {
-        title,
-        markdown: `# ${title}\n\n${dropInternalLinks(withoutDuplicateTitle(page.text, title))}`,
-      };
+      return { title, markdown: `# ${title}\n\n${body}` };
     }),
     ...tables.flatMap((table) => {
       const title = titleFromFileName(table.path);

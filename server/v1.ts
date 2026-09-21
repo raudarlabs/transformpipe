@@ -355,6 +355,11 @@ v1.post('/documents', async (c) => {
      * for an import at the top, and only this one needs a zip reader.
      */
     const mammoth = await import('mammoth');
+    const { pictureBudget } = await import('../shared/pictures.js');
+    const { wordPictures } = await import('../shared/from-word.js');
+
+    /* Why the pictures travel as numbers and come back at the end: see `from-word.ts`. */
+    const pictures = wordPictures(pictureBudget());
 
     let value = '';
     let messages: Array<{ message: string }> = [];
@@ -367,9 +372,10 @@ v1.post('/documents', async (c) => {
        */
       await refuseIfItUnpacksTooFar(new Uint8Array(docx));
 
-      ({ value, messages } = await mammoth.convertToHtml({
-        buffer: Buffer.from(docx),
-      }));
+      ({ value, messages } = await mammoth.convertToHtml(
+        { buffer: Buffer.from(docx) },
+        { convertImage: mammoth.images.imgElement(pictures.read) }
+      ));
     } catch (cause) {
       /*
        * What a .docx that is not a .docx reaches here as: mammoth opens it as a zip and says so.
@@ -385,7 +391,7 @@ v1.post('/documents', async (c) => {
       );
     }
 
-    markdown = htmlToMarkdown(value);
+    markdown = pictures.restore(htmlToMarkdown(value));
 
     if (!markdown.trim()) {
       /*

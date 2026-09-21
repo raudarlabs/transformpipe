@@ -1,6 +1,8 @@
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
+import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   buildTocDocument,
+  readZipPictures,
   readZipTextFiles,
   withoutDuplicateTitle,
   type TocPage,
@@ -24,15 +26,33 @@ function titleFromFileName(path: string): string {
 }
 
 export async function obsidianZipToMarkdown(bytes: Uint8Array): Promise<string> {
-  const pages = await readZipTextFiles(bytes, '.md');
+  const [pages, pictures] = await Promise.all([
+    readZipTextFiles(bytes, '.md'),
+    readZipPictures(bytes),
+  ]);
 
   if (pages.length === 0) {
     throw new Error('No Markdown notes found in that .zip — is it an Obsidian vault?');
   }
 
+  /*
+   * A vault resolves an embed by file name wherever the file is filed, so the question
+   * `rewriteWikilinks` asks is whether the archive holds a picture of that name at all — the same
+   * question, and the same answer, that `pictureFinder` falls back to a line later.
+   */
+  const names = new Set([...pictures.keys()].map((path) => path.split('/').pop()!.toLowerCase()));
+  const budget = pictureBudget();
+
   const tocPages: TocPage[] = pages.map((page) => {
     const title = titleFromFileName(page.path);
-    const body = rewriteWikilinks(withoutDuplicateTitle(stripFrontmatter(page.text), title));
+    const folder = page.path.split('/').slice(0, -1).join('/');
+    const body = embedPictures(
+      rewriteWikilinks(withoutDuplicateTitle(stripFrontmatter(page.text), title), (name) =>
+        names.has(name.toLowerCase())
+      ),
+      pictureFinder(pictures, folder),
+      budget
+    );
 
     return { title, markdown: `# ${title}\n\n${body}` };
   });

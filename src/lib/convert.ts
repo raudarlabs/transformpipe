@@ -151,16 +151,23 @@ export async function convertFile(
     }
 
     case 'word-to-markdown': {
-      const [{ htmlToMarkdown }, mammoth] = await Promise.all([
-        import('@shared/from-html'),
-        import('mammoth'),
-      ]);
+      const [{ htmlToMarkdown }, { pictureBudget }, { wordPictures }, mammoth] =
+        await Promise.all([
+          import('@shared/from-html'),
+          import('@shared/pictures'),
+          import('@shared/from-word'),
+          import('mammoth'),
+        ]);
 
-      const { value, messages } = await mammoth.convertToHtml({
-        arrayBuffer: await file.arrayBuffer(),
-      });
+      /* Why the pictures travel as numbers and come back at the end: see `from-word.ts`. */
+      const pictures = wordPictures(pictureBudget());
 
-      const markdown = htmlToMarkdown(value);
+      const { value, messages } = await mammoth.convertToHtml(
+        { arrayBuffer: await file.arrayBuffer() },
+        { convertImage: mammoth.images.imgElement(pictures.read) }
+      );
+
+      const markdown = pictures.restore(htmlToMarkdown(value));
 
       if (!markdown.trim()) {
         /*

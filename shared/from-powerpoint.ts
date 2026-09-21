@@ -1,6 +1,12 @@
 import { markdownTable } from './from-table.js';
 import { escapeMarkdownLine } from './from-text.js';
-import { buildTocDocument, readZipTextEntries, type TocPage } from './zip-import.js';
+import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
+import {
+  buildTocDocument,
+  readZipPictures,
+  readZipTextEntries,
+  type TocPage,
+} from './zip-import.js';
 
 /*
  * A .pptx deck, as one document: a slide is a section, in the order the deck actually plays, and
@@ -24,10 +30,10 @@ import { buildTocDocument, readZipTextEntries, type TocPage } from './zip-import
  * of its own — it inherits one from a layout this does not read — and two text boxes side by side
  * would be interleaved line by line rather than read as the two columns they are.
  *
- * What it does not read, deliberately: charts, SmartArt and images. A chart's numbers live in an
- * embedded workbook and SmartArt's words in `ppt/diagrams/`, and both would come out as a shapeless
- * list with none of the arrangement that made them worth drawing. A slide that is only a diagram
- * keeps its heading and its notes and says nothing else, which is honest about what was there.
+ * What it does not read, deliberately: charts and SmartArt. A chart's numbers live in an embedded
+ * workbook and SmartArt's words in `ppt/diagrams/`, and both would come out as a shapeless list
+ * with none of the arrangement that made them worth drawing. A slide that is only a diagram keeps
+ * its heading and its notes and says so, which is honest about what was there.
  */
 
 /*
@@ -280,18 +286,36 @@ function renderTable(table: string, links: Map<string, string>): string {
  * it is the difference between a contents list of forty real titles and one that says "Slide 2".
  */
 function readsAsHeading(text: string): boolean {
+  /*
+   * `](` catches the case that was actually shipping: a slide holding nothing but a picture has
+   * one block, that block is an image, an image is short and has no line break in it — so the
+   * picture was promoted to the slide's title and printed as `# ![](ppt/media/image14.png)`, in
+   * the table of contents as well. A heading is words.
+   */
   return (
-    text.length <= 80 && !text.includes('\n') && !/^([-|]|\d+[.)]\s|>|#)/.test(text)
+    text.length <= 80 &&
+    !text.includes('\n') &&
+    !text.includes('](') &&
+    !/^([-|!]|\d+[.)]\s|>|#)/.test(text)
   );
 }
 
 /** Everything a slide says, and what it is called. */
-function renderSlide(xml: string, links: Map<string, string>): { title: string | null; body: string } {
+function renderSlide(
+  xml: string,
+  links: Map<string, string>,
+  /*
+   * Every picture already placed earlier in this deck. A picture repeated slide after slide is
+   * the deck's furniture — a logo, a divider, a footer badge somebody pasted onto each one — and
+   * forty copies of it in a document is forty copies of the budget spent on nothing. The first
+   * time it appears it is content; after that it is wallpaper.
+   */
+  placed: Set<string>
+): { title: string | null; body: string } {
   let title: string | null = null;
   const parts: string[] = [];
 
   const shapes = xml.matchAll(/<p:(sp|graphicFrame|pic)(?:\s[^>]*)?>([\s\S]*?)<\/p:\1>/g);
-  const pictures: string[] = [];
 
   for (const shape of shapes) {
     const inner = shape[2];
@@ -300,7 +324,20 @@ function renderSlide(xml: string, links: Map<string, string>): { title: string |
     if (placeholder && FURNITURE.has(placeholder)) continue;
 
     if (shape[1] === 'pic') {
-      pictures.push(decode(attribute(openingTag(inner, 'p:cNvPr'), 'descr') ?? '').trim());
+      /*
+       * Written as an ordinary Markdown image pointing at the path inside the archive, and turned
+       * into the bytes themselves a few lines below by the one piece of code every importer here
+       * shares. What is left pointing at `ppt/media/` afterwards is a picture that would not fit.
+       */
+      const media = links.get(attribute(openingTag(inner, 'a:blip'), 'r:embed') ?? '');
+
+      if (media && !placed.has(media)) {
+        placed.add(media);
+
+        const alt = decode(attribute(openingTag(inner, 'p:cNvPr'), 'descr') ?? '').trim();
+
+        parts.push(`![${escapeMarkdownLine(alt)}](${media})`);
+      }
 
       continue;
     }
@@ -340,24 +377,21 @@ function renderSlide(xml: string, links: Map<string, string>): { title: string |
     title = parts.shift()!;
   }
 
-  /*
-   * A slide with nothing but a picture on it says so.
-   *
-   * Left empty, the heading stands over nothing and reads as text this converter dropped — which
-   * is the wrong thing to believe about a slide that never had any. The alt text is used when
-   * somebody wrote one; the rest of the time the sentence is all there is to say.
-   */
-  if (parts.length === 0 && pictures.length) {
-    const described = pictures.filter(Boolean);
-
-    parts.push(
-      described.length
-        ? described.map((alt) => `*A picture: ${escapeMarkdownLine(alt)}*`).join('\n\n')
-        : `*This slide is ${pictures.length > 1 ? 'pictures' : 'a picture'}, with no text on it.*`
-    );
-  }
-
   return { title, body: parts.join('\n\n') };
+}
+
+/**
+ * A picture that could not be carried, named instead of left as a link to nothing.
+ *
+ * Unlike an archive of Markdown, where a picture that does not fit keeps the link it already had
+ * and the document is no worse than before, nothing wrote these links but this converter. Leaving
+ * one behind would be inventing a broken image, so what is left is the alt text if the deck had
+ * one and a plain sentence if it did not.
+ */
+function nameWhatIsMissing(markdown: string): string {
+  return markdown.replace(/!\[([^\]]*)\]\(ppt\/media\/[^)]*\)/g, (_, alt: string) =>
+    alt.trim() ? `*A picture: ${alt.trim()}*` : '*A picture, which was too large to include.*'
+  );
 }
 
 /** The notes pane, as a quotation: prose, never bullets, and marked as what it is. */
@@ -432,7 +466,10 @@ export async function powerpointToMarkdown(bytes: Uint8Array, title: string): Pr
     );
   };
 
-  const files = await readZipTextEntries(bytes, wanted);
+  const [files, media] = await Promise.all([
+    readZipTextEntries(bytes, wanted),
+    readZipPictures(bytes),
+  ]);
   const at = (path: string) => files.get(path) ?? files.get(path.toLowerCase());
   const deck = at('ppt/presentation.xml');
 
@@ -463,11 +500,15 @@ export async function powerpointToMarkdown(bytes: Uint8Array, title: string): Pr
     throw new Error('That .pptx has no slides in it');
   }
 
+  const budget = pictureBudget();
+  const find = pictureFinder(media, '');
+  const placed = new Set<string>();
+
   const pages: TocPage[] = order.map((path, index) => {
     const xml = at(path)!;
     const file = path.split('/').pop()!;
     const links = relationships(at(`ppt/slides/_rels/${file}.rels`), 'ppt/slides/');
-    const slide = renderSlide(xml, links);
+    const slide = renderSlide(xml, links, placed);
 
     const notesPath = [...links.entries()].find(([, target]) =>
       /^ppt\/notesslides\//i.test(target)
@@ -476,7 +517,9 @@ export async function powerpointToMarkdown(bytes: Uint8Array, title: string): Pr
     const notes = notesXml ? renderNotes(notesXml, links) : '';
 
     const heading = slide.title ?? `Slide ${index + 1}`;
-    const body = [slide.body, notes].filter(Boolean).join('\n\n');
+    const body = nameWhatIsMissing(
+      embedPictures([slide.body, notes].filter(Boolean).join('\n\n'), find, budget)
+    );
 
     return { title: heading, markdown: `# ${heading}\n\n${body}`.trimEnd() };
   });

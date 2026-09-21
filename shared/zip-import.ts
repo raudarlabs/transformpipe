@@ -13,6 +13,8 @@
  * API caller cannot run the browser's own copy.
  */
 
+import { pictureType } from './pictures.js';
+
 export interface ZipPage {
   /** The full path inside the archive, e.g. `Space/Sub page abc123….md`. */
   path: string;
@@ -66,11 +68,11 @@ export async function refuseIfItUnpacksTooFar(bytes: Uint8Array): Promise<void> 
  * which is what makes the size check a check rather than a post-mortem. It also skips unpacking
  * every entry that would be thrown away afterwards.
  */
-export async function readZipTextEntries(
+export async function readZipEntries(
   bytes: Uint8Array,
   wanted: (path: string) => boolean
-): Promise<Map<string, string>> {
-  const { unzipSync, strFromU8 } = await import('fflate');
+): Promise<Map<string, Uint8Array>> {
+  const { unzipSync } = await import('fflate');
 
   let files: Record<string, Uint8Array>;
   let unpacked = 0;
@@ -94,10 +96,33 @@ export async function readZipTextEntries(
   }
 
   return new Map(
-    Object.entries(files)
-      .filter(([path, data]) => data.length > 0 && wanted(path))
-      .map(([path, data]) => [path, strFromU8(data)])
+    Object.entries(files).filter(([path, data]) => data.length > 0 && wanted(path))
   );
+}
+
+/** The same entries, decoded as text. */
+export async function readZipTextEntries(
+  bytes: Uint8Array,
+  wanted: (path: string) => boolean
+): Promise<Map<string, string>> {
+  const { strFromU8 } = await import('fflate');
+  const files = await readZipEntries(bytes, wanted);
+
+  return new Map([...files].map(([path, data]) => [path, strFromU8(data)]));
+}
+
+/**
+ * Every picture in the archive, by its path.
+ *
+ * A separate pass over the zip rather than a second job for the one above: an importer reads text
+ * by extension and pictures by what they are, and fflate is fast enough on the ten megabytes this
+ * app accepts that the alternative — one pass handing back a mixture the caller has to sort — buys
+ * nothing and reads worse at every call site.
+ */
+export async function readZipPictures(
+  bytes: Uint8Array
+): Promise<Map<string, Uint8Array>> {
+  return readZipEntries(bytes, (path) => pictureType(path) !== null);
 }
 
 /** Every entry in the archive matching `extension`, as text — skips directories and empty files. */

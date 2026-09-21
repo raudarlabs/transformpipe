@@ -28,3 +28,26 @@ export const DOCUMENT_BYTES = 10 * 1024 * 1024;
  * move, not a bigger number, so until it is made this is the honest ceiling.
  */
 export const KEEP_BYTES = 4 * 1024 * 1024;
+
+/**
+ * What all the pictures in one document may weigh once embedded.
+ *
+ * It follows from `KEEP_BYTES` rather than being chosen: a picture is carried as a `data:` URI —
+ * see `pictures.ts` for why it is carried and not uploaded — which is text, and it lands in the
+ * same 4 MB a document has to fit inside to be saved at all. Half of that leaves the other half
+ * for the words, which is a million of them; a document whose pictures spend more than its prose
+ * is an album, and an album that cannot be saved is worse than one with two photographs missing.
+ *
+ * Measured against the encoded length, not the file on disk, because the encoded length is what
+ * actually has to fit.
+ */
+export const PICTURES_BYTES = 2 * 1024 * 1024;
+
+/**
+ * What one picture may weigh, so that the first one cannot spend everything.
+ *
+ * Without it a single photograph straight off a phone takes the whole allowance and the twelve
+ * screenshots after it — the ones that were carrying the argument — are all left behind. A
+ * megabyte encoded is about 750 KB on disk, which is a generous screenshot and a small photo.
+ */
+export const PICTURE_BYTES = 1024 * 1024;

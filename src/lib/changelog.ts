@@ -93,6 +93,231 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'Pictures survive an export',
+    slug: 'pictures-survive-an-export',
+    body:
+      'A Notion, Confluence or Obsidian export kept its pictures in the .zip and never unpacked '
+      + 'them, so the document arrived with every image pointing at a file that was not there. A '
+      + 'PowerPoint deck lost its slides’ pictures. A Word file lost its pictures having already '
+      + 'handed every one of them over. All four now carry them, inside the document itself.',
+    detail: {
+      en: {
+        description:
+          'Images in a Notion, Confluence, Obsidian or PowerPoint archive, and in a Word file, are now carried into the document instead of left behind.',
+        keywords:
+          'notion export broken images, confluence export images markdown, obsidian embed images, word document images to markdown, powerpoint images markdown',
+        body: `This was the loudest complaint about two of these formats, and this converter had it too.
+
+## What was happening
+
+An export writes its pictures into folders and links to them relatively: Notion beside each page,
+Confluence under \`attachments/\`, Obsidian wherever you filed them. Only the text was ever read
+out of the archive, so the Markdown came out still saying \`![](some/path.png)\` about files that
+were never unpacked — twenty broken images in a converted wiki, which reads as something this
+lost rather than something it never had.
+
+PowerPoint was worse in a quieter way: a slide that was only a diagram said so and moved on. And
+Word was the strangest of the four, because \`mammoth\` reads a \`.docx\`'s own pictures out of the
+file and hands over every one of them — and a single line, set years ago and never commented,
+threw them away.
+
+## They are carried, not uploaded
+
+A picture becomes part of the document, as its own bytes. That is the constraint rather than a
+shortcut: every conversion here promises the file stays in your browser, and putting the images
+in storage on the way through would make that untrue. It also means they travel — into the
+downloaded Markdown, into the standalone HTML, into the Word export, into a shared link.
+
+## There is a ceiling, and it is not ours
+
+A document has to fit in 4 MB to be saved to an account, so pictures have half of that between
+them and a megabyte each. Past it, a picture from an archive keeps the link it already had —
+nothing is lost that was not lost before — and one with no file behind it is replaced by its own
+description.
+
+## The part that changed the design
+
+The obvious way to keep Word's pictures was to stop discarding them. Measured on a 3.5 MB
+document holding three photographs, that produced 4.7 MB of HTML in 224 ms and then did not
+finish: an \`<img>\` whose address is two million characters long is not what an HTML parser is
+built for. So the bytes never go near it now — each picture is weighed as it is read, held aside
+under a number, and put back once the Markdown is small again. Sixty milliseconds.`,
+      },
+      de: {
+        description:
+          'Bilder aus einem Notion-, Confluence-, Obsidian- oder PowerPoint-Archiv und aus einer Word-Datei landen jetzt im Dokument statt im Archiv.',
+        keywords:
+          'notion export bilder fehlen, confluence export bilder markdown, obsidian bilder einbetten, word bilder nach markdown, powerpoint bilder markdown',
+        body: `Das war die lauteste Beschwerde über zwei dieser Formate — und dieser Konverter hatte sie auch.
+
+## Was passiert ist
+
+Ein Export legt seine Bilder in Ordner und verlinkt sie relativ: Notion neben jeder Seite,
+Confluence unter \`attachments/\`, Obsidian dort, wo Sie sie abgelegt haben. Aus dem Archiv wurde
+nur der Text gelesen, also stand im Markdown weiterhin \`![](irgendein/pfad.png)\` über Dateien,
+die nie entpackt wurden — zwanzig kaputte Bilder in einem konvertierten Wiki, was so aussieht,
+als hätte dieses Werkzeug sie verloren, statt sie nie gehabt zu haben.
+
+Bei PowerPoint war es auf stillere Weise schlimmer: eine Folie, die nur ein Diagramm war, sagte
+das und ging weiter. Word war der seltsamste der vier Fälle, denn \`mammoth\` liest die Bilder
+einer \`.docx\` aus der Datei und übergibt jedes einzelne — und eine vor Jahren gesetzte,
+nirgends kommentierte Zeile warf sie weg.
+
+## Getragen, nicht hochgeladen
+
+Ein Bild wird Teil des Dokuments, mit seinen eigenen Bytes. Das ist die Randbedingung und keine
+Abkürzung: jede Konvertierung hier verspricht, dass die Datei im Browser bleibt, und die Bilder
+unterwegs in einen Speicher zu legen, würde das unwahr machen. Es heißt auch, dass sie mitreisen
+— in das heruntergeladene Markdown, in das eigenständige HTML, in den Word-Export, in einen
+geteilten Link.
+
+## Es gibt eine Obergrenze, und sie ist nicht unsere
+
+Ein Dokument muss in 4 MB passen, um in einem Konto gespeichert zu werden; die Bilder teilen
+sich die Hälfte davon und dürfen einzeln ein Megabyte wiegen. Darüber behält ein Bild aus einem
+Archiv den Link, den es ohnehin hatte — verloren geht nichts, was nicht vorher schon verloren war
+— und eines ohne Datei dahinter wird durch seine eigene Beschreibung ersetzt.
+
+## Was den Entwurf verändert hat
+
+Der naheliegende Weg für Words Bilder war, sie einfach nicht mehr zu verwerfen. Gemessen an einem
+3,5-MB-Dokument mit drei Fotos ergab das 4,7 MB HTML in 224 ms — und lief dann nicht zu Ende: ein
+\`<img>\`, dessen Adresse zwei Millionen Zeichen lang ist, ist nicht das, wofür ein HTML-Parser
+gebaut ist. Die Bytes kommen ihm jetzt gar nicht mehr nahe: jedes Bild wird beim Lesen gewogen,
+unter einer Nummer beiseitegelegt und wieder eingesetzt, wenn das Markdown klein ist. Sechzig
+Millisekunden.`,
+      },
+      fr: {
+        description:
+          'Les images d’une archive Notion, Confluence, Obsidian ou PowerPoint, et celles d’un fichier Word, arrivent maintenant dans le document.',
+        keywords:
+          'export notion images cassées, export confluence images markdown, obsidian intégrer images, images word vers markdown, images powerpoint markdown',
+        body: `C’était la plainte la plus fréquente à propos de deux de ces formats, et ce convertisseur l’avait aussi.
+
+## Ce qui se passait
+
+Un export range ses images dans des dossiers et les lie relativement : Notion à côté de chaque
+page, Confluence sous \`attachments/\`, Obsidian là où vous les avez mises. Seul le texte était lu
+dans l’archive, si bien que le Markdown continuait d’écrire \`![](un/chemin.png)\` à propos de
+fichiers jamais décompressés — vingt images cassées dans un wiki converti, ce qui donne
+l’impression que l’outil les a perdues plutôt qu’il ne les a jamais eues.
+
+PowerPoint était pire en plus discret : une diapositive qui n’était qu’un schéma le disait et
+passait. Word était le plus étrange des quatre, car \`mammoth\` lit les images d’un \`.docx\` dans
+le fichier et les remet toutes — et une ligne posée il y a des années, jamais commentée, les
+jetait.
+
+## Portées, pas téléversées
+
+Une image devient une partie du document, avec ses propres octets. C’est la contrainte et non un
+raccourci : chaque conversion ici promet que le fichier reste dans le navigateur, et mettre les
+images dans un stockage au passage rendrait cette promesse fausse. Cela veut dire aussi qu’elles
+voyagent — dans le Markdown téléchargé, dans le HTML autonome, dans l’export Word, dans un lien
+partagé.
+
+## Il y a un plafond, et il n’est pas de nous
+
+Un document doit tenir dans 4 Mo pour être enregistré dans un compte ; les images se partagent la
+moitié, un mégaoctet chacune au plus. Au-delà, une image venue d’une archive garde le lien
+qu’elle avait déjà — rien n’est perdu qui ne l’était déjà — et celle qui n’a aucun fichier
+derrière elle est remplacée par sa propre description.
+
+## Ce qui a changé la conception
+
+La façon évidente de garder les images de Word était de cesser de les jeter. Mesuré sur un
+document de 3,5 Mo contenant trois photographies : 4,7 Mo de HTML en 224 ms, puis rien — un
+\`<img>\` dont l’adresse fait deux millions de caractères n’est pas ce pour quoi un analyseur HTML
+est fait. Les octets ne l’approchent plus : chaque image est pesée à la lecture, mise de côté
+sous un numéro, et replacée une fois le Markdown redevenu petit. Soixante millisecondes.`,
+      },
+      es: {
+        description:
+          'Las imágenes de un archivo de Notion, Confluence, Obsidian o PowerPoint, y las de un archivo de Word, ahora llegan al documento.',
+        keywords:
+          'exportación notion imágenes rotas, exportación confluence imágenes markdown, obsidian incrustar imágenes, imágenes word a markdown, imágenes powerpoint markdown',
+        body: `Era la queja más repetida sobre dos de estos formatos, y este conversor también la tenía.
+
+## Qué pasaba
+
+Una exportación guarda sus imágenes en carpetas y las enlaza de forma relativa: Notion junto a
+cada página, Confluence bajo \`attachments/\`, Obsidian donde tú las dejaste. Del archivo solo se
+leía el texto, así que el Markdown seguía diciendo \`![](alguna/ruta.png)\` sobre archivos que
+nunca se descomprimieron — veinte imágenes rotas en un wiki convertido, lo que parece que la
+herramienta las perdió en lugar de no haberlas tenido nunca.
+
+Con PowerPoint era peor de forma más silenciosa: una diapositiva que era solo un esquema lo decía
+y seguía adelante. Word era el más extraño de los cuatro, porque \`mammoth\` lee las imágenes de un
+\`.docx\` del propio archivo y las entrega todas — y una línea puesta hace años, sin comentar en
+ninguna parte, las tiraba.
+
+## Se llevan, no se suben
+
+Una imagen pasa a ser parte del documento, con sus propios bytes. Es la restricción y no un
+atajo: cada conversión aquí promete que el archivo se queda en tu navegador, y poner las imágenes
+en un almacenamiento por el camino haría falsa esa promesa. También significa que viajan — al
+Markdown descargado, al HTML autónomo, a la exportación a Word, a un enlace compartido.
+
+## Hay un techo, y no es nuestro
+
+Un documento debe caber en 4 MB para guardarse en una cuenta; las imágenes se reparten la mitad,
+con un megabyte como máximo cada una. Por encima de eso, una imagen venida de un archivo conserva
+el enlace que ya tenía — no se pierde nada que no estuviera ya perdido — y la que no tiene
+ningún archivo detrás se sustituye por su propia descripción.
+
+## Lo que cambió el diseño
+
+La forma obvia de conservar las imágenes de Word era dejar de descartarlas. Medido en un
+documento de 3,5 MB con tres fotografías: 4,7 MB de HTML en 224 ms y después nada — un \`<img>\`
+cuya dirección tiene dos millones de caracteres no es para lo que se construyó un analizador de
+HTML. Ahora los bytes ni se le acercan: cada imagen se pesa al leerla, se aparta bajo un número y
+se repone cuando el Markdown vuelve a ser pequeño. Sesenta milisegundos.`,
+      },
+      it: {
+        description:
+          'Le immagini di un archivio Notion, Confluence, Obsidian o PowerPoint, e quelle di un file Word, ora arrivano nel documento.',
+        keywords:
+          'esportazione notion immagini rotte, esportazione confluence immagini markdown, obsidian incorporare immagini, immagini word in markdown, immagini powerpoint markdown',
+        body: `Era la lamentela più frequente su due di questi formati, e questo convertitore ce l’aveva anche lui.
+
+## Che cosa succedeva
+
+Un’esportazione mette le immagini in cartelle e le collega in modo relativo: Notion accanto a ogni
+pagina, Confluence sotto \`attachments/\`, Obsidian dove le hai messe tu. Dall’archivio veniva
+letto solo il testo, così il Markdown continuava a dire \`![](qualche/percorso.png)\` di file mai
+estratti — venti immagini rotte in un wiki convertito, il che sembra che lo strumento le abbia
+perse invece che non averle mai avute.
+
+Con PowerPoint era peggio in modo più silenzioso: una diapositiva che era solo uno schema lo
+diceva e passava oltre. Word era il più strano dei quattro, perché \`mammoth\` legge le immagini di
+un \`.docx\` dal file stesso e le consegna tutte — e una riga scritta anni fa, mai commentata, le
+buttava via.
+
+## Portate, non caricate
+
+Un’immagine diventa parte del documento, con i propri byte. È il vincolo, non una scorciatoia:
+ogni conversione qui promette che il file resta nel browser, e mettere le immagini in un archivio
+remoto lungo la strada renderebbe falsa quella promessa. Vuol dire anche che viaggiano — nel
+Markdown scaricato, nell’HTML autonomo, nell’esportazione in Word, in un link condiviso.
+
+## C’è un tetto, e non è nostro
+
+Un documento deve stare in 4 MB per essere salvato in un account; le immagini si dividono la metà,
+al massimo un megabyte ciascuna. Oltre, un’immagine che viene da un archivio mantiene il
+collegamento che aveva già — non si perde nulla che non fosse già perso — e quella che non ha
+alcun file dietro viene sostituita dalla propria descrizione.
+
+## La parte che ha cambiato il progetto
+
+Il modo ovvio di tenere le immagini di Word era smettere di scartarle. Misurato su un documento da
+3,5 MB con tre fotografie: 4,7 MB di HTML in 224 ms, e poi più nulla — un \`<img>\` il cui
+indirizzo è lungo due milioni di caratteri non è ciò per cui è fatto un parser HTML. Ora i byte
+non gli si avvicinano: ogni immagine viene pesata mentre si legge, messa da parte sotto un numero
+e rimessa quando il Markdown è tornato piccolo. Sessanta millisecondi.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-21',
     title: 'The formats that are coming say so',
     body:
       'The blocks under the dropzone now name what is on the way — EPUB, ODT, RTF and Evernote — '

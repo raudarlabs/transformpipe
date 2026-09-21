@@ -1,6 +1,8 @@
 import { htmlToMarkdown } from './from-html.js';
+import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   buildTocDocument,
+  readZipPictures,
   readZipTextFiles,
   withoutDuplicateTitle,
   type TocPage,
@@ -42,7 +44,10 @@ function titleFromFileName(path: string): string {
 }
 
 export async function confluenceZipToMarkdown(bytes: Uint8Array): Promise<string> {
-  const pages = await readZipTextFiles(bytes, '.html');
+  const [pages, pictures] = await Promise.all([
+    readZipTextFiles(bytes, '.html'),
+    readZipPictures(bytes),
+  ]);
 
   if (pages.length === 0) {
     throw new Error(
@@ -50,9 +55,16 @@ export async function confluenceZipToMarkdown(bytes: Uint8Array): Promise<string
     );
   }
 
+  const budget = pictureBudget();
+
   const tocPages: TocPage[] = pages.map((page) => {
     const title = titleFromHtml(page.text) ?? titleFromFileName(page.path);
-    const markdown = withoutDuplicateTitle(htmlToMarkdown(page.text), title);
+    const folder = page.path.split('/').slice(0, -1).join('/');
+    const markdown = embedPictures(
+      withoutDuplicateTitle(htmlToMarkdown(page.text), title),
+      pictureFinder(pictures, folder),
+      budget
+    );
 
     return { title, markdown: `# ${title}\n\n${markdown}` };
   });
