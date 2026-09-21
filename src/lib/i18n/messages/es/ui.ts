@@ -270,7 +270,6 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'Resumen con IA',
   'converter.fullscreen.enter': 'Leer a pantalla completa',
   'converter.fullscreen.exit': 'Salir de pantalla completa',
-  'converter.fullscreen.error': 'La pantalla completa no está disponible aquí',
   'converter.summary.needsSave': 'Guarda este documento en tu cuenta para resumirlo.',
   'converter.summary.loading': 'Leyendo el documento…',
   'converter.summary.error': 'No se pudo resumir este documento.',

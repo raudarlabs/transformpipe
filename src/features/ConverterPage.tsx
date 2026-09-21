@@ -15,76 +15,72 @@ import {
   Share2,
   ShieldCheck,
   Sparkles,
-} from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { api } from '@/lib/api';
-import { DocStats } from '@/components/DocStats';
-import { checkDocument } from '@shared/check';
-import { DocumentCheck } from '@/components/DocumentCheck';
-import { DocumentPreview } from '@/components/DocumentPreview';
-import { Hint } from '@/components/Hint';
-import { ScrollToTop } from '@/components/ScrollToTop';
-import { ShareDialog } from '@/components/ShareDialog';
-import { AppBreadcrumbs } from '@/components/AppBreadcrumbs';
-import { ConversionPicker } from '@/components/ConversionPicker';
-import { crumbsForConversion } from '@/lib/breadcrumbs';
-import { STATIC_PAGES } from '@/lib/pages';
-import { articleCardImage } from '@/lib/covers';
-import { Dropzone } from '@/components/Dropzone';
-import { PasteBox } from '@/components/PasteBox';
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { api } from "@/lib/api";
+import { DocStats } from "@/components/DocStats";
+import { checkDocument } from "@shared/check";
+import { DocumentCheck } from "@/components/DocumentCheck";
+import { DocumentPreview } from "@/components/DocumentPreview";
+import { Hint } from "@/components/Hint";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { ShareDialog } from "@/components/ShareDialog";
+import { AppBreadcrumbs } from "@/components/AppBreadcrumbs";
+import { ConversionPicker } from "@/components/ConversionPicker";
+import { crumbsForConversion } from "@/lib/breadcrumbs";
+import { STATIC_PAGES } from "@/lib/pages";
+import { articleCardImage } from "@/lib/covers";
+import { Dropzone } from "@/components/Dropzone";
+import { PasteBox } from "@/components/PasteBox";
 import {
   type Conversion,
   type ConversionId,
   DEFAULT_CONVERSION,
-} from '@shared/conversions';
-import { articlePath, articlesFor, formatArticleDate } from '@/lib/blog';
-import { FAQ_FLAGS } from '@/lib/faq';
-import { useI18n, useT } from '@/lib/i18n/context';
-import { INTL_LOCALES } from '@/lib/i18n/locales';
-import { ArticleCard } from '@/ui/components/ArticleCard';
-import { CodeBlock } from '@/ui/components/Code';
-import { Faq } from '@/ui/components/Faq';
-import { SectionHeading } from '@/ui/components/SectionHeading';
-import { useTheme } from '@/lib/theme';
-import type { ConvertedDoc } from '@/lib/types';
-import { buildStandaloneHtml } from '@/lib/markdown';
-import { downloadDoc, printDoc, saveBlob } from '@/lib/download';
+} from "@shared/conversions";
+import { articlePath, articlesFor, formatArticleDate } from "@/lib/blog";
+import { FAQ_FLAGS } from "@/lib/faq";
+import { useI18n, useT } from "@/lib/i18n/context";
+import { INTL_LOCALES } from "@/lib/i18n/locales";
+import { ArticleCard } from "@/ui/components/ArticleCard";
+import { CodeBlock } from "@/ui/components/Code";
+import { Faq } from "@/ui/components/Faq";
+import { SectionHeading } from "@/ui/components/SectionHeading";
+import { useTheme } from "@/lib/theme";
+import { OVERLAY, useFullscreen } from "@/lib/use-fullscreen";
+import type { ConvertedDoc } from "@/lib/types";
+import { buildStandaloneHtml } from "@/lib/markdown";
+import { downloadDoc, printDoc, saveBlob } from "@/lib/download";
 import {
   type DocFormat,
   FORMAT_LABELS,
   formatBytes,
   formatDateTime,
   toFileName,
-} from '@/lib/format';
-import { Badge } from '@/ui/components/Badge';
-import { Button } from '@/ui/components/Button';
-import { Card } from '@/ui/components/Card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/ui/components/Tabs';
+} from "@/lib/format";
+import { Badge } from "@/ui/components/Badge";
+import { Button } from "@/ui/components/Button";
+import { Card } from "@/ui/components/Card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/ui/components/Tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/ui/components/DropdownMenu';
-import { IconButton } from '@/ui/components/IconButton';
-import { Typography } from '@/ui/components/Typography';
-import { cn } from '@/ui/lib/utils';
-import { toast } from '@/ui/components/Toast';
+} from "@/ui/components/DropdownMenu";
+import { IconButton } from "@/ui/components/IconButton";
+import { Typography } from "@/ui/components/Typography";
+import { cn } from "@/ui/lib/utils";
+import { toast } from "@/ui/components/Toast";
 
 /** Conversions with nothing to paste, because the source is a binary or an archive. */
 const BINARY_CONVERSIONS = new Set<ConversionId>([
-  'word-to-markdown',
-  'notion-to-markdown',
-  'confluence-to-markdown',
-  'obsidian-to-markdown',
-  'excel-to-markdown',
-  'powerpoint-to-markdown',
-  'epub-to-markdown',
+  "word-to-markdown",
+  "notion-to-markdown",
+  "confluence-to-markdown",
+  "obsidian-to-markdown",
+  "excel-to-markdown",
+  "powerpoint-to-markdown",
+  "epub-to-markdown",
 ]);
 
 interface ConverterPageProps {
@@ -121,18 +117,22 @@ export function ConverterPage({
   /** What this conversion is called and says, in the reader's language. */
   const words = content.conversions[conversion.id];
   const [isCopied, setIsCopied] = useState(false);
-  const [tab, setTab] = useState<'preview' | 'source' | 'summary' | 'check'>(
-    'preview'
+  const [tab, setTab] = useState<"preview" | "source" | "summary" | "check">(
+    "preview",
   );
 
   /* The same parse the panel makes, so the badge and the list can never disagree. */
   const problems = useMemo(
     () => (doc ? checkDocument(doc.markdown).length : 0),
-    [doc]
+    [doc],
   );
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const previewFrame = useRef<HTMLDivElement>(null);
+  const {
+    isFullscreen,
+    overlaid,
+    toggle: toggleFullscreen,
+  } = useFullscreen(previewFrame);
 
   const [summary, setSummary] = useState<string | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
@@ -158,7 +158,7 @@ export function ConverterPage({
       setSummary(result.summary);
     } catch (cause) {
       setSummaryError(
-        cause instanceof Error ? cause.message : t('converter.summary.error')
+        cause instanceof Error ? cause.message : t("converter.summary.error"),
       );
     } finally {
       setSummaryLoading(false);
@@ -170,30 +170,17 @@ export function ConverterPage({
   // `tab` and the document's id: `summary`/`summaryLoading`/`summaryError` are this effect's own
   // output, and including them would make it re-run the moment it sets them.
   useEffect(() => {
-    if (tab === 'summary' && doc?.remoteId && !summary && !summaryLoading && !summaryError) {
+    if (
+      tab === "summary" &&
+      doc?.remoteId &&
+      !summary &&
+      !summaryLoading &&
+      !summaryError
+    ) {
       void loadSummary();
     }
   }, [tab, doc?.remoteId]);
 
-  // Escape and the browser's own chrome can leave fullscreen without us, so follow the event.
-  useEffect(() => {
-    const sync = () => setIsFullscreen(document.fullscreenElement !== null);
-
-    document.addEventListener('fullscreenchange', sync);
-
-    return () => document.removeEventListener('fullscreenchange', sync);
-  }, []);
-
-  const toggleFullscreen = () => {
-    if (document.fullscreenElement) {
-      void document.exitFullscreen();
-      return;
-    }
-
-    void previewFrame.current?.requestFullscreen().catch(() => {
-      toast.error(t('converter.fullscreen.error'));
-    });
-  };
   const { theme } = useTheme();
 
   /*
@@ -203,9 +190,9 @@ export function ConverterPage({
    * one obvious button makes them go looking for the thing they actually asked for. So the primary
    * format follows the conversion, and the rest stay one click away.
    */
-  const primary: DocFormat = conversion.to === 'html' ? 'html' : 'md';
-  const secondary: DocFormat[] = (['md', 'html', 'txt'] as DocFormat[]).filter(
-    (one) => one !== primary
+  const primary: DocFormat = conversion.to === "html" ? "html" : "md";
+  const secondary: DocFormat[] = (["md", "html", "txt"] as DocFormat[]).filter(
+    (one) => one !== primary,
   );
 
   /*
@@ -220,7 +207,7 @@ export function ConverterPage({
       content.faq
         .map((one, index) => ({ ...one, ...FAQ_FLAGS[index] }))
         .filter((one) => !one.detail),
-    [content.faq]
+    [content.faq],
   );
 
   const standalone = useMemo(
@@ -232,8 +219,8 @@ export function ConverterPage({
             createdAt: doc.createdAt,
             theme,
           })
-        : '',
-    [doc, theme]
+        : "",
+    [doc, theme],
   );
 
   if (!doc) {
@@ -263,7 +250,7 @@ export function ConverterPage({
         <Dropzone
           isBusy={isBusy}
           extensions={conversion.extensions}
-          title={t('converter.dropzone.title', {
+          title={t("converter.dropzone.title", {
             extension: conversion.extensions[0],
           })}
           hint={words.hint}
@@ -283,7 +270,9 @@ export function ConverterPage({
           extension={conversion.extensions[0]}
           disabledReason={
             BINARY_CONVERSIONS.has(conversion.id)
-              ? t('converter.paste.unavailable', { extension: conversion.extensions[0] })
+              ? t("converter.paste.unavailable", {
+                  extension: conversion.extensions[0],
+                })
               : undefined
           }
           /*
@@ -296,34 +285,38 @@ export function ConverterPage({
           onText={(text) =>
             onFiles([
               new File([text], `pasted${conversion.extensions[0]}`, {
-                type: 'text/plain',
+                type: "text/plain",
               }),
             ])
           }
         />
 
         {/*
-          * The how-to page for this format, linked from the one screen where somebody is holding
-          * that kind of file. Found by matching the page's own `action` against this conversion's
-          * address rather than by a second mapping — the pages already say which conversion they
-          * end on, and two lists of the same fact is one list that goes stale. `covers` is the same
-          * page saying which *other* conversions it answers for, which is how the three screens
-          * that all take a `.zip` share one guide.
-          *
-          * This is also what keeps those pages reachable. They used to sit in the footer as a
-          * column of nine, which was a wall on every page of the site to serve a reader who has
-          * exactly one file in front of them.
-          */}
+         * The how-to page for this format, linked from the one screen where somebody is holding
+         * that kind of file. Found by matching the page's own `action` against this conversion's
+         * address rather than by a second mapping — the pages already say which conversion they
+         * end on, and two lists of the same fact is one list that goes stale. `covers` is the same
+         * page saying which *other* conversions it answers for, which is how the three screens
+         * that all take a `.zip` share one guide.
+         *
+         * This is also what keeps those pages reachable. They used to sit in the footer as a
+         * column of nine, which was a wall on every page of the site to serve a reader who has
+         * exactly one file in front of them.
+         */}
         {(() => {
           const guide = STATIC_PAGES.find(
             (one) =>
               one.action === conversion.path ||
-              one.covers?.includes(conversion.path)
+              one.covers?.includes(conversion.path),
           );
 
           return guide ? (
-            <Typography variant="p" textColor="light" className="text-center text-sm">
-              {t('converter.howto')}{' '}
+            <Typography
+              variant="p"
+              textColor="light"
+              className="text-center text-sm"
+            >
+              {t("converter.howto")}{" "}
               <a
                 href={guide.path}
                 className="text-brand-tertiary underline underline-offset-2"
@@ -345,9 +338,9 @@ export function ConverterPage({
             <SectionHeading
               align="center"
               size="lg"
-              eyebrow={t('converter.blog.eyebrow')}
-              title={t('converter.blog.title')}
-              description={t('converter.blog.blurb')}
+              eyebrow={t("converter.blog.eyebrow")}
+              title={t("converter.blog.title")}
+              description={t("converter.blog.blurb")}
             />
 
             {/* Six: two full rows of three, so the last row is never one card on its own. */}
@@ -369,7 +362,7 @@ export function ConverterPage({
             </div>
 
             <Button variant="secondary" size="sm" onClick={onGoToBlog}>
-              {t('converter.blog.all')}
+              {t("converter.blog.all")}
             </Button>
           </section>
         )}
@@ -382,9 +375,9 @@ export function ConverterPage({
           <SectionHeading
             align="center"
             size="lg"
-            eyebrow={t('converter.faq.eyebrow')}
-            title={t('converter.faq.title')}
-            description={t('converter.faq.blurb')}
+            eyebrow={t("converter.faq.eyebrow")}
+            title={t("converter.faq.title")}
+            description={t("converter.faq.blurb")}
           />
 
           <Faq items={questions} className="max-w-3xl" />
@@ -393,14 +386,17 @@ export function ConverterPage({
     );
   }
 
-  const source = primary === 'html' ? standalone : doc.markdown;
+  const source = primary === "html" ? standalone : doc.markdown;
 
   const handleDownload = (format: DocFormat) => {
     downloadDoc(doc.name, doc.markdown, doc.createdAt, theme, format);
 
-    toast.success(t('converter.download.done', { format: FORMAT_LABELS[format] }), {
-      description: toFileName(doc.name, format),
-    });
+    toast.success(
+      t("converter.download.done", { format: FORMAT_LABELS[format] }),
+      {
+        description: toFileName(doc.name, format),
+      },
+    );
   };
 
   const handleDownloadDocx = async () => {
@@ -411,11 +407,13 @@ export function ConverterPage({
     try {
       const blob = await api.downloadDocx(doc.remoteId);
 
-      saveBlob(`${doc.name.replace(/\.[^.]+$/, '')}.docx`, blob);
-      toast.success(t('converter.download.done', { format: 'Word' }));
+      saveBlob(`${doc.name.replace(/\.[^.]+$/, "")}.docx`, blob);
+      toast.success(t("converter.download.done", { format: "Word" }));
     } catch (cause) {
       toast.error(
-        cause instanceof Error ? cause.message : t('converter.download.docx.error')
+        cause instanceof Error
+          ? cause.message
+          : t("converter.download.docx.error"),
       );
     }
   };
@@ -424,11 +422,11 @@ export function ConverterPage({
     try {
       await printDoc(doc.name, doc.html, doc.createdAt, theme, t);
     } catch (cause) {
-      toast.error(t('converter.print.error'), {
+      toast.error(t("converter.print.error"), {
         description:
           cause instanceof Error
             ? cause.message
-            : t('converter.print.error.hint'),
+            : t("converter.print.error.hint"),
       });
     }
   };
@@ -439,10 +437,10 @@ export function ConverterPage({
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
       toast.success(
-        t('converter.copy.done', { format: FORMAT_LABELS[primary] })
+        t("converter.copy.done", { format: FORMAT_LABELS[primary] }),
       );
     } catch {
-      toast.error(t('common.clipboard.error'));
+      toast.error(t("common.clipboard.error"));
     }
   };
 
@@ -470,17 +468,21 @@ export function ConverterPage({
                 {doc.name}
               </Typography>
               <Badge variant="success" size="sm" rounded="full">
-                {t('converter.badge.converted')}
+                {t("converter.badge.converted")}
               </Badge>
 
               {doc.sources && (
                 <Badge variant="secondary" size="sm" rounded="full">
-                  {t('converter.badge.merged', { count: doc.sources.length })}
+                  {t("converter.badge.merged", { count: doc.sources.length })}
                 </Badge>
               )}
             </div>
-            <Typography variant="span" textColor="secondary" className="text-xs">
-              {formatBytes(doc.size, INTL_LOCALES[locale])} ·{' '}
+            <Typography
+              variant="span"
+              textColor="secondary"
+              className="text-xs"
+            >
+              {formatBytes(doc.size, INTL_LOCALES[locale])} ·{" "}
               {formatDateTime(doc.createdAt, INTL_LOCALES[locale])}
             </Typography>
             <div className="mt-1">
@@ -496,7 +498,7 @@ export function ConverterPage({
             leftSlot={<RotateCcw />}
             onClick={onReset}
           >
-            {t('converter.newfile')}
+            {t("converter.newfile")}
           </Button>
           {/*
            * Nothing reaches the account on its own any more, so this is the button that puts it
@@ -506,10 +508,10 @@ export function ConverterPage({
           <Hint
             content={
               doc.remoteId
-                ? t('converter.save.done')
+                ? t("converter.save.done")
                 : canSave
-                  ? t('converter.save.hint')
-                  : t('converter.save.hint.signedout')
+                  ? t("converter.save.hint")
+                  : t("converter.save.hint.signedout")
             }
           >
             <span>
@@ -520,7 +522,7 @@ export function ConverterPage({
                 disabled={!canSave || Boolean(doc.remoteId)}
                 onClick={onSave}
               >
-                {doc.remoteId ? t('converter.saved') : t('converter.save')}
+                {doc.remoteId ? t("converter.saved") : t("converter.save")}
               </Button>
             </span>
           </Hint>
@@ -528,10 +530,10 @@ export function ConverterPage({
           <Hint
             content={
               doc.remoteId
-                ? t('converter.share.hint')
+                ? t("converter.share.hint")
                 : canSave
-                  ? t('converter.share.hint.unsaved')
-                  : t('converter.share.hint.signedout')
+                  ? t("converter.share.hint.unsaved")
+                  : t("converter.share.hint.signedout")
             }
           >
             <span>
@@ -542,7 +544,7 @@ export function ConverterPage({
                 disabled={!doc.remoteId}
                 onClick={() => setIsShareOpen(true)}
               >
-                {t('converter.share')}
+                {t("converter.share")}
               </Button>
             </span>
           </Hint>
@@ -554,8 +556,8 @@ export function ConverterPage({
             onClick={handleCopy}
           >
             {isCopied
-              ? t('common.copied')
-              : t('converter.copy', { format: FORMAT_LABELS[primary] })}
+              ? t("common.copied")
+              : t("converter.copy", { format: FORMAT_LABELS[primary] })}
           </Button>
 
           {/* A split button: the conversion's own format under the thumb, the others in the menu. */}
@@ -567,14 +569,14 @@ export function ConverterPage({
               className="rounded-r-none"
               onClick={() => handleDownload(primary)}
             >
-              {t('converter.download', { format: primary })}
+              {t("converter.download", { format: primary })}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <IconButton
                   variant="primary"
                   size="sm"
-                  aria-label={t('converter.download.more')}
+                  aria-label={t("converter.download.more")}
                   className="ml-px rounded-l-none"
                 >
                   <ChevronDown />
@@ -592,7 +594,7 @@ export function ConverterPage({
                 ))}
                 <DropdownMenuItem onSelect={() => void handlePrint()}>
                   <Printer className="size-4" />
-                  {t('converter.print')}
+                  {t("converter.print")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   disabled={!doc.remoteId}
@@ -600,8 +602,8 @@ export function ConverterPage({
                 >
                   <FileText className="size-4" />
                   {doc.remoteId
-                    ? t('converter.download.docx')
-                    : t('converter.download.docx.needsSave')}
+                    ? t("converter.download.docx")
+                    : t("converter.download.docx.needsSave")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -612,50 +614,61 @@ export function ConverterPage({
       <Tabs
         value={tab}
         onValueChange={(value) =>
-          setTab(value as 'preview' | 'source' | 'summary' | 'check')
+          setTab(value as "preview" | "source" | "summary" | "check")
         }
         className="flex flex-col gap-4"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="preview">
-              <Eye className="size-4" />
-              {t('converter.tab.preview')}
-            </TabsTrigger>
-            <TabsTrigger value="source">
-              <FileCode2 className="size-4" />
-              {primary === 'html'
-                ? t('converter.tab.html')
-                : t('converter.tab.markdown')}
-            </TabsTrigger>
-            <TabsTrigger value="summary">
-              <Sparkles className="size-4" />
-              {t('converter.tab.summary')}
-            </TabsTrigger>
-            {/*
-              * The count is on the tab, not behind it.
-              *
-              * A check nobody opens is a check nobody has, and the whole point of this one is that
-              * a person who was not looking for problems learns there are some. The number is the
-              * cheapest way to say so, and it costs a parse the page has already paid for.
-              */}
-            <TabsTrigger value="check">
-              <ShieldCheck className="size-4" />
-              {t('converter.tab.check')}
-              {problems > 0 && (
-                <span className="ml-1 rounded-full bg-surface-chips px-1.5 py-px text-ink-secondary text-xxs">
-                  {problems}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
+          {/*
+           * The strip scrolls rather than wrapping or shrinking.
+           *
+           * Four tabs — Preview, the source, AI Summary, Check and its count — come to 494
+           * pixels, and a phone is 375. It had been three tabs and fitted; the fourth arrived
+           * and took the whole page sideways with it, which is the failure nobody sees on a
+           * desktop and everybody sees on a train. `no-scrollbar` is the same pair of classes
+           * the blog's tag row uses for the same reason.
+           */}
+          <div className="no-scrollbar -mx-1 max-w-full overflow-x-auto px-1">
+            <TabsList>
+              <TabsTrigger value="preview">
+                <Eye className="size-4" />
+                {t("converter.tab.preview")}
+              </TabsTrigger>
+              <TabsTrigger value="source">
+                <FileCode2 className="size-4" />
+                {primary === "html"
+                  ? t("converter.tab.html")
+                  : t("converter.tab.markdown")}
+              </TabsTrigger>
+              <TabsTrigger value="summary">
+                <Sparkles className="size-4" />
+                {t("converter.tab.summary")}
+              </TabsTrigger>
+              {/*
+               * The count is on the tab, not behind it.
+               *
+               * A check nobody opens is a check nobody has, and the whole point of this one is that
+               * a person who was not looking for problems learns there are some. The number is the
+               * cheapest way to say so, and it costs a parse the page has already paid for.
+               */}
+              <TabsTrigger value="check">
+                <ShieldCheck className="size-4" />
+                {t("converter.tab.check")}
+                {problems > 0 && (
+                  <span className="ml-1 rounded-full bg-surface-chips px-1.5 py-px text-ink-secondary text-xxs">
+                    {problems}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {tab === 'preview' && (
+          {tab === "preview" && (
             <Hint
               content={
                 isFullscreen
-                  ? t('converter.fullscreen.exit')
-                  : t('converter.fullscreen.enter')
+                  ? t("converter.fullscreen.exit")
+                  : t("converter.fullscreen.enter")
               }
             >
               <IconButton
@@ -663,8 +676,8 @@ export function ConverterPage({
                 size="sm"
                 aria-label={
                   isFullscreen
-                    ? t('converter.fullscreen.exit')
-                    : t('converter.fullscreen.enter')
+                    ? t("converter.fullscreen.exit")
+                    : t("converter.fullscreen.enter")
                 }
                 onClick={toggleFullscreen}
               >
@@ -677,8 +690,28 @@ export function ConverterPage({
         <TabsContent value="preview" className="outline-none">
           <div
             ref={previewFrame}
-            className="md-preview-frame rounded-xl border border-stroke bg-surface-page p-3 sm:p-6"
+            className={cn(
+              "md-preview-frame rounded-xl border border-stroke bg-surface-page p-3 sm:p-6",
+              overlaid && OVERLAY,
+            )}
           >
+            {/*
+             * Laid over the page rather than genuinely full screen, the control that got us
+             * here is underneath — so the way out has to be in here. Real fullscreen has the
+             * browser's own, and this button is hidden along with everything else.
+             */}
+            {overlaid && (
+              <IconButton
+                variant="secondary"
+                size="sm"
+                aria-label={t("converter.fullscreen.exit")}
+                className="fixed top-3 right-3 z-10 shadow-rest"
+                onClick={toggleFullscreen}
+              >
+                <Minimize2 />
+              </IconButton>
+            )}
+
             <DocumentPreview
               html={doc.html}
               className="mx-auto max-w-3xl rounded-lg border border-stroke p-6 shadow-rest sm:p-10"
@@ -690,7 +723,7 @@ export function ConverterPage({
 
         <TabsContent value="source" className="outline-none">
           <CodeBlock
-            language={primary === 'html' ? 'html' : 'markdown'}
+            language={primary === "html" ? "html" : "markdown"}
             className="max-h-[70vh] rounded-xl bg-surface-page"
           >
             {source}
@@ -705,11 +738,11 @@ export function ConverterPage({
           <div className="flex flex-col items-start gap-4 rounded-xl border border-stroke bg-surface-page p-6">
             {!doc.remoteId ? (
               <Typography variant="p" textColor="secondary">
-                {t('converter.summary.needsSave')}
+                {t("converter.summary.needsSave")}
               </Typography>
             ) : summaryLoading ? (
               <Typography variant="p" textColor="secondary">
-                {t('converter.summary.loading')}
+                {t("converter.summary.loading")}
               </Typography>
             ) : summaryError ? (
               <>
@@ -722,7 +755,7 @@ export function ConverterPage({
                   leftSlot={<RefreshCw />}
                   onClick={() => void loadSummary()}
                 >
-                  {t('converter.summary.retry')}
+                  {t("converter.summary.retry")}
                 </Button>
               </>
             ) : summary ? (
@@ -736,7 +769,7 @@ export function ConverterPage({
                   leftSlot={<RefreshCw />}
                   onClick={() => void loadSummary(true)}
                 >
-                  {t('converter.summary.regenerate')}
+                  {t("converter.summary.regenerate")}
                 </Button>
               </>
             ) : null}

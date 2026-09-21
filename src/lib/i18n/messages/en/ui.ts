@@ -274,7 +274,6 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'AI Summary',
   'converter.fullscreen.enter': 'Read fullscreen',
   'converter.fullscreen.exit': 'Exit fullscreen',
-  'converter.fullscreen.error': 'Fullscreen is not available here',
   'converter.summary.needsSave': 'Save this document to your account to summarise it.',
   'converter.summary.loading': 'Reading the document…',
   'converter.summary.error': 'Could not summarise this document.',

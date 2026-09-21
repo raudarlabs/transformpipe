@@ -262,7 +262,6 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'Riepilogo IA',
   'converter.fullscreen.enter': 'Leggi a schermo intero',
   'converter.fullscreen.exit': 'Esci da schermo intero',
-  'converter.fullscreen.error': 'Lo schermo intero non è disponibile qui',
   'converter.summary.needsSave': 'Salva questo documento nel tuo account per riassumerlo.',
   'converter.summary.loading': 'Lettura del documento…',
   'converter.summary.error': 'Impossibile riassumere questo documento.',

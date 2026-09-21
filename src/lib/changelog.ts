@@ -93,6 +93,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'Three things that only went wrong on a phone',
+    body:
+      'Reading a document full screen did nothing at all on an iPhone — Safari has no such API '
+      + 'there, so the button threw instead of working, silently, since the day it shipped. The '
+      + 'tabs above a converted document ran off the side of the screen once there were four of '
+      + 'them. And a dialog taller than a phone held sideways could not be scrolled, so the '
+      + 'bottom of the sign-in form was simply unreachable. All three are fixed.',
+  },
+  {
+    date: '2026-09-21',
     title: 'A book, as one document',
     slug: 'epub-to-markdown',
     body:

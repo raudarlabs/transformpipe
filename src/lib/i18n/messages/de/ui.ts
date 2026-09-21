@@ -279,7 +279,6 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'KI-Zusammenfassung',
   'converter.fullscreen.enter': 'Im Vollbild lesen',
   'converter.fullscreen.exit': 'Vollbild beenden',
-  'converter.fullscreen.error': 'Vollbild ist hier nicht verfügbar',
   'converter.summary.needsSave':
     'Speichern Sie dieses Dokument in Ihrem Konto, um es zusammenzufassen.',
   'converter.summary.loading': 'Dokument wird gelesen…',

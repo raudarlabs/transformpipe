@@ -208,7 +208,17 @@ export function AuthDialog({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="grid max-w-[42rem] gap-0 overflow-hidden p-0 sm:grid-cols-[15rem_1fr]">
+      {/*
+        * `grid-rows-[minmax(0,1fr)]` is what makes the column below actually scroll.
+        *
+        * The form column already asked to: `min-h-0` and `overflow-y-auto`, which is the right
+        * pair. But a grid row defaults to `auto`, and an `auto` row sizes to its content and is
+        * then *clipped* by the container's `max-height` rather than compressed by it — so on a
+        * phone held sideways the row laid out at its natural 460 pixels inside a dialog clamped
+        * to 336, and 124 pixels of the form were unreachable. Bounding the row hands the
+        * constraint down to where the scrolling already was.
+        */}
+      <ModalContent className="grid max-w-[42rem] grid-rows-[minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:grid-cols-[15rem_1fr]">
         <div className="hidden flex-col gap-6 border-stroke border-r bg-gradient-to-b from-surface-accent to-surface-card p-7 sm:flex">
           <Logo className="h-5 w-auto self-start text-ink-primary" />
 

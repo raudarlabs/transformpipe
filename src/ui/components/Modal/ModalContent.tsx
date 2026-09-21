@@ -32,7 +32,23 @@ export function ModalContent({
         ref={ref}
         aria-describedby={undefined}
         className={cn(
-          'flex max-h-[90dvh] max-w-lg flex-col',
+          /*
+           * The cap needs something to do when the content is taller than it.
+           *
+           * `max-h-[90dvh]` was here from the start and it is the right cap; what was missing is
+           * that nothing scrolled once it bit. Turn a phone sideways and the viewport is 375
+           * pixels tall: the sign-in dialog was capped at 337 with 124 pixels of itself below
+           * the fold, `overflow: hidden`, and no way to reach them. Every dialog in this app is
+           * this component, so every one of them had it.
+           *
+           * The scroll goes here rather than on a wrapper inside, which was tried first and
+           * measured: a `flex-1 min-h-0` child of a container whose height is clamped by
+           * `max-height` rather than set is not itself clamped — it laid out at its natural 870
+           * pixels and was simply clipped, exactly as before. The close button below scrolls
+           * with the content as a result; Escape and a tap outside both still close, so what
+           * changes is where the button is, not whether there is a way out.
+           */
+          'flex max-h-[90dvh] max-w-lg flex-col overflow-y-auto',
           'fixed top-1/2 left-1/2 z-[100] w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2',
           'rounded-lg',
           'border border-stroke',

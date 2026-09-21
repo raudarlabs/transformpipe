@@ -10,6 +10,7 @@ import { useI18n, useT } from '@/lib/i18n/context';
 import { markdownToHtml } from '@/lib/markdown';
 import { looksLikeBareDiagram } from '@/lib/mermaid';
 import { useTheme } from '@/lib/theme';
+import { OVERLAY, useFullscreen } from '@/lib/use-fullscreen';
 import { Button } from '@/ui/components/Button';
 import { IconButton } from '@/ui/components/IconButton';
 import { SectionHeading } from '@/ui/components/SectionHeading';
@@ -77,33 +78,18 @@ export function LivePreviewPage({
   const markdown = given ?? t('live.sample');
   const [settled, setSettled] = useState(markdown);
   const [isCopied, setIsCopied] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const field = useRef<HTMLTextAreaElement>(null);
   const frame = useRef<HTMLDivElement>(null);
-
-  // Escape and the browser's own chrome can leave fullscreen without us, so follow the event.
-  useEffect(() => {
-    const sync = () => setIsFullscreen(document.fullscreenElement !== null);
-
-    document.addEventListener('fullscreenchange', sync);
-
-    return () => document.removeEventListener('fullscreenchange', sync);
-  }, []);
 
   /*
    * Both panes go fullscreen, not just the preview. On this page the editor is half the work, and
    * a reader who wanted only the document would be on the converter.
    */
-  const toggleFullscreen = () => {
-    if (document.fullscreenElement) {
-      void document.exitFullscreen();
-      return;
-    }
-
-    void frame.current?.requestFullscreen().catch(() => {
-      toast.error(t('converter.fullscreen.error'));
-    });
-  };
+  const {
+    isFullscreen,
+    overlaid,
+    toggle: toggleFullscreen,
+  } = useFullscreen(frame);
 
   /*
    * The render follows the typing by a beat. Converting on every keystroke is fine for a paragraph
@@ -212,9 +198,25 @@ export function LivePreviewPage({
           'grid gap-4 lg:grid-cols-2',
           isFullscreen
             ? 'h-screen bg-surface-page p-4'
-            : 'lg:h-[74vh] lg:min-h-[34rem]'
+            : 'lg:h-[74vh] lg:min-h-[34rem]',
+          overlaid && OVERLAY
         )}
       >
+        {/*
+          * Over the page rather than genuinely full screen, the control that got us here is
+          * underneath — so the way out has to be in here. See `use-fullscreen.ts`.
+          */}
+        {overlaid && (
+          <IconButton
+            variant="secondary"
+            size="sm"
+            aria-label={t('converter.fullscreen.exit')}
+            className="fixed top-3 right-3 z-10 shadow-rest"
+            onClick={toggleFullscreen}
+          >
+            <Minimize2 />
+          </IconButton>
+        )}
         <div
           className={cn(
             'flex min-w-0 flex-col gap-2',
@@ -258,7 +260,16 @@ export function LivePreviewPage({
             isFullscreen ? 'h-full' : 'h-[62vh] min-h-[26rem] lg:h-auto'
           )}
         >
-          <div className="flex h-8 items-center justify-between gap-2">
+          {/*
+            * Wrapping below `lg`, and a fixed height only at `lg`.
+            *
+            * The height is there so this header and the editor's line up when the two panes are
+            * side by side — see the comment on the editor's. Below that the panes are stacked,
+            * nothing is being lined up with anything, and a row holding three labelled buttons
+            * and an icon is 483 pixels wide on a 375-pixel phone: the whole page scrolled
+            * sideways, on the one screen that exists to be typed into.
+            */}
+          <div className="flex flex-wrap items-center justify-between gap-2 lg:h-8 lg:flex-nowrap">
             <Typography
               variant="span"
               textColor="light"
@@ -267,7 +278,7 @@ export function LivePreviewPage({
               {t('live.preview')}
             </Typography>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <Hint content={t('live.save.hint')}>
                 <Button
                   variant="primary"
