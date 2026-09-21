@@ -93,11 +93,16 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 
 | | State |
 | --- | --- |
-| Chrome Web Store | 2.0.0 submitted, still in review. Today's work needs 2.0.1 once it clears |
-| Firefox Add-ons | 2.0.0 submitted 19 September, with source and `BUILD.md` — 0 errors, 26 warnings, all from mermaid's own dependencies |
+| Chrome Web Store | **2.1.0 submitted 21 September**, with the screenshots redrawn. 1.0.0 was published that morning — 2.0.0 was built on the 19th and never went to Chrome, which is why the next number is 2.1.0 |
+| Firefox Add-ons | 2.0.0 submitted 19 September with source and `BUILD.md` — 0 errors, 26 warnings, all from mermaid's own dependencies. 2.1.0 and its source archive are built and go up once that one clears |
 | GitHub Marketplace, for the Action | `branding` is in `action.yml`; the listing itself has not been made |
 
 The rule that came out of this: submit early in a week and ship something else while it sits.
+
+And the one from 21 September: **the screenshots are part of the listing.** `check-store.mjs` was
+written after the 1.0.0 rejection to stop this repository naming a format it does not convert, and
+it read the description only — while the caption drawn onto screenshot four still said "Word, PDF,
+spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads the captions now.
 
 ---
 
@@ -108,6 +113,8 @@ says otherwise.
 
 ### 21 September
 
+- [x] **2.1.0** — tagged, released on GitHub, and in the Chrome Web Store's queue. The version the
+      extension had never had: everything below the 19th plus everything above it
 - [x] **Pictures survive an export** — images in a Notion, Confluence, Obsidian or PowerPoint
       archive are carried into the document, and Word's are kept instead of thrown away after
       `mammoth` had already handed them over. Embedded rather than uploaded, because the file
