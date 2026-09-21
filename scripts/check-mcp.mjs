@@ -786,14 +786,56 @@ check(
   brokenJson.text.slice(0, 120)
 );
 
+/* The three formats that are text, and so the three a tool can carry beyond the originals. */
+const plain = await tool(tokens.access_token, 'tp_convert_to_markdown', {
+  source: 'Stars like *this* are not emphasis in a text file.',
+  from: 'text',
+});
+check(
+  'plain text is escaped rather than read as Markdown',
+  plain.text.includes('\\*this\\*'),
+  plain.text.slice(0, 120)
+);
+
+const rtf = await tool(tokens.access_token, 'tp_convert_to_markdown', {
+  source: '{\\rtf1\\ansi\\ansicpg1252 \\pard Plain and \\b bold\\b0 .\\par}',
+  from: 'rtf',
+});
+check(
+  'rich text keeps its emphasis',
+  rtf.text.includes('**bold**'),
+  rtf.text.slice(0, 160)
+);
+
+const enex = await tool(tokens.access_token, 'tp_convert_to_markdown', {
+  source:
+    '<en-export><note><title>A note</title><tag>work</tag>' +
+    '<content><![CDATA[<en-note><div>Body text.</div></en-note>]]></content>' +
+    '</note></en-export>',
+  from: 'enex',
+});
+check(
+  'an Evernote note keeps its title and its tags',
+  /# A note/.test(enex.text) && /work/.test(enex.text) && /Body text/.test(enex.text),
+  enex.text.slice(0, 160)
+);
+
 const asWord = await tool(tokens.access_token, 'tp_convert_to_markdown', {
   source: 'PK...',
   from: 'word',
 });
+/*
+ * The accepted list grows — text, rtf and enex joined it — so testing for the words "html, csv,
+ * tsv or json" meant this check would fail every time a format shipped, and the fix would have
+ * been to make the sentence wrong again. What has to stay true is the second half of the name:
+ * a file that is bytes is refused, and the refusal says where to take it.
+ */
 check(
   'a .docx is refused here, and the sentence says where it goes',
-  asWord.isError && /html, csv, tsv or json/i.test(asWord.text),
-  asWord.text.slice(0, 120)
+  asWord.isError &&
+    /bytes rather than text/i.test(asWord.text) &&
+    /\/api\/v1\/documents/.test(asWord.text),
+  asWord.text.slice(0, 160)
 );
 
 /*

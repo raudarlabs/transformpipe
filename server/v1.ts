@@ -47,6 +47,26 @@ import { deleteSources, putSource, readSource } from './source.js';
 
 type Env = { Variables: { caller: Caller } };
 
+/**
+ * An `.rtf` body as the string its parser wants.
+ *
+ * Latin-1 is the right reading of a file on disk: every byte becomes the character with that
+ * code, so `\'e9` is still `\'e9` and a raw high byte is still one byte for the parser to decode
+ * through the codepage the file declares.
+ *
+ * But a caller is not always posting a file. An assistant holding rich text as a *string* sends
+ * it UTF-8 encoded, and reading those bytes as Latin-1 turns every accented character into two.
+ * Valid UTF-8 is not something a Latin-1 file produces by accident, so the stricter reading is
+ * tried first and the looser one catches what it refuses.
+ */
+function asRtfText(bytes: ArrayBuffer): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return new TextDecoder('iso-8859-1').decode(bytes);
+  }
+}
+
 const v1 = new Hono<Env>().basePath('/api/v1');
 
 /*
@@ -280,10 +300,12 @@ v1.post('/documents', async (c) => {
   let docx: ArrayBuffer | null = null;
 
   /*
-   * Word, Notion, Confluence, Excel and PowerPoint all arrive as bytes rather than text — each is
-   * a zip (an .xlsx and a .pptx included) or, for Word, XML inside one — so all of them read the
-   * body as an ArrayBuffer instead of text, and share the same size check below before any of them
-   * reaches a parser.
+   * The kinds whose body is bytes rather than text.
+   *
+   * Most are a zip — `.docx`, `.xlsx`, `.pptx`, `.epub`, `.odt` and the three exports — and a zip
+   * read as text is not a zip. `.rtf` is the odd one: it is text, but text in whatever codepage
+   * the file names, with its own characters written as `\'e9`, so it is read as bytes too and
+   * decoded below rather than by whatever the request's charset happened to say.
    */
   const BINARY_KINDS = new Set<ConversionId>([
     'word-to-markdown',
@@ -502,11 +524,7 @@ v1.post('/documents', async (c) => {
     try {
       const { rtfToMarkdown } = await import('../shared/from-rtf.js');
 
-      /* Byte for byte — see src/lib/convert.ts for why an .rtf is not read as UTF-8. */
-      markdown = rtfToMarkdown(
-        new TextDecoder('iso-8859-1').decode(docx),
-        (name || 'document').replace(/\.[^.]+$/, '')
-      );
+      markdown = rtfToMarkdown(asRtfText(docx), (name || 'document').replace(/\.[^.]+$/, ''));
     } catch (cause) {
       return c.json(
         { error: cause instanceof Error ? cause.message : 'That is not a readable .rtf' },

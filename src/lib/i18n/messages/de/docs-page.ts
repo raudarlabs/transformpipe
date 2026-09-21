@@ -144,7 +144,7 @@ export const docsPage = {
    * stehen die Erklärungen daneben. Die Platzhalter sind Query-Parameter und JSON-Formen.
    */
   'docs.api.post':
-    'Markdown als Body ({name}) oder JSON {json}. {share} veröffentlicht es im selben Aufruf. {kindHtml}, {kindCsv}, {kindJson} oder {word} wandelt den Body zuerst um, sodass eine Seite, eine Tabelle, eine API-Antwort oder ein {docx} so gesendet werden kann, wie es ist.',
+    'Markdown als Body ({name}) oder JSON {json}. {share} veröffentlicht es im selben Aufruf. {kindHtml}, {kindCsv}, {kindJson} oder {word} wandelt den Body zuerst um, sodass eine Seite, eine Tabelle, eine API-Antwort oder ein {docx} so gesendet werden kann, wie es ist. Jede Konvertierung hat ihre eigene Art — fünfzehn insgesamt, benannt nach der Seite, zu der sie gehört — und eine Datei, die Bytes und kein Text ist, wird als Rumpf gesendet.',
   'docs.api.list':
     'Die neuesten 500, mit Größen, Zahlen und Freigabestand.',
   'docs.api.one': 'Metadaten und der Markdown-Quelltext.',
@@ -161,7 +161,7 @@ export const docsPage = {
     '{cli} im Repository ist dieselbe API mit freundlicherem Gesicht, und ohne Abhängigkeiten — ein Werkzeug, das in CI läuft, sollte keinen Paketbaum hinter sich herziehen.',
   /** Die Platzhalter sind die vier Endungen, die es umwandelt, die eine, die es abweist, und die Flag. */
   'docs.cli.extensions':
-    'Ein gepushtes {html}, {csv}, {tsv} oder {json} wird vom Endpunkt umgewandelt, statt gespeichert zu werden, als wäre es schon Markdown; ein {docx} wird abgewiesen, mit Hinweis auf die Seite, die es lesen kann. {merge} verkettet nur Markdown.',
+    'Ein gepushtes {html}, {csv}, {tsv} oder {json} wird vom Endpunkt umgewandelt, statt gespeichert zu werden, als wäre es schon Markdown; ein {docx} wird abgewiesen, mit Hinweis auf die Seite, die es lesen kann — ebenso jede andere Datei, die Bytes und kein Text ist. Eine .enex wird dagegen umgewandelt. {merge} verkettet nur Markdown.',
   /** Die Platzhalter sind die Flag, die Variable, der Konfigurationspfad, die Host-Variable und die Flag. */
   'docs.cli.key':
     'Der Schlüssel kommt aus {key}, dann {env}, dann {config}. {host} richtet es auf ein anderes Deployment, und {json} gibt die Antwort der API selbst aus.',

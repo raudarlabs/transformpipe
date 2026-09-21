@@ -93,6 +93,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'An assistant can convert three more things',
+    body:
+      'The connector offered HTML, CSV, TSV and JSON, and had done since before plain text '
+      + 'shipped. It now also takes plain text, rich text and an Evernote export — the formats '
+      + 'that are text, and so the ones a tool can carry at all. A file that is bytes still '
+      + 'cannot come through a conversation, and the refusal now says where to take it instead.',
+  },
+  {
+    date: '2026-09-21',
     title: 'Evernote, tags and all',
     slug: 'evernote-to-markdown',
     body:

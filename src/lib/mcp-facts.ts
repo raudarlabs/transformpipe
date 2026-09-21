@@ -31,9 +31,9 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_convert_markdown:
     'Markdown in, sanitised HTML out. Optionally the whole self-contained document.',
   tp_convert_to_markdown:
-    'HTML, CSV, TSV or JSON in, Markdown out. Word is a file, so it goes to the API or the app.',
+    'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
   tp_save_document:
-    'Saves Markdown to the account — or HTML, CSV, TSV or JSON, converted on the way in.',
+    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in.',
   tp_list_documents: 'What is on the account, with the id each other tool takes.',
   tp_get_document: 'One document, as its Markdown source or as rendered HTML.',
   tp_summarize_document:

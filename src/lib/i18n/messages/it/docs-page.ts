@@ -123,7 +123,7 @@ export const docsPage = {
    * explanations beside them. The placeholders are query parameters and JSON shapes.
    */
   'docs.api.post':
-    'Markdown nel corpo ({name}) oppure JSON {json}. {share} lo pubblica nella stessa chiamata. {kindHtml}, {kindCsv}, {kindJson} o {word} convertono prima il corpo, così una pagina, un foglio di calcolo, una risposta di API o un {docx} si possono inviare così come sono.',
+    'Markdown nel corpo ({name}) oppure JSON {json}. {share} lo pubblica nella stessa chiamata. {kindHtml}, {kindCsv}, {kindJson} o {word} convertono prima il corpo, così una pagina, un foglio di calcolo, una risposta di API o un {docx} si possono inviare così come sono. Ogni conversione ha il proprio kind — quindici in tutto, dal nome della pagina a cui appartiene — e un file che è byte e non testo si invia come corpo.',
   'docs.api.list': 'I 500 più recenti, con dimensioni, statistiche e stato della condivisione.',
   'docs.api.one': 'I metadati e il sorgente Markdown.',
   'docs.api.html': 'Il documento autosufficiente. {theme} è opzionale.',
@@ -139,7 +139,7 @@ export const docsPage = {
     '{cli} nel repository è la stessa API con una faccia più amichevole, e senza dipendenze: uno strumento che gira nella CI non deve trascinarsi dietro un albero di pacchetti.',
   /** The placeholders are the four extensions it converts, the one it refuses, and the flag. */
   'docs.cli.extensions':
-    'Un {html}, {csv}, {tsv} o {json} inviato viene convertito dall’endpoint invece di essere conservato come se fosse già Markdown; un {docx} viene rifiutato, con l’indicazione della pagina che lo sa leggere. {merge} concatena solo il Markdown.',
+    'Un {html}, {csv}, {tsv} o {json} inviato viene convertito dall’endpoint invece di essere conservato come se fosse già Markdown; un {docx} viene rifiutato, con l’indicazione della pagina che lo sa leggere, come ogni altro file che è byte e non testo. Un .enex invece viene convertito. {merge} concatena solo il Markdown.',
   /** The placeholders are the flag, the variable, the config path, the host variable and the flag. */
   'docs.cli.key':
     'La chiave viene da {key}, poi da {env}, poi da {config}. {host} lo punta su un altro deployment e {json} stampa la risposta dell’API così com’è.',

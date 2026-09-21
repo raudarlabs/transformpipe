@@ -47,12 +47,40 @@ import v1 from './v1.js';
  * produce from an attachment it only ever sees as extracted text. Word converts in the app and at
  * the API, where a request body can be bytes.
  */
+/*
+ * The conversions a tool can carry, which is the ones whose source is text.
+ *
+ * An assistant hands over a string, so a `.docx`, an `.xlsx`, a `.pptx`, an `.epub`, an `.odt`
+ * and the three export zips cannot come through here at all — they are bytes, and there is no
+ * honest way to put bytes in a JSON argument. Those go to the app or to the API, and the tool
+ * descriptions say so rather than failing at the far end.
+ *
+ * Rich text and an Evernote export are text, so they can: `.rtf` is control words in ASCII with
+ * its own characters escaped, and `.enex` is XML.
+ */
 const SAVE_KINDS: Record<string, string> = {
   html: 'html-to-markdown',
   csv: 'csv-to-markdown',
   tsv: 'csv-to-markdown',
   json: 'json-to-markdown',
+  text: 'text-to-markdown',
+  rtf: 'rtf-to-markdown',
+  enex: 'evernote-to-markdown',
 };
+
+/**
+ * What to say when `from` names something a tool cannot carry.
+ *
+ * Both tools say it, and it has to do two things: name what is accepted, and say where the rest
+ * goes. The second half is the one that matters — somebody whose `.docx` was refused needs the
+ * next step, not a list they are not in.
+ */
+const UNSUPPORTED_FROM =
+  '`from` must be one of ' +
+  Object.keys(SAVE_KINDS).join(', ') +
+  '. A .docx, .xlsx, .pptx, .epub, .odt or an export .zip is bytes rather than text and cannot ' +
+  'come through a tool: convert it in the app, or POST the file to ' +
+  '/api/v1/documents?kind=word-to-markdown and the rest.';
 
 /** Versions this server will speak if a client asks for one of them. */
 const SPOKEN = new Set(['2024-11-05', '2025-03-26', '2025-06-18', '2025-11-25']);
@@ -519,7 +547,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_convert_to_markdown: {
     description:
-      'Convert HTML, CSV, TSV or JSON to Markdown and return it. `from` says which. Nothing is saved to the account; to keep the result, pass the same source and `from` to tp_save_document, which stores it and records what it was made from. A Word file cannot come through here — a .docx is a zip, not text — so it converts in the app, or by POSTing the file to /api/v1/documents?kind=word-to-markdown.',
+      'Convert HTML, CSV, TSV, JSON, plain text, rich text (.rtf) or an Evernote export (.enex) to Markdown and return it. `from` says which. Nothing is saved to the account; to keep the result, pass the same source and `from` to tp_save_document, which stores it and records what it was made from. A file that is bytes rather than text cannot come through a tool — a .docx, .xlsx, .pptx, .epub, .odt or an export .zip is an archive — so those convert in the app, or by POSTing the file to /api/v1/documents?kind=word-to-markdown and the rest.',
     ui: DOCUMENT_CARD_URI,
     annotations: { title: 'Convert to Markdown', readOnlyHint: true, openWorldHint: false },
     inputSchema: {
@@ -530,7 +558,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         source: { type: 'string', description: 'The file, as text.' },
         from: {
           type: 'string',
-          enum: ['html', 'csv', 'tsv', 'json'],
+          enum: ['html', 'csv', 'tsv', 'json', 'text', 'rtf', 'enex'],
           description: 'What the source is.',
         },
         name: {
@@ -595,7 +623,33 @@ const TOOLS: Record<McpToolName, Tool> = {
         }
       }
 
-      return say('`from` must be html, csv, tsv or json.', true);
+      if (from === 'text') {
+        const { textToMarkdown } = await import('../shared/from-text.js');
+        const markdown = textToMarkdown(source);
+
+        return card(clip(markdown), forConversion(named, markdown));
+      }
+
+      if (from === 'rtf' || from === 'enex') {
+        const title = String(args.name ?? 'document').replace(/\.[^.]+$/, '');
+
+        try {
+          const markdown =
+            from === 'rtf'
+              ? (await import('../shared/from-rtf.js')).rtfToMarkdown(source, title)
+              : (await import('../shared/from-evernote.js')).evernoteToMarkdown(source, title);
+
+          return card(clip(markdown), forConversion(named, markdown));
+        } catch (cause) {
+          /* Both of these say what is wrong with the file, which is the only useful answer. */
+          return say(
+            cause instanceof Error ? cause.message : 'That file could not be read.',
+            true
+          );
+        }
+      }
+
+      return say(UNSUPPORTED_FROM, true);
     },
   },
 
@@ -622,9 +676,9 @@ const TOOLS: Record<McpToolName, Tool> = {
         },
         from: {
           type: 'string',
-          enum: ['html', 'csv', 'tsv', 'json'],
+          enum: ['html', 'csv', 'tsv', 'json', 'text', 'rtf', 'enex'],
           description:
-            'Convert the source on the way in. Omit for Markdown. A .docx cannot come through a tool; use the app or the API.',
+            'Convert the source on the way in. Omit for Markdown. A file that is bytes — .docx, .xlsx, .pptx, .epub, .odt, an export .zip — cannot come through a tool; use the app or the API.',
         },
         name: {
           type: 'string',
@@ -658,7 +712,7 @@ const TOOLS: Record<McpToolName, Tool> = {
       const kind = SAVE_KINDS[from];
 
       if (from && !kind) {
-        return say('`from` must be html, csv, tsv or json.', true);
+        return say(UNSUPPORTED_FROM, true);
       }
 
       /*

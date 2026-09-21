@@ -130,7 +130,7 @@ export const docsPage = {
    * las explicaciones de al lado. Los marcadores son parámetros de consulta y formas de JSON.
    */
   'docs.api.post':
-    'Markdown en el cuerpo ({name}) o JSON {json}. {share} lo publica en la misma llamada. {kindHtml}, {kindCsv}, {kindJson} o {word} convierten antes el cuerpo, así que una página, una hoja de cálculo, la respuesta de una API o un {docx} se pueden enviar tal cual.',
+    'Markdown en el cuerpo ({name}) o JSON {json}. {share} lo publica en la misma llamada. {kindHtml}, {kindCsv}, {kindJson} o {word} convierten antes el cuerpo, así que una página, una hoja de cálculo, la respuesta de una API o un {docx} se pueden enviar tal cual. Cada conversión tiene su propio kind — quince en total, con el nombre de la página a la que pertenece — y un archivo que son bytes y no texto se envía como cuerpo.',
   'docs.api.list': 'Los 500 más recientes, con tamaños, recuentos y estado de lo compartido.',
   'docs.api.one': 'Los metadatos y el Markdown de origen.',
   'docs.api.html': 'El documento autónomo. {theme} es opcional.',
@@ -146,7 +146,7 @@ export const docsPage = {
     '{cli}, en el repositorio, es la misma API con una cara más amable y sin dependencias — una herramienta que se ejecuta en CI no debería arrastrar un árbol de paquetes detrás.',
   /** Los marcadores son las cuatro extensiones que convierte, la que rechaza y el flag. */
   'docs.cli.extensions':
-    'Un {html}, {csv}, {tsv} o {json} enviado lo convierte el endpoint en vez de guardarse como si ya fuera Markdown; un {docx} se rechaza, indicando la página que sí sabe leerlo. {merge} solo enlaza Markdown.',
+    'Un {html}, {csv}, {tsv} o {json} enviado lo convierte el endpoint en vez de guardarse como si ya fuera Markdown; un {docx} se rechaza, indicando la página que sí sabe leerlo, igual que cualquier otro archivo que sean bytes y no texto. Un .enex, en cambio, se convierte. {merge} solo enlaza Markdown.',
   /** Los marcadores son el flag, la variable, la ruta de configuración, la variable del host y el flag. */
   'docs.cli.key':
     'La clave sale de {key}, luego de {env} y luego de {config}. {host} lo apunta a otro despliegue y {json} imprime la respuesta de la propia API.',

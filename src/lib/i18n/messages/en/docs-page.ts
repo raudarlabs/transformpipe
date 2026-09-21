@@ -141,7 +141,7 @@ export const docsPage = {
    * explanations beside them. The placeholders are query parameters and JSON shapes.
    */
   'docs.api.post':
-    'Markdown as the body ({name}) or JSON {json}. {share} publishes it in the same call. {kindHtml}, {kindCsv}, {kindJson} or {word} converts the body first, so a page, a spreadsheet, an API response or a {docx} can be posted as it is.',
+    'Markdown as the body ({name}) or JSON {json}. {share} publishes it in the same call. {kindHtml}, {kindCsv}, {kindJson} or {word} converts the body first, so a page, a spreadsheet, an API response or a {docx} can be posted as it is. Every conversion has a kind of its own — fifteen of them, named after the page each belongs to — and a file that is bytes rather than text is posted as the body.',
   'docs.api.list': 'The newest 500, with sizes, stats and share state.',
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
@@ -157,7 +157,7 @@ export const docsPage = {
     '{cli} in the repository is the same API with a friendlier face, and no dependencies — a tool that runs in CI should not drag a package tree behind it.',
   /** The placeholders are the four extensions it converts, the one it refuses, and the flag. */
   'docs.cli.extensions':
-    'A pushed {html}, {csv}, {tsv} or {json} is converted by the endpoint rather than stored as if it were already Markdown; a {docx} is refused, with the page that can read it. {merge} chains Markdown only.',
+    'A pushed {html}, {csv}, {tsv} or {json} is converted by the endpoint rather than stored as if it were already Markdown; an .enex is converted too; a {docx} is refused, with the page that can read it, and so is every other file that is bytes rather than text. {merge} chains Markdown only.',
   /** The placeholders are the flag, the variable, the config path, the host variable and the flag. */
   'docs.cli.key':
     "The key comes from {key}, then {env}, then {config}. {host} points it at another deployment, and {json} prints the API's own answer.",

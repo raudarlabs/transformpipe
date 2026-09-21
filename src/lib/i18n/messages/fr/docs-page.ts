@@ -130,7 +130,7 @@ export const docsPage = {
    * voici les explications à côté. Les espaces réservés sont des paramètres et des formes JSON.
    */
   'docs.api.post':
-    'Le Markdown en corps de requête ({name}) ou en JSON {json}. {share} le publie dans le même appel. {kindHtml}, {kindCsv}, {kindJson} ou {word} convertit d’abord le corps, de sorte qu’une page, un tableur, une réponse d’API ou un {docx} se poste tel quel.',
+    'Le Markdown en corps de requête ({name}) ou en JSON {json}. {share} le publie dans le même appel. {kindHtml}, {kindCsv}, {kindJson} ou {word} convertit d’abord le corps, de sorte qu’une page, un tableur, une réponse d’API ou un {docx} se poste tel quel. Chaque conversion a son propre kind — quinze en tout, nommés d’après la page à laquelle chacun appartient — et un fichier qui est des octets plutôt que du texte se poste dans le corps.',
   'docs.api.list':
     'Les 500 plus récents, avec les tailles, les décomptes et l’état de partage.',
   'docs.api.one': 'Les métadonnées et la source Markdown.',
@@ -147,7 +147,7 @@ export const docsPage = {
     '{cli} dans le dépôt est la même API avec un visage plus aimable, et sans dépendances — un outil qui tourne en CI ne devrait pas traîner un arbre de paquets derrière lui.',
   /** Les espaces réservés sont les quatre extensions converties, celle qui est refusée, et l’option. */
   'docs.cli.extensions':
-    'Un {html}, {csv}, {tsv} ou {json} poussé est converti par le point d’entrée au lieu d’être conservé comme s’il était déjà du Markdown ; un {docx} est refusé, avec l’adresse de la page qui sait le lire. {merge} n’enchaîne que du Markdown.',
+    'Un {html}, {csv}, {tsv} ou {json} poussé est converti par le point d’entrée au lieu d’être conservé comme s’il était déjà du Markdown ; un {docx} est refusé, avec l’adresse de la page qui sait le lire, comme tout autre fichier qui est des octets plutôt que du texte. Un .enex, lui, est converti. {merge} n’enchaîne que du Markdown.',
   /** Les espaces réservés sont l’option, la variable, le fichier de config, la variable d’hôte et l’option. */
   'docs.cli.key':
     'La clé vient de {key}, puis de {env}, puis de {config}. {host} le pointe vers un autre déploiement, et {json} affiche la réponse même de l’API.',
