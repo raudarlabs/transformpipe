@@ -175,7 +175,7 @@ orden en un solo documento con un índice generado.
 | A favor | En contra |
 | --- | --- |
 | Sin recorrer directorios, sin leer un archivo índice a mano | Produce un solo documento — no es la forma que quieres si cada página necesita seguir siendo su propio archivo con su propia URL |
-| Todas las páginas en orden, con un índice construido para ti | No reescribe los enlaces `/download/attachments/` ni reconstruye el árbol de páginas — nada hace eso sin decidir primero dónde van a vivir los archivos |
+| Todas las páginas en orden, con un índice construido para ti, y un adjunto que sea imagen llevado dentro del documento en lugar de seguir apuntando a `/download/attachments/` | No reconstruye el árbol de páginas — nada hace eso sin decidir primero dónde van a vivir los archivos — y un adjunto que no sea imagen conserva el enlace que tenía |
 | Corre en el navegador; el zip no se sube cuando no has iniciado sesión | Las pérdidas de macros son idénticas a cualquier otra ruta de HTML a Markdown, porque el HTML de origen es el mismo en ambos casos |
 
 **Precio:** gratis, corre en local.

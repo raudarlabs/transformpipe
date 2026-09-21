@@ -72,7 +72,7 @@ Sobald Sie dieses Zip haben, ist der kürzeste kostenlose Weg, das ganze Archiv 
 | --- | --- |
 | Kein Entpacken, kein Verzeichnisdurchlauf, keine Indexdatei, die von Hand zu lesen wäre | Ein Dokument heraus, nicht eine Datei pro Seite — die falsche Form für eine Doku-Site |
 | Eine Inhaltsliste wird aus dem Titel jeder Seite erzeugt | Die Inhaltsliste besteht aus reinen Titeln, nicht aus Links |
-| Läuft im Browser; abgemeldet wird das Zip nirgendwohin hochgeladen | Anhangslinks werden nicht auf die Dateien im Zip umgeschrieben |
+| Läuft im Browser; abgemeldet wird das Zip nirgendwohin hochgeladen, und ein Anhang, der ein Bild ist, wird ins Dokument übernommen | Ein Anhang, der kein Bild ist, behält seinen Link, der weiterhin eine Confluence-Sitzung verlangt |
 | Kostenlos, kein Konto, keine Installation, nichts, was ein Admin genehmigen müsste | Die Seitenreihenfolge folgt den Pfaden des Archivs, nicht der Hierarchie des Wikis |
 
 **Preis:** kostenlos. Ein Konto ergänzt Verlauf, Freigabe und eine API, ebenfalls kostenlos.

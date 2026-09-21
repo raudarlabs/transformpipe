@@ -114,7 +114,7 @@ L’export Markdown & CSV scrive le immagini di ogni pagina in una cartella acca
 
 `notion-to-md` restituisce i blocchi immagine come sintassi Markdown ordinaria che punta agli URL temporanei di Notion, che scadono — il pacchetto non scarica il file per te, quindi uno script su questa strada ha bisogno di un passaggio proprio per recuperare ogni URL di immagine prima che scada e riscrivere il Markdown perché punti a una copia locale.
 
-Una strada di unione e caricamento vede quello che lo zip contiene già: le immagini stanno già nelle cartelle proprie dell’export, quindi niente si rompe ulteriormente, ma niente migliora nemmeno — un percorso relativo rotto nel `.md` sorgente resta rotto nel documento unito, perché unire cambia dove vive il testo, non dove puntano i suoi link.
+Una strada di unione e caricamento prima vedeva soltanto quello che diceva il testo dello zip, e un percorso relativo rotto restava rotto uguale. Ora anche le immagini vengono lette dall’archivio e portate dentro il documento stesso, così non resta più nessun percorso da rompere: l’immagine viaggia dentro il Markdown, dentro l’esportazione in HTML e dentro tutto ciò che viene condiviso da lì. Il tetto è di due megabyte di immagini per documento e uno per immagine — un documento salvato deve stare in quattro — e un’immagine oltre quel limite mantiene il link che aveva, il che non è peggio di prima.
 
 ## Caricare lo zip dell’export direttamente, unito in un unico documento
 

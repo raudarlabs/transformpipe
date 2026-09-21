@@ -67,7 +67,7 @@ La decisión de diseño que hay debajo hace que el problema de los wikilinks des
 | --- | --- |
 | Sin instalación, sin binario, sin plugin — un zip y una pestaña del navegador | Un documento, no una carpeta de archivos: la forma equivocada si las notas tienen que seguir siendo direccionables por separado |
 | Los wikilinks, las etiquetas con `\|` al estilo alias y las anclas `#encabezado` se reducen todos a sus palabras mostradas en una sola pasada | Los enlaces pasan a ser texto llano en vez de enlaces que funcionan, porque no queda ningún destino externo |
-| El frontmatter se quita en lugar de representarse como una línea horizontal suelta y un bloque de ruido clave-valor | Los embeds de imágenes y adjuntos pasan a ser texto en cursiva a modo de marcador — una fusión solo de Markdown no lleva binarios |
+| El frontmatter se quita en lugar de representarse como una línea horizontal suelta y un bloque de ruido clave-valor, y un embed de imagen pasa a ser la imagen misma | El techo son dos megabytes de imágenes por documento, y un adjunto que no sea imagen sigue quedando como texto en cursiva |
 | Un índice generado, así que una bóveda de cien notas se puede recorrer desde arriba | Las tablas de Dataview y otras vistas representadas por plugins no están, igual que por cualquier otra vía |
 | Funciona en el navegador; la bóveda no se sube cuando no has iniciado sesión | Una bóveda muy grande está limitada por la máquina que hace el trabajo |
 
@@ -78,7 +78,7 @@ La decisión de diseño que hay debajo hace que el problema de los wikilinks des
 - Del archivador se leen solo las entradas `.md`, ordenadas por su ruta completa dentro del zip, que es lo que fija el orden de las secciones en la salida — renombra una carpeta y el orden cambia con ella
 - El título de una nota sale de su nombre de archivo y no de nada escrito dentro, igual que Obsidian identifica las notas; si la primera línea de esa nota repite el título como H1, el duplicado se descarta en vez de imprimirse dos veces
 - La reescritura de wikilinks cubre `[[Target]]`, `[[Target|Mostrado]]`, `[[Target#Encabezado]]` y `[[Target#Encabezado|Mostrado]]`, además de la forma de embed `![[...]]` de cada uno
-- Un embed cuyo destino termina en una extensión reconocida de imagen, documento o medio se convierte en texto en cursiva nombrando el archivo, en vez de una referencia de imagen rota apuntando a un archivo que no está en el documento
+- Un embed cuyo destino es una imagen presente en el zip pasa a ser esa imagen, llevada dentro del documento; uno cuyo destino es cualquier otro archivo de documento o medio reconocido pasa a ser texto en cursiva nombrándolo, en vez de una referencia rota apuntando a un archivo que no está
 - El bloque de frontmatter YAML de la parte superior de una nota se elimina antes de que se ejecute nada más
 - Las secciones se unen con una línea horizontal entre ellas, la misma convención que usa la aplicación para [fusionar varios archivos Markdown en uno](/blog/merging-many-markdown-files)
 
@@ -131,7 +131,7 @@ El directorio de plugins de la comunidad de Obsidian tiene plugins de exportaci�
 | A favor | En contra |
 | --- | --- |
 | Funciona desde dentro de la aplicación, sobre la nota que estás mirando | El repositorio no lleva archivo de licencia, cosa que importa si piensas bifurcarlo o incorporar su código (consultado en github.com/bingryan/obsidian-markdown-export-plugin, 14 de septiembre de 2026) |
-| Empaqueta los adjuntos de imagen con el Markdown exportado, algo que la vía de fusionar en un documento no puede hacer | Un plugin de la comunidad es una dependencia con su propio ritmo de publicación y sus propias decisiones |
+| Deja las imágenes como archivos junto al Markdown exportado, mientras que la vía de fusionar en un documento las pone dentro del documento | Un plugin de la comunidad es una dependencia con su propio ritmo de publicación y sus propias decisiones |
 | Tiene una opción de salida en GitHub Flavored Markdown, que es el sabor en el que coinciden la mayoría de los destinos | Cómo trata las referencias de bloque, los callouts y el contenido representado por plugins es decisión del plugin, no tuya |
 | Exporta carpetas además de archivos sueltos, y también puede sacar HTML | La exportación basada en plugin escala mal a una bóveda entera comparada con una herramienta de línea de comandos que puedes programar |
 

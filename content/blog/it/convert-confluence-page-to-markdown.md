@@ -92,7 +92,7 @@ Per uno spazio dove la destinazione era sempre stata un unico documento leggibil
 | Pro | Contro |
 | --- | --- |
 | Nessuna cartella da esplorare a mano, nessun file indice da leggere | Produce un documento solo — non la forma giusta se ogni pagina deve restare un file proprio con un URL proprio |
-| Ogni pagina in ordine, con un indice costruito per te | Non riscrive i link `/download/attachments/` né ricostruisce l'albero delle pagine — nessuno lo fa senza decidere dove vivranno i file |
+| Ogni pagina in ordine, con un indice costruito per te, e un allegato che è un’immagine portato dentro il documento invece di restare puntato a `/download/attachments/` | Non ricostruisce l'albero delle pagine — nessuno lo fa senza decidere dove vivranno i file — e un allegato che non è un’immagine mantiene il link che aveva |
 | Gira nel browser; lo zip non viene caricato quando non hai fatto l'accesso | Le perdite delle macro sono identiche a qualunque altra strada da HTML a Markdown, perché l'HTML di partenza è lo stesso in ogni caso |
 
 **Prezzo:** gratis, gira in locale.

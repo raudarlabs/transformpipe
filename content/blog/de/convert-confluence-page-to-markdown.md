@@ -92,7 +92,7 @@ Für einen Space, bei dem das Ziel immer ein einziges lesbares Dokument war stat
 | Vorteile | Nachteile |
 | --- | --- |
 | Kein Verzeichnisdurchlauf, keine Indexdatei, die von Hand zu lesen ist | Erzeugt ein Dokument — nicht die richtige Form, wenn jede Seite ihre eigene Datei mit eigener URL bleiben muss |
-| Jede Seite in Reihenfolge, mit einem für Sie erzeugten Inhaltsverzeichnis | Schreibt `/download/attachments/`-Links nicht um und rekonstruiert den Seitenbaum nicht — nichts tut das, ohne zu entscheiden, wo die Dateien landen sollen |
+| Jede Seite in Reihenfolge, mit einem für Sie erzeugten Inhaltsverzeichnis, und ein Anhang, der ein Bild ist, wird ins Dokument übernommen, statt auf `/download/attachments/` zu zeigen | Rekonstruiert den Seitenbaum nicht — nichts tut das, ohne zu entscheiden, wo die Dateien landen sollen — und ein Anhang, der kein Bild ist, behält den Link, den er hatte |
 | Läuft im Browser; das Zip wird nicht hochgeladen, wenn Sie abgemeldet sind | Makro-Verluste sind identisch mit jedem anderen HTML-zu-Markdown-Weg, denn das Quell-HTML ist so oder so dasselbe |
 
 **Preis:** kostenlos, läuft lokal.

@@ -92,7 +92,7 @@ For a space where the destination was always one readable document rather than a
 | Pros | Cons |
 | --- | --- |
 | No directory walk, no index file to read by hand | Produces one document — not the shape you want if each page needs to stay its own file with its own URL |
-| Every page in order, with a table of contents built for you | Does not rewrite `/download/attachments/` links or reconstruct the page tree — nothing does that without deciding where files will live |
+| Every page in order, with a table of contents built for you, and an attachment that is a picture carried into the document rather than left pointing at `/download/attachments/` | Does not reconstruct the page tree — nothing does that without deciding where files will live — and an attachment that is not a picture keeps the link it had |
 | Runs in the browser; the zip is not uploaded when signed out | Macro losses are identical to any other HTML-to-Markdown route, because the source HTML is the same either way |
 
 **Price:** free, runs locally.

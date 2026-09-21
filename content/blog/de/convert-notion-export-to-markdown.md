@@ -114,7 +114,7 @@ Der Markdown-&-CSV-Export schreibt die Bilder jeder Seite in einen Ordner neben 
 
 `notion-to-md` gibt Bildblöcke als gewöhnliche Markdown-Bildsyntax zurück, die auf Notions eigene temporäre Datei-URLs zeigt, die verfallen — das Paket lädt die Datei nicht für Sie herunter, ein Skript, das diesen Weg nimmt, braucht also einen eigenen Schritt, um jede Bild-URL abzurufen, bevor sie ungültig wird, und das Markdown umzuschreiben, damit es auf eine lokale Kopie zeigt.
 
-Ein Zusammenführen-und-Hochladen-Weg sieht, was auch immer das Zip schon enthält: Die Bilder liegen schon in den eigenen Ordnern des Exports, es bricht also nichts weiter, aber es verbessert sich auch nichts weiter — ein kaputter relativer Pfad in der Quell-`.md` ist im zusammengeführten Dokument immer noch kaputt, denn Zusammenführen ändert, wo der Text lebt, nicht, worauf seine Links zeigen.
+Ein Zusammenführen-und-Hochladen-Weg sah früher nur, was der Text im Zip sagte, und ein kaputter relativer Pfad blieb genau so kaputt. Inzwischen werden auch die Bilder aus dem Archiv gelesen und ins Dokument selbst übernommen, sodass kein Pfad mehr übrig ist, der brechen könnte: Das Bild reist im Markdown mit, im HTML-Export und in allem, was daraus geteilt wird. Die Obergrenze liegt bei zwei Megabyte Bildern je Dokument und einem je Bild — ein gespeichertes Dokument muss in vier passen — und ein Bild darüber behält den Link, den es hatte, also nicht schlechter als vorher.
 
 ## Das Export-Zip direkt hochladen, zusammengeführt zu einem Dokument
 

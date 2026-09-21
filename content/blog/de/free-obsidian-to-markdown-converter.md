@@ -67,7 +67,7 @@ Die Entwurfsentscheidung darunter lässt das Wikilink-Problem verschwinden, stat
 | --- | --- |
 | Keine Installation, kein Binary, kein Plugin — ein Zip und ein Browser-Tab | Ein Dokument, kein Ordner voller Dateien: die falsche Form, wenn die Notizen einzeln adressierbar bleiben müssen |
 | Wikilinks, Alias-Beschriftungen per `\|` und `#Überschrift`-Anker fallen in einem Durchgang auf ihre angezeigten Worte zusammen | Links werden reiner Text statt funktionierender Links, weil kein externes Ziel mehr übrig ist |
-| Frontmatter wird entfernt, statt als verirrte horizontale Linie und Block aus Schlüssel-Wert-Lärm dargestellt zu werden | Bild- und Anhangs-Embeds werden kursiver Platzhaltertext — eine reine Markdown-Zusammenführung trägt keine Binärdateien |
+| Frontmatter wird entfernt, statt als verirrte horizontale Linie und Block aus Schlüssel-Wert-Lärm dargestellt zu werden, und aus einem Bild-Embed wird das Bild selbst | Zwei Megabyte Bilder je Dokument sind die Obergrenze, und ein Anhang, der kein Bild ist, wird weiterhin kursiver Platzhaltertext |
 | Ein erzeugtes Inhaltsverzeichnis, ein Vault mit hundert Notizen ist also von oben navigierbar | Dataview-Tabellen und andere von Plugins dargestellte Ansichten fehlen, wie auf jedem Weg |
 | Läuft im Browser; abgemeldet wird der Vault nicht hochgeladen | Ein sehr großer Vault ist durch den Rechner begrenzt, der die Arbeit macht |
 
@@ -78,7 +78,7 @@ Die Entwurfsentscheidung darunter lässt das Wikilink-Problem verschwinden, stat
 - Aus dem Archiv werden nur `.md`-Einträge gelesen, sortiert nach ihrem vollen Pfad im Zip, und das legt die Reihenfolge der Abschnitte in der Ausgabe fest — benennen Sie einen Ordner um, und die Reihenfolge ändert sich mit
 - Der Titel einer Notiz stammt aus ihrem Dateinamen statt aus irgendetwas, das darin steht, passend dazu, wie Obsidian selbst Notizen identifiziert; wiederholt die erste Zeile dieser Notiz den Titel als H1, fällt das Duplikat weg, statt zweimal gedruckt zu werden
 - Das Umschreiben der Wikilinks deckt `[[Ziel]]`, `[[Ziel|Angezeigt]]`, `[[Ziel#Überschrift]]` und `[[Ziel#Überschrift|Angezeigt]]` ab, dazu die `![[...]]`-Embed-Form von jedem
-- Ein Embed, dessen Ziel auf eine erkannte Bild-, Dokument- oder Medienendung endet, wird kursiver Text mit dem Dateinamen, statt einer kaputten Bildreferenz auf eine Datei, die nicht im Dokument liegt
+- Ein Embed, dessen Ziel ein Bild im Zip ist, wird zu diesem Bild, mitgetragen im Dokument; eines, dessen Ziel eine andere erkannte Dokument- oder Mediendatei ist, wird kursiver Text mit dem Dateinamen, statt einer kaputten Referenz auf eine Datei, die nicht da ist
 - Der YAML-Frontmatter-Block am Anfang einer Notiz wird entfernt, bevor irgendetwas anderes läuft
 - Abschnitte werden durch eine horizontale Linie verbunden, dieselbe Konvention, die die App auch beim [Zusammenführen mehrerer Markdown-Dateien zu einer](/blog/merging-many-markdown-files) verwendet
 
@@ -131,7 +131,7 @@ Obsidians Verzeichnis der Community-Plugins führt Export-Plugins, und [obsidian
 | Dafür | Dagegen |
 | --- | --- |
 | Läuft aus der App heraus, an der Notiz, die Sie gerade ansehen | Das Repository trägt keine Lizenzdatei, was zählt, wenn Sie den Code forken oder mitliefern wollen (geprüft auf github.com/bingryan/obsidian-markdown-export-plugin, 14. September 2026) |
-| Bündelt Bildanhänge mit dem exportierten Markdown, was der Weg über die Zusammenführung zu einem Dokument nicht kann | Ein Community-Plugin ist eine Abhängigkeit mit eigenem Veröffentlichungstakt und eigenen Entscheidungen |
+| Behält die Bilder als Dateien neben dem exportierten Markdown, während der Weg über die Zusammenführung sie stattdessen ins Dokument legt | Ein Community-Plugin ist eine Abhängigkeit mit eigenem Veröffentlichungstakt und eigenen Entscheidungen |
 | Hat eine Option für Ausgabe in GitHub Flavored Markdown, dem Dialekt, auf den sich die meisten Ziele einigen | Wie es mit Blockreferenzen, Callouts und von Plugins dargestellten Inhalten umgeht, ist die Entscheidung des Plugins, nicht Ihre |
 | Exportiert Ordner ebenso wie einzelne Dateien und kann auch HTML ausgeben | Export per Plugin skaliert für einen ganzen Vault schlecht, verglichen mit einer CLI, die Sie skripten können |
 

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 21 September 2026.** Next up: **what survives an export, and what does not**.
+**Updated 21 September 2026.** Next up: **ODT and RTF → Markdown**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,16 +14,13 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **What survives an export, and what does not** — one comparison page per source
-      · content, not code: a Notion database already comes out as a Markdown table and nobody
-      has been told
+- [ ] **ODT and RTF → Markdown** — LibreOffice and Google Docs exports
+      · two in a week, because ODT is a zip of XML and RTF is small
 
 ## Next, in order
 
 ### Formats, going in
 
-- [ ] **ODT and RTF → Markdown** — LibreOffice and Google Docs exports
-      · two in a week, because ODT is a zip of XML and RTF is small
 - [ ] **Evernote → Markdown** — an `.enex` export, notes merged
       · the one format here with a user base actively looking for the door
 
@@ -106,6 +103,10 @@ says otherwise.
 
 ### 21 September
 
+- [x] **What survives an export, and what does not** — not the new comparison pages this said,
+      because six already existed and said the opposite of what is now true. Thirty-five
+      corrections across five languages instead: "nothing carries binary attachments across in a
+      Markdown-only merge" and five more like it, on the pages that already rank for the question
 - [x] **EPUB → Markdown** — a book as one document: a chapter is a section, in the order the
       spine gives rather than the order the files are numbered, under the titles the book's own
       contents gives them, with the pictures inside and the cross-references reduced to words

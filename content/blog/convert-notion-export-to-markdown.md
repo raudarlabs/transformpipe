@@ -114,7 +114,7 @@ The Markdown & CSV export writes each page's images into a folder alongside its 
 
 `notion-to-md` returns image blocks as ordinary Markdown image syntax pointing at Notion's own temporary file URLs, which expire — the package does not download the file for you, so a script using this route needs its own step to fetch each image URL before it goes stale and rewrite the Markdown to point at a local copy.
 
-A merge-and-upload route sees whatever the zip already contains: the images already sit in the export's own folders, so nothing further breaks, but nothing further improves either — a broken relative path in the source `.md` is still broken in the merged document, because merging changes where the text lives, not what its links point at.
+A merge-and-upload route used to see only what the zip's text said, which left a broken relative path exactly as broken. It now reads the images out of the archive as well and carries them into the document itself, so there is no path left to break: the picture travels inside the Markdown, inside the HTML export, and inside anything shared from it. The ceiling is two megabytes of pictures per document and one per picture — a saved document has to fit in four — and a picture past it keeps the link it had, which is no worse than before.
 
 ## Upload the export zip directly, merged into one document
 

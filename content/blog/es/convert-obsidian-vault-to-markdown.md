@@ -111,7 +111,7 @@ La reescritura de arriba merece la pena para una bóveda que se va a quedar como
 | A favor | En contra |
 | --- | --- |
 | Sin script, sin índice de nombres de archivo que construir tú mismo por toda la bóveda | Produce un solo documento — la forma equivocada si las notas necesitan seguir siendo archivos separados con su propia ruta |
-| El frontmatter se elimina automáticamente, en vez de mostrarse como una línea horizontal suelta | Los embebidos de imágenes y otros adjuntos se convierten en texto en cursiva plano, no en el archivo real — nada lleva adjuntos binarios en una fusión solo de Markdown |
+| El frontmatter se elimina automáticamente, y un embebido `![[imagen.png]]` pasa a ser la imagen misma, llevada dentro del documento | El techo son dos megabytes de imágenes por documento; un adjunto que no sea imagen — un PDF, una nota de audio — sigue quedando como texto en cursiva |
 | Se ejecuta en el navegador; la bóveda nunca se sube si no has iniciado sesión | Las tablas de Dataview y demás contenido renderizado por plugins siguen ausentes, igual que en cualquier otra vía, porque el archivo de origen nunca las tuvo |
 
 **Precio:** gratis, se ejecuta en local.

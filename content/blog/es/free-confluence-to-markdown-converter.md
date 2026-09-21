@@ -72,7 +72,7 @@ Una vez que tienes ese zip, el camino gratuito más corto es entregar el archiva
 | --- | --- |
 | Sin descomprimir, sin recorrer directorios, sin leer el archivo de índice a mano | Sale un documento, no un archivo por página — la forma equivocada para un sitio de documentación |
 | El índice se genera a partir del título de cada página | El índice son títulos llanos, no enlaces |
-| Funciona en el navegador; sin sesión iniciada, el zip no se sube a ninguna parte | Los enlaces a adjuntos no se reescriben hacia los archivos del zip |
+| Funciona en el navegador; sin sesión iniciada, el zip no se sube a ninguna parte, y un adjunto que sea imagen se lleva dentro del documento | Un adjunto que no sea imagen conserva su enlace, que sigue pidiendo una sesión de Confluence |
 | Gratis, sin cuenta, sin instalar, sin nada que tenga que aprobar un administrador | El orden de las páginas sigue las rutas del archivador, no la jerarquía del wiki |
 
 **Precio:** gratis. Una cuenta añade historial, compartir y una API, también gratis.

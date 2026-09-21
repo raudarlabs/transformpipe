@@ -72,7 +72,7 @@ Once you have that zip, the shortest free path is to hand the whole archive to a
 | --- | --- |
 | No unzipping, no directory walk, no index file to read by hand | One document out, not one file per page — the wrong shape for a docs site |
 | A contents list is generated from every page's title | The contents list is plain titles, not links |
-| Runs in the browser; signed out, the zip is not uploaded anywhere | Attachment links are not rewritten to the files in the zip |
+| Runs in the browser; signed out, the zip is not uploaded anywhere, and an attachment that is a picture is carried into the document | An attachment that is not a picture keeps the link it had, which still wants a Confluence session |
 | Free, no account, no install, nothing for an admin to approve | Page order follows the archive's paths, not the wiki's hierarchy |
 
 **Price:** free. An account adds history, sharing and an API, also free.

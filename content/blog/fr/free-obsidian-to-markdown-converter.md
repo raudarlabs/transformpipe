@@ -67,7 +67,7 @@ Le choix de conception qui sous-tend tout cela fait disparaître le problème de
 | --- | --- |
 | Pas d’installation, pas de binaire, pas de greffon — une archive et un onglet de navigateur | Un document unique, pas un dossier de fichiers : la mauvaise forme si les notes doivent rester adressables séparément |
 | Wikiliens, libellés après une barre verticale `\|` et ancres `#titre` se réduisent tous aux mots affichés en une seule passe | Les liens deviennent du texte brut plutôt que des liens actifs, puisqu’il ne reste aucune cible externe |
-| Le frontmatter est retiré au lieu d’être rendu sous forme d’un filet horizontal égaré suivi d’un bloc de clés-valeurs parasites | Les intégrations d’images et de pièces jointes deviennent du texte en italique — une fusion purement Markdown ne transporte aucun binaire |
+| Le frontmatter est retiré au lieu d’être rendu sous forme d’un filet horizontal égaré suivi d’un bloc de clés-valeurs parasites, et une intégration d’image devient l’image elle-même | Le plafond est de deux mégaoctets d’images par document, et une pièce jointe qui n’est pas une image devient toujours du texte en italique |
 | Un sommaire généré, si bien qu’un coffre de cent notes se parcourt depuis le haut | Les tableaux Dataview et les autres vues rendues par un greffon sont absents, comme par toutes les voies |
 | Tourne dans le navigateur ; le coffre n’est pas téléversé quand vous êtes déconnecté | Un très gros coffre est limité par la machine qui fait le travail |
 
@@ -78,7 +78,7 @@ Le choix de conception qui sous-tend tout cela fait disparaître le problème de
 - L’archive n’est lue que pour ses entrées `.md`, triées par leur chemin complet à l’intérieur de l’archive, ce qui fixe l’ordre des sections dans la sortie — renommez un dossier et l’ordre change avec lui
 - Le titre d’une note vient de son nom de fichier plutôt que de quoi que ce soit écrit dedans, à l’image de la manière dont Obsidian lui-même identifie les notes ; si la première ligne de cette note répète le titre en H1, le doublon est retiré au lieu d’être imprimé deux fois
 - La réécriture des wikiliens couvre `[[Cible]]`, `[[Cible|Affiché]]`, `[[Cible#Titre]]` et `[[Cible#Titre|Affiché]]`, ainsi que la forme d’intégration `![[...]]` de chacun
-- Une intégration dont la cible se termine par une extension d’image, de document ou de média reconnue devient du texte en italique nommant le fichier, plutôt qu’une référence d’image cassée pointant vers un fichier absent du document
+- Une intégration dont la cible est une image présente dans l’archive devient cette image, portée dans le document ; une dont la cible est un autre fichier de document ou de média reconnu devient du texte en italique le nommant, plutôt qu’une référence cassée pointant vers un fichier absent
 - Le bloc de frontmatter YAML en tête d’une note est supprimé avant que quoi que ce soit d’autre ne s’exécute
 - Les sections sont jointes par un filet horizontal, la même convention que celle employée par l’application pour [fusionner plusieurs fichiers Markdown en un seul](/blog/merging-many-markdown-files)
 
@@ -131,7 +131,7 @@ Le répertoire de greffons communautaires d’Obsidian propose des greffons d’
 | Avantages | Inconvénients |
 | --- | --- |
 | S’exécute depuis l’application, sur la note que vous avez sous les yeux | Le dépôt ne comporte aucun fichier de licence, ce qui compte si vous comptez le forker ou en intégrer le code (vérifié sur github.com/bingryan/obsidian-markdown-export-plugin, le 14 septembre 2026) |
-| Empaquette les images avec le Markdown exporté, ce que la voie de la fusion en un document unique ne peut pas faire | Un greffon communautaire est une dépendance avec son propre rythme de publication et ses propres décisions |
+| Garde les images comme fichiers à côté du Markdown exporté, là où la voie de la fusion en un document unique les place à l’intérieur du document | Un greffon communautaire est une dépendance avec son propre rythme de publication et ses propres décisions |
 | Propose une option de sortie en GitHub Flavored Markdown, la variante sur laquelle la plupart des destinations s’accordent | Son traitement des références de bloc, des encadrés et du contenu rendu par greffon est le choix du greffon, pas le vôtre |
 | Exporte aussi bien des dossiers que des fichiers isolés, et peut également produire du HTML | Un export par greffon passe mal à l’échelle d’un coffre entier face à un outil en ligne de commande que vous pouvez scripter |
 

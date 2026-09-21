@@ -72,7 +72,7 @@ Una volta che hai quello zip, la strada gratuita più corta è consegnare l’in
 | --- | --- |
 | Niente da decomprimere, nessuna cartella da percorrere, nessun file indice da leggere a mano | Un documento solo in uscita, non un file per pagina — la forma sbagliata per un sito di documentazione |
 | Un elenco dei contenuti viene generato dal titolo di ogni pagina | L’elenco dei contenuti è fatto di titoli semplici, non di link |
-| Gira nel browser; se non hai fatto l’accesso, lo zip non viene caricato da nessuna parte | I link agli allegati non vengono riscritti verso i file dentro lo zip |
+| Gira nel browser; se non hai fatto l’accesso, lo zip non viene caricato da nessuna parte, e un allegato che è un’immagine viene portato dentro il documento | Un allegato che non è un’immagine mantiene il suo link, che continua a richiedere una sessione Confluence |
 | Gratis, senza account, senza installazioni, senza niente da far approvare a un admin | L’ordine delle pagine segue i percorsi dell’archivio, non la gerarchia del wiki |
 
 **Prezzo:** gratis. Un account aggiunge cronologia, condivisione e un’API, anche questi gratis.

@@ -111,7 +111,7 @@ Das obige Umschreiben lohnt sich für einen Vault, der ein Ordner separater Date
 | Vorteile | Nachteile |
 | --- | --- |
 | Kein Skript, kein selbst zu bauender vault-weiter Dateinamenindex | Erzeugt ein Dokument — die falsche Form, wenn Notizen separate Dateien mit eigenen Pfaden bleiben müssen |
-| Frontmatter wird automatisch entfernt, statt als verirrte Trennlinie zu erscheinen | Einbettungen von Bildern und anderen Anhängen werden zu einfachem kursivem Text, nicht zur echten Datei — nichts trägt binäre Anhänge über eine reine Markdown-Zusammenführung |
+| Frontmatter wird automatisch entfernt, und aus einer `![[bild.png]]`-Einbettung wird das Bild selbst, mitgetragen im Dokument | Zwei Megabyte Bilder je Dokument sind die Obergrenze; ein Anhang, der kein Bild ist — ein PDF, eine Sprachnotiz — wird weiterhin zu kursivem Text |
 | Läuft im Browser; der Vault wird abgemeldet nie hochgeladen | Dataview-Tabellen und anderer plugin-dargestellter Inhalt fehlen, wie bei jedem anderen Weg, weil die Quelldatei sie nie hatte |
 
 **Preis:** kostenlos, läuft lokal.

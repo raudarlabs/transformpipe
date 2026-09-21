@@ -111,7 +111,7 @@ The rewrite above is worth doing for a vault staying a folder of separate files.
 | Pros | Cons |
 | --- | --- |
 | No script, no vault-wide filename index to build yourself | Produces one document — the wrong shape if notes need to stay separate files with their own paths |
-| Frontmatter is stripped automatically, rather than showing as a stray horizontal rule | Embeds of images and other attachments become plain italic text, not the actual file — nothing carries binary attachments across in a Markdown-only merge |
+| Frontmatter is stripped automatically, and an `![[image.png]]` embed becomes the picture itself, carried inside the document | Two megabytes of pictures per document is the ceiling; an attachment that is not a picture — a PDF, an audio note — still becomes plain italic text |
 | Runs in the browser; the vault is never uploaded when signed out | Dataview tables and other plugin-rendered content are absent, the same as any other route, because the source file never had them |
 
 **Price:** free, runs locally.

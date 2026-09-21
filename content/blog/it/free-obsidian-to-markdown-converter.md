@@ -67,7 +67,7 @@ La scelta progettuale che sta sotto fa sparire il problema dei wikilink invece d
 | --- | --- |
 | Nessuna installazione, nessun binario, nessun plugin — uno zip e una scheda del browser | Un documento solo, non una cartella di file: la forma sbagliata se le note devono restare indirizzabili separatamente |
 | Wikilink, etichette con `\|` in stile alias e ancore `#intestazione` si riducono tutti alle parole mostrate in un unico passaggio | I link diventano testo semplice invece che link funzionanti, perché non resta nessuna destinazione esterna |
-| Il frontmatter viene rimosso invece di essere reso come una linea orizzontale vagante e un blocco di rumore chiave-valore | Gli embed di immagini e allegati diventano testo segnaposto in corsivo — un’unione di soli Markdown non porta con sé file binari |
+| Il frontmatter viene rimosso invece di essere reso come una linea orizzontale vagante e un blocco di rumore chiave-valore, e un embed di immagine diventa l’immagine stessa | Il tetto è di due megabyte di immagini per documento, e un allegato che non è un’immagine resta testo segnaposto in corsivo |
 | Un indice generato, così un vault da cento note è navigabile dall’alto | Le tabelle Dataview e le altre viste rese dai plugin sono assenti, come lo sono per qualunque strada |
 | Gira nel browser; il vault non viene caricato se non hai fatto l’accesso | Un vault molto grande è limitato dalla macchina che fa il lavoro |
 
@@ -78,7 +78,7 @@ La scelta progettuale che sta sotto fa sparire il problema dei wikilink invece d
 - Dell’archivio vengono lette solo le voci `.md`, ordinate per percorso completo dentro lo zip, che è ciò che fissa l’ordine delle sezioni nell’output — rinomina una cartella e l’ordine cambia con lei
 - Il titolo di una nota viene dal nome del file invece che da qualcosa scritto al suo interno, in linea con il modo in cui Obsidian stesso identifica le note; se la prima riga di quella nota ripete il titolo come H1, il doppione viene eliminato invece di essere stampato due volte
 - La riscrittura dei wikilink copre `[[Target]]`, `[[Target|Mostrato]]`, `[[Target#Intestazione]]` e `[[Target#Intestazione|Mostrato]]`, più la forma con embed `![[...]]` di ciascuno
-- Un embed la cui destinazione finisce con un’estensione riconosciuta di immagine, documento o media diventa testo in corsivo che nomina il file, invece di un riferimento a immagine rotto che punta a un file che nel documento non c’è
+- Un embed la cui destinazione è un’immagine presente nello zip diventa quell’immagine, portata dentro il documento; uno la cui destinazione è un altro file di documento o media riconosciuto diventa testo in corsivo che lo nomina, invece di un riferimento rotto a un file che non c’è
 - Il blocco di frontmatter YAML in cima a una nota viene rimosso prima che parta qualunque altra cosa
 - Le sezioni sono unite con una linea orizzontale in mezzo, la stessa convenzione che l’app usa per [unire più file Markdown in uno](/blog/merging-many-markdown-files)
 
@@ -131,7 +131,7 @@ La directory dei plugin della community di Obsidian contiene plugin di export, e
 | Pro | Contro |
 | --- | --- |
 | Gira da dentro l’app, sulla nota che stai guardando | Il repository non contiene nessun file di licenza, cosa che conta se intendi fare un fork o incorporarne il codice (verificato su github.com/bingryan/obsidian-markdown-export-plugin, 14 settembre 2026) |
-| Impacchetta gli allegati immagine insieme al Markdown esportato, cosa che la strada dell’unione in un documento non può fare | Un plugin della community è una dipendenza con il suo ritmo di rilascio e le sue decisioni |
+| Tiene le immagini come file accanto al Markdown esportato, mentre la strada dell’unione in un documento le mette dentro il documento | Un plugin della community è una dipendenza con il suo ritmo di rilascio e le sue decisioni |
 | Ha un’opzione per l’output in GitHub Flavored Markdown, la variante su cui quasi tutte le destinazioni concordano | Come gestisce riferimenti ai blocchi, callout e contenuti resi dai plugin è una scelta del plugin, non tua |
 | Esporta cartelle oltre che singoli file, e può anche produrre HTML | L’export via plugin scala male su un vault intero rispetto a una CLI che puoi scriptare |
 

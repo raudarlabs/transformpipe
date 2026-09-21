@@ -67,7 +67,7 @@ The design choice underneath it makes the wikilink problem disappear rather than
 | --- | --- |
 | No install, no binary, no plugin — a zip and a browser tab | One document, not a folder of files: the wrong shape if the notes must stay separately addressable |
 | Wikilinks, alias-style `\|` labels and `#heading` anchors all collapse to their displayed words in one pass | Links become plain text rather than working links, because there is no external target left |
-| Frontmatter is stripped rather than rendered as a stray horizontal rule and a block of key-value noise | Image and attachment embeds become italic placeholder text — a Markdown-only merge carries no binaries |
+| Frontmatter is stripped rather than rendered as a stray horizontal rule and a block of key-value noise, and an image embed becomes the picture itself | Two megabytes of pictures per document is the ceiling, and an attachment that is not a picture still becomes italic placeholder text |
 | A generated table of contents, so a hundred-note vault is navigable from the top | Dataview tables and other plugin-rendered views are absent, as they are by every route |
 | Runs in the browser; the vault is not uploaded when signed out | A very large vault is limited by the machine doing the work |
 
@@ -78,7 +78,7 @@ The design choice underneath it makes the wikilink problem disappear rather than
 - The archive is read for `.md` entries only, sorted by their full path inside the zip, which is what fixes the order of sections in the output — rename a folder and the order changes with it
 - A note's title comes from its filename rather than from anything written inside it, matching how Obsidian itself identifies notes; if that note's own first line repeats the title as an H1, the duplicate is dropped rather than printed twice
 - The wikilink rewrite covers `[[Target]]`, `[[Target|Shown]]`, `[[Target#Heading]]` and `[[Target#Heading|Shown]]`, plus the `![[...]]` embed form of each
-- An embed whose target ends in a recognised image, document or media extension becomes italic text naming the file, rather than a broken image reference pointing at a file that is not in the document
+- An embed whose target is a picture in the zip becomes that picture, carried inside the document; one whose target is any other recognised document or media file becomes italic text naming it, rather than a broken reference pointing at a file that is not there
 - The YAML frontmatter block at the top of a note is removed before anything else runs
 - Sections are joined with a horizontal rule between them, the same convention the app uses for [merging several Markdown files into one](/blog/merging-many-markdown-files)
 
@@ -131,7 +131,7 @@ Obsidian's community plugin directory carries export plugins, and [obsidian-mark
 | Pros | Cons |
 | --- | --- |
 | Runs from inside the app, on the note you are looking at | The repository carries no licence file, which matters if you intend to fork or vendor its code (checked on github.com/bingryan/obsidian-markdown-export-plugin, 14 September 2026) |
-| Bundles image attachments with the exported Markdown, which the merge-to-one-document route cannot do | A community plugin is a dependency with its own release cadence and its own decisions |
+| Keeps the images as files beside the exported Markdown, where the merge-to-one-document route puts them inside the document instead | A community plugin is a dependency with its own release cadence and its own decisions |
 | Has an option for GitHub Flavored Markdown output, which is the flavour most destinations agree on | Its handling of block references, callouts and plugin-rendered content is the plugin's choice, not yours |
 | Exports folders as well as single files, and can also output HTML | Plugin-based export scales poorly to a whole vault compared with a CLI you can script |
 

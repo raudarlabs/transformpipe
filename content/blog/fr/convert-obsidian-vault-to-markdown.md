@@ -111,7 +111,7 @@ La réécriture ci-dessus vaut la peine pour un coffre qui reste un dossier de f
 | Avantages | Inconvénients |
 | --- | --- |
 | Aucun script, aucun index de noms de fichiers à construire soi-même | Produit un document unique — la mauvaise forme si les notes doivent rester des fichiers séparés avec leurs propres chemins |
-| L'en-tête est retiré automatiquement, au lieu de s'afficher comme un filet horizontal égaré | Les intégrations d'images et d'autres pièces jointes deviennent du texte en italique, pas le fichier réel : rien ne transporte de pièces jointes binaires dans une fusion purement Markdown |
+| L'en-tête est retiré automatiquement, et une intégration `![[image.png]]` devient l'image elle-même, portée dans le document | Le plafond est de deux mégaoctets d'images par document ; une pièce jointe qui n'est pas une image — un PDF, une note audio — devient toujours du texte en italique |
 | Fonctionne dans le navigateur ; le coffre n'est jamais téléversé quand vous n'êtes pas connecté | Les tableaux Dataview et les autres contenus rendus par plugin sont absents, comme par n'importe quel autre chemin, puisque le fichier source ne les a jamais contenus |
 
 **Prix :** gratuit, exécution locale.

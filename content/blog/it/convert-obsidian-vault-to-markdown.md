@@ -111,7 +111,7 @@ La riscrittura descritta sopra vale la pena se il vault resta una cartella di fi
 | Pro | Contro |
 | --- | --- |
 | Nessuno script, nessun indice di nomi di file da costruire a livello di vault | Produce un documento solo — la forma sbagliata se le note devono restare file separati con un proprio percorso |
-| Il frontmatter viene rimosso in automatico, invece di apparire come una linea orizzontale isolata | Gli embed di immagini e altri allegati diventano semplice testo in corsivo, non il file vero — niente porta allegati binari attraverso un’unione solo Markdown |
+| Il frontmatter viene rimosso in automatico, e un embed `![[immagine.png]]` diventa l’immagine stessa, portata dentro il documento | Il tetto è di due megabyte di immagini per documento; un allegato che non è un’immagine — un PDF, una nota audio — resta comunque testo in corsivo |
 | Gira nel browser; il vault non viene mai caricato quando non hai fatto l’accesso | Le tabelle Dataview e altri contenuti generati da plugin sono assenti, come su qualunque altra strada, perché il file sorgente non li aveva mai |
 
 **Prezzo:** gratis, gira in locale.

@@ -92,7 +92,7 @@ Pour un espace dont la destination a toujours été un document lisible unique p
 | Avantages | Inconvénients |
 | --- | --- |
 | Aucun parcours de répertoire, aucun fichier d’index à lire à la main | Produit un seul document — ce n’est pas la forme voulue si chaque page doit rester un fichier à elle avec son URL |
-| Chaque page dans l’ordre, avec un sommaire construit pour vous | Ne réécrit pas les liens `/download/attachments/` et ne reconstruit pas l’arborescence — rien ne le fait sans décider où les fichiers vivront |
+| Chaque page dans l’ordre, avec un sommaire construit pour vous, et une pièce jointe qui est une image portée dans le document au lieu de pointer vers `/download/attachments/` | Ne reconstruit pas l’arborescence — rien ne le fait sans décider où les fichiers vivront — et une pièce jointe qui n’est pas une image garde le lien qu’elle avait |
 | Tourne dans le navigateur ; l’archive n’est pas téléversée quand vous êtes déconnecté | Les pertes de macros sont identiques à toute autre voie HTML vers Markdown, puisque le HTML source est le même de toute façon |
 
 **Prix :** gratuit, tourne localement.

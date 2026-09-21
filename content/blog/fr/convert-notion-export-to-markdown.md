@@ -114,7 +114,7 @@ L'export Markdown & CSV écrit les images de chaque page dans un dossier voisin 
 
 `notion-to-md` renvoie les blocs image sous forme de syntaxe Markdown ordinaire pointant vers les URL de fichiers temporaires de Notion, lesquelles expirent — le paquet ne télécharge pas le fichier pour vous, donc un script suivant ce chemin a besoin de sa propre étape pour récupérer chaque URL d'image avant qu'elle ne périme et réécrire le Markdown vers une copie locale.
 
-Un chemin de fusion et téléversement voit ce que le zip contient déjà : les images se trouvent déjà dans les dossiers de l'export, donc rien de plus ne casse, mais rien de plus ne s'améliore non plus — un chemin relatif cassé dans le `.md` source reste cassé dans le document fusionné, puisque fusionner change l'endroit où vit le texte, pas ce vers quoi ses liens pointent.
+Un chemin de fusion et téléversement ne voyait auparavant que ce que disait le texte du zip, et un chemin relatif cassé restait cassé tel quel. Les images sont désormais lues dans l'archive elles aussi et portées dans le document lui-même, si bien qu'il ne reste plus de chemin à casser : l'image voyage dans le Markdown, dans l'export HTML et dans tout ce qui en est partagé. Le plafond est de deux mégaoctets d'images par document et d'un par image — un document enregistré doit tenir dans quatre — et une image au-delà garde le lien qu'elle avait, ce qui n'est pas pire qu'avant.
 
 ## Téléverser le zip d'export directement, fusionné en un seul document
 

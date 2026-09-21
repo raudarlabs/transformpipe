@@ -72,7 +72,7 @@ Une fois cette archive en main, le chemin gratuit le plus court consiste à conf
 | --- | --- |
 | Pas de décompression, pas de parcours de dossiers, pas de fichier d’index à lire à la main | Un document en sortie, pas un fichier par page — la mauvaise forme pour un site de documentation |
 | Un sommaire est généré à partir du titre de chaque page | Le sommaire contient des titres bruts, pas des liens |
-| Tourne dans le navigateur ; déconnecté, l’archive n’est téléversée nulle part | Les liens vers les pièces jointes ne sont pas réécrits vers les fichiers de l’archive |
+| Tourne dans le navigateur ; déconnecté, l’archive n’est téléversée nulle part, et une pièce jointe qui est une image est portée dans le document | Une pièce jointe qui n’est pas une image garde son lien, lequel exige toujours une session Confluence |
 | Gratuit, sans compte, sans installation, sans rien à faire approuver par un administrateur | L’ordre des pages suit les chemins de l’archive, pas la hiérarchie du wiki |
 
 **Prix :** gratuit. Un compte ajoute l’historique, le partage et une API, gratuits eux aussi.
