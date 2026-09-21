@@ -10,4 +10,4 @@
  * `npm run deploy:check` compares this with `package.json` and fails the build when they drift, so
  * the copy cannot go stale quietly.
  */
-export const VERSION = '2.0.0';
+export const VERSION = '2.1.0';

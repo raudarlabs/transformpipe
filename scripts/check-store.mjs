@@ -26,6 +26,18 @@ const listing = readFileSync(path.join(root, 'content/extension-store.md'), 'utf
 const conversions = readFileSync(path.join(root, 'shared/conversions.ts'), 'utf8');
 
 /*
+ * The screenshots are part of the listing, and this check used not to read them.
+ *
+ * That is not hypothetical. The sentence Google quoted when it rejected 1.0.0 — "Word documents,
+ * PDFs, spreadsheets, HTML, CSV, JSON, EPUB" — was taken out of the description, and the
+ * description was rewritten, and this script was written to stop it happening again. The caption
+ * drawn onto screenshot four still read "Word, PDF, spreadsheets, HTML, CSV, JSON and more", and
+ * it was uploaded to the same store page. A guard that covers the text and not the pictures
+ * beside it is a guard that reports success while the claim is still on the shelf.
+ */
+const art = readFileSync(path.join(root, 'scripts/store-art.mjs'), 'utf8');
+
+/*
  * Which extensions the converters actually take, read out of the source rather than imported: this
  * script is plain Node, and the one thing it needs is a list of quoted `.xyz` strings.
  */
@@ -71,22 +83,35 @@ const quoted = listing
   .join('\n')
   .toLowerCase();
 
+/* The words drawn onto the screenshots, which reach the same store page the description does. */
+const drawn = [...art.matchAll(/^\s*(?:caption|blurb):\s*'([^']*)'/gm)]
+  .map((match) => match[1])
+  .join('\n')
+  .toLowerCase();
+
+const sources = [
+  ['content/extension-store.md', quoted],
+  ['scripts/store-art.mjs, drawn onto a screenshot', drawn],
+];
+
 const problems = [];
 
-for (const [word, extension] of Object.entries(CLAIMS)) {
-  if (!new RegExp(`\\b${word}\\b`).test(quoted)) {
-    continue;
-  }
+for (const [where, text] of sources) {
+  for (const [word, extension] of Object.entries(CLAIMS)) {
+    if (!new RegExp(`\\b${word}\\b`).test(text)) {
+      continue;
+    }
 
-  if (!supported.has(extension)) {
-    problems.push(
-      `the listing says "${word}", but no conversion in shared/conversions.ts takes ${extension}`
-    );
+    if (!supported.has(extension)) {
+      problems.push(
+        `${where} says "${word}", but no conversion in shared/conversions.ts takes ${extension}`
+      );
+    }
   }
 }
 
 if (problems.length > 0) {
-  console.error(`\n${problems.length} problem(s) in content/extension-store.md:`);
+  console.error(`\n${problems.length} problem(s) in the store listing:`);
 
   for (const one of problems) {
     console.error(`  ${one}`);
@@ -100,5 +125,6 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `store listing names no format the converters lack (${supported.size} extensions supported)`
+  `store listing and screenshots name no format the converters lack ` +
+    `(${supported.size} extensions supported)`
 );

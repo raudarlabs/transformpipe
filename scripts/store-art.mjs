@@ -350,12 +350,15 @@ const SHOTS = [
     },
   },
   {
-    id: '4-ten-formats',
+    // Named for what it shows rather than for how many, so the file does not need renaming
+    // every time a conversion ships — which is how it came to be called `4-ten-formats` while
+    // showing eleven.
+    id: '4-formats',
     surface: 'viewer.html?doc=shot',
     size: { width: 1180, height: 780 },
     handoff: true,
-    caption: 'Ten formats, converted in your browser',
-    blurb: 'Word, PDF, spreadsheets, HTML, CSV, JSON and more. Nothing is uploaded.',
+    caption: 'Eleven formats, converted in your browser',
+    blurb: 'Word, slides, spreadsheets, HTML, CSV, JSON and more. Nothing is uploaded.',
   },
   {
     id: '5-save-and-share',

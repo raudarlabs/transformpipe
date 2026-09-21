@@ -93,6 +93,18 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    version: '2.1.0',
+    title: 'Everything a document is made of',
+    body:
+      'A release about fidelity rather than reach. Diagrams are drawn, formulas are typeset, code '
+      + 'is coloured, and six things people routinely write in Markdown stopped being printed as '
+      + 'punctuation. PowerPoint became the tenth conversion, speaker notes included, and the '
+      + 'pictures inside an export stopped being left behind in the .zip. A document says what is '
+      + 'wrong with it. The extension reads what the screen shows rather than what the page '
+      + 'claims. Each of those has a page of its own below; this card is the list.',
+  },
+  {
+    date: '2026-09-21',
     title: 'Pictures survive an export',
     slug: 'pictures-survive-an-export',
     body:

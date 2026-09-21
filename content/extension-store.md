@@ -37,10 +37,10 @@ which are localised with it.
 >
 > **A file on your machine, converted without uploading it.**
 >
-> Drop in a Word document and it comes back as Markdown. So does a spreadsheet, a page of saved
-> HTML, or the zip that Notion, Confluence and Obsidian produce when you export. Ten conversions in
-> all, every one of them running in your browser: nothing is uploaded, and none of it needs a
-> network connection.
+> Drop in a Word document and it comes back as Markdown. So does a slide deck, a spreadsheet, a
+> page of saved HTML, or the zip that Notion, Confluence and Obsidian produce when you export.
+> Eleven conversions in all, every one of them running in your browser: nothing is uploaded, and
+> none of it needs a network connection.
 >
 > **Why it reads pages better than a copy and paste**
 >
@@ -69,8 +69,8 @@ words it as excessive keywords, and it was — a comma-separated run of formats 
 box rather than for a person.
 
 It was also wrong. This extension has never converted a PDF and has never converted an EPUB; the
-ten conversions take `.md`, `.html`, `.txt`, `.csv`, `.tsv`, `.json`, `.docx`, `.xlsx` and the
-`.zip` from Notion, Confluence or Obsidian. Two of the seven formats in that list did not exist
+eleven conversions take `.md`, `.html`, `.txt`, `.csv`, `.tsv`, `.json`, `.docx`, `.xlsx`, `.pptx`
+and the `.zip` from Notion, Confluence or Obsidian. Two of the seven formats in that list did not exist
 here. Had a reviewer installed it and looked for the PDF option, the rejection would have been the
 worse kind.
 
@@ -290,17 +290,26 @@ submits is never the week that has nothing else in it.
 
 ### What has been submitted, and what the numbers mean
 
-**1.0.0 went to the Chrome Web Store and is in review.** Nothing about that package needs changing
-while it waits: a store version has to increase, and it does not have to be the first number anybody
-would guess.
+One number for the whole product, which is why the extension's versions look like they skip. The
+repository was already at v2.0.0 when `package.json` still said 1.0.0, so the manifest — which
+reads that file — would have shipped every release as 1.0.0 forever. The trade is a jump that
+looks like more than it is; the alternative was two numbering schemes and a conversation about
+which one a bug report means.
 
-The repository is 2.0.0 — `package.json`, which the manifest reads — because the site's own tags
-had reached v2.0.0 while that file still said 1.0.0, so every extension release would have shipped
-as 1.0.0 forever. One number for the whole product is the trade: the extension's first update will
-jump from 1.0.0 to 2.0.0, which looks like more than it is and costs nothing, and the alternative is
-two numbering schemes and a conversation about which one a bug report means.
+| | |
+| --- | --- |
+| **Chrome Web Store** | 1.0.0 rejected 18 September, listing rewritten, and the store shows **1.0.0 published on 21 September**. 2.0.0 was built but never went to Chrome |
+| **Firefox Add-ons** | 2.0.0 submitted 19 September, with the source archive and `BUILD.md` |
 
-**What is in 2.0.0 that 1.0.0 does not have**, from the extension's side, is one fix: a row like
-`39 words · 1 heading` used to arrive as `39words1heading`, because the space between those elements
-comes from the layout and not from the markup. It is worth shipping and not worth hurrying — bundle
-it with the next real change rather than replacing a package under review.
+So the next Chrome package is the first the store will have seen since the rename, and it is
+**2.1.0** — a version above anything either store holds, which is the only rule about the number
+that a store actually enforces.
+
+**What is in it that 1.0.0 does not have** is most of a fortnight, and almost all of it reaches
+the extension through `shared/`: diagrams drawn rather than printed, formulas typeset, code
+coloured, six more pieces of Markdown syntax understood, PowerPoint as an eleventh conversion,
+the pictures inside an export carried into the document, and a document check. From the
+extension's own side: it reads what the screen shows rather than what the markup claims —
+hidden routes, shadow DOM, typed form values, preformatted blocks kept preformatted, a side
+panel that follows a route change rather than only a page load, and a fail-safe that refuses to
+hand back an emptied page.

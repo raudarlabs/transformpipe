@@ -84,7 +84,7 @@ export function AppFooter({
         href: one.path,
         onNavigate: () => onConversionChange(one.id),
       })),
-      // Ten conversions in one list read as a wall; two columns of five read as a menu.
+      // Eleven conversions in one list read as a wall; two columns read as a menu.
       twoLists: true,
     },
     {

@@ -30,7 +30,7 @@ the CLI and the Action name the new domain. Nothing in `server/` carries a domai
 come from the request through `selfOrigin`, which is what made the move a matter of one trusted
 origin and a rebuild.
 
-Upload a file, see exactly what it became, and download it. Ten conversions, each with its own
+Upload a file, see exactly what it became, and download it. Eleven conversions, each with its own
 page and address:
 
 | Conversion | Takes | Produces |
