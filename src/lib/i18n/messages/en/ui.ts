@@ -226,6 +226,8 @@ export const ui: Content['ui'] = {
    */
   'converter.accepts': 'Takes {extensions}, up to 10 MB, converted in your browser.',
   'converter.picker.label': 'Or convert something else',
+  'converter.picker.soon': 'Soon',
+  'converter.picker.soon.title': 'Not here yet — it is on the roadmap',
   'converter.howto': 'New to this format?',
   'converter.blog.eyebrow': 'Blog',
   'converter.blog.title': 'Making Markdown behave',

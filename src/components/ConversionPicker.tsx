@@ -14,6 +14,29 @@ interface ConversionPickerProps {
 }
 
 /**
+ * The formats named in `ROADMAP.md` that are not here yet, shown as blocks nobody can click.
+ *
+ * Two reasons they are worth the space. The grid is five across and there are eleven conversions,
+ * so the last row held one card and four holes, which reads as something that failed to load.
+ * And somebody who arrived with an `.epub` currently learns only that this app does not take one
+ * — which is true today and false in a month, and "not yet" is a far better answer than nothing.
+ *
+ * The ids are the ids those conversions will be given, and the render below drops any entry whose
+ * id has since appeared in `CONVERSIONS`. So a format ships and its "Soon" card disappears in the
+ * same commit, with nobody having to remember this file — which is the only version of a list
+ * like this that does not eventually lie.
+ *
+ * The labels are not translated. They are two proper nouns and an arrow, identical in all five
+ * languages; the badge beside them is the only word here, and that one is in the catalogue.
+ */
+const COMING: { id: string; label: string; extensions: string[] }[] = [
+  { id: 'epub-to-markdown', label: 'EPUB → Markdown', extensions: ['.epub'] },
+  { id: 'odt-to-markdown', label: 'ODT → Markdown', extensions: ['.odt'] },
+  { id: 'rtf-to-markdown', label: 'RTF → Markdown', extensions: ['.rtf'] },
+  { id: 'evernote-to-markdown', label: 'Evernote → Markdown', extensions: ['.enex'] },
+];
+
+/**
  * The conversions, as blocks under the dropzone.
  *
  * They took the place of three cards that praised the product — converted in this browser, several
@@ -44,9 +67,10 @@ export function ConversionPicker({
       </Typography>
 
       {/*
-        * Five tracks at the top width, because there are five conversions and a grid of four
-        * would leave the fifth alone on a row of its own — which reads as a mistake rather than
-        * as the last item. Two on a phone, three in between.
+        * Five tracks at the top width. It was chosen when there were five conversions and a grid
+        * of four would have left the fifth alone on a row — and it still divides, because the
+        * eleven conversions and the four formats below them come to fifteen. Two on a phone,
+        * three in between.
         */}
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {CONVERSIONS.map((one) => {
@@ -108,6 +132,40 @@ export function ConversionPicker({
             </a>
           );
         })}
+
+        {COMING.filter(
+          (soon) => !CONVERSIONS.some((shipped) => shipped.id === soon.id)
+        ).map((soon) => (
+          <div
+            key={soon.id}
+            title={t('converter.picker.soon.title')}
+            className="flex cursor-default flex-col gap-1 rounded-lg border border-dashed border-stroke p-4"
+          >
+            <span className="flex items-center gap-1.5">
+              <Typography
+                variant="span"
+                weight="semibold"
+                textColor="secondary"
+                className="text-sm"
+              >
+                {soon.label}
+              </Typography>
+
+              <Typography
+                variant="span"
+                weight="semibold"
+                textColor="light"
+                className="shrink-0 rounded-full border border-stroke px-1.5 py-px text-xxs uppercase tracking-wide"
+              >
+                {t('converter.picker.soon')}
+              </Typography>
+            </span>
+
+            <Typography variant="span" textColor="light" className="text-xs">
+              {soon.extensions.join(', ')}
+            </Typography>
+          </div>
+        ))}
       </div>
     </div>
   );

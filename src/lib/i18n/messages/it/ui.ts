@@ -68,7 +68,7 @@ export const ui: Content['ui'] = {
   'auth.dialog.back': 'Torna all’accesso',
   'auth.dialog.or': 'oppure',
   'auth.dialog.google': 'Continua con Google',
-  'auth.dialog.aside.lede': 'Non Ã¨ l’account il punto, ma ciÃ² che contiene.',
+  'auth.dialog.aside.lede': 'Non è l’account il punto, ma ciò che contiene.',
   'auth.dialog.aside.history': 'Cronologia',
   'auth.dialog.aside.history.detail': 'ogni documento convertito resta e si riapre',
   'auth.dialog.aside.links': 'Link',
@@ -214,6 +214,8 @@ export const ui: Content['ui'] = {
    */
   'converter.accepts': 'Accetta {extensions}, fino a 10 MB, convertiti nel browser.',
   'converter.picker.label': 'Oppure converti qualcos’altro',
+  'converter.picker.soon': 'Presto',
+  'converter.picker.soon.title': 'Non c’è ancora — è in programma',
   'converter.howto': 'È la prima volta con questo formato?',
   'converter.blog.eyebrow': 'Blog',
   'converter.blog.title': 'Tenere a bada il Markdown',

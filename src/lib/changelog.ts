@@ -92,6 +92,23 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-21',
+    title: 'The formats that are coming say so',
+    body:
+      'The blocks under the dropzone now name what is on the way — EPUB, ODT, RTF and Evernote — '
+      + 'marked as not here yet. Arriving with an .epub and learning only that this does not take '
+      + 'one was a worse answer than "not yet", and the row of empty space beside the eleventh '
+      + 'conversion read as something that had failed to load.',
+  },
+  {
+    date: '2026-09-21',
+    title: 'The German, French, Spanish and Italian sign-in panel reads properly again',
+    body:
+      'The panel added on 19 September went out with its accented characters mangled in four '
+      + 'languages — "lässt" as "lÃ¤sst", and ten more like it. The text was right; the file it '
+      + 'was written into was not.',
+  },
+  {
     date: '2026-09-20',
     title: 'Plain text that looks like markup stays plain text',
     body:
