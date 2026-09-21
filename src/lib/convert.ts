@@ -97,6 +97,16 @@ export async function convertFile(
       };
     }
 
+    case 'evernote-to-markdown': {
+      const { evernoteToMarkdown } = await import('@shared/from-evernote');
+
+      return {
+        markdown: evernoteToMarkdown(await readText(file), renamed(file.name, '')),
+        name: renamed(file.name, '.md'),
+        kind: id,
+      };
+    }
+
     case 'text-to-markdown': {
       const { textToMarkdown } = await import('@shared/from-text');
 

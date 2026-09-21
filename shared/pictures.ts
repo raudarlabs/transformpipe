@@ -230,3 +230,62 @@ export function pictureFinder(
     return bytes ? { bytes, type } : null;
   };
 }
+
+/*
+ * A picture put aside while its document goes through an HTML parser.
+ *
+ * Two importers need this and both learned it the hard way. `htmlToMarkdown` is configured to
+ * discard an `<img>` that carries its own bytes — right for a web page, where a `data:` image is
+ * a tracking pixel or a spacer — so a picture written into the HTML as a data URI simply
+ * vanishes. Turning that option on is the obvious answer and it is the wrong one: measured on a
+ * 3.5 MB Word document, an `<img>` whose `src` is two million characters long did not finish
+ * parsing in nine minutes.
+ *
+ * So the bytes never go near the parser. Each picture is held here under a number, the HTML gets
+ * a twenty-six character marker, and the pictures go back into the Markdown afterwards, by which
+ * point there is nothing left to parse.
+ */
+
+/**
+ * The scheme is invented and that is the point: it has to survive `htmlToMarkdown` untouched, so
+ * it must not look relative, must not look like a `data:` URI — which that converter discards —
+ * and must not be anything a browser would fetch if one ever escaped.
+ */
+const MARK = 'x-transformpipe-picture:';
+
+const PLACED = new RegExp(`!\\[((?:\\\\.|[^\\][])*)\\]\\(${MARK}(\\d+|over)\\)`, 'g');
+
+export interface Held {
+  /** The marker to write in place of a picture, or in place of one too large to carry. */
+  hold(uri: string | null): string;
+  /** The Markdown with every marker replaced, once it is out of the HTML parser. */
+  restore(markdown: string): string;
+}
+
+export function heldPictures(budget: Budget): Held {
+  const kept: string[] = [];
+
+  return {
+    hold: (uri) => {
+      if (!uri || uri.length > PICTURE_BYTES || uri.length > budget.left) return `${MARK}over`;
+
+      budget.left -= uri.length;
+      kept.push(uri);
+
+      return `${MARK}${kept.length - 1}`;
+    },
+
+    restore: (markdown) =>
+      markdown.replace(PLACED, (_, alt: string, at: string) => {
+        /*
+         * A picture too large to carry has nothing to fall back to — there is no file beside the
+         * document to point at, the way there is in an archive — so what is left is the words
+         * somebody wrote about it, which is the rule `notes.ts` already follows for an embed it
+         * cannot bring along.
+         */
+        if (at === 'over') return alt.trim() ? `*${alt.trim()}*` : '';
+
+        return `![${alt}](${kept[Number(at)]})`;
+      }),
+  };
+}

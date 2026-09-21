@@ -762,6 +762,45 @@ export const pages: Content['pages'] = {
         'How to open a rich text file, why a Mac produces one every time you drag text between apps, what is inside it, and how to turn one into Markdown.',
     },
   },
+  'how-to-enex': {
+    label: 'Open an .enex file',
+    title: 'How to open an .enex file',
+    lede: 'It is the only way notes leave Evernote, and almost nothing opens it directly.',
+    sections: [
+      {
+        heading: 'What it is',
+        body: [
+          'An `.enex` is one XML file holding every note you exported: the title, the tags, the dates, and the note itself as ENML — Evernote’s own restricted flavour of XHTML — wrapped inside the XML. Attachments travel in the same file, base64-encoded, linked to the note by the MD5 of their contents rather than by name.',
+        ],
+      },
+      {
+        heading: 'Getting one out of Evernote',
+        body: [
+          'Select the notes, or a whole notebook, then File, Export notes. The desktop app writes `.enex`; the web app does not offer an export at all, so this is a desktop-only operation.',
+          'Export a notebook at a time rather than everything at once. A single file of ten thousand notes is one thing that can go wrong instead of twenty.',
+        ],
+      },
+      {
+        heading: 'What reads one',
+        body: [
+          'Obsidian’s Importer plugin, Notion’s import, Apple Notes, Joplin and Bear all accept `.enex` — because it is the format everybody wrote an importer for when Evernote’s pricing changed. What does not read one is a text editor: open it and you get XML with your notes inside base64 and CDATA.',
+        ],
+      },
+      {
+        heading: 'What to check after any import',
+        body: [
+          'Tags, first. They are how an Evernote library is organised and several importers drop them, at which point ten thousand notes are a pile rather than a library.',
+          'Then attachments. A note that had a PDF or a photograph in it should still say so, and the format links the two by a hash rather than a filename — which is where an importer that took a shortcut shows it.',
+        ],
+      },
+    ],
+    action: 'Convert an .enex file to Markdown',
+    seo: {
+      title: 'How to open an .enex file — TransformPipe',
+      description:
+        'How to export an .enex from Evernote, what is inside one, which apps import it, and what to check afterwards — tags and attachments above all.',
+    },
+  },
   'how-to-zip': {
     label: 'Open an export .zip',
     title: 'How to open a .zip export from Notion, Confluence or Obsidian',

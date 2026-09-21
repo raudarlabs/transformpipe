@@ -16,24 +16,31 @@ interface ConversionPickerProps {
 /**
  * The formats named in `ROADMAP.md` that are not here yet, shown as blocks nobody can click.
  *
- * Two reasons they are worth the space. The grid is five across and there are eleven conversions,
- * so the last row held one card and four holes, which reads as something that failed to load.
- * And somebody who arrived with an `.epub` currently learns only that this app does not take one
- * — which is true today and false in a month, and "not yet" is a far better answer than nothing.
+ * Two reasons they are worth the space. The grid is five across and the conversions rarely land
+ * on a multiple of five, so the last row held holes, which reads as something that failed to
+ * load. And somebody who arrives wanting one of these learns only that this app does not do it
+ * — true today and false in a month, and "not yet" is a far better answer than nothing.
  *
  * The ids are the ids those conversions will be given, and the render below drops any entry whose
  * id has since appeared in `CONVERSIONS`. So a format ships and its "Soon" card disappears in the
  * same commit, with nobody having to remember this file — which is the only version of a list
- * like this that does not eventually lie.
+ * like this that does not eventually lie. The first four entries here were EPUB, ODT, RTF and
+ * Evernote, and all four removed themselves over one day.
+ *
+ * What is left is the direction nobody does well: Markdown going *out*. Ten formats read into it
+ * and almost nothing writes back, so "I have the Markdown, I need it in Confluence" has no good
+ * answer anywhere. The second line is what you get rather than what you drop, because for these
+ * the thing you drop is always the same.
  *
  * The labels are not translated. They are two proper nouns and an arrow, identical in all five
  * languages; the badge beside them is the only word here, and that one is in the catalogue.
  */
-const COMING: { id: string; label: string; extensions: string[] }[] = [
-  { id: 'epub-to-markdown', label: 'EPUB → Markdown', extensions: ['.epub'] },
-  { id: 'odt-to-markdown', label: 'ODT → Markdown', extensions: ['.odt'] },
-  { id: 'rtf-to-markdown', label: 'RTF → Markdown', extensions: ['.rtf'] },
-  { id: 'evernote-to-markdown', label: 'Evernote → Markdown', extensions: ['.enex'] },
+const COMING: { id: string; label: string; note: string }[] = [
+  { id: 'markdown-to-confluence', label: 'Markdown → Confluence', note: 'storage format' },
+  { id: 'markdown-to-jira', label: 'Markdown → Jira', note: 'wiki markup' },
+  { id: 'markdown-to-slack', label: 'Markdown → Slack', note: 'mrkdwn' },
+  { id: 'markdown-to-epub', label: 'Markdown → EPUB', note: '.epub' },
+  { id: 'markdown-to-word', label: 'Markdown → Word', note: '.docx, styled' },
 ];
 
 /**
@@ -69,7 +76,7 @@ export function ConversionPicker({
       {/*
         * Five tracks at the top width. It was chosen when there were five conversions and a grid
         * of four would have left the fifth alone on a row — and it still divides, because the
-        * eleven conversions and the four formats below them come to fifteen. Two on a phone,
+        * fifteen conversions and the five formats below them come to twenty. Two on a phone,
         * three in between.
         */}
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
@@ -162,7 +169,7 @@ export function ConversionPicker({
             </span>
 
             <Typography variant="span" textColor="light" className="text-xs">
-              {soon.extensions.join(', ')}
+              {soon.note}
             </Typography>
           </div>
         ))}

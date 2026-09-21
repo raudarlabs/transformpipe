@@ -93,6 +93,133 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'Evernote, tags and all',
+    slug: 'evernote-to-markdown',
+    body:
+      'An .enex export becomes one document with a note per section — and the tags come with it. '
+      + 'They are how an Evernote library is organised, the reason ten thousand notes are '
+      + 'findable at all, and several importers drop them without saying so. Checkboxes become a '
+      + 'task list, and a picture is matched to its note by the hash the format links them with.',
+    detail: {
+      en: {
+        description:
+          'An Evernote .enex export converts to one Markdown document: a note per section, with tags, dates, checkboxes and pictures kept.',
+        keywords:
+          'evernote to markdown, enex to markdown, export evernote notes, evernote alternative migration, enex converter',
+        body: `The fifteenth conversion, and the one with a queue of people at the door.
+
+## Tags are the point
+
+An Evernote library is not organised by folders. It is organised by tags, and that is how somebody with ten thousand notes finds one — so an import that quietly drops them turns a library into a pile. They come across here as a line under each note's title, beside the date it was created.
+
+## What the format actually is
+
+One XML file holding every note, with each note's content as ENML — Evernote's own restricted XHTML — wrapped in a CDATA section so that one XML document can carry another. Two parsers deep before there is a word to convert.
+
+Three tags in it are Evernote's own. A checkbox becomes a Markdown task list. Encrypted text says that it is encrypted rather than vanishing. And a picture is the interesting one: a note does not name its pictures, it names the **MD5 of their contents**, with the bytes further down the file. There is no id and no filename linking the two, so reading the format means computing the hash — which is why this release added an MD5 to a codebase that had no use for one.
+
+## What comes through
+
+Bold, italic, links, lists, tables, checkboxes, pictures and non-picture attachments named where they were. The pictures ride inside the document, as everything else here does, so a converted notebook is one file with nothing beside it.
+
+It runs in the browser. Nothing is uploaded.`,
+      },
+      de: {
+        description:
+          'Ein Evernote-.enex-Export wird zu einem Markdown-Dokument: eine Notiz je Abschnitt, mit Schlagwörtern, Daten, Kästchen und Bildern.',
+        keywords:
+          'evernote in markdown, enex in markdown, evernote notizen exportieren, evernote alternative umzug, enex konverter',
+        body: `Die fünfzehnte Konvertierung, und die mit einer Warteschlange vor der Tür.
+
+## Die Schlagwörter sind der Punkt
+
+Eine Evernote-Sammlung ist nicht nach Ordnern organisiert, sondern nach Schlagwörtern — und genau so findet jemand mit zehntausend Notizen eine davon wieder. Ein Import, der sie stillschweigend fallen lässt, macht aus einer Sammlung einen Haufen. Hier stehen sie in einer Zeile unter dem Titel jeder Notiz, neben dem Datum ihrer Erstellung.
+
+## Was das Format tatsächlich ist
+
+Eine XML-Datei mit allen Notizen, und der Inhalt jeder Notiz als ENML — Evernotes eigene eingeschränkte XHTML-Variante —, eingewickelt in einen CDATA-Abschnitt, damit ein XML-Dokument ein zweites tragen kann. Zwei Parser tief, bevor es ein Wort zu konvertieren gibt.
+
+Drei Tags darin gehören Evernote allein. Ein Kästchen wird eine Markdown-Aufgabenliste. Verschlüsselter Text sagt, dass er verschlüsselt ist, statt zu verschwinden. Und die Bilder sind der interessante Fall: eine Notiz benennt ihre Bilder nicht, sie benennt den **MD5 ihres Inhalts**, während die Bytes weiter unten in der Datei stehen. Es gibt keine ID und keinen Dateinamen, der beides verbindet — das Format zu lesen heißt also, den Hash zu berechnen. Deshalb hat dieses Release einer Codebasis ein MD5 hinzugefügt, die keines brauchte.
+
+## Was ankommt
+
+Fett, kursiv, Links, Listen, Tabellen, Kästchen, Bilder und benannte Anhänge, die keine Bilder sind. Die Bilder reisen im Dokument mit, wie alles andere hier, sodass ein konvertiertes Notizbuch eine einzige Datei ist, ohne etwas daneben.
+
+Läuft im Browser. Nichts wird hochgeladen.`,
+      },
+      fr: {
+        description:
+          'Un export Evernote .enex devient un document Markdown : une note par section, avec étiquettes, dates, cases à cocher et images.',
+        keywords:
+          'evernote vers markdown, enex vers markdown, exporter les notes evernote, migration evernote, convertisseur enex',
+        body: `La quinzième conversion, et celle qui a une file d’attente à la porte.
+
+## Les étiquettes sont l’essentiel
+
+Une bibliothèque Evernote n’est pas organisée en dossiers. Elle est organisée en étiquettes, et c’est ainsi que quelqu’un avec dix mille notes en retrouve une — donc un import qui les laisse tomber en silence transforme une bibliothèque en tas. Elles arrivent ici sur une ligne sous le titre de chaque note, à côté de sa date de création.
+
+## Ce qu’est réellement le format
+
+Un seul fichier XML contenant toutes les notes, le contenu de chacune en ENML — la variante restreinte de XHTML propre à Evernote — enveloppé dans une section CDATA pour qu’un document XML puisse en porter un autre. Deux analyseurs de profondeur avant d’avoir un mot à convertir.
+
+Trois balises y appartiennent en propre à Evernote. Une case à cocher devient une liste de tâches Markdown. Un texte chiffré dit qu’il est chiffré plutôt que de disparaître. Et les images sont le cas intéressant : une note ne nomme pas ses images, elle nomme l’**empreinte MD5 de leur contenu**, les octets se trouvant plus bas dans le fichier. Aucun identifiant, aucun nom de fichier ne relie les deux — lire le format, c’est donc calculer l’empreinte. C’est pourquoi cette version ajoute un MD5 à une base de code qui n’en avait aucun usage.
+
+## Ce qui passe
+
+Gras, italique, liens, listes, tableaux, cases, images et pièces jointes non images nommées là où elles étaient. Les images voyagent dans le document, comme tout le reste ici, si bien qu’un carnet converti est un seul fichier, sans rien à côté.
+
+Cela tourne dans le navigateur. Rien n’est téléversé.`,
+      },
+      es: {
+        description:
+          'Una exportación .enex de Evernote se convierte en un documento Markdown: una nota por sección, con etiquetas, fechas, casillas e imágenes.',
+        keywords:
+          'evernote a markdown, enex a markdown, exportar notas de evernote, migrar desde evernote, conversor enex',
+        body: `La decimoquinta conversión, y la que tiene cola en la puerta.
+
+## Las etiquetas son lo importante
+
+Una biblioteca de Evernote no se organiza por carpetas. Se organiza por etiquetas, y así es como alguien con diez mil notas encuentra una — de modo que una importación que las descarta en silencio convierte una biblioteca en un montón. Aquí llegan en una línea bajo el título de cada nota, junto a la fecha en que se creó.
+
+## Qué es el formato en realidad
+
+Un único archivo XML con todas las notas, y el contenido de cada una en ENML — la variante restringida de XHTML propia de Evernote — envuelto en una sección CDATA para que un documento XML pueda transportar otro. Dos analizadores de profundidad antes de que haya una palabra que convertir.
+
+Tres etiquetas dentro son propias de Evernote. Una casilla pasa a ser una lista de tareas de Markdown. El texto cifrado dice que está cifrado en vez de desaparecer. Y las imágenes son el caso interesante: una nota no nombra sus imágenes, nombra el **MD5 de su contenido**, con los bytes más abajo en el archivo. No hay identificador ni nombre de archivo que enlace ambos, así que leer el formato significa calcular el hash. Por eso esta versión añade un MD5 a una base de código que no lo necesitaba para nada.
+
+## Qué pasa entero
+
+Negrita, cursiva, enlaces, listas, tablas, casillas, imágenes y adjuntos que no son imágenes, nombrados donde estaban. Las imágenes viajan dentro del documento, como todo lo demás aquí, así que una libreta convertida es un solo archivo sin nada al lado.
+
+Funciona en el navegador. No se sube nada.`,
+      },
+      it: {
+        description:
+          'Un export .enex di Evernote diventa un documento Markdown: una nota per sezione, con tag, date, caselle e immagini.',
+        keywords:
+          'evernote in markdown, enex in markdown, esportare note evernote, migrare da evernote, convertitore enex',
+        body: `La quindicesima conversione, e quella con la fila alla porta.
+
+## I tag sono il punto
+
+Una raccolta Evernote non è organizzata in cartelle. È organizzata in tag, ed è così che chi ha diecimila note ne ritrova una — perciò un’importazione che li lascia cadere in silenzio trasforma una raccolta in un mucchio. Qui arrivano su una riga sotto il titolo di ogni nota, accanto alla data in cui è stata creata.
+
+## Che cos’è davvero il formato
+
+Un unico file XML con tutte le note, e il contenuto di ciascuna in ENML — la variante ristretta di XHTML propria di Evernote — avvolto in una sezione CDATA perché un documento XML possa trasportarne un altro. Due parser di profondità prima che ci sia una parola da convertire.
+
+Tre tag lì dentro sono solo di Evernote. Una casella diventa un elenco di attività Markdown. Il testo cifrato dice di essere cifrato invece di sparire. E le immagini sono il caso interessante: una nota non nomina le proprie immagini, nomina l’**MD5 del loro contenuto**, con i byte più in basso nel file. Non c’è identificatore né nome di file che colleghi i due, quindi leggere il formato significa calcolare l’hash. Ecco perché questa versione aggiunge un MD5 a una base di codice che non ne aveva alcun uso.
+
+## Che cosa arriva
+
+Grassetto, corsivo, collegamenti, elenchi, tabelle, caselle, immagini e allegati non immagine nominati dov’erano. Le immagini viaggiano dentro il documento, come tutto il resto qui, così un taccuino convertito è un unico file senza nulla accanto.
+
+Gira nel browser. Non viene caricato nulla.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-21',
     title: 'LibreOffice and rich text, both read',
     slug: 'odt-and-rtf-to-markdown',
     body:

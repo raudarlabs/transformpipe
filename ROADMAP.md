@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 21 September 2026.** Next up: **Evernote → Markdown**.
+**Updated 21 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,18 +14,16 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **Evernote → Markdown** — an `.enex` export, notes merged
-      · the one format here with a user base actively looking for the door
+- [ ] **Markdown → Confluence storage format**
+      · XHTML with Confluence's own macro elements. A renderer, not a filter
 
 ## Next, in order
 
 ### Formats, going out
 
-The half nobody does well: thirteen conversions read *into* Markdown and almost nothing writes back out
+The half nobody does well: fourteen conversions read *into* Markdown and almost nothing writes back out
 of it. "I have the Markdown, I need it in Confluence" still has no good answer on the internet.
 
-- [ ] **Markdown → Confluence storage format**
-      · XHTML with Confluence's own macro elements. A renderer, not a filter
 - [ ] **Markdown → Jira wiki markup**, and **→ Slack mrkdwn**
       · line-level transforms of the token stream; they share a week
 - [ ] **Markdown → EPUB**
@@ -103,6 +101,10 @@ says otherwise.
 
 ### 21 September
 
+- [x] **Evernote → Markdown** — the fifteenth, and the tags come with it, because tags are how
+      an Evernote library is organised. A note addresses its pictures by the MD5 of their bytes
+      and by nothing else, so reading the format meant adding an MD5 to a codebase with no use
+      for one
 - [x] **ODT and RTF → Markdown** — the thirteenth and fourteenth. OpenDocument states what
       things are, so nothing is guessed; RTF states only what somebody did, so a heading is
       recognised from an outline level where there is one and from bold-and-larger where there

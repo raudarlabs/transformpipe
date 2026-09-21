@@ -183,6 +183,19 @@ export const conversions: Content['conversions'] = {
         'Convierte un archivo .rtf en Markdown: negrita, cursiva, enlaces, listas y tablas conservados, y encabezados recuperados. Convierte en tu navegador; nada se sube.',
     },
   },
+  'evernote-to-markdown': {
+    label: 'Evernote → Markdown',
+    short: 'ENEX → MD',
+    title: 'Una exportación de Evernote a Markdown',
+    blurb:
+      'Sube un .enex y obtén cada nota como una sección de un solo documento — con sus etiquetas, su fecha, sus casillas y sus imágenes.',
+    hint: 'Sube un .enex de Archivo, Exportar notas. Las etiquetas van bajo el título de cada nota, las casillas pasan a ser una lista de tareas, y una imagen se empareja con su nota por el hash con el que el formato las enlaza.',
+    seo: {
+      title: 'Convertir ENEX de Evernote a Markdown — TransformPipe',
+      description:
+        'Convierte una exportación .enex de Evernote en un documento Markdown: cada nota una sección, con etiquetas, fechas, casillas e imágenes. Convierte en tu navegador.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabla Markdown',
     short: 'XLSX → MD',

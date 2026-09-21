@@ -130,6 +130,8 @@ const KIND_BY_EXTENSION = {
   '.epub': 'epub-to-markdown',
   '.odt': 'odt-to-markdown',
   '.rtf': 'rtf-to-markdown',
+  // An .enex is XML, so unlike the rest of these the server can read it straight from the body.
+  '.enex': 'evernote-to-markdown',
 };
 
 function kindFor(name) {

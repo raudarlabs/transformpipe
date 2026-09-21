@@ -756,6 +756,45 @@ export const pages: Content['pages'] = {
         'Comment ouvrir un fichier de texte enrichi, pourquoi un Mac en produit dès qu’on déplace du texte, ce qu’il contient, et comment en faire du Markdown.',
     },
   },
+  'how-to-enex': {
+    label: 'Ouvrir un fichier .enex',
+    title: 'Comment ouvrir un fichier .enex',
+    lede: 'C’est la seule sortie des notes d’Evernote, et presque rien ne l’ouvre directement.',
+    sections: [
+      {
+        heading: 'Ce que c’est',
+        body: [
+          'Un `.enex` est un seul fichier XML contenant toutes les notes exportées : le titre, les étiquettes, les dates, et la note elle-même en ENML — la variante restreinte de XHTML propre à Evernote — enchâssée dans le XML. Les pièces jointes voyagent dans le même fichier, encodées en base64, reliées à la note par l’empreinte MD5 de leur contenu et non par un nom.',
+        ],
+      },
+      {
+        heading: 'Comment en obtenir un',
+        body: [
+          'Sélectionnez les notes, ou un carnet entier, puis Fichier, Exporter les notes. L’application de bureau écrit du `.enex` ; la version web ne propose aucun export, c’est donc une opération de bureau uniquement.',
+          'Exportez un carnet à la fois plutôt que tout d’un coup. Un fichier unique de dix mille notes, c’est une chose qui peut mal tourner au lieu de vingt.',
+        ],
+      },
+      {
+        heading: 'Ce qui le lit',
+        body: [
+          'Le greffon Importer d’Obsidian, l’import de Notion, Notes d’Apple, Joplin et Bear acceptent tous le `.enex` — parce que c’est le format pour lequel tout le monde a écrit un importateur quand les tarifs d’Evernote ont changé. Ce qui ne le lit pas, c’est un éditeur de texte : ouvrez-le et vous avez du XML avec vos notes en base64 et en CDATA.',
+        ],
+      },
+      {
+        heading: 'Ce qu’il faut vérifier après un import',
+        body: [
+          'Les étiquettes d’abord. C’est l’organisation même d’une bibliothèque Evernote, et plusieurs importateurs les laissent tomber — dix mille notes deviennent alors un tas et non une bibliothèque.',
+          'Puis les pièces jointes. Une note qui contenait un PDF ou une photographie devrait encore le dire ; le format relie les deux par une empreinte et non par un nom de fichier, et c’est précisément là qu’un importateur ayant pris un raccourci se trahit.',
+        ],
+      },
+    ],
+    action: 'Convertir un .enex en Markdown',
+    seo: {
+      title: 'Comment ouvrir un fichier .enex — TransformPipe',
+      description:
+        'Comment exporter un .enex depuis Evernote, ce qu’il contient, quelles applications l’importent, et quoi vérifier ensuite — étiquettes et pièces jointes avant tout.',
+    },
+  },
   'how-to-zip': {
     label: 'Ouvrir un export .zip',
     title: 'Comment ouvrir un export .zip de Notion, Confluence ou Obsidian',

@@ -563,6 +563,19 @@ v1.post('/documents', async (c) => {
     }
   }
 
+  if (kind === 'evernote-to-markdown') {
+    try {
+      const { evernoteToMarkdown } = await import('../shared/from-evernote.js');
+
+      markdown = evernoteToMarkdown(source, (name || 'notes').replace(/\.[^.]+$/, ''));
+    } catch (cause) {
+      return c.json(
+        { error: cause instanceof Error ? cause.message : 'That is not a readable .enex' },
+        400
+      );
+    }
+  }
+
   if (kind === 'text-to-markdown') {
     const { textToMarkdown } = await import('../shared/from-text.js');
 

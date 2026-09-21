@@ -1,5 +1,4 @@
-import { PICTURE_BYTES } from './limits.js';
-import type { Budget } from './pictures.js';
+import { heldPictures, type Budget } from './pictures.js';
 
 /*
  * A Word file's own pictures, kept — without putting a megabyte of base64 through an HTML parser.
@@ -30,15 +29,6 @@ interface WordImage {
   readAsBase64String(): Promise<string>;
 }
 
-/**
- * The scheme is invented and that is the point: it has to survive `htmlToMarkdown` untouched, so
- * it must not look relative, must not look like a `data:` URI — which that converter is set to
- * discard — and must not be anything a browser would try to fetch if one ever escaped.
- */
-const MARK = 'x-transformpipe-picture:';
-
-const PLACED = new RegExp(`!\\[([^\\]]*)\\]\\(${MARK}(\\d+|over)\\)`, 'g');
-
 export interface WordPictures {
   /** Give this to `mammoth.images.imgElement`. */
   read(image: WordImage): Promise<{ src: string }>;
@@ -47,33 +37,15 @@ export interface WordPictures {
 }
 
 export function wordPictures(budget: Budget): WordPictures {
-  const kept: string[] = [];
+  const held = heldPictures(budget);
 
   return {
     read: async (image) => {
       const base64 = await image.readAsBase64String();
 
-      if (base64.length > PICTURE_BYTES || base64.length > budget.left) {
-        return { src: `${MARK}over` };
-      }
-
-      budget.left -= base64.length;
-      kept.push(`data:${image.contentType || 'image/png'};base64,${base64}`);
-
-      return { src: `${MARK}${kept.length - 1}` };
+      return { src: held.hold(`data:${image.contentType || 'image/png'};base64,${base64}`) };
     },
 
-    restore: (markdown) =>
-      markdown.replace(PLACED, (_, alt: string, at: string) => {
-        /*
-         * A picture too large to carry has nothing to fall back to — there is no file beside the
-         * document to point at, the way there is in an archive — so what is left is the words
-         * somebody wrote about it, which is the rule `notes.ts` already follows for an embed it
-         * cannot bring along.
-         */
-        if (at === 'over') return alt.trim() ? `*${alt.trim()}*` : '';
-
-        return `![${alt}](${kept[Number(at)]})`;
-      }),
+    restore: held.restore,
   };
 }

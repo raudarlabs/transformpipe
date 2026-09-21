@@ -183,6 +183,19 @@ export const conversions: Content['conversions'] = {
         'Turn a rich text .rtf file into Markdown: bold, italic, links, lists and tables kept, and headings recovered. Converts in your browser; nothing is uploaded.',
     },
   },
+  'evernote-to-markdown': {
+    label: 'Evernote → Markdown',
+    short: 'ENEX → MD',
+    title: 'An Evernote export to Markdown',
+    blurb:
+      'Upload an .enex and get every note as a section of one document — with its tags, its date, its checkboxes and its pictures.',
+    hint: 'Upload an .enex from File, Export notes. Tags come across under each note’s title, checkboxes become a task list, and a picture is matched to its note by the hash the format links them with.',
+    seo: {
+      title: 'Evernote ENEX to Markdown converter — TransformPipe',
+      description:
+        'Turn an Evernote .enex export into one Markdown document: every note a section, with tags, dates, checkboxes and pictures kept. Converts in your browser.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown table',
     short: 'XLSX → MD',

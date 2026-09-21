@@ -185,6 +185,19 @@ export const conversions: Content['conversions'] = {
         'Eine Rich-Text-.rtf in Markdown umwandeln: fett, kursiv, Links, Listen und Tabellen bleiben, Überschriften werden erkannt. Läuft im Browser; nichts wird hochgeladen.',
     },
   },
+  'evernote-to-markdown': {
+    label: 'Evernote → Markdown',
+    short: 'ENEX → MD',
+    title: 'Ein Evernote-Export in Markdown',
+    blurb:
+      'Eine .enex hochladen und jede Notiz als Abschnitt eines einzigen Dokuments erhalten — mit ihren Schlagwörtern, ihrem Datum, ihren Kästchen und ihren Bildern.',
+    hint: 'Eine .enex aus Datei, Notizen exportieren hochladen. Schlagwörter stehen unter dem Titel jeder Notiz, Kästchen werden eine Aufgabenliste, und ein Bild wird über den Hash zugeordnet, mit dem das Format die beiden verbindet.',
+    seo: {
+      title: 'Evernote-ENEX in Markdown umwandeln — TransformPipe',
+      description:
+        'Einen Evernote-.enex-Export in ein Markdown-Dokument umwandeln: jede Notiz ein Abschnitt, mit Schlagwörtern, Daten, Kästchen und Bildern. Läuft im Browser.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown-Tabelle',
     short: 'XLSX → MD',

@@ -34,7 +34,8 @@ export type ConversionId =
   | 'powerpoint-to-markdown'
   | 'epub-to-markdown'
   | 'odt-to-markdown'
-  | 'rtf-to-markdown';
+  | 'rtf-to-markdown'
+  | 'evernote-to-markdown';
 
 export interface Conversion {
   id: ConversionId;
@@ -132,6 +133,12 @@ export const CONVERSIONS: Conversion[] = [
     to: 'markdown',
     path: '/rtf-to-markdown',
     extensions: ['.rtf'],
+  },
+  {
+    id: 'evernote-to-markdown',
+    to: 'markdown',
+    path: '/evernote-to-markdown',
+    extensions: ['.enex'],
   },
   {
     id: 'excel-to-markdown',

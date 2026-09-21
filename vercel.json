@@ -140,6 +140,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/evernote-to-markdown",
+      "destination": "/index.html"
+    },
+    {
       "source": "/how-to/:page",
       "destination": "/index.html"
     },

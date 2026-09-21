@@ -181,6 +181,19 @@ export const conversions: Content['conversions'] = {
         'Convertir un fichier .rtf en Markdown : gras, italique, liens, listes et tableaux conservés, titres retrouvés. Conversion locale, rien n’est téléversé.',
     },
   },
+  'evernote-to-markdown': {
+    label: 'Evernote → Markdown',
+    short: 'ENEX → MD',
+    title: 'Un export Evernote vers Markdown',
+    blurb:
+      'Déposez un .enex et obtenez chaque note comme section d’un seul document — avec ses étiquettes, sa date, ses cases à cocher et ses images.',
+    hint: 'Déposez un .enex issu de Fichier, Exporter les notes. Les étiquettes suivent sous le titre de chaque note, les cases deviennent une liste de tâches, et une image est reliée à sa note par l’empreinte que le format utilise pour les associer.',
+    seo: {
+      title: 'Convertir un ENEX Evernote en Markdown — TransformPipe',
+      description:
+        'Convertir un export Evernote .enex en un document Markdown : chaque note une section, étiquettes, dates, cases et images conservées. Conversion locale.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tableau Markdown',
     short: 'XLSX → MD',
