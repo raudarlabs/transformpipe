@@ -1,6 +1,7 @@
 import { CONVERSIONS, type ConversionId } from '@shared/conversions';
 import { Logo } from '@/components/Logo';
 import { useI18n, useT } from '@/lib/i18n/context';
+import { boundArrow } from '@/lib/labels';
 import { pagesIn, REPO_URL, STATIC_PAGES, type StaticPageId } from '@/lib/pages';
 import type { Destination } from '@/lib/route';
 import {
@@ -80,7 +81,7 @@ export function AppFooter({
     {
       heading: t('footer.converter'),
       links: CONVERSIONS.map((one) => ({
-        label: content.conversions[one.id].label,
+        label: boundArrow(content.conversions[one.id].label),
         href: one.path,
         onNavigate: () => onConversionChange(one.id),
       })),

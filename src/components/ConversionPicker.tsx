@@ -4,6 +4,8 @@ import {
   type ConversionId,
 } from '@shared/conversions';
 import { useI18n, useT } from '@/lib/i18n/context';
+import { boundArrow } from '@/lib/labels';
+
 import { Typography } from '@/ui/components/Typography';
 import { cn } from '@/ui/lib/utils';
 
@@ -112,20 +114,28 @@ export function ConversionPicker({
                   : 'border-stroke bg-surface-card hover:border-brand-tertiary'
               )}
             >
-              <span className="flex items-center gap-1.5">
+              {/*
+                * Two lines of room whether or not the second is used.
+                *
+                * A grid row is as tall as its tallest cell, so one label that wraps used to make
+                * a whole row of five taller than the row under it — which is the thing somebody
+                * actually notices, more than the wrap itself. Reserving the space costs one line
+                * of white in the short cards and keeps every row level.
+                */}
+              <span className="flex min-h-[2.5rem] items-start gap-1.5">
                 <Typography
                   variant="span"
                   weight="semibold"
                   textColor={isCurrent ? 'accent' : 'primary'}
                   className="text-sm"
                 >
-                  {content.conversions[one.id].label}
+                  {boundArrow(content.conversions[one.id].label)}
                 </Typography>
 
                 {isCurrent ? (
-                  <Check className="size-3.5 shrink-0 text-brand-tertiary" />
+                  <Check className="mt-1 size-3.5 shrink-0 text-brand-tertiary" />
                 ) : (
-                  <ArrowRight className="size-3.5 shrink-0 text-ink-inactive transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="mt-1 size-3.5 shrink-0 text-ink-inactive transition-transform group-hover:translate-x-0.5" />
                 )}
               </span>
 
@@ -148,14 +158,25 @@ export function ConversionPicker({
             title={t('converter.picker.soon.title')}
             className="flex cursor-default flex-col gap-1 rounded-lg border border-dashed border-stroke p-4"
           >
-            <span className="flex items-center gap-1.5">
+            {/*
+              * The badge sits under the label rather than beside it. Beside it, it took thirty
+              * pixels off the widest line in the card and wrapped every one of these — including
+              * `Markdown → Jira`, which is fifteen characters.
+              */}
+            <span className="flex min-h-[2.5rem] items-start">
               <Typography
                 variant="span"
                 weight="semibold"
                 textColor="secondary"
                 className="text-sm"
               >
-                {soon.label}
+                {boundArrow(soon.label)}
+              </Typography>
+            </span>
+
+            <span className="flex items-center gap-1.5">
+              <Typography variant="span" textColor="light" className="text-xs">
+                {soon.note}
               </Typography>
 
               <Typography
@@ -167,10 +188,6 @@ export function ConversionPicker({
                 {t('converter.picker.soon')}
               </Typography>
             </span>
-
-            <Typography variant="span" textColor="light" className="text-xs">
-              {soon.note}
-            </Typography>
           </div>
         ))}
       </div>

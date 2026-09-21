@@ -93,6 +93,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'A conversion’s name no longer breaks after its arrow',
+    body:
+      'The blocks under the dropzone, and the list of conversions in the footer, put the arrow at '
+      + 'the end of one line and what it pointed at on the next. The arrow is bound to its word '
+      + 'now, so a name that has to wrap wraps in front of it; the cards keep room for a second '
+      + 'line so a row stays level either way; and the “Soon” badge moved off the name’s line, '
+      + 'where it had been taking a third of the width.',
+  },
+  {
+    date: '2026-09-21',
     title: 'An assistant can convert three more things',
     body:
       'The connector offered HTML, CSV, TSV and JSON, and had done since before plain text '

@@ -130,6 +130,15 @@ export function assertCatalogueShapes(): void {
    * one line and the Italian one (25) does not. Narrower windows wrap sooner, which is what the
    * layout is for; this is about the width where the grid is five across.
    *
+   * It is a coarse net and it is worth saying why, because it let `OpenDocument → Markdown` (23)
+   * through and that one wraps: a count of characters is not a width. `tabella` is seven narrow
+   * letters and `OpenDocument` is twelve wide ones, and the card cares about the second thing.
+   * Measuring properly would mean rendering the text in the real font at build time, which the
+   * cover script already does with a headless browser and which is a great deal of machinery for
+   * a label. So the picker no longer depends on the answer: it reserves two lines for every
+   * label and binds the arrow to the word after it, which makes a wrap tidy rather than wrong,
+   * and this stays as the cap that keeps anybody from writing a sentence in there.
+   *
    * Checked for English too, because the same card renders it.
    */
   const LABEL_LIMIT = 24;

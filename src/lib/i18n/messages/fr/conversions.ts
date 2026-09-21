@@ -156,7 +156,7 @@ export const conversions: Content['conversions'] = {
     },
   },
   'odt-to-markdown': {
-    label: 'OpenDocument → Markdown',
+    label: 'ODT → Markdown',
     short: 'ODT → MD',
     title: 'Un fichier OpenDocument vers Markdown',
     blurb:
