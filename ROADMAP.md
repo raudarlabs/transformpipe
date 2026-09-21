@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 20 September 2026.** Next up: **EPUB → Markdown**.
+**Updated 21 September 2026.** Next up: **EPUB → Markdown**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -18,6 +18,21 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
       · zip plus XHTML, and `htmlToMarkdown()` exists
 
 ## Next, in order
+
+### What comes out of an export
+
+First in this list rather than further down it, because it is the only section here that makes
+conversions already shipped work properly instead of adding another one beside them.
+
+- [ ] **Pictures survive an export** — images in a Notion, Confluence, Obsidian or PowerPoint
+      archive embedded in the document, and Word's kept rather than dropped
+      · the first complaint in both ecosystems, and `keepDataImages: false` in `from-html.ts`
+      means mammoth already hands us every Word image and we delete it
+      · embedded, not uploaded: every conversion page promises the file stays in the browser, so
+      blob storage is for an explicit save into an account and nothing else
+- [ ] **What survives an export, and what does not** — one comparison page per source
+      · content, not code: a Notion database already comes out as a Markdown table and nobody
+      has been told
 
 ### Formats, going in
 
@@ -160,7 +175,6 @@ Sized to drop into a gap without planning, and none depends on anything above.
   numbers are in the database and nobody can see them
 - **Export everything** — every document as one zip. Small, and it makes trusting an account cheap
 - **Edit in place** — change the Markdown on the page and save it as the next version
-- **Assets out** — every image in a converted document, as a zip beside it
 - **Markdown → AsciiDoc and reStructuredText**, for docs teams migrating between generators
 - **Sign in with GitHub** — one provider on an existing flow, and it reads differently once there
   is a GitHub App in the Marketplace
@@ -186,3 +200,8 @@ Sized to drop into a gap without planning, and none depends on anything above.
   sits.
 - This file is updated in the commit that ships the thing, not afterwards. A roadmap that records
   what came of it is the only kind anybody keeps believing.
+- **PDF → Markdown is not coming.** Written down so it is not proposed a third time: reading a PDF
+  acceptably means vision models and OCR — column order, reading order, tables, formulas — which
+  means a server, and a server means the one thing that makes this different, that the file never
+  leaves the browser, is gone. It is also the most crowded corner of the market. PDF stays where it
+  already is, on the way out.
