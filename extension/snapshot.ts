@@ -261,6 +261,24 @@ export async function snapshot(
   }
 
   /*
+   * The page's `<style>` elements are paired with the copy's before anything is inserted.
+   *
+   * Both lists are taken here, above the link pass, and that is the whole of the fix for a bug
+   * that made a saved page render with no styling at all. The pairing is by position — the nth
+   * `<style>` in the copy is the nth in the document — and the link pass below replaces every
+   * `<link rel=stylesheet>` with a *new* `<style>`. Ask the copy for its styles after that and
+   * the list has grown: position 6 in the copy is now an inlined stylesheet while position 6 in
+   * the document is still the sixth `<style>` the page wrote, and the loop overwrites the first
+   * with the second.
+   *
+   * On mermaid.ai that meant every one of the site's stylesheets was replaced by the CSS of a
+   * Mermaid diagram — 1.6 MB of `#mermaid-20 { … }` and not one rule that matched anything on
+   * the page. `querySelectorAll` returns a static list, so taking both now keeps them aligned.
+   */
+  const liveStyles = [...document.querySelectorAll('style')];
+  const copiedStyles = [...copy.querySelectorAll('style')];
+
+  /*
    * Stylesheets, in the order the document has them.
    *
    * `cssRules` is read first because it is already parsed and already resolved; a cross-origin
@@ -324,10 +342,8 @@ export async function snapshot(
   /*
    * The page's own `<style>` elements: same two passes, and the live one beside each is what has
    * the parsed rules. A framework's styles arrive this way as often as they arrive as a file.
+   * Both lists were taken above, before the link pass could add to either.
    */
-  const liveStyles = [...document.querySelectorAll('style')];
-  const copiedStyles = [...copy.querySelectorAll('style')];
-
   for (let index = 0; index < copiedStyles.length; index++) {
     const style = copiedStyles[index];
     const sheet = liveStyles[index]?.sheet;

@@ -93,6 +93,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'A saved page keeps the site’s own stylesheets',
+    body:
+      'Saving a page as it looks could produce a file with none of the site’s styling in it — the '
+      + 'text and the pictures all there, laid out as though the stylesheet had never existed. '
+      + 'Every linked stylesheet was being inlined correctly and then overwritten, one by one, '
+      + 'with the contents of an unrelated `<style>` from elsewhere in the page.',
+  },
+  {
+    date: '2026-09-21',
     title: 'Three things that only went wrong on a phone',
     body:
       'Reading a document full screen did nothing at all on an iPhone — Safari has no such API '
