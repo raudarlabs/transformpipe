@@ -84,6 +84,7 @@ Pandoc est un convertisseur de documents en ligne de commande écrit en Haskell,
 - `--template` et les filtres Lua pour réécrire le document en cours de conversion
 - `--sandbox` restreint l’accès au système de fichiers lors de la conversion d’un fichier auquel vous ne faites pas confiance
 - `--reference-doc` transporte une mise en forme Word dans la sortie `.docx`
+- La liste des formats est asymétrique : il lit l'[EPUB](/blog/convert-epub-to-markdown) mais écrit le PowerPoint sans le lire, donc [une présentation demande une autre voie](/blog/convert-powerpoint-to-markdown)
 
 **Pour qui ?** Quiconque convertit plus d’une fois : un build de documentation, une chaîne de production de manuscrit, un processus de publication. Pour un seul fichier et une personne qui l’attend, Pandoc en fait plus que la tâche ne demande, et [les options plus légères méritent d’être connues](/blog/pandoc-alternatives-for-markdown-to-html) avant d’installer un binaire Haskell.
 
