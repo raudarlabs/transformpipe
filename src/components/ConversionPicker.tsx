@@ -76,12 +76,16 @@ export function ConversionPicker({
       </Typography>
 
       {/*
-        * Five tracks at the top width. It was chosen when there were five conversions and a grid
-        * of four would have left the fifth alone on a row — and it still divides, because the
-        * fifteen conversions and the five formats below them come to twenty. Two on a phone,
-        * three in between.
+        * Five tracks, but not until there is room for five.
+        *
+        * The fifth column used to arrive at `lg`, which is 1024px — and measured there, ten of
+        * the twenty labels wrapped, because a card 186px wide holds about fifteen characters and
+        * half these names are longer. At four columns, on the same screen, none of them wrap.
+        *
+        * So the fifth column waits for `xl`. Twenty cards divide by four and by five, so neither
+        * step leaves a row with holes in it.
         */}
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {CONVERSIONS.map((one) => {
           const isCurrent = one.id === current;
 
