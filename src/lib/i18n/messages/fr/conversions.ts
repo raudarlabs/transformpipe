@@ -155,6 +155,32 @@ export const conversions: Content['conversions'] = {
         'Convertir un livre EPUB en un document Markdown : chapitres dans l’ordre de lecture, sommaire conservé, images incluses. Conversion locale, rien n’est téléversé.',
     },
   },
+  'odt-to-markdown': {
+    label: 'OpenDocument → Markdown',
+    short: 'ODT → MD',
+    title: 'Un fichier OpenDocument vers Markdown',
+    blurb:
+      'Déposez un .odt — le format de LibreOffice, d’OpenOffice et d’un téléchargement Google Docs — et obtenez du Markdown avec ses titres, listes, tableaux, notes de bas de page et images.',
+    hint: 'Déposez un .odt. Ce format annonce lui-même ses niveaux de titre, rien n’est donc deviné : les listes gardent leur imbrication, les tableaux restent des tableaux, les notes restent des notes.',
+    seo: {
+      title: 'Convertir un ODT en Markdown — TransformPipe',
+      description:
+        'Convertir un .odt LibreOffice ou OpenDocument en Markdown avec titres, listes, tableaux, notes et images conservés. Conversion locale, rien n’est téléversé.',
+    },
+  },
+  'rtf-to-markdown': {
+    label: 'Texte enrichi → Markdown',
+    short: 'RTF → MD',
+    title: 'Texte enrichi vers Markdown',
+    blurb:
+      'Déposez un .rtf — ce qu’écrivent TextEdit, WordPad et la plupart des logiciels quand on en tire du texte — et obtenez du Markdown plutôt qu’un mur de mots de contrôle.',
+    hint: 'Déposez un .rtf. Gras, italique, liens, listes et tableaux passent ; un titre est lu dans le niveau de plan là où il y en a un, et dans le corps de la police là où il n’y en a pas.',
+    seo: {
+      title: 'Convertir un RTF en Markdown — TransformPipe',
+      description:
+        'Convertir un fichier .rtf en Markdown : gras, italique, liens, listes et tableaux conservés, titres retrouvés. Conversion locale, rien n’est téléversé.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tableau Markdown',
     short: 'XLSX → MD',

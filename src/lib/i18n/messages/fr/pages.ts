@@ -678,6 +678,84 @@ export const pages: Content['pages'] = {
         'Comment ouvrir un EPUB sur n’importe quel appareil, pourquoi le décompresser fait perdre l’ordre des chapitres, et comment transformer un livre en document.',
     },
   },
+  'how-to-odt': {
+    label: 'Ouvrir un fichier .odt',
+    title: 'Comment ouvrir un fichier .odt',
+    lede: 'C’est la norme internationale du document de traitement de texte — et Word l’ouvre aussi.',
+    sections: [
+      {
+        heading: 'Ce que c’est',
+        body: [
+          'Un `.odt` est une archive zip de XML — `content.xml` pour les mots, `styles.xml` pour leur apparence, un dossier `Pictures` — et c’est OpenDocument Text, une norme ISO et non le format d’une seule entreprise. LibreOffice et OpenOffice l’écrivent par défaut, et Google Docs le rend via Fichier, Télécharger.',
+        ],
+      },
+      {
+        heading: 'Pour l’ouvrir',
+        body: [
+          'LibreOffice est la réponse évidente et il est gratuit sur tous les systèmes de bureau. Microsoft Word ouvre et enregistre les `.odt` depuis 2007, Word en ligne aussi ; Google Docs l’importe via Fichier, Ouvrir. Apple Pages l’ouvre également, mais voudra le réenregistrer autrement.',
+          'S’il s’agit seulement de le lire, l’archive vous est ouverte : décompressez-la et `content.xml` est le document, balises comprises.',
+        ],
+      },
+      {
+        heading: 'Ce qui tourne mal en général',
+        body: [
+          'L’aller-retour par Word. Un `.odt` ouvert dans Word puis réenregistré garde ses mots et perd une partie de sa mise en forme, faute d’accord entre les deux logiciels sur ce que signifie chaque style — ce qui ne pose problème que si quelqu’un le rouvre ensuite dans LibreOffice.',
+          'Les polices, comme pour tout format de document. Un fichier qui nomme une police absente de votre machine est composé avec ce que le lecteur substitue, et un nombre de pages qui comptait cesse d’être le même.',
+        ],
+      },
+      {
+        heading: 'Du document au Markdown',
+        body: [
+          'C’est le format qui se convertit le plus fidèlement, parce qu’il dit ce que les choses sont plutôt que de quoi elles ont l’air : un titre connaît son niveau, une liste son imbrication, un tableau est un tableau et une note une note. La conversion garde tout cela, images portées dans le fichier.',
+        ],
+      },
+    ],
+    action: 'Convertir un .odt en Markdown',
+    seo: {
+      title: 'Comment ouvrir un fichier .odt — TransformPipe',
+      description:
+        'Comment ouvrir un fichier OpenDocument, quels logiciels le lisent hormis LibreOffice, ce que coûte un aller-retour par Word, et comment en faire du Markdown.',
+    },
+  },
+  'how-to-rtf': {
+    label: 'Ouvrir un fichier .rtf',
+    title: 'Comment ouvrir un fichier .rtf',
+    lede: 'Tout l’ouvre. C’est précisément sa raison d’être, et la raison pour laquelle il existe encore.',
+    sections: [
+      {
+        heading: 'Ce que c’est',
+        body: [
+          'Le Rich Text Format est du texte brut avec des instructions dedans : `{\\rtf1` au début, puis des mots de contrôle comme `\\b` pour le gras et `\\par` pour un nouveau paragraphe, jusqu’au bout. Microsoft l’a publié en 1987 et a cessé de le faire évoluer en 2008 — c’est exactement pour cela que tout traitement de texte écrit depuis sait le lire.',
+        ],
+      },
+      {
+        heading: 'Pour l’ouvrir',
+        body: [
+          'TextEdit sur Mac et WordPad sous Windows l’ouvrent sans rien installer, comme Word, LibreOffice, Google Docs et Pages. Sur un Mac, la barre d’espace dans le Finder l’affiche.',
+          'Il se lit aussi tel quel : ouvrez-le dans un éditeur de texte et les mots sont là entre les mots de contrôle, ce qu’on ne peut pas dire d’un `.docx`.',
+        ],
+      },
+      {
+        heading: 'Pourquoi il arrive si souvent',
+        body: [
+          'Parce que c’est ce qu’un Mac produit quand du texte quitte une application. Faites glisser une sélection d’une fenêtre à une autre et macOS transmet du RTF ; il en va de même pour une grande partie des copier-coller entre logiciels, et pour tout ce qu’a exporté un système plus ancien soucieux de garder le gras et l’italique sans s’engager sur un format.',
+          'Il ne porte presque aucune métadonnée et aucune macro, ce qui en fait aussi l’option prudente pour envoyer un document à l’extérieur.',
+        ],
+      },
+      {
+        heading: 'Et en Markdown',
+        body: [
+          'Gras, italique, barré, liens, listes et tableaux se convertissent. Les titres sont la seule chose sur laquelle le format reste vague : Word écrit un niveau de plan et le pense, un Mac n’écrit rien d’autre qu’une ligne grasse plus grande — on prend donc le niveau de plan là où il existe, et sinon un paragraphe gras composé plus grand que le corps du texte.',
+        ],
+      },
+    ],
+    action: 'Convertir un .rtf en Markdown',
+    seo: {
+      title: 'Comment ouvrir un fichier .rtf — TransformPipe',
+      description:
+        'Comment ouvrir un fichier de texte enrichi, pourquoi un Mac en produit dès qu’on déplace du texte, ce qu’il contient, et comment en faire du Markdown.',
+    },
+  },
   'how-to-zip': {
     label: 'Ouvrir un export .zip',
     title: 'Comment ouvrir un export .zip de Notion, Confluence ou Obsidian',

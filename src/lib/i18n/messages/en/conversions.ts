@@ -157,6 +157,32 @@ export const conversions: Content['conversions'] = {
         'Turn an EPUB book into one Markdown document: chapters in reading order, the table of contents kept, pictures inside. Converts in your browser; nothing is uploaded.',
     },
   },
+  'odt-to-markdown': {
+    label: 'OpenDocument → Markdown',
+    short: 'ODT → MD',
+    title: 'An OpenDocument file to Markdown',
+    blurb:
+      'Upload an .odt — what LibreOffice, OpenOffice and a Google Docs download are — and get Markdown with the headings, lists, tables, footnotes and pictures it had.',
+    hint: 'Upload an .odt. This format states its own heading levels, so nothing is guessed: lists keep their nesting, tables stay tables and footnotes stay footnotes.',
+    seo: {
+      title: 'ODT to Markdown converter — TransformPipe',
+      description:
+        'Turn a LibreOffice or OpenDocument .odt into Markdown with its headings, lists, tables, footnotes and images kept. Converts in your browser; nothing is uploaded.',
+    },
+  },
+  'rtf-to-markdown': {
+    label: 'Rich text → Markdown',
+    short: 'RTF → MD',
+    title: 'Rich text to Markdown',
+    blurb:
+      'Upload an .rtf — what TextEdit, WordPad and most things write when you drag text out of them — and get Markdown instead of a wall of control words.',
+    hint: 'Upload an .rtf. Bold, italic, links, lists and tables come through; a heading is read from the outline level where the writer set one and from the type size where nobody did.',
+    seo: {
+      title: 'RTF to Markdown converter — TransformPipe',
+      description:
+        'Turn a rich text .rtf file into Markdown: bold, italic, links, lists and tables kept, and headings recovered. Converts in your browser; nothing is uploaded.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown table',
     short: 'XLSX → MD',

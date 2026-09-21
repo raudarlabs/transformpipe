@@ -157,6 +157,32 @@ export const conversions: Content['conversions'] = {
         'Convierte un libro EPUB en un documento Markdown: capítulos en orden de lectura, índice conservado e imágenes incluidas. Convierte en tu navegador; nada se sube.',
     },
   },
+  'odt-to-markdown': {
+    label: 'OpenDocument → Markdown',
+    short: 'ODT → MD',
+    title: 'Un archivo OpenDocument a Markdown',
+    blurb:
+      'Sube un .odt — el formato de LibreOffice, de OpenOffice y de una descarga de Google Docs — y obtén Markdown con sus encabezados, listas, tablas, notas al pie e imágenes.',
+    hint: 'Sube un .odt. Este formato declara sus propios niveles de encabezado, así que no se adivina nada: las listas conservan su anidamiento, las tablas siguen siendo tablas y las notas, notas.',
+    seo: {
+      title: 'Convertir ODT a Markdown — TransformPipe',
+      description:
+        'Convierte un .odt de LibreOffice u OpenDocument en Markdown con encabezados, listas, tablas, notas e imágenes. Convierte en tu navegador; nada se sube.',
+    },
+  },
+  'rtf-to-markdown': {
+    label: 'Texto RTF → Markdown',
+    short: 'RTF → MD',
+    title: 'Texto enriquecido a Markdown',
+    blurb:
+      'Sube un .rtf — lo que escriben TextEdit, WordPad y casi todo cuando arrastras texto fuera de ellos — y obtén Markdown en lugar de un muro de palabras de control.',
+    hint: 'Sube un .rtf. Negrita, cursiva, enlaces, listas y tablas pasan; un encabezado se lee del nivel de esquema donde alguien lo puso, y del tamaño de letra donde nadie lo hizo.',
+    seo: {
+      title: 'Convertir RTF a Markdown — TransformPipe',
+      description:
+        'Convierte un archivo .rtf en Markdown: negrita, cursiva, enlaces, listas y tablas conservados, y encabezados recuperados. Convierte en tu navegador; nada se sube.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabla Markdown',
     short: 'XLSX → MD',

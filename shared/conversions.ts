@@ -32,7 +32,9 @@ export type ConversionId =
   | 'text-to-markdown'
   | 'excel-to-markdown'
   | 'powerpoint-to-markdown'
-  | 'epub-to-markdown';
+  | 'epub-to-markdown'
+  | 'odt-to-markdown'
+  | 'rtf-to-markdown';
 
 export interface Conversion {
   id: ConversionId;
@@ -118,6 +120,18 @@ export const CONVERSIONS: Conversion[] = [
     to: 'markdown',
     path: '/epub-to-markdown',
     extensions: ['.epub'],
+  },
+  {
+    id: 'odt-to-markdown',
+    to: 'markdown',
+    path: '/odt-to-markdown',
+    extensions: ['.odt'],
+  },
+  {
+    id: 'rtf-to-markdown',
+    to: 'markdown',
+    path: '/rtf-to-markdown',
+    extensions: ['.rtf'],
   },
   {
     id: 'excel-to-markdown',

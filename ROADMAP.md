@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 21 September 2026.** Next up: **ODT and RTF → Markdown**.
+**Updated 21 September 2026.** Next up: **Evernote → Markdown**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,19 +14,14 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **ODT and RTF → Markdown** — LibreOffice and Google Docs exports
-      · two in a week, because ODT is a zip of XML and RTF is small
-
-## Next, in order
-
-### Formats, going in
-
 - [ ] **Evernote → Markdown** — an `.enex` export, notes merged
       · the one format here with a user base actively looking for the door
 
+## Next, in order
+
 ### Formats, going out
 
-The half nobody does well: eleven conversions read *into* Markdown and almost nothing writes back out
+The half nobody does well: thirteen conversions read *into* Markdown and almost nothing writes back out
 of it. "I have the Markdown, I need it in Confluence" still has no good answer on the internet.
 
 - [ ] **Markdown → Confluence storage format**
@@ -108,6 +103,10 @@ says otherwise.
 
 ### 21 September
 
+- [x] **ODT and RTF → Markdown** — the thirteenth and fourteenth. OpenDocument states what
+      things are, so nothing is guessed; RTF states only what somebody did, so a heading is
+      recognised from an outline level where there is one and from bold-and-larger where there
+      is not
 - [x] **2.2.0** — EPUB, the three mobile fixes, and a saved page that keeps the site's
       stylesheets. Replaced 2.1.0 in the Chrome queue the same day
 - [x] **A saved page keeps the site's own stylesheets** — every linked stylesheet was inlined

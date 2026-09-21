@@ -132,6 +132,14 @@
       "destination": "/index.html"
     },
     {
+      "source": "/odt-to-markdown",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/rtf-to-markdown",
+      "destination": "/index.html"
+    },
+    {
       "source": "/how-to/:page",
       "destination": "/index.html"
     },

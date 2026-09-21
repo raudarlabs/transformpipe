@@ -684,6 +684,84 @@ export const pages: Content['pages'] = {
         'How to open an EPUB book on any device, why unzipping one loses the chapter order, and how to turn a whole book into a document you can search and edit.',
     },
   },
+  'how-to-odt': {
+    label: 'Open an .odt file',
+    title: 'How to open an .odt file',
+    lede: 'It is the international standard for a word-processor document, and Word opens it too.',
+    sections: [
+      {
+        heading: 'What it is',
+        body: [
+          'An `.odt` is a zip of XML — `content.xml` for the words, `styles.xml` for how they look, a `Pictures` folder — and it is OpenDocument Text, an ISO standard rather than one company’s format. LibreOffice and OpenOffice write it by default, and Google Docs hands one back under File, Download.',
+        ],
+      },
+      {
+        heading: 'Opening one',
+        body: [
+          'LibreOffice is the obvious answer and it is free on every desktop system. Microsoft Word has opened and saved `.odt` since 2007, and so has Word on the web; Google Docs imports one through File, Open. Apple Pages opens one too, though it will want to save it back as something else.',
+          'If all you need is to read it, the zip is open to you: unpack it and `content.xml` is the document, tags and all.',
+        ],
+      },
+      {
+        heading: 'What tends to go wrong',
+        body: [
+          'Round-tripping through Word. An `.odt` opened in Word and saved again keeps its words and loses some of its styling, because the two applications do not agree on what every style means — which is a problem only if somebody else is going to open it in LibreOffice afterwards.',
+          'Fonts, as with every document format. A file that names a font your machine does not have is laid out in whatever the reader substitutes, and a page count that mattered stops being the same page count.',
+        ],
+      },
+      {
+        heading: 'Getting one into a document',
+        body: [
+          'This is the format that converts most faithfully of the lot, because it states what things are rather than how they look: a heading knows its own level, a list knows its nesting, a table is a table and a footnote is a footnote. Converting one gives you Markdown with all of that, the pictures carried inside the file.',
+        ],
+      },
+    ],
+    action: 'Convert an .odt file to Markdown',
+    seo: {
+      title: 'How to open an .odt file — TransformPipe',
+      description:
+        'How to open an OpenDocument file, which programs read one besides LibreOffice, what breaks on a round trip through Word, and how to turn one into Markdown.',
+    },
+  },
+  'how-to-rtf': {
+    label: 'Open an .rtf file',
+    title: 'How to open an .rtf file',
+    lede: 'Everything opens one. That is the whole point of it, and the reason it is still around.',
+    sections: [
+      {
+        heading: 'What it is',
+        body: [
+          'Rich Text Format is plain text with instructions in it: `{\\rtf1` at the start, then control words like `\\b` for bold and `\\par` for a new paragraph, all the way down. Microsoft published it in 1987 and stopped developing it in 2008, which is exactly why every word processor written since reads it.',
+        ],
+      },
+      {
+        heading: 'Opening one',
+        body: [
+          'TextEdit on a Mac and WordPad on Windows both open one without installing anything, and so do Word, LibreOffice, Google Docs and Pages. On a Mac, pressing space on the file in Finder shows it.',
+          'It is also readable as it stands: open it in a text editor and the words are there between the control words, which is more than can be said for a `.docx`.',
+        ],
+      },
+      {
+        heading: 'Why it arrives so often',
+        body: [
+          'Because it is what a Mac produces when text leaves an application. Drag a selection out of one window and into another and macOS hands over RTF; the same is true of a great deal of copy and paste between programs, and of anything exported by an older system that wanted to keep bold and italic without committing to a format.',
+          'It carries almost no metadata and no macros, which is also why it turns up as the safe option for sending a document to somebody outside an organisation.',
+        ],
+      },
+      {
+        heading: 'Getting one into Markdown',
+        body: [
+          'Bold, italic, strikethrough, links, lists and tables all convert. Headings are the one thing the format is vague about: Word writes an outline level and means it, and a Mac writes nothing but a larger bold line — so the outline level is used where there is one, and a bold paragraph set larger than the body is read as a heading where there is not.',
+        ],
+      },
+    ],
+    action: 'Convert an .rtf file to Markdown',
+    seo: {
+      title: 'How to open an .rtf file — TransformPipe',
+      description:
+        'How to open a rich text file, why a Mac produces one every time you drag text between apps, what is inside it, and how to turn one into Markdown.',
+    },
+  },
   'how-to-zip': {
     label: 'Open an export .zip',
     title: 'How to open a .zip export from Notion, Confluence or Obsidian',

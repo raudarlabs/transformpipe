@@ -93,6 +93,154 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-21',
+    title: 'LibreOffice and rich text, both read',
+    slug: 'odt-and-rtf-to-markdown',
+    body:
+      'Two conversions rather than one. An .odt — what LibreOffice, OpenOffice and a Google Docs '
+      + 'download are — converts with its headings, lists, tables, footnotes and pictures intact, '
+      + 'because that format says what things are. An .rtf converts too, which is harder than it '
+      + 'sounds: it says only what a writer did, so a heading has to be recognised rather than '
+      + 'read.',
+    detail: {
+      en: {
+        description:
+          'OpenDocument .odt and rich text .rtf both convert to Markdown, with headings, lists, tables, footnotes and pictures kept where the format records them.',
+        keywords:
+          'odt to markdown, rtf to markdown, libreoffice to markdown, convert rich text to markdown, opendocument converter',
+        body: `Two formats in one week because they are opposite problems, and the second one is the interesting half.
+
+## OpenDocument says what things are
+
+An \`.odt\` is a zip of XML, and its XML describes a document rather than a page: \`<text:h text:outline-level="2">\` is a second-level heading and says so, a list nests by nesting, a table is a table, a footnote is a footnote. Nothing has to be inferred, which makes it the most faithful conversion here.
+
+The one indirection is emphasis. Bold is not on the word — it is a style name on the word, defined elsewhere, possibly inheriting from another style, possibly in a different file inside the zip. So the styles are read from both files and resolved through their parents before a single word is converted, which is also how a paragraph styled *Heading 2* is recognised as a heading in the documents that use one instead of a real heading element.
+
+## Rich text says only what somebody did
+
+An \`.rtf\` has no document tree at all. It is a stream of control words that a word processor replays: \`\\b\` and the text after it is bold, \`\\par\` and a paragraph ended. So this reads it the same way — a cursor, a stack of formatting states that a brace copies and restores, paragraphs collected as they end.
+
+What the format does not record has to be worked out:
+
+- **A heading.** Word writes an outline level and means it. TextEdit, Pages and everything else on a Mac write nothing but a bold line set larger than the body, and mean exactly the same thing. So the outline level is used where there is one, and where there is not, a paragraph that is bold end to end and larger than the body is a heading, ranked by size.
+- **A numbered list against a bulleted one.** The file says which list and how deep, and never which kind. What does say is the marker the writer drew: a digit is a number, anything else is a bullet.
+- **Which bytes are even text.** Half the file is the font table, the colour table, the stylesheet and the revision history, and every one of those has to be skipped whole — the words inside them read exactly like content.
+
+Characters come back properly either way: \`\\u1055\` and \`\\'e9\` both decode, the second through whichever codepage the file names.
+
+Both run in the browser. Neither file is uploaded.`,
+      },
+      de: {
+        description:
+          'OpenDocument-.odt und Rich-Text-.rtf werden beide zu Markdown, mit Überschriften, Listen, Tabellen, Fußnoten und Bildern, soweit das Format sie festhält.',
+        keywords:
+          'odt in markdown, rtf in markdown, libreoffice in markdown, rich text umwandeln, opendocument konverter',
+        body: `Zwei Formate in einer Woche, weil sie entgegengesetzte Probleme sind — und das zweite ist die interessante Hälfte.
+
+## OpenDocument sagt, was die Dinge sind
+
+Eine \`.odt\` ist ein Zip aus XML, und ihr XML beschreibt ein Dokument und keine Seite: \`<text:h text:outline-level="2">\` ist eine Überschrift zweiter Ebene und sagt das auch, eine Liste verschachtelt sich durch Verschachtelung, eine Tabelle ist eine Tabelle, eine Fußnote eine Fußnote. Nichts muss erschlossen werden, was dies zur treuesten Konvertierung hier macht.
+
+Die eine Umleitung ist die Auszeichnung. Fett steht nicht am Wort — es steht als Formatname am Wort, anderswo definiert, womöglich von einer weiteren Vorlage geerbt, womöglich in einer anderen Datei im Zip. Also werden die Vorlagen aus beiden Dateien gelesen und über ihre Eltern aufgelöst, bevor ein einziges Wort umgewandelt wird. Auf demselben Weg wird ein als *Überschrift 2* formatierter Absatz in den Dokumenten erkannt, die statt eines echten Überschriftenelements eine Formatvorlage benutzen.
+
+## Rich Text sagt nur, was jemand getan hat
+
+Eine \`.rtf\` hat überhaupt keinen Dokumentbaum. Sie ist ein Strom von Steuerwörtern, den eine Textverarbeitung abspielt: \`\\b\`, und was folgt, ist fett; \`\\par\`, und ein Absatz ist zu Ende. Genauso wird sie hier gelesen — ein Cursor, ein Stapel von Formatzuständen, den eine Klammer kopiert und wiederherstellt, Absätze, die beim Enden gesammelt werden.
+
+Was das Format nicht festhält, muss erschlossen werden:
+
+- **Eine Überschrift.** Word schreibt eine Gliederungsebene und meint sie. TextEdit, Pages und alles andere auf dem Mac schreiben nichts als eine fette, größer gesetzte Zeile und meinen genau dasselbe. Also gilt die Gliederungsebene, wo es eine gibt, und sonst ein durchgehend fetter Absatz, der größer ist als der Fließtext, eingestuft nach seiner Größe.
+- **Nummerierte gegen ungeordnete Liste.** Die Datei sagt, welche Liste und wie tief, und nie welche Art. Was es sagt, ist die Marke, die der Schreiber gezeichnet hat: eine Ziffer ist eine Nummer, alles andere ein Aufzählungszeichen.
+- **Welche Bytes überhaupt Text sind.** Die halbe Datei ist Schrifttabelle, Farbtabelle, Formatvorlagen und Änderungsverlauf, und jedes davon muss als Ganzes übersprungen werden — der Text darin liest sich genau wie Inhalt.
+
+Zeichen kommen in beiden Fällen richtig an: \`\\u1055\` und \`\\'e9\` werden dekodiert, das zweite über die Codepage, die die Datei nennt.
+
+Beides läuft im Browser. Keine der Dateien wird hochgeladen.`,
+      },
+      fr: {
+        description:
+          'Les .odt OpenDocument et les .rtf de texte enrichi se convertissent en Markdown, titres, listes, tableaux, notes et images conservés.',
+        keywords:
+          'odt vers markdown, rtf vers markdown, libreoffice vers markdown, convertir texte enrichi, convertisseur opendocument',
+        body: `Deux formats en une semaine parce qu’ils posent des problèmes opposés — et le second est la moitié intéressante.
+
+## OpenDocument dit ce que les choses sont
+
+Un \`.odt\` est une archive zip de XML, et son XML décrit un document et non une page : \`<text:h text:outline-level="2">\` est un titre de deuxième niveau et le dit, une liste s’imbrique en s’imbriquant, un tableau est un tableau, une note est une note. Rien n’est à deviner, ce qui en fait la conversion la plus fidèle d’ici.
+
+La seule indirection est la mise en valeur. Le gras n’est pas sur le mot : c’est un nom de style sur le mot, défini ailleurs, héritant peut-être d’un autre style, peut-être dans un autre fichier de l’archive. Les styles sont donc lus dans les deux fichiers et résolus par leurs parents avant qu’un seul mot ne soit converti — c’est aussi ainsi qu’un paragraphe en style *Titre 2* est reconnu comme un titre dans les documents qui en utilisent un plutôt qu’un véritable élément de titre.
+
+## Le texte enrichi ne dit que ce que quelqu’un a fait
+
+Un \`.rtf\` n’a aucun arbre de document. C’est un flux de mots de contrôle qu’un traitement de texte rejoue : \`\\b\`, et ce qui suit est gras ; \`\\par\`, et un paragraphe s’achève. Il est donc lu de la même façon — un curseur, une pile d’états de mise en forme qu’une accolade copie et restaure, des paragraphes récoltés à mesure qu’ils finissent.
+
+Ce que le format n’enregistre pas doit être déduit :
+
+- **Un titre.** Word écrit un niveau de plan et le pense. TextEdit, Pages et tout le reste sur Mac n’écrivent qu’une ligne grasse composée plus grande, et veulent dire exactement la même chose. On prend donc le niveau de plan là où il existe, et sinon un paragraphe gras de bout en bout et plus grand que le corps, classé par sa taille.
+- **Une liste numérotée contre une liste à puces.** Le fichier dit quelle liste et à quelle profondeur, jamais laquelle des deux. Ce qui le dit, c’est la marque dessinée par l’auteur : un chiffre est un numéro, tout le reste est une puce.
+- **Quels octets sont même du texte.** La moitié du fichier est la table des polices, celle des couleurs, la feuille de styles et l’historique des révisions, et chacune doit être sautée en bloc — le texte à l’intérieur se lit exactement comme du contenu.
+
+Les caractères reviennent correctement dans les deux cas : \`\\u1055\` et \`\\'e9\` se décodent, le second via la page de codes que le fichier nomme.
+
+Les deux tournent dans le navigateur. Aucun des fichiers n’est téléversé.`,
+      },
+      es: {
+        description:
+          'Los .odt de OpenDocument y los .rtf de texto enriquecido se convierten en Markdown, con encabezados, listas, tablas, notas e imágenes.',
+        keywords:
+          'odt a markdown, rtf a markdown, libreoffice a markdown, convertir texto enriquecido, conversor opendocument',
+        body: `Dos formatos en una semana porque plantean problemas opuestos, y el segundo es la mitad interesante.
+
+## OpenDocument dice qué son las cosas
+
+Un \`.odt\` es un zip de XML, y su XML describe un documento y no una página: \`<text:h text:outline-level="2">\` es un encabezado de segundo nivel y lo dice, una lista se anida anidándose, una tabla es una tabla, una nota es una nota. No hay nada que inferir, lo que la convierte en la conversión más fiel de todas.
+
+La única indirección es el énfasis. La negrita no está en la palabra: es un nombre de estilo sobre la palabra, definido en otro sitio, quizá heredando de otro estilo, quizá en otro archivo del zip. Así que los estilos se leen de ambos archivos y se resuelven por sus padres antes de convertir una sola palabra — y así también se reconoce como encabezado un párrafo con estilo *Título 2* en los documentos que usan uno en vez de un elemento de encabezado real.
+
+## El texto enriquecido solo dice lo que alguien hizo
+
+Un \`.rtf\` no tiene árbol de documento. Es un flujo de palabras de control que un procesador de textos reproduce: \`\\b\`, y lo que sigue va en negrita; \`\\par\`, y un párrafo termina. Se lee igual — un cursor, una pila de estados de formato que una llave copia y restaura, y párrafos recogidos según terminan.
+
+Lo que el formato no registra hay que deducirlo:
+
+- **Un encabezado.** Word escribe un nivel de esquema y lo dice en serio. TextEdit, Pages y todo lo demás en un Mac no escriben más que una línea en negrita compuesta más grande, y quieren decir exactamente lo mismo. Se usa el nivel de esquema donde lo hay, y donde no, un párrafo en negrita de principio a fin y más grande que el cuerpo, ordenado por su tamaño.
+- **Una lista numerada frente a una de viñetas.** El archivo dice qué lista y a qué profundidad, y nunca de cuál de las dos se trata. Lo que sí lo dice es la marca que dibujó el autor: un dígito es un número, cualquier otra cosa es una viñeta.
+- **Qué bytes son siquiera texto.** La mitad del archivo es la tabla de fuentes, la de colores, la hoja de estilos y el historial de revisiones, y cada una hay que saltarla entera: el texto que hay dentro se lee exactamente como contenido.
+
+Los caracteres vuelven bien en ambos casos: \`\\u1055\` y \`\\'e9\` se decodifican, el segundo con la página de códigos que el archivo nombra.
+
+Los dos funcionan en el navegador. Ninguno de los archivos se sube.`,
+      },
+      it: {
+        description:
+          'Gli .odt di OpenDocument e gli .rtf di testo formattato diventano Markdown, con intestazioni, elenchi, tabelle, note e immagini.',
+        keywords:
+          'odt in markdown, rtf in markdown, libreoffice in markdown, convertire testo formattato, convertitore opendocument',
+        body: `Due formati in una settimana perché pongono problemi opposti, e il secondo è la metà interessante.
+
+## OpenDocument dice che cosa sono le cose
+
+Un \`.odt\` è uno zip di XML, e il suo XML descrive un documento e non una pagina: \`<text:h text:outline-level="2">\` è un’intestazione di secondo livello e lo dichiara, un elenco si annida annidandosi, una tabella è una tabella, una nota è una nota. Non c’è nulla da dedurre, il che ne fa la conversione più fedele fra quelle qui.
+
+L’unica indirezione è l’enfasi. Il grassetto non sta sulla parola: è un nome di stile sulla parola, definito altrove, magari ereditato da un altro stile, magari in un altro file dentro lo zip. Gli stili vengono quindi letti da entrambi i file e risolti attraverso i loro genitori prima che una sola parola venga convertita — ed è così che viene riconosciuto come intestazione anche un paragrafo con stile *Titolo 2* nei documenti che ne usano uno invece di un vero elemento di intestazione.
+
+## Il testo formattato dice solo che cosa ha fatto qualcuno
+
+Un \`.rtf\` non ha alcun albero del documento. È un flusso di parole di controllo che un programma di videoscrittura riproduce: \`\\b\`, e ciò che segue è in grassetto; \`\\par\`, e un paragrafo finisce. Viene letto allo stesso modo — un cursore, una pila di stati di formattazione che una graffa copia e ripristina, paragrafi raccolti man mano che finiscono.
+
+Quello che il formato non registra va ricavato:
+
+- **Un’intestazione.** Word scrive un livello di struttura e lo intende davvero. TextEdit, Pages e tutto il resto su Mac non scrivono altro che una riga in grassetto composta più grande, e intendono esattamente la stessa cosa. Si usa il livello di struttura dove c’è, e dove non c’è un paragrafo in grassetto da cima a fondo e più grande del corpo, ordinato per dimensione.
+- **Un elenco numerato contro uno puntato.** Il file dice quale elenco e a che profondità, e mai quale dei due. A dirlo è il segno che ha disegnato chi scriveva: una cifra è un numero, qualsiasi altra cosa è un punto elenco.
+- **Quali byte siano perfino testo.** Metà del file è la tabella dei caratteri, quella dei colori, il foglio di stili e la cronologia delle revisioni, e ognuna va saltata per intero: il testo che contengono si legge esattamente come contenuto.
+
+I caratteri tornano corretti in entrambi i casi: \`\\u1055\` e \`\\'e9\` si decodificano, il secondo tramite la codepage che il file dichiara.
+
+Entrambi girano nel browser. Nessuno dei due file viene caricato.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-21',
     version: '2.2.0',
     title: 'EPUB, and a phone that works',
     body:

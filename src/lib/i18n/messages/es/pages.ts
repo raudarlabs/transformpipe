@@ -682,6 +682,84 @@ export const pages: Content['pages'] = {
         'Cómo abrir un EPUB en cualquier dispositivo, por qué al descomprimirlo se pierde el orden de los capítulos y cómo convertir un libro en un documento.',
     },
   },
+  'how-to-odt': {
+    label: 'Abrir un archivo .odt',
+    title: 'Cómo abrir un archivo .odt',
+    lede: 'Es la norma internacional del documento de procesador de textos, y Word también lo abre.',
+    sections: [
+      {
+        heading: 'Qué es',
+        body: [
+          'Un `.odt` es un zip de XML — `content.xml` para las palabras, `styles.xml` para su aspecto, una carpeta `Pictures` — y es OpenDocument Text, una norma ISO y no el formato de una sola empresa. LibreOffice y OpenOffice lo escriben por defecto, y Google Docs lo devuelve en Archivo, Descargar.',
+        ],
+      },
+      {
+        heading: 'Para abrirlo',
+        body: [
+          'LibreOffice es la respuesta obvia y es gratuito en cualquier sistema de escritorio. Microsoft Word abre y guarda `.odt` desde 2007, y Word en la web también; Google Docs lo importa desde Archivo, Abrir. Apple Pages también lo abre, aunque querrá volver a guardarlo en otro formato.',
+          'Si solo quieres leerlo, el zip está a tu disposición: descomprímelo y `content.xml` es el documento, etiquetas incluidas.',
+        ],
+      },
+      {
+        heading: 'Qué suele salir mal',
+        body: [
+          'La ida y vuelta por Word. Un `.odt` abierto en Word y vuelto a guardar conserva sus palabras y pierde parte de su formato, porque los dos programas no coinciden en qué significa cada estilo — un problema solo si después alguien lo abre en LibreOffice.',
+          'Las fuentes, como en cualquier formato de documento. Un archivo que nombra una fuente que no tienes se compone con la que el lector sustituya, y un recuento de páginas que importaba deja de ser el mismo.',
+        ],
+      },
+      {
+        heading: 'Del documento al Markdown',
+        body: [
+          'Es el formato que se convierte con más fidelidad de todos, porque dice qué son las cosas en lugar de cómo se ven: un encabezado conoce su nivel, una lista su anidamiento, una tabla es una tabla y una nota una nota. Al convertirlo se conserva todo eso, con las imágenes dentro del archivo.',
+        ],
+      },
+    ],
+    action: 'Convertir un .odt a Markdown',
+    seo: {
+      title: 'Cómo abrir un archivo .odt — TransformPipe',
+      description:
+        'Cómo abrir un archivo OpenDocument, qué programas lo leen además de LibreOffice, qué se pierde al pasar por Word y cómo convertirlo en Markdown.',
+    },
+  },
+  'how-to-rtf': {
+    label: 'Abrir un archivo .rtf',
+    title: 'Cómo abrir un archivo .rtf',
+    lede: 'Lo abre todo. Esa es justamente su razón de ser, y por eso sigue existiendo.',
+    sections: [
+      {
+        heading: 'Qué es',
+        body: [
+          'El Rich Text Format es texto plano con instrucciones dentro: `{\\rtf1` al principio y luego palabras de control como `\\b` para negrita y `\\par` para un párrafo nuevo, hasta el final. Microsoft lo publicó en 1987 y dejó de desarrollarlo en 2008, que es exactamente por lo que todo procesador de textos escrito desde entonces lo lee.',
+        ],
+      },
+      {
+        heading: 'Para abrirlo',
+        body: [
+          'TextEdit en un Mac y WordPad en Windows lo abren sin instalar nada, igual que Word, LibreOffice, Google Docs y Pages. En un Mac, la barra espaciadora en el Finder lo muestra.',
+          'También se lee tal cual: ábrelo en un editor de texto y las palabras están ahí entre las palabras de control, que es más de lo que puede decirse de un `.docx`.',
+        ],
+      },
+      {
+        heading: 'Por qué aparece tan a menudo',
+        body: [
+          'Porque es lo que produce un Mac cuando el texto sale de una aplicación. Arrastra una selección de una ventana a otra y macOS entrega RTF; lo mismo vale para buena parte del copiar y pegar entre programas, y para todo lo exportado por un sistema antiguo que quería conservar negrita y cursiva sin comprometerse con un formato.',
+          'No lleva casi metadatos ni macros, y por eso también es la opción prudente para mandar un documento fuera de la organización.',
+        ],
+      },
+      {
+        heading: 'Y en Markdown',
+        body: [
+          'Negrita, cursiva, tachado, enlaces, listas y tablas se convierten. Los encabezados son lo único en lo que el formato es vago: Word escribe un nivel de esquema y lo dice en serio, y un Mac no escribe más que una línea en negrita más grande — así que se usa el nivel de esquema donde lo hay, y donde no, un párrafo en negrita compuesto más grande que el cuerpo.',
+        ],
+      },
+    ],
+    action: 'Convertir un .rtf a Markdown',
+    seo: {
+      title: 'Cómo abrir un archivo .rtf — TransformPipe',
+      description:
+        'Cómo abrir un archivo de texto enriquecido, por qué un Mac genera uno al arrastrar texto entre apps, qué lleva dentro y cómo convertirlo en Markdown.',
+    },
+  },
   'how-to-zip': {
     label: 'Abrir un .zip de exportación',
     title: 'Cómo abrir un .zip exportado de Notion, Confluence u Obsidian',

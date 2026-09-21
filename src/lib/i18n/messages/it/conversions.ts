@@ -152,6 +152,32 @@ export const conversions: Content['conversions'] = {
         'Trasforma un libro EPUB in un documento Markdown: capitoli in ordine di lettura, indice conservato e immagini incluse. Converte nel browser, senza caricare nulla.',
     },
   },
+  'odt-to-markdown': {
+    label: 'OpenDocument → Markdown',
+    short: 'ODT → MD',
+    title: 'Da un file OpenDocument a Markdown',
+    blurb:
+      'Carica un .odt — il formato di LibreOffice, di OpenOffice e di un download da Google Docs — e ottieni Markdown con le sue intestazioni, elenchi, tabelle, note a piè di pagina e immagini.',
+    hint: 'Carica un .odt. Questo formato dichiara da solo i livelli delle intestazioni, quindi non si indovina nulla: gli elenchi mantengono l’annidamento, le tabelle restano tabelle e le note restano note.',
+    seo: {
+      title: 'Da ODT a Markdown — TransformPipe',
+      description:
+        'Trasforma un .odt di LibreOffice o OpenDocument in Markdown con intestazioni, elenchi, tabelle, note e immagini. Converte nel browser, senza caricare nulla.',
+    },
+  },
+  'rtf-to-markdown': {
+    label: 'Testo RTF → Markdown',
+    short: 'RTF → MD',
+    title: 'Da testo formattato a Markdown',
+    blurb:
+      'Carica un .rtf — quello che scrivono TextEdit, WordPad e quasi tutto quando ne trascini fuori del testo — e ottieni Markdown invece di un muro di parole di controllo.',
+    hint: 'Carica un .rtf. Grassetto, corsivo, collegamenti, elenchi e tabelle passano; un’intestazione si legge dal livello di struttura dove qualcuno l’ha impostato e dal corpo del carattere dove nessuno l’ha fatto.',
+    seo: {
+      title: 'Da RTF a Markdown — TransformPipe',
+      description:
+        'Trasforma un file .rtf in Markdown: grassetto, corsivo, collegamenti, elenchi e tabelle conservati, intestazioni recuperate. Converte nel browser, senza caricare nulla.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → tabella Markdown',
     short: 'XLSX → MD',

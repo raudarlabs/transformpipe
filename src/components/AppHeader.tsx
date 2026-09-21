@@ -71,7 +71,7 @@ const NAV_ITEMS = [
  *
  *   The middle is a search box instead of a sentence. The line beside the wordmark said what the
  *   page's own h1 says three centimetres lower; what it replaces is the thing this app had no way
- *   to do at all — twelve conversions and twenty-one pages, reachable by typing two letters of the name.
+ *   to do at all — fourteen conversions and twenty-three pages, reachable by typing two letters of the name.
  *   ⌘K opens it from anywhere, which is where the second half of the roadmap is going.
  *
  *   The three destinations lose their words and keep their glyphs, with the name in `title` and
@@ -147,7 +147,7 @@ export function AppHeader({
           </button>
 
           {/*
-            * Twelve conversions behind one control, and the control says which one you are on. It is
+            * Fourteen conversions behind one control, and the control says which one you are on. It is
             * the first thing after the wordmark because it is the thing people come back to change.
             */}
           <DropdownMenu>

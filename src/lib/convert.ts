@@ -137,6 +137,34 @@ export async function convertFile(
       return { markdown, name: renamed(file.name, '.md'), kind: id };
     }
 
+    case 'odt-to-markdown': {
+      const { odtToMarkdown } = await import('@shared/from-odt');
+      const markdown = await odtToMarkdown(
+        new Uint8Array(await file.arrayBuffer()),
+        renamed(file.name, '')
+      );
+
+      return { markdown, name: renamed(file.name, '.md'), kind: id };
+    }
+
+    case 'rtf-to-markdown': {
+      const { rtfToMarkdown } = await import('@shared/from-rtf');
+
+      /*
+       * Byte for byte, not as UTF-8. An `.rtf` is ASCII control words with its own characters
+       * written as `\'e9` in a codepage the file names — decoding the whole thing as UTF-8
+       * first would replace every raw high byte with a question mark before the parser, which
+       * knows the codepage, ever sees it.
+       */
+      const text = new TextDecoder('iso-8859-1').decode(await file.arrayBuffer());
+
+      return {
+        markdown: rtfToMarkdown(text, renamed(file.name, '')),
+        name: renamed(file.name, '.md'),
+        kind: id,
+      };
+    }
+
     case 'notion-to-markdown': {
       const { notionZipToMarkdown } = await import('@shared/from-notion');
       const markdown = await notionZipToMarkdown(new Uint8Array(await file.arrayBuffer()));

@@ -128,6 +128,8 @@ const KIND_BY_EXTENSION = {
   '.xlsx': 'excel-to-markdown',
   '.pptx': 'powerpoint-to-markdown',
   '.epub': 'epub-to-markdown',
+  '.odt': 'odt-to-markdown',
+  '.rtf': 'rtf-to-markdown',
 };
 
 function kindFor(name) {
@@ -175,6 +177,10 @@ async function push() {
 
     if (kind === 'epub-to-markdown') {
       fail(`${name}: an .epub is read in the browser. Convert it at ${HOST}/epub-to-markdown and push the Markdown.`);
+    }
+
+    if (kind === 'odt-to-markdown' || kind === 'rtf-to-markdown') {
+      fail(`${name}: an ${kind === 'odt-to-markdown' ? '.odt' : '.rtf'} is read in the browser. Convert it at ${HOST}/${kind.replace('-to-markdown', '')}-to-markdown and push the Markdown.`);
     }
 
     return { name, kind, markdown: readFileSync(file, 'utf8') };

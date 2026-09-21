@@ -293,6 +293,8 @@ v1.post('/documents', async (c) => {
     'excel-to-markdown',
     'powerpoint-to-markdown',
     'epub-to-markdown',
+    'odt-to-markdown',
+    'rtf-to-markdown',
   ]);
 
   /*
@@ -475,6 +477,39 @@ v1.post('/documents', async (c) => {
     } catch (cause) {
       return c.json(
         { error: cause instanceof Error ? cause.message : 'That is not a readable .zip' },
+        400
+      );
+    }
+  }
+
+  if (docx && kind === 'odt-to-markdown') {
+    try {
+      const { odtToMarkdown } = await import('../shared/from-odt.js');
+
+      markdown = await odtToMarkdown(
+        new Uint8Array(docx),
+        (name || 'document').replace(/\.[^.]+$/, '')
+      );
+    } catch (cause) {
+      return c.json(
+        { error: cause instanceof Error ? cause.message : 'That is not a readable .odt' },
+        400
+      );
+    }
+  }
+
+  if (docx && kind === 'rtf-to-markdown') {
+    try {
+      const { rtfToMarkdown } = await import('../shared/from-rtf.js');
+
+      /* Byte for byte — see src/lib/convert.ts for why an .rtf is not read as UTF-8. */
+      markdown = rtfToMarkdown(
+        new TextDecoder('iso-8859-1').decode(docx),
+        (name || 'document').replace(/\.[^.]+$/, '')
+      );
+    } catch (cause) {
+      return c.json(
+        { error: cause instanceof Error ? cause.message : 'That is not a readable .rtf' },
         400
       );
     }

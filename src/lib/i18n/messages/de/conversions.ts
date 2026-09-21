@@ -159,6 +159,32 @@ export const conversions: Content['conversions'] = {
         'Ein EPUB-Buch in ein Markdown-Dokument umwandeln: Kapitel in Lesereihenfolge, Inhaltsverzeichnis und Bilder inbegriffen. Läuft im Browser; nichts wird hochgeladen.',
     },
   },
+  'odt-to-markdown': {
+    label: 'OpenDocument → Markdown',
+    short: 'ODT → MD',
+    title: 'Eine OpenDocument-Datei in Markdown',
+    blurb:
+      'Eine .odt hochladen — das Format von LibreOffice, OpenOffice und eines Google-Docs-Downloads — und Markdown mit ihren Überschriften, Listen, Tabellen, Fußnoten und Bildern erhalten.',
+    hint: 'Eine .odt hochladen. Dieses Format nennt seine Überschriftenebenen selbst, es wird also nichts geraten: Listen behalten ihre Verschachtelung, Tabellen bleiben Tabellen, Fußnoten bleiben Fußnoten.',
+    seo: {
+      title: 'ODT in Markdown umwandeln — TransformPipe',
+      description:
+        'Eine LibreOffice- oder OpenDocument-.odt in Markdown umwandeln, mit Überschriften, Listen, Tabellen, Fußnoten und Bildern. Läuft im Browser; nichts wird hochgeladen.',
+    },
+  },
+  'rtf-to-markdown': {
+    label: 'Rich Text → Markdown',
+    short: 'RTF → MD',
+    title: 'Rich Text in Markdown',
+    blurb:
+      'Eine .rtf hochladen — was TextEdit, WordPad und die meisten Programme schreiben, wenn man Text aus ihnen herauszieht — und Markdown statt einer Wand aus Steuerwörtern erhalten.',
+    hint: 'Eine .rtf hochladen. Fett, kursiv, Links, Listen und Tabellen kommen mit; eine Überschrift wird aus der Gliederungsebene gelesen, wo eine gesetzt wurde, und sonst aus der Schriftgröße.',
+    seo: {
+      title: 'RTF in Markdown umwandeln — TransformPipe',
+      description:
+        'Eine Rich-Text-.rtf in Markdown umwandeln: fett, kursiv, Links, Listen und Tabellen bleiben, Überschriften werden erkannt. Läuft im Browser; nichts wird hochgeladen.',
+    },
+  },
   'excel-to-markdown': {
     label: 'Excel → Markdown-Tabelle',
     short: 'XLSX → MD',

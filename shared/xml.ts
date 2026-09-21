@@ -81,3 +81,96 @@ export function decodeXml(text: string): string {
 export function textOf(xml: string): string {
   return decodeXml(xml.replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
+
+/** A piece of mixed content: either the characters between tags, or an element. */
+export type XmlNode =
+  | { kind: 'text'; text: string }
+  | { kind: 'element'; name: string; attributes: string; inner: string };
+
+const TAG = /<(\/?)([A-Za-z_][\w.:-]*)((?:"[^"]*"|'[^']*'|[^>"'])*?)(\/?)>|<!--[\s\S]*?-->|<\?[\s\S]*?\?>/g;
+
+/**
+ * One level of mixed content, in order: the text and the elements as they are written.
+ *
+ * The other readers here ask for one tag at a time, which is enough when a format keeps its
+ * blocks in a flat list. OpenDocument does not: `<text:list>` holds a `<text:list>` for every
+ * level of indentation, so a lazy match for `</text:list>` closes the outer list on the inner
+ * one's tag and a nested bullet swallows the rest of the document. This keeps a depth count per
+ * name instead, which costs one pass and gets nesting right.
+ *
+ * Only the top level is returned. A caller that wants what is inside an element parses its
+ * `inner` in turn, which is what makes the shape of the walk match the shape of the document.
+ */
+export function childNodes(xml: string): XmlNode[] {
+  const nodes: XmlNode[] = [];
+  let depth = 0;
+  let openName = '';
+  let openAttributes = '';
+  let innerFrom = 0;
+  let textFrom = 0;
+
+  TAG.lastIndex = 0;
+
+  for (let match = TAG.exec(xml); match; match = TAG.exec(xml)) {
+    /* A comment or a processing instruction is not content and is not a tag either. */
+    if (match[2] === undefined) continue;
+
+    const [whole, closing, name, attributes, selfClosing] = match;
+
+    if (depth === 0) {
+      if (closing) continue;
+
+      if (match.index > textFrom) {
+        const text = xml.slice(textFrom, match.index);
+
+        if (text.trim()) nodes.push({ kind: 'text', text });
+      }
+
+      if (selfClosing) {
+        nodes.push({ kind: 'element', name, attributes, inner: '' });
+        textFrom = match.index + whole.length;
+
+        continue;
+      }
+
+      depth = 1;
+      openName = name;
+      openAttributes = attributes;
+      innerFrom = match.index + whole.length;
+
+      continue;
+    }
+
+    if (name !== openName || selfClosing) continue;
+
+    depth += closing ? -1 : 1;
+
+    if (depth === 0) {
+      nodes.push({
+        kind: 'element',
+        name: openName,
+        attributes: openAttributes,
+        inner: xml.slice(innerFrom, match.index),
+      });
+      textFrom = match.index + whole.length;
+    }
+  }
+
+  if (textFrom < xml.length) {
+    const text = xml.slice(textFrom);
+
+    if (text.trim()) nodes.push({ kind: 'text', text });
+  }
+
+  /* An element that never closed: everything after its tag is its content. */
+  if (depth > 0) {
+    nodes.push({
+      kind: 'element',
+      name: openName,
+      attributes: openAttributes,
+      inner: xml.slice(innerFrom),
+    });
+  }
+
+  return nodes;
+}

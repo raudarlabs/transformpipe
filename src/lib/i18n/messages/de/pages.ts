@@ -686,6 +686,84 @@ export const pages: Content['pages'] = {
         'Wie man ein EPUB auf jedem Gerät öffnet, warum beim Entpacken die Kapitelreihenfolge verlorengeht und wie aus einem Buch ein durchsuchbares Dokument wird.',
     },
   },
+  'how-to-odt': {
+    label: 'Eine .odt öffnen',
+    title: 'Wie man eine .odt-Datei öffnet',
+    lede: 'Der internationale Standard für ein Textdokument — und Word öffnet ihn ebenfalls.',
+    sections: [
+      {
+        heading: 'Was sie ist',
+        body: [
+          'Eine `.odt` ist ein Zip aus XML — `content.xml` für die Worte, `styles.xml` für ihr Aussehen, ein `Pictures`-Ordner — und sie ist OpenDocument Text, ein ISO-Standard und nicht das Format einer einzelnen Firma. LibreOffice und OpenOffice schreiben sie standardmäßig, und Google Docs gibt sie unter Datei, Herunterladen heraus.',
+        ],
+      },
+      {
+        heading: 'Zum Öffnen',
+        body: [
+          'LibreOffice ist die naheliegende Antwort und auf jedem Desktop-System kostenlos. Microsoft Word öffnet und speichert `.odt` seit 2007, ebenso Word im Web; Google Docs importiert sie über Datei, Öffnen. Apple Pages öffnet sie auch, will sie aber als etwas anderes zurückspeichern.',
+          'Wenn Sie sie nur lesen wollen, steht Ihnen das Zip offen: entpacken, und `content.xml` ist das Dokument, Tags inklusive.',
+        ],
+      },
+      {
+        heading: 'Was meistens schiefgeht',
+        body: [
+          'Der Umweg über Word. Eine in Word geöffnete und wieder gespeicherte `.odt` behält ihre Worte und verliert einen Teil ihrer Formatierung, weil sich die beiden Programme nicht über jede Formatvorlage einig sind — ein Problem nur dann, wenn sie danach wieder jemand in LibreOffice öffnet.',
+          'Schriften, wie bei jedem Dokumentformat. Eine Datei, die eine Schrift nennt, die es auf Ihrem Rechner nicht gibt, wird mit dem Ersatz gesetzt, den das Programm wählt — und eine Seitenzahl, auf die es ankam, ist nicht mehr dieselbe.',
+        ],
+      },
+      {
+        heading: 'Vom Dokument zum Markdown',
+        body: [
+          'Dieses Format wandelt sich am treuesten von allen um, weil es benennt, was etwas ist, statt wie es aussieht: eine Überschrift kennt ihre Ebene, eine Liste ihre Verschachtelung, eine Tabelle ist eine Tabelle und eine Fußnote eine Fußnote. Beim Umwandeln bleibt all das erhalten, die Bilder inbegriffen.',
+        ],
+      },
+    ],
+    action: 'Eine .odt in Markdown umwandeln',
+    seo: {
+      title: 'Wie man eine .odt-Datei öffnet — TransformPipe',
+      description:
+        'Wie man eine OpenDocument-Datei öffnet, welche Programme das außer LibreOffice können, was der Umweg über Word kostet und wie daraus Markdown wird.',
+    },
+  },
+  'how-to-rtf': {
+    label: 'Eine .rtf öffnen',
+    title: 'Wie man eine .rtf-Datei öffnet',
+    lede: 'Alles öffnet sie. Genau dafür ist sie da, und deshalb gibt es sie noch.',
+    sections: [
+      {
+        heading: 'Was sie ist',
+        body: [
+          'Das Rich Text Format ist reiner Text mit Anweisungen darin: `{\\rtf1` am Anfang, dann Steuerwörter wie `\\b` für fett und `\\par` für einen neuen Absatz, bis zum Schluss. Microsoft veröffentlichte es 1987 und stellte die Entwicklung 2008 ein — genau deshalb liest es jede seither geschriebene Textverarbeitung.',
+        ],
+      },
+      {
+        heading: 'Zum Öffnen',
+        body: [
+          'TextEdit auf dem Mac und WordPad unter Windows öffnen sie ohne Installation, ebenso Word, LibreOffice, Google Docs und Pages. Auf dem Mac genügt die Leertaste im Finder.',
+          'Sie ist auch so lesbar: in einem Texteditor geöffnet, stehen die Worte zwischen den Steuerwörtern — mehr, als sich über eine `.docx` sagen lässt.',
+        ],
+      },
+      {
+        heading: 'Warum sie so oft auftaucht',
+        body: [
+          'Weil sie das ist, was ein Mac erzeugt, wenn Text eine Anwendung verlässt. Ziehen Sie eine Auswahl aus einem Fenster in ein anderes, und macOS übergibt RTF; dasselbe gilt für sehr viel Kopieren und Einfügen zwischen Programmen und für alles, was ein älteres System exportiert hat, das fett und kursiv behalten wollte, ohne sich auf ein Format festzulegen.',
+          'Sie trägt fast keine Metadaten und keine Makros — auch deshalb ist sie die sichere Wahl, wenn ein Dokument nach außen geht.',
+        ],
+      },
+      {
+        heading: 'Und in Markdown',
+        body: [
+          'Fett, kursiv, durchgestrichen, Links, Listen und Tabellen werden umgewandelt. Unklar ist das Format nur bei Überschriften: Word schreibt eine Gliederungsebene und meint sie, ein Mac schreibt nichts als eine größere fette Zeile — also wird die Gliederungsebene genommen, wo es eine gibt, und sonst ein fetter Absatz, der größer gesetzt ist als der Fließtext.',
+        ],
+      },
+    ],
+    action: 'Eine .rtf in Markdown umwandeln',
+    seo: {
+      title: 'Wie man eine .rtf-Datei öffnet — TransformPipe',
+      description:
+        'Wie man eine Rich-Text-Datei öffnet, warum ein Mac beim Ziehen von Text zwischen Programmen eine erzeugt, was darin steht und wie daraus Markdown wird.',
+    },
+  },
   'how-to-zip': {
     label: 'Einen .zip-Export öffnen',
     title: 'Wie man einen .zip-Export aus Notion, Confluence oder Obsidian öffnet',

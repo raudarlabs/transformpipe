@@ -30,6 +30,8 @@ export type StaticPageId =
   | 'how-to-xlsx'
   | 'how-to-pptx'
   | 'how-to-epub'
+  | 'how-to-odt'
+  | 'how-to-rtf'
   | 'how-to-zip'
   | 'how-to-assistant';
 
@@ -154,6 +156,8 @@ export const STATIC_PAGES: StaticPage[] = [
     action: '/powerpoint-to-markdown',
   },
   { id: 'how-to-epub', path: '/how-to/open-epub', group: 'how-to', action: '/epub-to-markdown' },
+  { id: 'how-to-odt', path: '/how-to/open-odt', group: 'how-to', action: '/odt-to-markdown' },
+  { id: 'how-to-rtf', path: '/how-to/open-rtf', group: 'how-to', action: '/rtf-to-markdown' },
   {
     id: 'how-to-zip',
     path: '/how-to/open-zip',
