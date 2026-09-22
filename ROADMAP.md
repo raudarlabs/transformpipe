@@ -76,9 +76,10 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 
 | | State |
 | --- | --- |
-| Chrome Web Store | **2.2.0**, which replaced 2.1.0 in the queue the same day it went up. 1.0.0 was published on the morning of the 21st; 2.0.0 was built on the 19th and never sent |
-| Firefox Add-ons | 2.0.0 submitted 19 September with source and `BUILD.md` — 0 errors, 26 warnings, all from mermaid's own dependencies. 2.2.0 and its source archive follow it |
 | GitHub Marketplace, for the Action | `branding` is in `action.yml`; the listing itself has not been made |
+
+Both browser stores cleared on 22 September and are in **Shipped** below. Mozilla holds 2.0.0
+until 2.2.0 and its source archive are uploaded; Chrome is on 2.2.0 already.
 
 The rule that came out of this: submit early in a week and ship something else while it sits.
 
@@ -98,6 +99,13 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 22 September
+
+- [x] **The extension is in both stores** — Chrome published 2.2.0 and Mozilla published the
+      add-on, so `/extension` has a button per store instead of the hidden one it had while both
+      were under review. One list of stores in `src/lib/pages.ts`: a store with no address yet is
+      simply not on the page
 
 ### 21 September
 
@@ -182,8 +190,8 @@ says otherwise.
 | | Then | Now |
 | --- | --- | --- |
 | Blog | 63 English, 63 German, 4 each in French, Spanish, Italian | **68 in all five languages** — 340 articles |
-| Changelog | A list of cards | **45 entries with pages of their own**, in five languages |
-| Prerendered pages | 273 | **795** |
+| Changelog | A list of cards | **53 entries with pages of their own**, in five languages |
+| Prerendered pages | 273 | **800** |
 | How-to pages | 9, English only | 9, five languages, linked from the conversion that answers them |
 
 ---

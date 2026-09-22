@@ -143,10 +143,10 @@ export const pages: Content['pages'] = {
         heading: 'Installing it',
         body: [
           'Chrome takes it from the Chrome Web Store, and so do the browsers built on Chromium: Edge, Brave, Opera, Arc. It asks for no host permission at install — until you connect an account it has no reason to talk to us — and the side panel asks for what it needs at the moment you turn it on.',
+          'Firefox takes it from Mozilla Add-ons, on the desktop and on Android. The same build from the same source; where Chrome asks for the side panel as a permission, Firefox grants its sidebar in the manifest, so there it asks for nothing at all.',
         ],
       },
     ],
-    action: 'Add it to Chrome',
     seo: {
       title: 'Browser extension — TransformPipe',
       description:

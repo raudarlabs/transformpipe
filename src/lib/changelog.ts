@@ -93,6 +93,151 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'The extension is in both stores',
+    slug: 'browser-extension-in-both-stores',
+    body:
+      'Chrome and Firefox both publish it now, at 2.2.0 and from the same source tree. The page '
+      + 'you are looking at becomes Markdown from the button in the toolbar, a side panel follows '
+      + 'you from tab to tab, and the fifteen conversions this site has run inside the extension, '
+      + 'on your own machine. Signed out it never talks to us at all.',
+    detail: {
+      en: {
+        description:
+          'The browser extension is published in the Chrome Web Store and on Mozilla Add-ons, version 2.2.0, one build from one source tree.',
+        keywords:
+          'markdown browser extension, chrome extension web page to markdown, firefox add-on markdown, save a web page as markdown, convert a page without uploading it',
+        body: `Two stores, one extension, and the same build in both.
+
+## Where it is
+
+Chrome takes it from the Chrome Web Store, and so do the browsers built on Chromium: Edge, Brave, Opera, Arc. Firefox takes it from Mozilla Add-ons, on the desktop and on Android. Both stores are at 2.2.0, which is the version this repository is at — the same source tree built twice, with three manifest keys and one file between the two.
+
+## What it does
+
+Press the button in the toolbar and the page you are looking at comes back as Markdown: the article picked out of the navigation and the cookie notices, every link and picture address made absolute. Copy it, download it, or save the page as a self-contained \`.html\` file, its own design and its pictures inside it.
+
+The side panel is the same thing kept open beside the page, following you from tab to tab and converting each page as you arrive. The right-click menu converts a selection. And the fifteen conversions this site has run inside the extension too, so a file on your machine converts without being uploaded.
+
+The pages this is for are the ones with no export: a wiki, a ticket, a thread, documentation — anything that exists only rendered. It reads what your browser already has on screen, so a page only you can see converts without anybody handing over a password.
+
+## What it asks for
+
+No host permission at install. Signed out it never talks to us at all — the conversion happens in the page, on your own machine — and there is no analytics in it and no record anywhere of which pages you converted. Permission to read the tab you are on is asked for when you turn Chrome's side panel on, and refusing it costs the panel and nothing else; in Firefox the sidebar is a manifest key and asks for nothing.
+
+Signed in, an OAuth token sits in the browser's extension storage — the same grant listed on your account page and revocable there. Save puts a document where the rest of them are, and Share publishes a link or names the people who may read it.`,
+      },
+      de: {
+        title: 'Die Erweiterung steht in beiden Stores',
+        summary: `Chrome und Firefox veröffentlichen sie jetzt beide, als 2.2.0 und aus demselben Quellbaum. Die Seite, die Sie gerade ansehen, wird per Knopf in der Symbolleiste zu Markdown, eine Seitenleiste folgt Ihnen von Tab zu Tab, und die fünfzehn Konvertierungen dieser Seite laufen in der Erweiterung, auf Ihrem eigenen Rechner. Abgemeldet spricht sie gar nicht mit uns.`,
+        description:
+          'Die Browser-Erweiterung ist im Chrome Web Store und bei Mozilla Add-ons veröffentlicht, Version 2.2.0, ein Build aus einem Quellbaum.',
+        keywords:
+          'markdown erweiterung browser, chrome erweiterung webseite in markdown, firefox add-on markdown, webseite als markdown speichern, seite konvertieren ohne hochladen',
+        body: `Zwei Stores, eine Erweiterung, in beiden derselbe Build.
+
+## Wo sie liegt
+
+Chrome holt sie aus dem Chrome Web Store, und die Chromium-Browser ebenso: Edge, Brave, Opera, Arc. Firefox holt sie von Mozilla Add-ons, auf dem Desktop und unter Android. Beide Stores stehen auf 2.2.0, dem Stand dieses Repositorys — derselbe Quellbaum, zweimal gebaut, mit drei Manifest-Schlüsseln und einer Datei Unterschied.
+
+## Was sie tut
+
+Ein Druck auf den Knopf in der Symbolleiste, und die Seite, die Sie gerade ansehen, kommt als Markdown zurück: der Artikel aus Navigation und Cookie-Hinweisen herausgelöst, jede Link- und Bildadresse absolut gemacht. Kopieren, herunterladen, oder die Seite als eigenständige \`.html\`-Datei sichern — mit ihrem eigenen Design und ihren Bildern darin.
+
+Die Seitenleiste ist dasselbe, nur dauerhaft neben der Seite geöffnet: Sie folgt Ihnen von Tab zu Tab und konvertiert jede Seite, sobald Sie ankommen. Das Kontextmenü konvertiert eine Auswahl. Und die fünfzehn Konvertierungen dieser Website laufen ebenfalls in der Erweiterung, sodass eine Datei auf Ihrem Rechner konvertiert wird, ohne hochgeladen zu werden.
+
+Gedacht ist das für die Seiten, die keinen Export haben: ein Wiki, ein Ticket, ein Thread, eine Dokumentation — alles, was nur gerendert existiert. Gelesen wird, was Ihr Browser bereits auf dem Bildschirm hat, also konvertiert auch eine Seite, die nur Sie sehen können, ohne dass jemand ein Passwort herausgeben muss.
+
+## Was sie verlangt
+
+Bei der Installation keine Host-Berechtigung. Abgemeldet spricht sie gar nicht mit uns — die Konvertierung geschieht in der Seite, auf Ihrem eigenen Rechner —, es gibt keine Analyse darin und nirgends eine Aufzeichnung, welche Seiten Sie konvertiert haben. Die Erlaubnis, den aktuellen Tab zu lesen, wird in dem Moment erfragt, in dem Sie Chromes Seitenleiste einschalten; wer ablehnt, verliert die Seitenleiste und sonst nichts. In Firefox ist die Sidebar ein Manifest-Eintrag und fragt gar nichts.
+
+Angemeldet liegt ein OAuth-Token im Erweiterungsspeicher des Browsers — dieselbe Freigabe, die auf Ihrer Kontoseite steht und dort widerrufbar ist. Speichern legt ein Dokument zu den übrigen, und Teilen veröffentlicht einen Link oder nennt die Personen, die ihn lesen dürfen.`,
+      },
+      fr: {
+        title: 'L’extension est dans les deux boutiques',
+        summary: `Chrome et Firefox la publient désormais tous les deux, en 2.2.0 et depuis le même arbre de sources. La page que vous regardez devient du Markdown depuis le bouton de la barre d’outils, un panneau latéral vous suit d’onglet en onglet, et les quinze conversions de ce site tournent dans l’extension, sur votre propre machine. Déconnectée, elle ne nous parle pas du tout.`,
+        description:
+          'L’extension de navigateur est publiée sur le Chrome Web Store et sur Mozilla Add-ons, en version 2.2.0, une compilation depuis une source.',
+        keywords:
+          'extension markdown navigateur, extension chrome page web en markdown, module firefox markdown, enregistrer une page web en markdown, convertir une page sans la téléverser',
+        body: `Deux boutiques, une extension, et la même compilation dans les deux.
+
+## Où elle se trouve
+
+Chrome la prend sur le Chrome Web Store, et les navigateurs bâtis sur Chromium aussi : Edge, Brave, Opera, Arc. Firefox la prend sur Mozilla Add-ons, sur le bureau comme sur Android. Les deux boutiques sont en 2.2.0, la version de ce dépôt — le même arbre de sources compilé deux fois, à trois clés de manifeste et un fichier près.
+
+## Ce qu’elle fait
+
+Appuyez sur le bouton de la barre d’outils et la page que vous regardez revient en Markdown : l’article extrait de la navigation et des bandeaux de cookies, chaque adresse de lien et d’image rendue absolue. Copiez-la, téléchargez-la, ou enregistrez la page en un fichier \`.html\` autonome, avec son propre design et ses images à l’intérieur.
+
+Le panneau latéral, c’est la même chose gardée ouverte à côté de la page : il vous suit d’onglet en onglet et convertit chaque page dès que vous y arrivez. Le menu contextuel convertit une sélection. Et les quinze conversions de ce site tournent également dans l’extension, si bien qu’un fichier de votre machine se convertit sans être téléversé.
+
+Ce sont les pages sans export qui justifient tout cela : un wiki, un ticket, un fil de discussion, une documentation — tout ce qui n’existe que rendu. Elle lit ce que votre navigateur affiche déjà, donc une page que vous seul pouvez voir se convertit sans que personne ait à céder un mot de passe.
+
+## Ce qu’elle demande
+
+Aucune autorisation de site à l’installation. Déconnectée, elle ne nous parle pas du tout — la conversion a lieu dans la page, sur votre machine — et elle ne contient aucune mesure d’audience ni trace nulle part des pages que vous avez converties. L’autorisation de lire l’onglet courant est demandée au moment où vous activez le panneau latéral de Chrome, et la refuser coûte le panneau et rien d’autre ; dans Firefox, la barre latérale est une clé du manifeste et ne demande rien.
+
+Connecté, un jeton OAuth réside dans le stockage d’extension du navigateur — la même autorisation que celle listée sur votre page de compte, révocable depuis là. Enregistrer range un document avec les autres, et Partager publie un lien ou nomme les personnes qui peuvent le lire.`,
+      },
+      es: {
+        title: 'La extensión está en las dos tiendas',
+        summary: `Chrome y Firefox ya la publican los dos, en 2.2.0 y desde el mismo árbol de código. La página que estás mirando se vuelve Markdown desde el botón de la barra, un panel lateral te sigue de pestaña en pestaña, y las quince conversiones de este sitio se ejecutan dentro de la extensión, en tu propia máquina. Sin sesión iniciada no habla con nosotros en absoluto.`,
+        description:
+          'La extensión de navegador está publicada en la Chrome Web Store y en Mozilla Add-ons, versión 2.2.0, una compilación desde un código.',
+        keywords:
+          'extensión markdown navegador, extensión chrome página web a markdown, complemento firefox markdown, guardar una página web como markdown, convertir una página sin subirla',
+        body: `Dos tiendas, una extensión y la misma compilación en ambas.
+
+## Dónde está
+
+Chrome la toma de la Chrome Web Store, y los navegadores construidos sobre Chromium también: Edge, Brave, Opera, Arc. Firefox la toma de Mozilla Add-ons, en el escritorio y en Android. Las dos tiendas están en 2.2.0, la versión de este repositorio: el mismo árbol de código compilado dos veces, con tres claves de manifiesto y un archivo de diferencia.
+
+## Qué hace
+
+Pulsa el botón de la barra de herramientas y la página que estás mirando vuelve como Markdown: el artículo separado de la navegación y de los avisos de cookies, cada dirección de enlace y de imagen convertida en absoluta. Cópialo, descárgalo o guarda la página como un archivo \`.html\` autónomo, con su propio diseño y sus imágenes dentro.
+
+El panel lateral es lo mismo mantenido abierto junto a la página: te sigue de pestaña en pestaña y convierte cada página según llegas. El menú contextual convierte una selección. Y las quince conversiones de este sitio también se ejecutan dentro de la extensión, así que un archivo de tu máquina se convierte sin subirlo.
+
+Las páginas que justifican todo esto son las que no tienen exportación: un wiki, un ticket, un hilo, una documentación, cualquier cosa que solo exista renderizada. Lee lo que tu navegador ya tiene en pantalla, de modo que una página que solo tú puedes ver se convierte sin que nadie entregue una contraseña.
+
+## Qué pide
+
+Ningún permiso de sitio al instalarse. Sin sesión iniciada no habla con nosotros en absoluto —la conversión ocurre en la página, en tu propia máquina— y no lleva analítica ni deja registro en ninguna parte de qué páginas convertiste. El permiso para leer la pestaña en la que estás se pide en el momento en que activas el panel lateral de Chrome, y negarlo cuesta el panel y nada más; en Firefox la barra lateral es una clave del manifiesto y no pide nada.
+
+Con la sesión iniciada, un token OAuth vive en el almacenamiento de extensiones del navegador: la misma concesión que aparece en tu página de cuenta y que se revoca ahí. Guardar pone un documento donde están los demás, y Compartir publica un enlace o nombra a las personas que pueden leerlo.`,
+      },
+      it: {
+        title: 'L’estensione è in entrambi gli store',
+        summary: `Chrome e Firefox ora la pubblicano entrambi, in 2.2.0 e dallo stesso albero di sorgenti. La pagina che stai guardando diventa Markdown dal pulsante nella barra, un pannello laterale ti segue di scheda in scheda, e le quindici conversioni di questo sito girano dentro l’estensione, sulla tua macchina. Senza accesso non parla affatto con noi.`,
+        description:
+          'L’estensione per browser è pubblicata sul Chrome Web Store e su Mozilla Add-ons, versione 2.2.0, una build da un solo sorgente.',
+        keywords:
+          'estensione markdown browser, estensione chrome pagina web in markdown, componente firefox markdown, salvare una pagina web in markdown, convertire una pagina senza caricarla',
+        body: `Due store, una estensione, la stessa build in entrambi.
+
+## Dove si trova
+
+Chrome la prende dal Chrome Web Store, e così i browser costruiti su Chromium: Edge, Brave, Opera, Arc. Firefox la prende da Mozilla Add-ons, sul desktop e su Android. Entrambi gli store sono alla 2.2.0, la versione di questo repository: lo stesso albero di sorgenti compilato due volte, a tre chiavi di manifest e un file di distanza.
+
+## Che cosa fa
+
+Premi il pulsante nella barra degli strumenti e la pagina che stai guardando torna in Markdown: l’articolo estratto dalla navigazione e dagli avvisi sui cookie, ogni indirizzo di link e di immagine reso assoluto. Copialo, scaricalo, oppure salva la pagina come file \`.html\` autonomo, con il suo design e le sue immagini dentro.
+
+Il pannello laterale è la stessa cosa tenuta aperta accanto alla pagina: ti segue di scheda in scheda e converte ogni pagina appena arrivi. Il menu contestuale converte una selezione. E le quindici conversioni di questo sito girano anche dentro l’estensione, così un file sulla tua macchina si converte senza essere caricato.
+
+Le pagine per cui tutto questo esiste sono quelle senza esportazione: un wiki, un ticket, una discussione, una documentazione — tutto ciò che esiste solo renderizzato. Legge quello che il browser ha già a schermo, quindi anche una pagina che puoi vedere solo tu si converte senza che nessuno consegni una password.
+
+## Che cosa chiede
+
+Nessun permesso sui siti all’installazione. Senza accesso non parla affatto con noi — la conversione avviene nella pagina, sulla tua macchina — e non contiene analytics né lascia da nessuna parte traccia di quali pagine hai convertito. Il permesso di leggere la scheda in cui ti trovi viene chiesto nel momento in cui attivi il pannello laterale di Chrome, e rifiutarlo costa il pannello e nulla più; in Firefox la barra laterale è una chiave del manifest e non chiede nulla.
+
+Con l’accesso fatto, un token OAuth sta nell’archivio estensioni del browser: la stessa concessione elencata sulla pagina del tuo account e revocabile da lì. Salva mette un documento insieme agli altri, e Condividi pubblica un link o indica le persone che possono leggerlo.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-22',
     title: 'Ten converters, and what each one will not read',
     body:
       'A comparison that counts what the front pages leave out. Pandoc does not read PowerPoint '

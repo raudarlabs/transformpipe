@@ -476,6 +476,9 @@ export const ui: Content['ui'] = {
   'page.questions': 'Fragen dazu gehen an',
   'page.questions.link': 'die Issues des Repositorys',
 
+  'extension.store.chrome': 'Zu Chrome hinzufügen',
+  'extension.store.firefox': 'Zu Firefox hinzufügen',
+
   /*
    * Ein Dokument, das jemand Ihnen geschickt hat, unter /open/<token>.
    *

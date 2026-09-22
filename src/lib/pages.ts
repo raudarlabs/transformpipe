@@ -103,14 +103,32 @@ const UPDATED = '2026-09-08';
  */
 const PRIVACY_UPDATED = '2026-09-17';
 
-/*
- * Where the extension lives in the Chrome Web Store.
+/**
+ * A store the extension can be installed from, and where.
  *
- * `null` until it is published, and the page's button is hidden while it is: a store link written
- * ahead of the review is a 404 on the one page whose whole job is to send somebody to the store.
- * Flipping this to the address is the last step of the submission, not the first.
+ * `null` until that store publishes it, and the button is hidden while it is: a store link written
+ * ahead of the review is a 404 on the one page whose whole job is to send somebody to a store.
+ * Filling one in is the last step of a submission, not the first.
+ *
+ * Chrome's address is the extension id alone, without the slug the store puts in front of it. The
+ * slug is made from the listing's name and changes when the name is edited; the id does not, and
+ * the store redirects the short form to whatever the long one currently is.
  */
-export const STORE_URL: string | null = null;
+export const EXTENSION_STORES: { id: 'chrome' | 'firefox'; url: string | null }[] = [
+  {
+    id: 'chrome',
+    url: 'https://chromewebstore.google.com/detail/aojjdmbhoajckgkacbeobkkkpdckndmi',
+  },
+  /* No locale in the path: Mozilla sends a reader to the listing in their own language, and an
+   * `/en-US/` written here would send a German reader to the English one. */
+  { id: 'firefox', url: 'https://addons.mozilla.org/firefox/addon/transformpipe/' },
+];
+
+/** The ones that exist, which is what the extension page offers. */
+export const publishedStores = () =>
+  EXTENSION_STORES.filter((store): store is { id: 'chrome' | 'firefox'; url: string } =>
+    Boolean(store.url)
+  );
 
 export const STATIC_PAGES: StaticPage[] = [
   /*
@@ -123,12 +141,9 @@ export const STATIC_PAGES: StaticPage[] = [
    */
   { id: 'about', path: '/about', group: 'company' },
   { id: 'support', path: '/support', group: 'company' },
-  {
-    id: 'extension',
-    path: '/extension',
-    group: 'company',
-    ...(STORE_URL ? { action: STORE_URL } : {}),
-  },
+  /* The extension page ends on a button per store rather than the one `action` gives a page, so it
+   * has none: see `publishedStores` above and `src/features/StaticPage.tsx`. */
+  { id: 'extension', path: '/extension', group: 'company' },
   { id: 'privacy', path: '/privacy', group: 'legal', updated: PRIVACY_UPDATED },
   { id: 'terms', path: '/terms', group: 'legal', updated: UPDATED },
   { id: 'cookies', path: '/cookies', group: 'legal', updated: UPDATED },

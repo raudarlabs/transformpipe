@@ -136,10 +136,10 @@ export const pages: Content['pages'] = {
         heading: 'Installarla',
         body: [
           'Chrome la prende dal Chrome Web Store, e così i browser costruiti su Chromium: Edge, Brave, Opera, Arc. All’installazione non chiede alcun permesso sui siti — finché non colleghi un account non ha motivo di parlare con noi — e il pannello laterale chiede ciò che gli serve nel momento in cui lo attivi.',
+          'Firefox la prende da Mozilla Add-ons, sul desktop e su Android. La stessa build dallo stesso sorgente; dove Chrome chiede un permesso per il pannello laterale, Firefox concede il suo nel manifest, quindi lì non chiede nulla.',
         ],
       },
     ],
-    action: 'Aggiungila a Chrome',
     seo: {
       title: 'Estensione per il browser — TransformPipe',
       description:

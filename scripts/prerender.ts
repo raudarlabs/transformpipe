@@ -40,7 +40,7 @@ import {
 } from '../shared/conversions.js';
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
-import { STATIC_PAGES } from '../src/lib/pages.js';
+import { publishedStores, STATIC_PAGES } from '../src/lib/pages.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
 import { hasTranslation } from '../src/lib/route.js';
 import {
@@ -667,7 +667,26 @@ for (const locale of LOCALES) {
               : ''
           }</section>`
       )
-      .join('')}`,
+      .join('')}${
+      /*
+       * The extension page ends on its store links here too, and not only in the app.
+       *
+       * This is the one static page whose purpose is to send somebody somewhere else, and the
+       * button that does it is rendered by React. A crawler reading the prerendered file would
+       * have found a page about an extension with no way to install it — and an outbound link to
+       * a store is the thing a search engine most wants to see on a page like this one.
+       */
+      one.id === 'extension'
+        ? `<p>${publishedStores()
+            .map(
+              (store) =>
+                `<a href="${store.url}">${escapeHtml(
+                  catalogue.ui[`extension.store.${store.id}`]
+                )}</a>`
+            )
+            .join(' ')}</p>`
+        : ''
+    }`,
   });
   }
 }

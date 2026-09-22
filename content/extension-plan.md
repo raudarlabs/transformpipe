@@ -221,8 +221,9 @@ new code written against a guess.
      remember to redraw.
    - `npm run ext:zip` builds and packs, refusing a package with a missing icon or a `default_locale`
      with no catalogue behind it.
-   - `/extension` on this site says what it is and what it never does, in five languages, and the
-     button to the store appears when `STORE_URL` in `src/lib/pages.ts` stops being `null`.
+   - `/extension` on this site says what it is and what it never does, in five languages, and it
+     ends on a button per store — `EXTENSION_STORES` in `src/lib/pages.ts`, where a store with no
+     address yet has `null` and no button.
    - The privacy page has a section of its own about the extension — what is read, what is kept,
      and the two storages it uses. Chrome requires it and it was the honest thing anyway.
    - The manifest now carries `minimum_chrome_version` (114, for the side panel), `homepage_url`,

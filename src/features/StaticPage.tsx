@@ -6,7 +6,7 @@ import { useConsent } from '@/lib/consent';
 import { formatDate } from '@/lib/format';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
-import { ISSUES_URL, type StaticPage as Page } from '@/lib/pages';
+import { ISSUES_URL, publishedStores, type StaticPage as Page } from '@/lib/pages';
 import { Button } from '@/ui/components/Button';
 import { Typography } from '@/ui/components/Typography';
 
@@ -51,6 +51,12 @@ function inlineCode(text: string) {
     )
   );
 }
+
+/** What each store's button says, keyed the way the catalogue keys it. */
+const STORE_LABELS = {
+  chrome: 'extension.store.chrome',
+  firefox: 'extension.store.firefox',
+} as const;
 
 export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
   const t = useT();
@@ -161,6 +167,30 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
           <Button onClick={() => setSettingsOpen(true)}>
             {t('cookies.settings.open')}
           </Button>
+        </div>
+      )}
+
+      {/*
+        * The extension page ends on one button per store it is in.
+        *
+        * Not `action`, which is one address and one label: this extension is in two stores and a
+        * reader is in one browser, and a single "Add it to Chrome" on a Firefox screen is a link
+        * that does nothing for the person reading it. The list is in `src/lib/pages.ts` and a
+        * store with no address yet is simply not in it.
+        */}
+      {page.id === 'extension' && publishedStores().length > 0 && (
+        <div className="flex flex-wrap gap-3 border-stroke border-t pt-6">
+          {publishedStores().map((store) => (
+            <a
+              key={store.id}
+              href={store.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white no-underline transition-colors hover:bg-brand-primary/90"
+            >
+              {t(STORE_LABELS[store.id])}
+            </a>
+          ))}
         </div>
       )}
 

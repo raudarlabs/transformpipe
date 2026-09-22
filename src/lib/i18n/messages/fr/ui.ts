@@ -463,6 +463,9 @@ export const ui: Content['ui'] = {
   'page.questions': 'Toute question à ce sujet est à adresser à',
   'page.questions.link': 'les tickets du dépôt',
 
+  'extension.store.chrome': 'L’ajouter à Chrome',
+  'extension.store.firefox': 'L’ajouter à Firefox',
+
   /*
    * Un document que quelqu’un vous a envoyé, à /open/<token>.
    *

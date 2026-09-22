@@ -141,10 +141,10 @@ export const pages: Content['pages'] = {
         heading: 'Instalarla',
         body: [
           'Chrome la toma de la Chrome Web Store, y los navegadores construidos sobre Chromium también: Edge, Brave, Opera, Arc. Al instalarse no pide ningún permiso de sitio —hasta que conectas una cuenta no tiene motivo para hablar con nosotros— y el panel lateral pide lo que necesita en el momento en que lo activas.',
+          'Firefox la toma de Mozilla Add-ons, en el escritorio y en Android. La misma compilación desde el mismo código; donde Chrome pide un permiso para el panel lateral, Firefox concede el suyo en el manifiesto, así que allí no pide nada.',
         ],
       },
     ],
-    action: 'Añadirla a Chrome',
     seo: {
       title: 'Extensión del navegador — TransformPipe',
       description:

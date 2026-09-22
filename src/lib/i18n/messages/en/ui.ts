@@ -467,6 +467,16 @@ export const ui: Content['ui'] = {
   'page.questions.link': 'the repository’s issues',
 
   /*
+   * The extension page's buttons, one per store it is in.
+   *
+   * Here rather than beside that page's own words because there is a button per store and the
+   * catalogue gives a page one `action`. Which of them a reader sees is decided by which stores
+   * have an address in `src/lib/pages.ts`.
+   */
+  'extension.store.chrome': 'Add it to Chrome',
+  'extension.store.firefox': 'Add it to Firefox',
+
+  /*
    * A document somebody sent you, at /open/<token>.
    *
    * The app's own screen, so it follows the reader's language like every other one. The copy the

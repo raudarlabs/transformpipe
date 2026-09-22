@@ -145,10 +145,10 @@ export const pages: Content['pages'] = {
         heading: 'Installieren',
         body: [
           'Chrome holt sie aus dem Chrome Web Store, und die Chromium-Browser ebenso: Edge, Brave, Opera, Arc. Bei der Installation verlangt sie keine Host-Berechtigung — bis Sie ein Konto verbinden, hat sie keinen Grund, mit uns zu sprechen — und die Seitenleiste fragt in dem Moment nach, in dem Sie sie einschalten.',
+          'Firefox holt sie von Mozilla Add-ons, auf dem Desktop und unter Android. Dasselbe Paket aus derselben Quelle; wo Chrome die Seitenleiste als Berechtigung erfragt, gewährt Firefox seine im Manifest — dort fragt sie also gar nichts.',
         ],
       },
     ],
-    action: 'Zu Chrome hinzufügen',
     seo: {
       title: 'Browser-Erweiterung — TransformPipe',
       description:

@@ -299,8 +299,12 @@ which one a bug report means.
 
 | | |
 | --- | --- |
-| **Chrome Web Store** | 1.0.0 rejected 18 September, listing rewritten, and **1.0.0 published on 21 September**. 2.0.0 was built and never sent. 2.1.0 went up on the 21st and was replaced the same day by **2.2.0** |
-| **Firefox Add-ons** | 2.0.0 submitted 19 September with the source archive and `BUILD.md`; 2.2.0 follows it |
+| **Chrome Web Store** | 1.0.0 rejected 18 September, listing rewritten, and 1.0.0 published on the 21st. 2.0.0 was built and never sent. 2.1.0 went up on the 21st and was replaced the same day by **2.2.0, published on 22 September** |
+| **Firefox Add-ons** | 2.0.0 submitted 19 September with the source archive and `BUILD.md`, and **published on 22 September**. It is the version on the shelf until 2.2.0 and its source archive are uploaded |
+
+Both addresses are in `src/lib/pages.ts`, which is what puts a button per store on `/extension`.
+Chrome's is the extension id without the slug in front of it: the slug is made from the listing's
+name and changes when the name is edited, and the id does not.
 
 2.1.0 was replaced rather than left to clear review, which is the opposite of the rule further
 down and was the right call once. A snapshot of any page whose CSS arrives by `<link>` — which is
