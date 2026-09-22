@@ -1,6 +1,6 @@
 ---
-title: "Turndown y las alternativas: elegir una biblioteca de HTML a Markdown"
-description: Comparamos la API de reglas de Turndown, node-html-markdown, html-to-md, html2text y Pandoc en tablas, bloques de código, listas anidadas y espacios en blanco.
+title: "Turndown y cinco bibliotecas de HTML a Markdown: qué pierden"
+description: "Seis bibliotecas comparadas en tablas, listas anidadas, bloques de código y espacios, con addRule, keep y remove de Turndown sobre el HTML que los necesita."
 date: 2026-08-21
 tag: Código
 keywords: biblioteca html a markdown, turndown, turndown addrule, node-html-markdown, html-to-md, html2text python, pandoc html a markdown

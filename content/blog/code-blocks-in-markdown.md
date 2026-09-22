@@ -1,6 +1,6 @@
 ---
-title: "Code blocks in Markdown: fences, language hints and syntax highlighting"
-description: Fenced versus indented code, what the language hint really does, where syntax highlighting actually happens, and how to print a backtick
+title: "Markdown code blocks: the fence rules and the HTML they emit"
+description: "Closing fences at least as long as the opening, tilde fences, code inside a list, backticks in a sentence: every rule with the case that breaks it."
 updated: 2026-09-09
 date: 2026-08-18
 tag: Syntax

@@ -1,6 +1,6 @@
 ---
-title: "CommonMark vs GFM: which Markdown are you actually writing?"
-description: What CommonMark specified, what GFM adds rule by rule, and what travels only as an extension - plus a feature-by-implementation table so you can predict what breaks
+title: "CommonMark vs GFM: what each engine supports, in one table"
+description: "What CommonMark settled, the five extensions GFM adds, what is in neither of them, and ten engines lined up so you can predict what breaks where."
 date: 2026-08-18
 tag: Syntax
 keywords: commonmark, commonmark vs markdown, github flavored markdown, gfm, gfm vs commonmark, markdown flavours, markdown spec, markdown extensions

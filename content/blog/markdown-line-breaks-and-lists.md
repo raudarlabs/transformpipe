@@ -1,6 +1,6 @@
 ---
-title: "Markdown line breaks and lists: the rules, and the small betrayals"
-description: Why a newline is a space, what two spaces and a backslash do, how far a nested list indents, tight against loose, and every character that needs escaping
+title: "Markdown line breaks and lists: 14 symptoms, 14 rules"
+description: "A newline that became a space, a list that became a code block, numbers that renumbered themselves: the symptom, the rule doing it, and what to write instead."
 updated: 2026-09-09
 date: 2026-07-11
 tag: Syntax

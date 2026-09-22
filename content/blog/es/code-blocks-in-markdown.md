@@ -1,6 +1,6 @@
 ---
-title: "Bloques de código en Markdown: cercas, pistas de lenguaje y resaltado de sintaxis"
-description: "Bloque delimitado frente a indentado, qué hace en realidad la pista de lenguaje, dónde ocurre el resaltado de sintaxis y cómo escribir una comilla invertida"
+title: "Bloques de código en Markdown: las vallas y el HTML que sale"
+description: "Valla de cierre al menos tan larga como la de apertura, código dentro de una lista, backticks en una frase: cada regla con el caso que la rompe."
 updated: 2026-09-09
 date: 2026-08-18
 tag: Sintaxis

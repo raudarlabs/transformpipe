@@ -1,6 +1,6 @@
 ---
-title: "Codeblöcke in Markdown: Zäune, Sprachhinweise und Syntaxhervorhebung"
-description: "Eingezäunter gegen eingerückten Code, was der Sprachhinweis wirklich tut, wo Syntaxhervorhebung tatsächlich stattfindet und wie man einen Backtick druckt"
+title: "Markdown-Codeblöcke: die Zaunregeln und das erzeugte HTML"
+description: "Schließende Zäune mindestens so lang wie der öffnende, Tilden-Zäune, Code in einer Liste, Backticks im Satz: jede Regel mit dem Fall, der sie bricht."
 updated: 2026-09-09
 date: 2026-08-18
 tag: Syntax

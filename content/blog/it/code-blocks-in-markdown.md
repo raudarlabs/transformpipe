@@ -1,6 +1,6 @@
 ---
-title: "Blocchi di codice in Markdown: fence, indicazione del linguaggio e syntax highlighting"
-description: "Codice con fence o indentato, cosa fa davvero l'indicazione del linguaggio, dove avviene il syntax highlighting, e come stampare un backtick"
+title: "Blocchi di codice Markdown: le recinzioni e l’HTML che esce"
+description: "Recinzione di chiusura lunga almeno quanto quella di apertura, codice dentro una lista, backtick in una frase: ogni regola con il caso che la rompe."
 updated: 2026-09-09
 date: 2026-08-18
 tag: Sintassi

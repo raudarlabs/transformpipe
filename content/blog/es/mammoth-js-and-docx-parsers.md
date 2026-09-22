@@ -1,6 +1,6 @@
 ---
-title: "DOCX a HTML en JavaScript: mammoth, docx4js y el resto de parsers"
-description: Lee un .docx en código con los mapas de estilo de mammoth, decide qué hacer con las imágenes y descubre dónde entran docx4js, docxtemplater y Pandoc
+title: "mammoth.js en el navegador: convertToHtml con un arrayBuffer"
+description: "Leer un .docx en el navegador o en Node: la llamada con arrayBuffer, style maps hacia tu propio HTML, imágenes en base64 y el array de avisos que nadie lee."
 date: 2026-08-20
 tag: Código
 keywords: convertir docx a html javascript, mammoth js, leer docx en node, parsear docx javascript, docx4js, docxtemplater, docx a html en el navegador, python-docx, docx a markdown

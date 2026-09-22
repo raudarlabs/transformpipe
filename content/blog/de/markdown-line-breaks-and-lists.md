@@ -1,6 +1,6 @@
 ---
-title: "Zeilenumbrüche und Listen in Markdown: die Regeln und die kleinen Tücken"
-description: "Warum ein Zeilenumbruch ein Leerzeichen ist, was zwei Leerzeichen und ein Backslash tun, wie weit eine verschachtelte Liste einrückt und dicht gegen locker"
+title: "Markdown-Zeilenumbrüche und Listen: 14 Symptome, 14 Regeln"
+description: "Ein Umbruch, der zum Leerzeichen wurde, eine Liste, die zum Codeblock wurde, Zahlen, die sich neu nummerierten: das Symptom, die Regel und die Abhilfe."
 updated: 2026-09-09
 date: 2026-07-11
 tag: Syntax

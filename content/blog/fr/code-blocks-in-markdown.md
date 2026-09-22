@@ -1,6 +1,6 @@
 ---
-title: "Les blocs de code en Markdown : clôtures, indications de langage et coloration syntaxique"
-description: "Code clôturé ou indenté, ce que fait vraiment l’indication de langage, où la coloration syntaxique se produit réellement, et comment imprimer un backtick"
+title: "Blocs de code Markdown : les règles de clôture et le HTML produit"
+description: "Clôture fermante au moins aussi longue que l’ouvrante, clôtures en tilde, code dans une liste, backticks dans une phrase : chaque règle avec le cas qui la casse."
 updated: 2026-09-09
 date: 2026-08-18
 tag: Syntaxe

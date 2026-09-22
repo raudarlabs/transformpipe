@@ -1,6 +1,6 @@
 ---
-title: "CommonMark gegen GFM: Welches Markdown schreiben Sie eigentlich?"
-description: "Was CommonMark festlegt, was GFM Regel für Regel ergänzt und was nur als Erweiterung reist — plus eine Tabelle Funktion gegen Implementierung, die Brüche vorhersagt"
+title: "CommonMark gegen GFM: was jede Engine kann, in einer Tabelle"
+description: "Was CommonMark festlegte, die fünf Erweiterungen von GFM, was in keinem von beiden steht, und zehn Engines nebeneinander, damit Sie sehen, wo etwas bricht."
 date: 2026-08-18
 tag: Syntax
 keywords: commonmark, commonmark gegen markdown, github flavored markdown, gfm, gfm gegen commonmark, markdown dialekte, markdown spezifikation, markdown erweiterungen, unterschied commonmark gfm

@@ -1,6 +1,6 @@
 ---
-title: "CommonMark frente a GFM: ¿qué Markdown estás escribiendo en realidad?"
-description: "Qué fijó CommonMark, qué añade GFM regla por regla y qué solo viaja como extensión, con una tabla por función e implementación para predecir qué se rompe"
+title: "CommonMark frente a GFM: qué admite cada motor, en una tabla"
+description: "Qué fijó CommonMark, las cinco extensiones que añade GFM, qué no está en ninguno de los dos, y diez motores alineados para predecir dónde se rompe algo."
 date: 2026-08-18
 tag: Sintaxis
 keywords: commonmark, commonmark vs markdown, github flavored markdown, gfm, diferencia entre commonmark y gfm, sabores de markdown, especificación de markdown, extensiones de markdown

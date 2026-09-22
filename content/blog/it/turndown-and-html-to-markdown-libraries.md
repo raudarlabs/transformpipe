@@ -1,6 +1,6 @@
 ---
-title: "Turndown e le alternative: come scegliere una libreria da HTML a Markdown"
-description: Le regole di Turndown, node-html-markdown, html-to-md, html2text e Pandoc a confronto su tabelle, blocchi di codice, liste annidate, spazi e supporto nel browser
+title: "Turndown e cinque librerie da HTML a Markdown: che cosa perdono"
+description: "Sei librerie a confronto su tabelle, liste annidate, blocchi di codice e spazi, con addRule, keep e remove di Turndown mostrati sull’HTML che li richiede."
 date: 2026-08-21
 tag: Codice
 keywords: libreria html markdown, turndown npm, turndown addrule, node-html-markdown, html-to-md, html2text python, pandoc html in markdown

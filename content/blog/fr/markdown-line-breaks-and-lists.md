@@ -1,6 +1,6 @@
 ---
-title: "Sauts de ligne et listes en Markdown : les règles, et les petites trahisons"
-description: Pourquoi un retour à la ligne est un espace, ce que font deux espaces et un antislash, jusqu’où indenter une liste imbriquée, et chaque caractère à échapper
+title: "Sauts de ligne et listes Markdown : 14 symptômes, 14 règles"
+description: "Un saut devenu espace, une liste devenue bloc de code, des numéros qui se renumérotent : le symptôme, la règle qui le produit, et ce qu’il faut écrire à la place."
 updated: 2026-09-09
 date: 2026-07-11
 tag: Syntaxe

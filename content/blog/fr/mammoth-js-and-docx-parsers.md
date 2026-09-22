@@ -1,6 +1,6 @@
 ---
-title: "DOCX vers HTML en JavaScript : mammoth, docx4js et les autres analyseurs"
-description: "Lire un .docx dans votre code avec les cartes de styles et le tableau messages de mammoth, gérer les images, et situer docx4js, docxtemplater et Pandoc"
+title: "mammoth.js dans le navigateur : convertToHtml et arrayBuffer"
+description: "Lire un .docx dans le navigateur ou dans Node : l’appel arrayBuffer, les style maps vers votre propre HTML, les images en base64 et le tableau de messages ignoré."
 date: 2026-08-20
 tag: Code
 keywords: docx vers html javascript, mammoth js, lire un docx en node, analyseur docx javascript, convertir docx en html node, docx4js, docxtemplater, docx vers html navigateur, python-docx

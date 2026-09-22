@@ -1,6 +1,6 @@
 ---
-title: "Saltos de línea y listas en Markdown: las reglas, y las pequeñas traiciones"
-description: "Por qué un salto de línea simple es un espacio, qué hacen dos espacios y una barra invertida, cuánto sangra una lista anidada, y qué escapar"
+title: "Saltos de línea y listas en Markdown: 14 síntomas, 14 reglas"
+description: "Un salto convertido en espacio, una lista convertida en bloque de código, números que se renumeran solos: el síntoma, la regla y qué escribir en su lugar."
 updated: 2026-09-09
 date: 2026-07-11
 tag: Sintaxis

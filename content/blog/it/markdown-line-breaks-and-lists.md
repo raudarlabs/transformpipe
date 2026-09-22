@@ -1,6 +1,6 @@
 ---
-title: "A capo e liste in Markdown: le regole, e i piccoli tradimenti"
-description: "Perché un a capo è uno spazio, cosa fanno due spazi e una barra rovesciata, quanto rientra una lista annidata, compatta contro ariosa"
+title: "A capo e liste in Markdown: 14 sintomi, 14 regole"
+description: "Un a capo diventato spazio, una lista diventata blocco di codice, numeri che si rinumerano da soli: il sintomo, la regola che lo causa e che cosa scrivere invece."
 updated: 2026-09-09
 date: 2026-07-11
 tag: Sintassi

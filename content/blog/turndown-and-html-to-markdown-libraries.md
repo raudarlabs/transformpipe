@@ -1,6 +1,6 @@
 ---
-title: "Turndown and the Alternatives: Choosing an HTML to Markdown Library"
-description: Turndown's rules API, node-html-markdown, html-to-md, html2text and Pandoc, compared on tables, code blocks, nested lists, whitespace and browser support
+title: "Turndown vs five HTML-to-Markdown libraries: what each loses"
+description: "Six libraries side by side on tables, nested lists, code blocks and whitespace, with Turndown's addRule, keep and remove shown on the HTML that needs them."
 date: 2026-08-21
 tag: Code
 keywords: html to markdown library, turndown, turndown addrule, node-html-markdown, html-to-md, html2text python, pandoc html to markdown
