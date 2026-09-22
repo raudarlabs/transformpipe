@@ -314,3 +314,7 @@ Only if they are embedded. Outlook blocks automatic picture downloads from the i
 ### What is the difference between alt text and a caption?
 
 A caption is visible to everyone and sits near the image, adding something the picture does not say by itself. Alt text replaces the image for a reader who is not receiving one — a screen reader user, or anyone whose image failed to load — so it should say what the picture communicates, and be empty when the picture communicates nothing.
+
+### Why did the pictures disappear when I converted the document?
+
+Because the converter found them and wrote a reference rather than the bytes. A picture inside a `.docx`, a `.pptx` or a Notion export is a separate file in the container, and a conversion has to either embed it, write it out beside the Markdown and rewrite the reference, or say that it did neither. [Where the pictures go when you export a document](/blog/pictures-in-a-document-export) covers where each format keeps them and what the three options cost.

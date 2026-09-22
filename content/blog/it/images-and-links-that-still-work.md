@@ -314,3 +314,7 @@ Solo se sono incorporate. Outlook blocca i download automatici di immagini da in
 ### Qual è la differenza tra alt text e una didascalia?
 
 Una didascalia è visibile a tutti e sta vicino all'immagine, aggiungendo qualcosa che l'immagine non dice da sola. L'alt text sostituisce l'immagine per un lettore che non la sta ricevendo — un utente di screen reader, o chiunque la cui immagine sia fallita nel caricamento — quindi dovrebbe dire cosa comunica l'immagine, ed essere vuoto quando l'immagine non comunica niente.
+
+### Perché le immagini sono sparite dopo la conversione?
+
+Perché il convertitore le ha trovate e ha scritto un riferimento invece dei byte. Un'immagine dentro un `.docx`, un `.pptx` o un'esportazione Notion è un file separato dentro il contenitore, e una conversione deve o incorporarla, o scriverla accanto al Markdown riscrivendo il riferimento, o dire che non ha fatto né l'una né l'altra cosa. [Dove finiscono le immagini quando esporti un documento](/blog/pictures-in-a-document-export) dice dove le tiene ciascun formato e quanto costano le tre opzioni.

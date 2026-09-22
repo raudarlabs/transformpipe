@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 21 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 22 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -165,7 +165,7 @@ says otherwise.
 - [x] **The browser extension** — the page as Markdown, a side panel that follows you, files
       converted in a tab of its own, the page saved as it looks, OAuth sign-in, save and share.
       Chrome and Firefox from one source
-- [x] **The blog in five languages** — 63 articles each in English, German, French, Spanish and
+- [x] **The blog in five languages** — 66 articles each in English, German, French, Spanish and
       Italian, written rather than machine-translated
 - [x] **Installable, and offline** for the half that never needed a network
 - [x] **⌘K** finds conversions, pages and the five documents you converted last
@@ -181,9 +181,9 @@ says otherwise.
 
 | | Then | Now |
 | --- | --- | --- |
-| Blog | 63 English, 63 German, 4 each in French, Spanish, Italian | **63 in all five languages** — 315 articles |
+| Blog | 63 English, 63 German, 4 each in French, Spanish, Italian | **66 in all five languages** — 330 articles |
 | Changelog | A list of cards | **45 entries with pages of their own**, in five languages |
-| Prerendered pages | 273 | **690** |
+| Prerendered pages | 273 | **785** |
 | How-to pages | 9, English only | 9, five languages, linked from the conversion that answers them |
 
 ---

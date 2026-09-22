@@ -92,6 +92,17 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-22',
+    title: 'Three of the new conversions are written up',
+    body:
+      'PowerPoint, EPUB and the question of where the pictures go each have an article now, in '
+      + 'all five languages. The load-bearing facts were checked rather than remembered: Pandoc '
+      + 'writes PowerPoint and does not read it, so the usual advice fails at the first command; '
+      + 'calibre reaches Markdown through its text output and drops every link unless you ask it '
+      + 'not to; and a picture carried inside the file costs a third more bytes than the one on '
+      + 'disk, which is the whole reason most converters leave it behind.',
+  },
+  {
     date: '2026-09-21',
     title: 'There is a page that says what this is',
     body:

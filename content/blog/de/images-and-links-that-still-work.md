@@ -314,3 +314,7 @@ Nur wenn sie eingebettet sind. Outlook blockiert standardmäßig das automatisch
 ### Was ist der Unterschied zwischen Alt-Text und einer Bildunterschrift?
 
 Eine Bildunterschrift ist für jeden sichtbar, steht nahe beim Bild und fügt etwas hinzu, was das Bild von sich aus nicht sagt. Alt-Text ersetzt das Bild für einen Leser, der keines bekommt — einen Screenreader-Nutzer oder jeden, dessen Bild nicht geladen hat — er sollte also sagen, was das Bild mitteilt, und leer sein, wenn das Bild nichts mitteilt.
+
+### Warum sind die Bilder nach der Umwandlung verschwunden?
+
+Weil der Konverter sie gefunden und einen Verweis statt der Bytes geschrieben hat. Ein Bild in einer `.docx`, einer `.pptx` oder einem Notion-Export ist eine eigene Datei im Container, und eine Umwandlung muss es entweder einbetten, neben das Markdown schreiben und den Verweis anpassen — oder sagen, dass sie beides nicht getan hat. [Wohin die Bilder gehen, wenn Sie ein Dokument exportieren](/blog/pictures-in-a-document-export) sagt, wo jedes Format sie hält und was die drei Möglichkeiten kosten.

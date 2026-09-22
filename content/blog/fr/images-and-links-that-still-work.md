@@ -314,3 +314,7 @@ Seulement si elles sont intégrées. Outlook bloque par défaut le téléchargem
 ### Quelle est la différence entre un texte alternatif et une légende ?
 
 Une légende est visible de tous, se tient près de l’image et ajoute quelque chose que l’image ne dit pas d’elle-même. Le texte alternatif remplace l’image pour un lecteur qui n’en reçoit pas — utilisateur de lecteur d’écran, ou quiconque dont l’image ne s’est pas chargée — il doit donc dire ce que l’image communique, et rester vide quand l’image ne communique rien.
+
+### Pourquoi les images ont-elles disparu après la conversion ?
+
+Parce que le convertisseur les a trouvées et a écrit une référence au lieu des octets. Une image dans un `.docx`, un `.pptx` ou un export Notion est un fichier distinct à l'intérieur du conteneur, et une conversion doit soit l'intégrer, soit l'écrire à côté du Markdown en réécrivant la référence, soit dire qu'elle n'a fait ni l'un ni l'autre. [Où passent les images quand vous exportez un document](/blog/pictures-in-a-document-export) dit où chaque format les garde et ce que coûtent les trois options.

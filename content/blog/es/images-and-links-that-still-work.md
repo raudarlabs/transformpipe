@@ -314,3 +314,12 @@ Solo si están incrustadas. Outlook bloquea las descargas automáticas de imáge
 ### ¿Cuál es la diferencia entre el texto alternativo y un pie de foto?
 
 Un pie de foto es visible para todos y se sienta cerca de la imagen, añadiendo algo que la imagen no dice por sí sola. El texto alternativo reemplaza la imagen para quien no la está recibiendo — quien usa lector de pantalla, o cualquiera cuya imagen falló al cargar — así que debería decir lo que comunica la imagen, y estar vacío cuando la imagen no comunica nada.
+
+### ¿Por qué desaparecieron las imágenes al convertir el documento?
+
+Porque el conversor las encontró y escribió una referencia en lugar de los bytes. Una imagen dentro
+de un `.docx`, un `.pptx` o una exportación de Notion es un archivo aparte dentro del contenedor, y
+una conversión tiene que incrustarla, escribirla junto al Markdown y reescribir la referencia, o
+decir que no hizo ninguna de las dos cosas.
+[Adónde van las imágenes cuando exportas un documento](/blog/pictures-in-a-document-export) explica
+dónde las guarda cada formato y qué cuestan las tres opciones.
