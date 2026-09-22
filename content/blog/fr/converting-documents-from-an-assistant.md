@@ -231,3 +231,7 @@ Non. MCP est une norme ouverte prise en charge par de nombreux clients, donc un 
 ### Que faire si le connecteur cesse de fonctionner ?
 
 Vérifiez d'abord l'approbation : un client révoqué, ou un jeton de rafraîchissement arrivé au bout de sa vie, produit exactement la même réponse non autorisée qu'un connecteur tout neuf, et réapprouver règle le problème. S'il s'autorise puis refuse d'enregistrer, demandez à l'assistant d'appeler l'outil d'usage, qui rapporte octets et documents comptés contre le plafond du compte au lieu de laisser le modèle deviner.
+
+### La conversion par un connecteur fait-elle vraiment économiser quelque chose ?
+
+Des jetons, et le montant relève de l'arithmétique plutôt que de l'affirmation. Un appel d'outil qui renvoie un lien met onze jetons dans la transcription là où le document lui-même en aurait mis des milliers — et la transcription est renvoyée à chaque tour suivant, donc l'écart se cumule. [Ce qu'un document coûte à un assistant](/blog/what-a-document-costs-an-assistant) fait le calcul, y compris le cas où le modèle doit vraiment lire le document et où l'économie est nulle.

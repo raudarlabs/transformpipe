@@ -231,3 +231,7 @@ No. MCP is an open standard supported across many clients, so a remote server re
 ### What should I do if the connector stops working?
 
 Check the approval first: a revoked client, or a refresh token past its life, produces exactly the same unauthorised response as a brand new connector, and re-approving fixes it. If it authorises and then refuses to save, ask the assistant to call the usage tool, which reports bytes and documents held against the account ceiling instead of leaving the model to guess.
+
+### Does converting through a connector actually save anything?
+
+Tokens, and the amount is arithmetic rather than a claim. A tool call that returns a link puts eleven tokens in the transcript where the document itself would have put thousands — and the transcript is re-sent on every subsequent turn, so the difference compounds. [What a document costs an assistant](/blog/what-a-document-costs-an-assistant) works through the numbers, including the case where the model genuinely has to read the document and the saving is zero.

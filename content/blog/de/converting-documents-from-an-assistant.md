@@ -231,3 +231,7 @@ Nein. MCP ist ein offener Standard, der von vielen Clients unterstützt wird, ei
 ### Was soll ich tun, wenn der Connector aufhört zu funktionieren?
 
 Prüfen Sie zuerst die Genehmigung: ein widerrufener Client, oder ein Refresh-Token nach Ablauf seiner Lebensdauer, erzeugt genau dieselbe unautorisierte Antwort wie ein brandneuer Connector, und erneutes Genehmigen behebt es. Autorisiert er, weigert sich dann aber zu speichern, bitten Sie den Assistenten, das Nutzungswerkzeug aufzurufen, das Bytes und Dokumente gegen die Kontoobergrenze meldet, statt das Modell raten zu lassen.
+
+### Spart die Umwandlung über einen Connector tatsächlich etwas?
+
+Token, und die Menge ist Arithmetik und keine Behauptung. Ein Werkzeugaufruf, der einen Link zurückgibt, legt elf Token ins Protokoll, wo das Dokument selbst Tausende gelegt hätte — und das Protokoll wird bei jeder weiteren Runde erneut geschickt, der Unterschied summiert sich also. [Was ein Dokument einen Assistenten kostet](/blog/what-a-document-costs-an-assistant) rechnet es durch, einschließlich des Falls, in dem das Modell das Dokument wirklich lesen muss und die Ersparnis null ist.

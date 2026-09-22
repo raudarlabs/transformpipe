@@ -93,6 +93,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'What a document costs an assistant',
+    body:
+      'A token is about 3.5 English characters, which turns the question into arithmetic: a long '
+      + 'article is 4,300 tokens, asking an assistant to convert it spends that going in and '
+      + 'again coming back, and a megabyte of embedded picture is 300,000 — more than most '
+      + 'context windows hold. A link to the same document is eleven. The article gives the '
+      + 'formula rather than a percentage, including the case where the model has to read the '
+      + 'document and the saving is nothing at all.',
+  },
+  {
+    date: '2026-09-22',
     title: 'Three of the new conversions are written up',
     body:
       'PowerPoint, EPUB and the question of where the pictures go each have an article now, in '

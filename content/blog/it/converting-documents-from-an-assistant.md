@@ -231,3 +231,7 @@ No. MCP è uno standard aperto supportato da molti client, quindi un server remo
 ### Cosa dovrei fare se il connettore smette di funzionare?
 
 Controlla prima l’approvazione: un client revocato, o un refresh token oltre la sua vita, produce esattamente la stessa risposta non autorizzata di un connettore appena nuovo, e riapprovare lo risolve. Se autorizza e poi si rifiuta di salvare, chiedi all’assistente di chiamare lo strumento di utilizzo, che riporta byte e documenti tenuti contro il tetto dell’account invece di lasciare che il modello indovini.
+
+### Convertire tramite un connettore fa davvero risparmiare qualcosa?
+
+Token, e la quantità è aritmetica e non un'affermazione. Una chiamata a uno strumento che restituisce un collegamento mette undici token nella trascrizione dove il documento stesso ne avrebbe messi migliaia — e la trascrizione viene rimandata a ogni turno successivo, quindi la differenza si somma. [Quanto costa un documento a un assistente](/blog/what-a-document-costs-an-assistant) fa il conto, compreso il caso in cui il modello deve davvero leggere il documento e il risparmio è zero.

@@ -231,3 +231,11 @@ No. MCP es un estándar abierto compatible con muchos clientes, así que un serv
 ### ¿Qué debería hacer si el conector deja de funcionar?
 
 Comprueba primero la aprobación: un cliente revocado, o un token de refresco que ya cumplió su vida, produce exactamente la misma respuesta sin autorizar que un conector recién añadido, y volver a aprobarlo lo soluciona. Si autoriza y luego se niega a guardar, pídele al asistente que llame a la herramienta de uso, que reporta bytes y documentos contados contra el techo de la cuenta en lugar de dejar que el modelo adivine.
+
+### ¿Convertir por un conector ahorra algo de verdad?
+
+Tokens, y la cantidad es aritmética y no una afirmación. Una llamada de herramienta que devuelve un
+enlace pone once tokens en la transcripción donde el documento mismo habría puesto miles — y la
+transcripción se reenvía en cada turno posterior, así que la diferencia se acumula.
+[Lo que un documento le cuesta a un asistente](/blog/what-a-document-costs-an-assistant) hace la
+cuenta, incluido el caso en que el modelo sí tiene que leer el documento y el ahorro es cero.
