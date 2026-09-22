@@ -361,3 +361,7 @@ Serverseitige Konverter tun es, denn das Telefon muss nur hoch- und herunterlade
 ### Was ist der Unterschied zwischen einem Dokumentkonverter und einem Dokumenteditor?
 
 Ein Konverter nimmt eine Datei in einem Format und gibt Ihnen denselben Inhalt in einem anderen; ein Editor ist der Ort, an dem Sie ihn schreiben. Editoren haben oft ein Exportmenü, was sie versehentlich zu Konvertern macht, und der Export ist auf die Art des Editors formatiert statt auf Ihre. Wenn Sie die Datei schon haben und nur ein anderes Format brauchen, ist ein Konverter weniger Schritte und weniger Überraschungen.
+
+### Womit sollte ich vergleichen?
+
+Mit dem, was an Ihrem Dokument scheitert, nicht mit dem, das die längste Formatliste hat. Die lokalen Werkzeuge unterscheiden sich darin, was sie glatt verweigern — Pandoc liest PowerPoint überhaupt nicht, calibre erreicht Markdown nur über seinen Textexporter, und Docling liest die breiteste Eingabeliste von allen. [Zehn Markdown-Konverter, verglichen nach dem, was sie nicht lesen](/blog/ten-markdown-converters-compared) stellt diese Verweigerungen in eine Tabelle, mit Datum und mit jedem Punkt aus der Dokumentation des jeweiligen Werkzeugs.

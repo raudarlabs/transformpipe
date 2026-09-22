@@ -363,3 +363,7 @@ I convertitori lato server sì, dato che il telefono deve solo caricare e scaric
 ### Qual è la differenza tra un convertitore di documenti e un editor di documenti?
 
 Un convertitore prende un file in un formato e te ne dà lo stesso contenuto in un altro; un editor è dove lo scrivi. Gli editor hanno spesso un menu di esportazione, il che li rende convertitori per caso, e l'esportazione è stilizzata a modo dell'editor piuttosto che a modo tuo. Se hai già il file e ti serve solo un formato diverso, un convertitore è meno passaggi e meno sorprese.
+
+### Con quale convertitore dovrei confrontarlo?
+
+Con quello che fallisce sul tuo documento, non con quello dall'elenco di formati più lungo. Gli strumenti locali si dividono su ciò che rifiutano di netto: Pandoc non legge PowerPoint affatto, calibre arriva a Markdown solo attraverso il suo esportatore di testo, e Docling legge l'elenco di ingressi più ampio di tutti. [Dieci convertitori Markdown a confronto per ciò che non leggono](/blog/ten-markdown-converters-compared) mette quei rifiuti in una tabella datata, con ogni affermazione presa dalla documentazione dello strumento stesso.

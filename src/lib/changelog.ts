@@ -93,6 +93,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'Ten converters, and what each one will not read',
+    body:
+      'A comparison that counts what the front pages leave out. Pandoc does not read PowerPoint '
+      + 'at all, calibre reaches Markdown only through its text exporter and drops every link '
+      + 'unless told otherwise, LibreOffice Writer now saves CommonMark directly, and Docling '
+      + 'reads the widest input list of the ten. Every claim comes from the tool\u2019s own '
+      + 'documentation with the date it was checked \u2014 and the section on this one lists the '
+      + 'five things it does not do, because a comparison the seller wins outright is not one.',
+  },
+  {
+    date: '2026-09-22',
     title: 'What a document costs an assistant',
     body:
       'A token is about 3.5 English characters, which turns the question into arithmetic: a long '

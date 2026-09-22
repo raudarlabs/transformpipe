@@ -361,3 +361,13 @@ Los del lado del servidor sí, porque el móvil solo tiene que subir y descargar
 ### ¿Cuál es la diferencia entre un conversor de documentos y un editor de documentos?
 
 Un conversor toma un archivo en un formato y te da el mismo contenido en otro; un editor es donde lo escribes. Los editores suelen tener un menú de exportación, lo que los convierte en conversores por accidente, y la exportación sigue el estilo del editor y no el tuyo. Si ya tienes el archivo y solo necesitas otro formato, un conversor son menos pasos y menos sorpresas.
+
+### ¿Con qué conversor debería compararlo?
+
+Con el que falla en tu documento, no con el que exhibe la lista de formatos más larga. Las
+herramientas locales se separan por lo que rechazan de plano: Pandoc no lee PowerPoint en absoluto,
+calibre llega a Markdown solo por su exportador de texto, y Docling lee la lista de entradas más
+amplia de todas.
+[Diez conversores a Markdown comparados por lo que no leen](/blog/ten-markdown-converters-compared)
+reúne esos rechazos en una tabla fechada, con cada afirmación tomada de la documentación de cada
+herramienta.

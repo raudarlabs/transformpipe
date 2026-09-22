@@ -361,3 +361,7 @@ Les convertisseurs côté serveur, oui, puisque le téléphone n’a qu’à té
 ### Quelle est la différence entre un convertisseur et un éditeur de documents ?
 
 Un convertisseur prend un fichier dans un format et vous rend le même contenu dans un autre ; un éditeur est l’endroit où vous l’écrivez. Les éditeurs ont souvent un menu d’export, ce qui en fait des convertisseurs par accident, et l’export est mis en forme à la manière de l’éditeur plutôt qu’à la vôtre. Si vous avez déjà le fichier et qu’il vous faut seulement un autre format, un convertisseur demande moins d’étapes et réserve moins de surprises.
+
+### À quel convertisseur faut-il le comparer ?
+
+À celui qui échoue sur votre document, pas à celui qui affiche la plus longue liste de formats. Les outils locaux se séparent sur ce qu'ils refusent d'emblée : Pandoc ne lit pas PowerPoint du tout, calibre n'atteint Markdown que par son exporteur de texte, et Docling lit la plus large liste d'entrées de tous. [Dix convertisseurs Markdown comparés par ce qu'ils refusent de lire](/blog/ten-markdown-converters-compared) rassemble ces refus dans un tableau daté, chaque point venant de la documentation de l'outil concerné.

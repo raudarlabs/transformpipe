@@ -165,7 +165,7 @@ says otherwise.
 - [x] **The browser extension** — the page as Markdown, a side panel that follows you, files
       converted in a tab of its own, the page saved as it looks, OAuth sign-in, save and share.
       Chrome and Firefox from one source
-- [x] **The blog in five languages** — 67 articles each in English, German, French, Spanish and
+- [x] **The blog in five languages** — 68 articles each in English, German, French, Spanish and
       Italian, written rather than machine-translated
 - [x] **Installable, and offline** for the half that never needed a network
 - [x] **⌘K** finds conversions, pages and the five documents you converted last
@@ -181,9 +181,9 @@ says otherwise.
 
 | | Then | Now |
 | --- | --- | --- |
-| Blog | 63 English, 63 German, 4 each in French, Spanish, Italian | **67 in all five languages** — 335 articles |
+| Blog | 63 English, 63 German, 4 each in French, Spanish, Italian | **68 in all five languages** — 340 articles |
 | Changelog | A list of cards | **45 entries with pages of their own**, in five languages |
-| Prerendered pages | 273 | **790** |
+| Prerendered pages | 273 | **795** |
 | How-to pages | 9, English only | 9, five languages, linked from the conversion that answers them |
 
 ---
