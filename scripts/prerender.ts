@@ -36,6 +36,7 @@ import {
 import {
   CONVERSIONS,
   conversion,
+  conversionForPath,
   DEFAULT_CONVERSION,
 } from '../shared/conversions.js';
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
@@ -318,6 +319,41 @@ function render(page: Page): string {
     page.head ?? '',
   ].join('\n    ');
 
+/*
+ * The footer, in the copy a crawler reads.
+ *
+ * The app has one on every screen — documentation, blog, live preview, changelog, the extension,
+ * support and the legal three — and this file wrote none of it, so a prerendered page was a leaf:
+ * the front page pointed at fifteen conversions and every one of those pointed at nothing. A
+ * sitemap lists pages; it does not tell a search engine which of them the site itself considers
+ * worth reaching, and that is what a link is for.
+ *
+ * The same links the footer shows and no others. The conversions are not repeated here because the
+ * front page and each conversion page already carry that list, and a block of twenty-five links on
+ * every page of a site is the shape of a link farm rather than a footer.
+ */
+function siteFooter(locale: Locale): string {
+  const catalogue = CATALOGUES[locale];
+  const page = (id: 'extension' | 'support' | 'privacy' | 'terms' | 'cookies') => {
+    const one = STATIC_PAGES.find((each) => each.id === id)!;
+
+    return anchor(localePath(locale, one.path), catalogue.pages[id].label);
+  };
+
+  return `<nav>${[
+    anchor(localePath(locale, '/'), catalogue.conversions[DEFAULT_CONVERSION].label),
+    anchor(localePath(locale, '/docs'), catalogue.ui['footer.docs']),
+    anchor(blogPath(locale), catalogue.ui['footer.blog']),
+    anchor(localePath(locale, '/markdown-live-preview'), catalogue.ui['footer.live']),
+    anchor(localePath(locale, '/changelog'), catalogue.ui['footer.changelog']),
+    page('extension'),
+    page('support'),
+    page('privacy'),
+    page('terms'),
+    page('cookies'),
+  ].join(' · ')}</nav>`;
+}
+
   return SHELL.replace(
     /<html lang="[a-z-]+"/,
     `<html lang="${locale}"`
@@ -333,7 +369,7 @@ function render(page: Page): string {
     .replace('</head>', `  ${HEAD_OPEN}\n    ${head}\n    ${HEAD_CLOSE}\n  </head>`)
     .replace(
       '<div id="root"></div>',
-      `${BODY_OPEN}<div id="prerender">${page.body}</div>${BODY_CLOSE}`
+      `${BODY_OPEN}<div id="prerender">${page.body}${siteFooter(locale)}</div>${BODY_CLOSE}`
     );
 }
 
@@ -485,6 +521,70 @@ for (const locale of withArticles) {
 }
 
 /*
+ * ---------------------------------------------------------------- where a page sends a reader next
+ *
+ * Every prerendered conversion page and every how-to page had no link on it whatsoever.
+ *
+ * Not a missing feature of the app — the app has a header, a footer and a button under every
+ * how-to page — but of this file, which writes the copy a crawler reads. The front page listed the
+ * conversions and the articles linked to each other, and past that the graph stopped: fifteen
+ * conversion pages and nine guides, each of them a leaf reachable from the sitemap and pointing at
+ * nothing. Those are the pages that have to rank commercially, and they were the ones with no
+ * internal links at all.
+ *
+ * So each conversion page now carries the guide that answers it, the articles that link to it, and
+ * its siblings; each how-to page carries the conversion it is about. Nothing here is invented — the
+ * guide is `action` in `src/lib/pages.ts`, the articles are whichever ones already chose to link,
+ * and the words are the catalogue's, so every anchor is in the reader's language.
+ */
+
+/** At most this many articles under a conversion: a page of links is not a page. */
+const ARTICLES_PER_CONVERSION = 3;
+
+/**
+ * Which articles link to a given path, taken from the English prose.
+ *
+ * One graph rather than five: a translation inherits its original's links, so the German article
+ * about Word points at `/word-to-markdown` because the English one does. Reading English and
+ * printing the translated titles is therefore the same answer, and it does not go stale in four
+ * languages when one article is rewritten.
+ */
+const articlesLinkingTo = new Map<string, string[]>();
+
+for (const article of articlesFor(DEFAULT_LOCALE)) {
+  const linked = new Set(
+    [...articleMarkdown(article.slug).matchAll(/\]\((\/[a-z0-9-]+)\)/g)].map((match) => match[1])
+  );
+
+  for (const path of linked) {
+    articlesLinkingTo.set(path, [...(articlesLinkingTo.get(path) ?? []), article.slug]);
+  }
+}
+
+const anchor = (href: string, words: string) => `<a href="${href}">${escapeHtml(words)}</a>`;
+
+/**
+ * The articles under a conversion, the ones about it first.
+ *
+ * Order matters at three links: `/excel-to-markdown` took the PowerPoint article first, because
+ * that piece happens to mention spreadsheets and was written later. An article whose own slug
+ * carries the format's name is the article about it, so that one goes on top and the rest keep the
+ * order the blog gives them.
+ */
+const aboutFirst = (path: string, slugs: string[]) => {
+  const format = path.replace('/', '').split('-to-')[0];
+
+  return [...slugs].sort(
+    (first, second) =>
+      Number(second.includes(format)) - Number(first.includes(format))
+  );
+};
+
+/** The guide written for this conversion, where there is one: `action`, or one of `covers`. */
+const guideFor = (path: string) =>
+  STATIC_PAGES.find((page) => page.action === path || page.covers?.includes(path));
+
+/*
  * ---------------------------------------------------------------- the conversions
  *
  * Each one is a page of its own, and that is the point of giving them addresses: "html to markdown"
@@ -517,7 +617,35 @@ for (const locale of LOCALES) {
         said.hint
       )}</p><p>${escapeHtml(
         words.ui['converter.dropzone.limits'].replace('{extensions}', one.extensions.join(', '))
-      )}</p>`,
+      )}</p>${(() => {
+        const guide = guideFor(one.path);
+        const written = aboutFirst(one.path, articlesLinkingTo.get(one.path) ?? [])
+          .map((slug) => articlesFor(locale).find((article) => article.slug === slug))
+          .filter((article) => article !== undefined)
+          .slice(0, ARTICLES_PER_CONVERSION);
+
+        return (
+          (guide
+            ? `<p>${anchor(
+                localePath(locale, guide.path),
+                words.pages[guide.id].title
+              )}</p>`
+            : '') +
+          (written.length > 0
+            ? `<ul>${written
+                .map(
+                  (article) =>
+                    `<li>${anchor(articlePath(article.slug, locale), article.title)}</li>`
+                )
+                .join('')}</ul>`
+            : '') +
+          `<p>${CONVERSIONS.filter((each) => each.id !== one.id)
+            .map((each) =>
+              anchor(localePath(locale, each.path), words.conversions[each.id].title)
+            )
+            .join(', ')}</p>`
+        );
+      })()}`,
     });
   }
 }
@@ -666,6 +794,31 @@ for (const locale of LOCALES) {
                 )}</a>`
             )
             .join(' ')}</p>`
+        : ''
+    }${
+      /*
+       * A how-to page ends on the conversion it is about, here as well as in the app.
+       *
+       * `action` is that conversion's address and the catalogue holds the words for it — the app
+       * renders them as a button and this file rendered neither, so the nine guides reached a
+       * crawler as pages about a file format with no link to the thing that opens one. `covers`
+       * is the rest: a `.zip` is three conversions and one guide answers for all three.
+       */
+      one.action && said.action
+        ? `<p>${anchor(localePath(locale, one.action), said.action)}</p>`
+        : ''
+    }${
+      one.covers
+        ? `<p>${one.covers
+            .map((path) => {
+              const also = conversionForPath(path);
+
+              return also
+                ? anchor(localePath(locale, also.path), catalogue.conversions[also.id].title)
+                : '';
+            })
+            .filter(Boolean)
+            .join(', ')}</p>`
         : ''
     }${
       one.updated

@@ -186,3 +186,38 @@ makes the comparison real.
   are no MarkItDown impressions in the export — which, on a site twelve days old, is evidence of no
   page rather than evidence of no demand. One bet of that kind is reasonable; a series of them is
   how a plan gets ignored. The rest of the comparison ideas stay parked.
+
+### 22 September 2026 — the link graph, which was the actual problem
+
+This plan ends by saying that if neither position nor clicks move, the problem is links rather than
+articles. It is worth checking that before writing anything, and the check takes one command: read
+the prerendered HTML — the copy a crawler is served — and count the links on it.
+
+**A conversion page had none. Not few: none.** The same for the nine how-to pages, the privacy page
+and every other page that is not the front page or an article. The app has a header, a footer and a
+button under every guide; `scripts/prerender.ts` wrote the words and none of the navigation. So the
+graph a crawler saw was: front page → fifteen conversion pages → nothing, plus articles linking to
+each other. The pages that have to rank commercially were the leaves.
+
+Fixed in the prerenderer, so it holds for every page and every language without anybody remembering:
+
+| Page | Now carries |
+| --- | --- |
+| A conversion | its how-to guide, up to three articles that link to it, and its fourteen siblings |
+| A how-to guide | the conversion it is about, and for `.zip` all three it answers for |
+| Every page | the footer the app already shows: home, docs, blog, live preview, changelog, extension, support and the legal three |
+
+12,185 internal links across 805 pages, none of them broken. `/excel-to-markdown` went from 0 to 27.
+
+**What the same pass measured, and what it says to write next.** Which conversions have no article
+behind them at all is now a number rather than a guess:
+
+| Conversion | Articles linking to it |
+| --- | --- |
+| `/odt-to-markdown` | 0 |
+| `/evernote-to-markdown` | 0 |
+| `/text-to-markdown` | 1 — the landing page at position 91.2 this plan already names |
+| `/epub-to-markdown`, `/rtf-to-markdown` | 1 each |
+
+Wave 3's item 8 is confirmed by this rather than by the export alone, and ODT and Evernote join it:
+three conversions shipped in the last fortnight with nothing written behind them.
