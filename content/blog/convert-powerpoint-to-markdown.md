@@ -1,6 +1,6 @@
 ---
 title: "Convert PowerPoint to Markdown: Slides, Speaker Notes and Reading Order"
-description: What survives turning a .pptx into Markdown, why Pandoc cannot read PowerPoint at all, and where the speaker notes go — six routes compared, with the tradeoffs
+description: What survives turning a .pptx into Markdown, where the speaker notes go, and what Pandoc's new deck reader still leaves behind — six routes compared
 date: 2026-09-21
 tag: Converting
 keywords: powerpoint to markdown, convert pptx to markdown, pptx to markdown converter, powerpoint speaker notes to markdown, slides to markdown, convert presentation to text
@@ -10,7 +10,7 @@ A deck is the shortest version of an argument somebody has already made. That is
 
 ### TL;DR
 
-A `.pptx` is a zip of XML parts: one part per slide, one separate part per notes page, and the pictures in a `ppt/media/` folder. Converting it well is mostly a question of which of those parts a tool bothers to open. Pandoc will not help — it writes `pptx` and does not read it, so the common advice to "just use Pandoc" fails at the first command (checked on pandoc.org, 21 September 2026). PowerPoint's own Outline/RTF export covers text in title and body placeholders and drops everything else, notes included. Exporting to PDF and converting the PDF turns a structured document into a page of positioned text and loses the structure that made the deck worth keeping. `python-pptx` reads both the slides and the notes and gives you the pieces, but you write the Markdown yourself. A converter that opens the parts directly — [TransformPipe's PowerPoint → Markdown](/powerpoint-to-markdown) is one — gives you a slide per heading with its notes underneath and its pictures embedded, in one pass.
+A `.pptx` is a zip of XML parts: one part per slide, one separate part per notes page, and the pictures in a `ppt/media/` folder. Converting it well is mostly a question of which of those parts a tool bothers to open. Pandoc will read one since version 3.8.3, released on 1 December 2025 — the widespread advice that it cannot is a year out of date — but its reader is marked alpha and opens no notes part at all, so "just use Pandoc" costs you the half of the deck that was never on screen (checked against the pandoc changelog and the reader's source, 22 September 2026). PowerPoint's own Outline/RTF export covers text in title and body placeholders and drops everything else, notes included. Exporting to PDF and converting the PDF turns a structured document into a page of positioned text and loses the structure that made the deck worth keeping. `python-pptx` reads both the slides and the notes and gives you the pieces, but you write the Markdown yourself. A converter that opens the parts directly — [TransformPipe's PowerPoint → Markdown](/powerpoint-to-markdown) is one — gives you a slide per heading with its notes underneath and its pictures embedded, in one pass.
 
 What no route recovers: animations, transitions, build order, SmartArt as a diagram, and charts as anything but an image. Those were never text.
 
@@ -40,16 +40,16 @@ The second is the notes. They are not in the slide part at all. Each notes page 
 | PowerPoint → Outline/RTF | Placeholders only | No | No | Placeholder order | Low |
 | PowerPoint → PDF → Markdown | As positioned text | Only if you print Notes Pages | Sometimes | Guessed from geometry | Medium |
 | `python-pptx` script | Yes | Yes | With work | Yours to decide | High, once |
-| Pandoc | Cannot read `.pptx` | — | — | — | — |
+| Pandoc, 3.8.3 and later | Yes | No — no notes part is opened | Extracted | Slide order | Low |
 | A converter that reads the parts | Yes | Yes | Embedded | Document order | Low |
 
-## Pandoc reads docx and epub, and does not read pptx
+## Pandoc reads a deck now, and still not the notes
 
-This is worth stating plainly because the advice is so common. Pandoc's format list is asymmetric: `docx` appears as both an input and an output format, `epub` appears as both, and `pptx` appears only as an output format (checked on pandoc.org, 21 September 2026). `pandoc -f pptx deck.pptx -t markdown` does not produce a worse conversion — it produces an error, because there is no pptx reader to select.
+This section used to say that Pandoc cannot read PowerPoint at all, which was true for nineteen years and stopped being true on 1 December 2025: version 3.8.3 added `pptx` as an input format, and `xlsx` in the same release. `pandoc -f pptx deck.pptx -t markdown` runs.
 
-That asymmetry is not an oversight so much as a statement about the format. A Word document is a stream of paragraphs with styles, which maps onto Pandoc's internal document model almost directly. A slide is a canvas of positioned shapes with no inherent reading order, and turning that into a linear document requires guesses that Pandoc has chosen not to make. Anything that does convert a deck is making those guesses; the question is only whether it tells you.
+What it gives you is a slide's shapes as blocks, its tables as tables and its SmartArt flattened into text, in slide order. What it does not give you is the notes. The reader is four modules — the archive, the shapes, the slides and SmartArt — and not one of them opens `ppt/notesSlides/`, so every sentence the presenter wrote under the slide is dropped without a warning. Both new readers also carry `Stability : alpha` in their own headers, which is the authors being straight with you (checked against the reader's source on github.com/jgm/pandoc, 22 September 2026).
 
-If you have a deck and a Pandoc-shaped workflow, the honest path is two steps: get Markdown out of the `.pptx` some other way, then hand the Markdown to Pandoc for whatever you wanted it to produce. [Alternatives to Pandoc for the Markdown side](/blog/pandoc-alternatives-for-markdown-to-html) covers the second half.
+That is the whole of the difference now. The old advice failed loudly, at the first command; the new behaviour fails quietly, in the half of the file that was never on screen. If the notes are why you are converting the deck — and they usually are — the route has to be one that opens that part. [Alternatives to Pandoc for the Markdown side](/blog/pandoc-alternatives-for-markdown-to-html) covers what to do once the text is out.
 
 ## PowerPoint's own outline export
 

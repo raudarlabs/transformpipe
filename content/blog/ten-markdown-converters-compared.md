@@ -10,7 +10,7 @@ Every converter's front page counts upward: three hundred formats, twenty-five t
 
 ### TL;DR
 
-Ten tools, checked against their own documentation on 22 September 2026. Pandoc reads `docx` and `epub` and does not read `pptx` at all. calibre reaches Markdown through its text exporter and removes every link unless you pass two flags. LibreOffice Writer can now save Markdown directly, as CommonMark. Google Docs can export it, with the copy-and-paste half switched off by default. MarkItDown reads PowerPoint including the speaker notes. Docling reads the widest input list of anything here. CloudConvert converts a deck to Markdown and does not list EPUB as a source. Turndown reads HTML and nothing else, on purpose. Mammoth reads `.docx` and produces HTML, not Markdown. python-pptx gives you the parts and no output format at all.
+Ten tools, checked against their own documentation on 22 September 2026. Pandoc reads `docx` and `epub`, and since 3.8.3 reads `pptx` and `xlsx` too — though the deck reader is alpha and takes no speaker notes. calibre reaches Markdown through its text exporter and removes every link unless you pass two flags. LibreOffice Writer can now save Markdown directly, as CommonMark. Google Docs can export it, with the copy-and-paste half switched off by default. MarkItDown reads PowerPoint including the speaker notes. Docling reads the widest input list of anything here. CloudConvert converts a deck to Markdown and does not list EPUB as a source. Turndown reads HTML and nothing else, on purpose. Mammoth reads `.docx` and produces HTML, not Markdown. python-pptx gives you the parts and no output format at all.
 
 None of them is bad. Each was built for a different shape of problem, and the mismatch between that shape and yours is where conversions go wrong.
 
@@ -32,7 +32,7 @@ Checked against each project's own documentation, 22 September 2026.
 
 | Tool | Runs | Reads pptx | Reads epub | Markdown is | Pictures |
 | --- | --- | --- | --- | --- | --- |
-| Pandoc | Locally | No — output only | Yes | A first-class target | `--extract-media` writes them out |
+| Pandoc | Locally | Yes, since 3.8.3; no notes | Yes | A first-class target | `--extract-media` writes them out |
 | calibre | Locally | No | Yes | A TXT output mode | References kept only with a flag |
 | LibreOffice Writer | Locally | Opens the deck, saves from Writer | Yes | A save-as filter, CommonMark | Not addressed in the docs |
 | Google Docs | Hosted | Opens it, exports from Docs | No | Download and import | Not addressed in the docs |
@@ -45,7 +45,7 @@ Checked against each project's own documentation, 22 September 2026.
 
 ## What each one is, in a paragraph
 
-**Pandoc** is the reference implementation of the idea that documents have a common structure. Its format list is asymmetric in a way worth internalising: `docx` appears as both reader and writer, `epub` likewise, and `pptx` only as a writer. `pandoc -f pptx` is not a poor conversion, it is an error. For everything it does read, it is the most faithful tool here and the most scriptable. [Lighter alternatives](/blog/pandoc-alternatives-for-markdown-to-html) exist for the one-file case.
+**Pandoc** is the reference implementation of the idea that documents have a common structure. Its format list is asymmetric in a way worth checking rather than remembering: `docx` and `epub` are readers and writers both, and `pptx` was a writer only until version 3.8.3 added a reader for it on 1 December 2025, along with one for `xlsx`. That reader is marked alpha and opens no notes part, so a deck converts and its speaker notes do not. For everything it does read, it is the most faithful tool here and the most scriptable. [Lighter alternatives](/blog/pandoc-alternatives-for-markdown-to-html) exist for the one-file case.
 
 **calibre** converts ebooks, and Markdown is reachable through its text output: `--txt-output-formatting=markdown`. The catch is documented and silent in practice — links are always removed with plain text output, so without `--keep-links` and `--keep-image-references` you get a clean, readable, link-free book and no warning that four hundred links were in it. It is also the most forgiving reader of malformed EPUBs, which matters more than it should.
 

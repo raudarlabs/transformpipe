@@ -39,7 +39,7 @@ Zwei Regeln machen das leicht lesbar, eine macht es leicht falsch. Das Leichte: 
 
 ## Pandoc, das EPUB tatsächlich liest
 
-Anders als bei PowerPoint, wo `pptx` nur ein Ausgabeformat ist, steht `epub` bei Pandoc auf beiden Seiten (geprüft auf pandoc.org, 21. September 2026). Das ist die kürzeste gute Antwort für ein Buch, das Sie als eine Datei wollen:
+`epub` steht bei Pandoc seit Jahren auf beiden Seiten, was nicht für jedes Format gilt, das es schreibt: `pptx` war bis zum Leser in 3.8.3 ein reines Ausgabeformat (geprüft auf pandoc.org, 22. September 2026). Das ist die kürzeste gute Antwort für ein Buch, das Sie als eine Datei wollen:
 
 ```bash
 pandoc -f epub -t gfm book.epub -o book.md --extract-media=media

@@ -364,4 +364,4 @@ A converter takes a file in one format and gives you the same content in another
 
 ### Which converter should I compare it against?
 
-The one that fails on your document rather than the one with the longest format list. The local tools split on what they refuse outright — Pandoc does not read PowerPoint at all, calibre reaches Markdown only through its text exporter, and Docling reads the widest input list of any of them. [Ten Markdown converters compared by what they will not read](/blog/ten-markdown-converters-compared) puts those refusals in one table, dated, with each claim taken from the tool's own documentation.
+The one that fails on your document rather than the one with the longest format list. The local tools split on what they refuse outright — Pandoc reads a deck only since 3.8.3 and takes none of its notes, calibre reaches Markdown only through its text exporter, and Docling reads the widest input list of any of them. [Ten Markdown converters compared by what they will not read](/blog/ten-markdown-converters-compared) puts those refusals in one table, dated, with each claim taken from the tool's own documentation.

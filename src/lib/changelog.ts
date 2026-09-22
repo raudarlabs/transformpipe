@@ -93,6 +93,18 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'Pandoc reads PowerPoint now, and four articles said it could not',
+    body:
+      'Version 3.8.3 added `pptx` and `xlsx` readers on 1 December 2025, and four articles here '
+      + 'still said a deck could not be read at all \u2014 one of them published this morning '
+      + 'with the date it was checked printed next to the claim. Corrected in five languages, '
+      + 'and the correction is not simply that it works: the reader opens no notes part, so a '
+      + 'deck converts and every sentence under the slides is dropped without a warning. Its own '
+      + 'source says `Stability : alpha`, which is more than the advice repeating the old answer '
+      + 'ever said.',
+  },
+  {
+    date: '2026-09-22',
     title: 'What Microsoft\u2019s converter is for, and when it is not',
     body:
       'MarkItDown is the default answer to \u201cconvert this document for a model to read\u201d, and '
@@ -251,8 +263,9 @@ Con l’accesso fatto, un token OAuth sta nell’archivio estensioni del browser
     date: '2026-09-22',
     title: 'Ten converters, and what each one will not read',
     body:
-      'A comparison that counts what the front pages leave out. Pandoc does not read PowerPoint '
-      + 'at all, calibre reaches Markdown only through its text exporter and drops every link '
+      'A comparison that counts what the front pages leave out. Pandoc reads a deck only since '
+      + '3.8.3 and takes none of its speaker notes, calibre reaches Markdown only through its '
+      + 'text exporter and drops every link '
       + 'unless told otherwise, LibreOffice Writer now saves CommonMark directly, and Docling '
       + 'reads the widest input list of the ten. Every claim comes from the tool\u2019s own '
       + 'documentation with the date it was checked \u2014 and the section on this one lists the '

@@ -1,6 +1,6 @@
 ---
 title: "Convertir PowerPoint a Markdown: diapositivas, notas y orden de lectura"
-description: "Qué sobrevive al convertir un .pptx a Markdown, por qué Pandoc no sabe leer PowerPoint y dónde acaban las notas del orador — seis caminos comparados"
+description: "Qué sobrevive al convertir un .pptx a Markdown, dónde acaban las notas del orador y qué sigue dejando fuera el nuevo lector de presentaciones de Pandoc"
 date: 2026-09-21
 tag: Conversión
 keywords: powerpoint a markdown, convertir pptx a markdown, notas del orador powerpoint, convertidor pptx markdown, diapositivas a markdown, presentación a texto
@@ -10,7 +10,7 @@ Una presentación es la versión más corta de un razonamiento que alguien ya de
 
 ### En resumen
 
-Un `.pptx` es un zip de partes XML: una parte por diapositiva, una parte aparte por página de notas y las imágenes en una carpeta `ppt/media/`. Lo bien que salga la conversión depende casi por completo de cuáles de esas partes se molesta en abrir la herramienta. Pandoc no ayuda: escribe `pptx` y no lo lee, así que el consejo habitual de «usa Pandoc» falla en el primer comando (comprobado en pandoc.org, 21 de septiembre de 2026). La exportación a Esquema/RTF que trae PowerPoint recoge el texto de los marcadores de título y cuerpo y deja fuera todo lo demás, notas incluidas. Pasar por PDF convierte un documento estructurado en texto colocado por coordenadas y pierde precisamente la estructura por la que valía la pena conservar la presentación. `python-pptx` lee diapositivas y notas y te entrega las piezas — el Markdown lo escribes tú. Un convertidor que abre las partes directamente, como [PowerPoint → Markdown en TransformPipe](/powerpoint-to-markdown), da en una sola pasada un encabezado por diapositiva, sus notas debajo y sus imágenes incrustadas.
+Un `.pptx` es un zip de partes XML: una parte por diapositiva, una parte aparte por página de notas y las imágenes en una carpeta `ppt/media/`. Lo bien que salga la conversión depende casi por completo de cuáles de esas partes se molesta en abrir la herramienta. Pandoc lee una presentación desde la versión 3.8.3, del 1 de diciembre de 2025 —el consejo habitual de que no puede lleva un año caducado—, pero su lector está marcado como alpha y no abre ninguna parte de notas, así que «usa Pandoc» te cuesta justo la mitad que nunca estuvo en pantalla (comprobado en el registro de cambios y en el código del lector, 22 de septiembre de 2026). La exportación a Esquema/RTF que trae PowerPoint recoge el texto de los marcadores de título y cuerpo y deja fuera todo lo demás, notas incluidas. Pasar por PDF convierte un documento estructurado en texto colocado por coordenadas y pierde precisamente la estructura por la que valía la pena conservar la presentación. `python-pptx` lee diapositivas y notas y te entrega las piezas — el Markdown lo escribes tú. Un convertidor que abre las partes directamente, como [PowerPoint → Markdown en TransformPipe](/powerpoint-to-markdown), da en una sola pasada un encabezado por diapositiva, sus notas debajo y sus imágenes incrustadas.
 
 Lo que no recupera ningún camino: animaciones, transiciones, orden de aparición, SmartArt como diagrama y los gráficos como algo que no sea una imagen. Nada de eso fue nunca texto.
 
@@ -40,16 +40,16 @@ La segunda son las notas. No están en la parte de la diapositiva. Cada página 
 | PowerPoint → Esquema/RTF | Solo marcadores | No | No | El de los marcadores | Bajo |
 | PowerPoint → PDF → Markdown | Como texto colocado | Solo imprimiendo páginas de notas | A veces | Adivinado por geometría | Medio |
 | Script con `python-pptx` | Sí | Sí | Con trabajo | El que tú decidas | Alto, una vez |
-| Pandoc | No lee `.pptx` | — | — | — | — |
+| Pandoc, 3.8.3 en adelante | Sí | No — no abre ninguna parte de notas | Extraídas | Orden de diapositivas | Bajo |
 | Un convertidor que lee las partes | Sí | Sí | Incrustadas | El del documento | Bajo |
 
-## Pandoc lee docx y epub, y no lee pptx
+## Pandoc ya lee una presentación, y las notas siguen sin salir
 
-Conviene decirlo sin rodeos, porque el consejo circula mucho. La lista de formatos de Pandoc es asimétrica: `docx` aparece como entrada y como salida, `epub` también, y `pptx` figura solo como formato de salida (comprobado en pandoc.org, 21 de septiembre de 2026). `pandoc -f pptx deck.pptx -t markdown` no produce una conversión peor: produce un error, porque no hay ningún lector de pptx que seleccionar.
+Aquí ponía que Pandoc no sabe leer PowerPoint. Fue cierto durante diecinueve años y dejó de serlo el 1 de diciembre de 2025: la versión 3.8.3 añadió `pptx` como formato de entrada, y `xlsx` en la misma entrega. `pandoc -f pptx deck.pptx -t markdown` funciona.
 
-Esa asimetría es menos un descuido que una afirmación sobre el formato. Un documento de Word es un flujo de párrafos con estilos y se proyecta casi directamente sobre el modelo interno de Pandoc. Una diapositiva es un lienzo de formas colocadas sin ningún orden de lectura propio, y linealizarla exige suposiciones que Pandoc ha decidido no hacer. Cualquier cosa que sí convierta una presentación está haciendo esas suposiciones; la única pregunta es si lo dice.
+Lo que sale: las formas de una diapositiva como bloques, sus tablas como tablas y su SmartArt aplanado a texto, en orden de diapositivas. Lo que no sale: las notas. El lector son cuatro módulos —el archivo, las formas, las diapositivas y SmartArt— y ninguno abre `ppt/notesSlides/`; cada frase escrita debajo de la diapositiva se cae sin aviso. Los dos lectores nuevos llevan además `Stability : alpha` en su propia cabecera, lo cual es honesto por parte de los autores (comprobado en el código, github.com/jgm/pandoc, 22 de septiembre de 2026).
 
-Si tienes una presentación y un flujo de trabajo montado alrededor de Pandoc, el camino honesto son dos pasos: sacar Markdown del `.pptx` por otra vía y luego entregarle ese Markdown a Pandoc para lo que quisieras que hiciera. La segunda mitad la cubren [las alternativas a Pandoc](/blog/pandoc-alternatives-for-markdown-to-html).
+Esa es toda la diferencia ahora. El consejo viejo fallaba a gritos, en el primer comando; el comportamiento nuevo falla en silencio, en la mitad del archivo que nunca estuvo en pantalla. Si las notas son el motivo de la conversión —y suelen serlo—, el camino tiene que abrir esa parte. Qué hacer con el texto después lo cubren [las alternativas a Pandoc](/blog/pandoc-alternatives-for-markdown-to-html).
 
 ## La exportación a esquema que trae PowerPoint
 

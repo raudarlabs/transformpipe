@@ -1,6 +1,6 @@
 ---
 title: "PowerPoint in Markdown umwandeln: Folien, Notizen und die Lesereihenfolge"
-description: "Was beim Umwandeln einer .pptx in Markdown übrig bleibt, warum Pandoc PowerPoint nicht lesen kann und wohin die Sprechernotizen verschwinden — sechs Wege"
+description: "Was beim Umwandeln einer .pptx in Markdown übrig bleibt, wohin die Sprechernotizen verschwinden und was Pandocs neuer Folien-Leser weiterhin liegen lässt"
 date: 2026-09-21
 tag: Konvertieren
 keywords: powerpoint in markdown umwandeln, pptx in markdown konvertieren, powerpoint notizen exportieren, präsentation als text speichern, pptx konverter, folien in markdown
@@ -10,7 +10,7 @@ Eine Präsentation ist die kürzeste Fassung einer Argumentation, die jemand ber
 
 ### Kurz gefasst
 
-Eine `.pptx` ist ein ZIP-Archiv aus XML-Teilen: ein Teil je Folie, ein eigener Teil je Notizenseite, die Bilder in einem Ordner `ppt/media/`. Wie gut die Umwandlung ausfällt, hängt fast ausschließlich davon ab, welche dieser Teile ein Werkzeug überhaupt öffnet. Pandoc hilft hier nicht: Es schreibt `pptx`, liest es aber nicht, weshalb der verbreitete Rat „nimm einfach Pandoc“ schon am ersten Befehl scheitert (geprüft auf pandoc.org, 21. September 2026). Der eingebaute Export als Gliederung/RTF erfasst den Text in Titel- und Inhaltsplatzhaltern und lässt alles andere liegen, die Notizen eingeschlossen. Der Umweg über PDF verwandelt ein strukturiertes Dokument in positionierten Text und verliert dabei genau die Struktur, wegen der die Präsentation erhaltenswert war. `python-pptx` liest Folien und Notizen und gibt Ihnen die Bestandteile — das Markdown schreiben Sie selbst. Ein Konverter, der die Teile direkt öffnet, etwa [PowerPoint → Markdown bei TransformPipe](/powerpoint-to-markdown), liefert in einem Durchgang je Folie eine Überschrift, die Notizen darunter und die Bilder eingebettet.
+Eine `.pptx` ist ein ZIP-Archiv aus XML-Teilen: ein Teil je Folie, ein eigener Teil je Notizenseite, die Bilder in einem Ordner `ppt/media/`. Wie gut die Umwandlung ausfällt, hängt fast ausschließlich davon ab, welche dieser Teile ein Werkzeug überhaupt öffnet. Pandoc liest eine Präsentation seit Version 3.8.3 vom 1. Dezember 2025 — der verbreitete Rat, es könne das nicht, ist ein Jahr alt —, doch sein Leser ist als alpha gekennzeichnet und öffnet keinen Notizenteil, sodass „nimm einfach Pandoc“ genau die Hälfte kostet, die nie auf der Leinwand stand (geprüft an Pandocs Änderungsprotokoll und am Quelltext des Lesers, 22. September 2026). Der eingebaute Export als Gliederung/RTF erfasst den Text in Titel- und Inhaltsplatzhaltern und lässt alles andere liegen, die Notizen eingeschlossen. Der Umweg über PDF verwandelt ein strukturiertes Dokument in positionierten Text und verliert dabei genau die Struktur, wegen der die Präsentation erhaltenswert war. `python-pptx` liest Folien und Notizen und gibt Ihnen die Bestandteile — das Markdown schreiben Sie selbst. Ein Konverter, der die Teile direkt öffnet, etwa [PowerPoint → Markdown bei TransformPipe](/powerpoint-to-markdown), liefert in einem Durchgang je Folie eine Überschrift, die Notizen darunter und die Bilder eingebettet.
 
 Was kein Weg rettet: Animationen, Übergänge, die Einblendreihenfolge, SmartArt als Diagramm und Diagramme als etwas anderes als ein Bild. Das war nie Text.
 
@@ -40,16 +40,16 @@ Die zweite sind die Notizen. Sie stehen überhaupt nicht im Folienteil. Jede Not
 | PowerPoint → Gliederung/RTF | Nur Platzhalter | Nein | Nein | Platzhalterfolge | Gering |
 | PowerPoint → PDF → Markdown | Als positionierter Text | Nur über Notizenseiten | Teilweise | Aus der Geometrie geraten | Mittel |
 | Skript mit `python-pptx` | Ja | Ja | Mit Arbeit | Selbst bestimmt | Hoch, einmalig |
-| Pandoc | Kann `.pptx` nicht lesen | — | — | — | — |
+| Pandoc ab 3.8.3 | Ja | Nein — kein Notizenteil wird geöffnet | Extrahiert | Folienreihenfolge | Gering |
 | Konverter, der die Teile liest | Ja | Ja | Eingebettet | Dokumentreihenfolge | Gering |
 
-## Pandoc liest docx und epub — pptx nicht
+## Pandoc liest jetzt Folien — die Notizen weiterhin nicht
 
-Das gehört deutlich gesagt, weil der Rat so häufig fällt. Pandocs Formatliste ist unsymmetrisch: `docx` steht als Eingabe- und als Ausgabeformat, `epub` ebenfalls, `pptx` dagegen ausschließlich als Ausgabeformat (geprüft auf pandoc.org, 21. September 2026). `pandoc -f pptx deck.pptx -t markdown` liefert also keine schlechtere Umwandlung, sondern einen Fehler, weil es keinen pptx-Leser zum Auswählen gibt.
+Hier stand, Pandoc könne PowerPoint gar nicht lesen. Das galt neunzehn Jahre lang und endete am 1. Dezember 2025: Version 3.8.3 nahm `pptx` als Eingabeformat auf, im selben Release auch `xlsx`. `pandoc -f pptx deck.pptx -t markdown` läuft.
 
-Diese Unsymmetrie ist weniger ein Versäumnis als eine Aussage über das Format. Ein Word-Dokument ist ein Strom von Absätzen mit Formatvorlagen und bildet sich fast unmittelbar auf Pandocs internes Dokumentmodell ab. Eine Folie ist eine Fläche mit positionierten Formen ohne festgelegte Lesereihenfolge; sie zu linearisieren verlangt Annahmen, die Pandoc bewusst nicht trifft. Jedes Werkzeug, das Präsentationen umwandelt, trifft diese Annahmen — die Frage ist nur, ob es das sagt.
+Heraus kommen die Formen einer Folie als Blöcke, ihre Tabellen als Tabellen und ihr SmartArt zu Text abgeflacht, in Folienreihenfolge. Nicht heraus kommen die Notizen. Der Leser besteht aus vier Modulen — Archiv, Formen, Folien und SmartArt —, und keines davon öffnet `ppt/notesSlides/`; jeder Satz, den der Vortragende unter die Folie geschrieben hat, fällt kommentarlos weg. Beide neuen Leser tragen zudem `Stability : alpha` im eigenen Kopf, was den Autoren hoch anzurechnen ist (geprüft am Quelltext auf github.com/jgm/pandoc, 22. September 2026).
 
-Wer eine Präsentation hat und einen auf Pandoc zugeschnittenen Arbeitsablauf, geht den ehrlichen Weg in zwei Schritten: erst auf anderem Weg Markdown aus der `.pptx` holen, dann dieses Markdown an Pandoc übergeben. Die zweite Hälfte behandelt [Alternativen zu Pandoc](/blog/pandoc-alternatives-for-markdown-to-html).
+Das ist der ganze Unterschied. Der alte Rat scheiterte laut, beim ersten Befehl; das neue Verhalten scheitert leise, in der Hälfte der Datei, die nie auf der Leinwand stand. Sind die Notizen der Grund für die Umwandlung — und das sind sie meistens —, muss der Weg einer sein, der diesen Teil öffnet. Was danach mit dem Text geschieht, behandeln [Alternativen zu Pandoc](/blog/pandoc-alternatives-for-markdown-to-html).
 
 ## Der eingebaute Gliederungsexport
 

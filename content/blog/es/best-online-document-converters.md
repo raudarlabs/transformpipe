@@ -365,7 +365,7 @@ Un conversor toma un archivo en un formato y te da el mismo contenido en otro; u
 ### ¿Con qué conversor debería compararlo?
 
 Con el que falla en tu documento, no con el que exhibe la lista de formatos más larga. Las
-herramientas locales se separan por lo que rechazan de plano: Pandoc no lee PowerPoint en absoluto,
+herramientas locales se separan por lo que rechazan de plano: Pandoc lee presentaciones solo desde la 3.8.3 y no se lleva ninguna de sus notas,
 calibre llega a Markdown solo por su exportador de texto, y Docling lee la lista de entradas más
 amplia de todas.
 [Diez conversores a Markdown comparados por lo que no leen](/blog/ten-markdown-converters-compared)

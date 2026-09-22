@@ -10,7 +10,7 @@ La portada de todo conversor cuenta hacia arriba: trescientos formatos, veintici
 
 ### En resumen
 
-Diez herramientas, comprobadas contra su propia documentación el 22 de septiembre de 2026. Pandoc lee `docx` y `epub` y no lee `pptx` en absoluto. calibre llega a Markdown por su exportador de texto y elimina todos los enlaces si no pasas dos opciones. LibreOffice Writer ya puede guardar Markdown directamente, como CommonMark. Google Docs sabe exportarlo, con la mitad de copiar y pegar desactivada por omisión. MarkItDown lee PowerPoint, notas del orador incluidas. Docling lee la lista de entradas más amplia de las que hay aquí. CloudConvert convierte una presentación a Markdown y no lista EPUB como origen. Turndown lee HTML y nada más, a propósito. Mammoth lee `.docx` y produce HTML, no Markdown. python-pptx te da las piezas y ningún formato de salida.
+Diez herramientas, comprobadas contra su propia documentación el 22 de septiembre de 2026. Pandoc lee `docx` y `epub`, y desde la 3.8.3 también `pptx` y `xlsx`, aunque su lector de presentaciones es alpha y no se lleva ninguna nota del orador. calibre llega a Markdown por su exportador de texto y elimina todos los enlaces si no pasas dos opciones. LibreOffice Writer ya puede guardar Markdown directamente, como CommonMark. Google Docs sabe exportarlo, con la mitad de copiar y pegar desactivada por omisión. MarkItDown lee PowerPoint, notas del orador incluidas. Docling lee la lista de entradas más amplia de las que hay aquí. CloudConvert convierte una presentación a Markdown y no lista EPUB como origen. Turndown lee HTML y nada más, a propósito. Mammoth lee `.docx` y produce HTML, no Markdown. python-pptx te da las piezas y ningún formato de salida.
 
 Ninguna es mala. Cada una se construyó para una forma distinta de problema, y el desajuste entre esa forma y la tuya es donde las conversiones se estropean.
 
@@ -32,7 +32,7 @@ Comprobada contra la documentación de cada proyecto, 22 de septiembre de 2026.
 
 | Herramienta | Se ejecuta | Lee pptx | Lee epub | Markdown es | Imágenes |
 | --- | --- | --- | --- | --- | --- |
-| Pandoc | En local | No — solo salida | Sí | Un destino de pleno derecho | `--extract-media` las escribe |
+| Pandoc | En local | Sí, desde la 3.8.3; sin notas | Sí | Un destino de pleno derecho | `--extract-media` las escribe |
 | calibre | En local | No | Sí | Un modo de salida TXT | Referencias solo con una opción |
 | LibreOffice Writer | En local | Abre la presentación, guarda desde Writer | Sí | Un filtro de guardado, CommonMark | No tratado en la documentación |
 | Google Docs | Alojado | La abre, exporta desde Docs | No | Descarga e importación | No tratado en la documentación |
@@ -45,7 +45,7 @@ Comprobada contra la documentación de cada proyecto, 22 de septiembre de 2026.
 
 ## Qué es cada una, en un párrafo
 
-**Pandoc** es la implementación de referencia de la idea de que los documentos tienen una estructura común. Su lista de formatos es asimétrica de una manera que conviene interiorizar: `docx` aparece como lector y como escritor, `epub` también, y `pptx` solo como escritor. `pandoc -f pptx` no es una conversión pobre: es un error. Para todo lo que sí lee, es la herramienta más fiel de aquí y la más apta para guiones. [Hay alternativas más ligeras](/blog/pandoc-alternatives-for-markdown-to-html) para el caso de un solo archivo.
+**Pandoc** es la implementación de referencia de la idea de que los documentos tienen una estructura común. Su lista de formatos es asimétrica de una manera que conviene comprobar en lugar de recordar: `docx` y `epub` son lectores y escritores, y `pptx` fue solo escritor hasta que la versión 3.8.3 le añadió un lector el 1 de diciembre de 2025, junto con otro para `xlsx`. Ese lector está marcado como alpha y no abre ninguna parte de notas: la presentación se convierte y sus notas del orador no. Para todo lo que sí lee, es la herramienta más fiel de aquí y la más apta para guiones. [Hay alternativas más ligeras](/blog/pandoc-alternatives-for-markdown-to-html) para el caso de un solo archivo.
 
 **calibre** convierte libros electrónicos, y a Markdown se llega por su salida de texto: `--txt-output-formatting=markdown`. La trampa está documentada y en la práctica es muda — con salida de texto plano los enlaces se eliminan siempre, así que sin `--keep-links` y `--keep-image-references` obtienes un libro limpio, legible y sin enlaces, y ningún aviso de que llevaba cuatrocientos. Es además el lector más indulgente de EPUB mal formados, lo que importa más de lo que debería.
 

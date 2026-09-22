@@ -39,7 +39,7 @@ Deux règles rendent cela facile à lire et une le rend facile à rater. Les fac
 
 ## Pandoc, qui lit bel et bien l'EPUB
 
-Contrairement à PowerPoint, où `pptx` n'est qu'un format de sortie, `epub` figure des deux côtés de la liste de Pandoc (vérifié sur pandoc.org, le 21 septembre 2026). C'est la meilleure réponse courte pour un livre que vous voulez en un seul fichier :
+`epub` figure des deux côtés de la liste de Pandoc depuis des années, ce qui n'est pas vrai de tous les formats qu'il écrit : `pptx` n'était qu'un format de sortie jusqu'au lecteur ajouté en 3.8.3 (vérifié sur pandoc.org, le 22 septembre 2026). C'est la meilleure réponse courte pour un livre que vous voulez en un seul fichier :
 
 ```bash
 pandoc -f epub -t gfm book.epub -o book.md --extract-media=media
