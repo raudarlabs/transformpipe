@@ -53,7 +53,7 @@ Checked against each project's own documentation, 22 September 2026.
 
 **Google Docs** imports and exports Markdown, with the export on by default; "Copy as Markdown" and "Paste from Markdown" are separate and off until you turn them on under Tools, Preferences, Enable Markdown. It is the converter most people already have, and its limits are the obvious ones: your document is already on somebody's server, and anything Docs cannot represent was lost on the way in, not on the way out.
 
-**MarkItDown**, from Microsoft, is aimed squarely at Markdown and reads PowerPoint properly — including `slide.has_notes_slide`, which it writes out under a `### Notes:` heading. Pictures come out as filename references by default and as data URIs when asked; charts become tables where it can read them and an explicit `[unsupported chart]` where it cannot. That last detail is the good habit: it says what it could not do.
+**MarkItDown**, from Microsoft, is aimed squarely at Markdown and reads PowerPoint properly — including `slide.has_notes_slide`, which it writes out under a `### Notes:` heading. Pictures come out as filename references by default and as data URIs when asked; charts become tables where it can read them and an explicit `[unsupported chart]` where it cannot. That last detail is the good habit: it says what it could not do. Where it stops, and what to reach for instead, is [a list of its own](/blog/markitdown-alternatives).
 
 **Docling**, from IBM, reads the widest list here — Office formats, OpenDocument, PDF, EPUB, HTML, images, and more — and writes Markdown among several outputs. It is the heaviest of the local tools, and the one to reach for when the input is a pile of mixed formats rather than one known one.
 

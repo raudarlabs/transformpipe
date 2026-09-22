@@ -93,6 +93,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'What Microsoft\u2019s converter is for, and when it is not',
+    body:
+      'MarkItDown is the default answer to \u201cconvert this document for a model to read\u201d, and '
+      + 'its own documentation says what it is for: text analysis pipelines, in Python, beside the '
+      + 'files. The new article reads the dependency list rather than the front page \u2014 Mammoth '
+      + 'for Word, python-pptx for decks, pdfminer for PDF \u2014 because that list is where the '
+      + 'ceiling is, and it names the four reasons somebody goes looking for something else. In '
+      + 'five languages, with the limits of this site stated in the same paragraph.',
+  },
+  {
+    date: '2026-09-22',
     title: 'The extension is in both stores',
     slug: 'browser-extension-in-both-stores',
     body:
