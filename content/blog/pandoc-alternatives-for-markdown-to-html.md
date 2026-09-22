@@ -6,7 +6,7 @@ tag: Converting
 keywords: pandoc markdown to html, pandoc standalone html, pandoc alternative, pandoc without installing, convert markdown without pandoc, markdown to docx, markdown to pdf
 ---
 
-Nobody searches for a Pandoc alternative because Pandoc is bad. They search because they wanted an HTML file and found themselves reading about template variables, or because the PDF flag asked for a TeX distribution, or because there is no terminal on the machine where the document lives. The tool is not the problem. The distance between the tool and the job is.
+Nobody searches for a Pandoc alternative because Pandoc is bad. ([What Pandoc actually is](/blog/what-is-pandoc), if that is the question underneath.) They search because they wanted an HTML file and found themselves reading about template variables, or because the PDF flag asked for a TeX distribution, or because there is no terminal on the machine where the document lives. The tool is not the problem. The distance between the tool and the job is.
 
 ### TL;DR
 

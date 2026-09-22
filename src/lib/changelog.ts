@@ -93,6 +93,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-22',
+    title: 'What Pandoc is, before the command somebody wanted to run',
+    body:
+      'The most-read piece here is about alternatives to Pandoc, and nothing said what Pandoc '
+      + 'is. It does now, in five languages: one binary, fifty readers, sixty-six writers and a '
+      + 'document model in between, which is why the format list is long without anybody having '
+      + 'written a thousand converters. It also answers the two things people search for and do '
+      + 'not find \u2014 there is no Pandoc app and no official Pandoc online, only a demo \u2014 '
+      + 'and it ends on the jobs this site is the better tool for, and the ones it is not.',
+  },
+  {
+    date: '2026-09-22',
     title: 'Pandoc reads PowerPoint now, and four articles said it could not',
     body:
       'Version 3.8.3 added `pptx` and `xlsx` readers on 1 December 2025, and four articles here '
