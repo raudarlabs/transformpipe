@@ -648,6 +648,26 @@ for (const locale of LOCALES) {
     lastmod: one.updated,
     head: breadcrumbs(crumbsForStaticPage(one, catalogue, locale)),
     body: `<h1>${escapeHtml(said.title)}</h1><p>${escapeHtml(said.lede)}</p>${
+      /*
+       * The extension page carries its store links here too, and not only in the app.
+       *
+       * This is the one static page whose purpose is to send somebody somewhere else, and the
+       * buttons that do it are rendered by React. A crawler reading the prerendered file would
+       * have found a page about an extension with no way to install it — and an outbound link to
+       * a store is the thing a search engine most wants to see on a page like this one. Directly
+       * under the lede, which is where the page puts them.
+       */
+      one.id === 'extension'
+        ? `<p>${publishedStores()
+            .map(
+              (store) =>
+                `<a href="${store.url}">${escapeHtml(
+                  catalogue.ui[`extension.store.${store.id}`]
+                )}</a>`
+            )
+            .join(' ')}</p>`
+        : ''
+    }${
       one.updated
         ? `<p>${escapeHtml(
             catalogue.ui['page.updated'].replace(
@@ -667,26 +687,7 @@ for (const locale of LOCALES) {
               : ''
           }</section>`
       )
-      .join('')}${
-      /*
-       * The extension page ends on its store links here too, and not only in the app.
-       *
-       * This is the one static page whose purpose is to send somebody somewhere else, and the
-       * button that does it is rendered by React. A crawler reading the prerendered file would
-       * have found a page about an extension with no way to install it — and an outbound link to
-       * a store is the thing a search engine most wants to see on a page like this one.
-       */
-      one.id === 'extension'
-        ? `<p>${publishedStores()
-            .map(
-              (store) =>
-                `<a href="${store.url}">${escapeHtml(
-                  catalogue.ui[`extension.store.${store.id}`]
-                )}</a>`
-            )
-            .join(' ')}</p>`
-        : ''
-    }`,
+      .join('')}`,
   });
   }
 }

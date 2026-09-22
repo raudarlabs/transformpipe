@@ -110,6 +110,32 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
         */}
       {page.id === 'support' && <IssueForm />}
 
+      {/*
+        * The extension page opens on one button per store it is in, like the support page opens on
+        * its form: somebody who arrived here to install the thing should not have to read a page
+        * about it first, and the button spent its first day at the bottom, under everything.
+        *
+        * Not `action`, which is one address and one label: this extension is in two stores and a
+        * reader is in one browser, and a single "Add it to Chrome" on a Firefox screen is a link
+        * that does nothing for the person reading it. The list is in `src/lib/pages.ts` and a
+        * store with no address yet is simply not in it.
+        */}
+      {page.id === 'extension' && publishedStores().length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {publishedStores().map((store) => (
+            <a
+              key={store.id}
+              href={store.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white no-underline transition-colors hover:bg-brand-primary/90"
+            >
+              {t(STORE_LABELS[store.id])}
+            </a>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col gap-8">
         {sections.map((section) => (
           <section key={section.heading} className="flex flex-col gap-3">
@@ -167,30 +193,6 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
           <Button onClick={() => setSettingsOpen(true)}>
             {t('cookies.settings.open')}
           </Button>
-        </div>
-      )}
-
-      {/*
-        * The extension page ends on one button per store it is in.
-        *
-        * Not `action`, which is one address and one label: this extension is in two stores and a
-        * reader is in one browser, and a single "Add it to Chrome" on a Firefox screen is a link
-        * that does nothing for the person reading it. The list is in `src/lib/pages.ts` and a
-        * store with no address yet is simply not in it.
-        */}
-      {page.id === 'extension' && publishedStores().length > 0 && (
-        <div className="flex flex-wrap gap-3 border-stroke border-t pt-6">
-          {publishedStores().map((store) => (
-            <a
-              key={store.id}
-              href={store.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white no-underline transition-colors hover:bg-brand-primary/90"
-            >
-              {t(STORE_LABELS[store.id])}
-            </a>
-          ))}
         </div>
       )}
 
