@@ -465,6 +465,16 @@ export const ui: Content['ui'] = {
   'article.missing.back': 'Zurück zum Blog',
 
   /*
+   * The invitation in the middle of an article, and the only one inside the prose.
+   *
+   * The button says the conversion's own label rather than a slogan, so it is a promise about
+   * where the click goes; which conversion that is comes from the article's own links. See
+   * `src/lib/article-cta.ts`.
+   */
+  'article.cta.title': 'Konvertieren Sie eine Datei, während Sie lesen',
+  'article.cta.blurb': 'Das geschieht in Ihrem Browser: Es wird nichts hochgeladen, und ein Konto braucht es nicht.',
+
+  /*
    * Die fünf Seiten, die nur aus Worten bestehen. Ihr eigener Text steht in `pages.ts`, nach Seite
    * geschlüsselt; diese zwei sind, was der Renderer darum herum sagt.
    *

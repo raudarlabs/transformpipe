@@ -92,6 +92,18 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-23',
+    title: 'Every article offers the conversion it is about',
+    body:
+      'Halfway down each of the 350 articles there is now one card: convert a file, in the '
+      + 'browser, no account. Which conversion it offers is read out of the article\u2019s own '
+      + 'links rather than fixed \u2014 the PowerPoint piece offers PowerPoint and says so on the '
+      + 'button, and a piece about syntax offers the default. It sits between two sections rather '
+      + 'than inside an argument, it is in the prerendered copy as well as the app, and the prose '
+      + 'in content/blog did not change: 350 Markdown files with the same paragraph pasted in is '
+      + '349 places for it to go stale.',
+  },
+  {
     date: '2026-09-22',
     title: 'What Pandoc is, before the command somebody wanted to run',
     body:

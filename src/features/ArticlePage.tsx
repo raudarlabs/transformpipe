@@ -4,6 +4,7 @@ import { DocumentPreview } from '@/components/DocumentPreview';
 import { crumbsForArticle } from '@/lib/breadcrumbs';
 import { articleCardImage } from '@/lib/covers';
 import { useI18n, useT } from '@/lib/i18n/context';
+import { localePath } from '@/lib/i18n/locales';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { headingsFromHtml } from '@/lib/toc';
 import { useActiveHeading } from '@/lib/use-active-heading';
@@ -16,6 +17,7 @@ import {
   findArticle,
   formatArticleDate,
 } from '@/lib/blog';
+import { articleCtaHtml, ctaConversionFor, withArticleCta } from '@/lib/article-cta';
 import { markdownToHtml } from '@/lib/markdown';
 import type { Destination } from '@/lib/route';
 import { ArticleCard } from '@/ui/components/ArticleCard';
@@ -94,10 +96,32 @@ export function ArticlePage({
     };
   }, [slug, locale]);
 
-  const html = useMemo(
-    () => (markdown ? markdownToHtml(markdown) : ''),
-    [markdown]
-  );
+  /*
+   * The article, with one invitation in the middle of it.
+   *
+   * Which conversion it offers comes from the article's own links, and the button says that
+   * conversion's label — so a piece about Word offers Word and says so. `src/lib/article-cta.ts`
+   * explains why this happens to the rendered HTML rather than to the Markdown, and the
+   * prerenderer does the same thing to the same article for the copy a crawler reads.
+   */
+  const html = useMemo(() => {
+    if (!markdown) {
+      return '';
+    }
+
+    const rendered = markdownToHtml(markdown);
+    const offered = ctaConversionFor(rendered);
+
+    return withArticleCta(
+      rendered,
+      articleCtaHtml({
+        href: localePath(locale, offered.path),
+        action: content.conversions[offered.id].label,
+        title: t('article.cta.title'),
+        blurb: t('article.cta.blurb'),
+      })
+    );
+  }, [markdown, locale, content, t]);
 
   /* The contents come out of the rendered HTML, so the ids are the renderer's own. */
   const headings = useMemo(() => headingsFromHtml(html), [html]);

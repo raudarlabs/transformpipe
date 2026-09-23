@@ -41,6 +41,7 @@ import {
 } from '../shared/conversions.js';
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
+import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, STATIC_PAGES } from '../src/lib/pages.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
 import { hasTranslation } from '../src/lib/route.js';
@@ -441,12 +442,33 @@ for (const locale of LOCALES) {
         }),
         DOC_STYLE,
       ].join('\n    '),
-      body: `<article class="md-doc"><h1>${escapeHtml(
-        article.title
-      )}</h1><p>${escapeHtml(meta)}</p>${localiseLinks(
-        markdownToHtml(articleMarkdown(article.slug, locale)),
-        locale
-      )}</article>`,
+      /*
+       * The same invitation the app puts in the middle of an article, in the crawled copy too.
+       *
+       * Not decoration: this is the one link on the page that goes from an article to the thing
+       * the article is about, and half of what a search engine makes of a page is where its links
+       * go. Which conversion it offers comes from the article's own prose — see
+       * `src/lib/article-cta.ts` — so it is this piece's conversion rather than the front page.
+       */
+      body: (() => {
+        const rendered = localiseLinks(
+          markdownToHtml(articleMarkdown(article.slug, locale)),
+          locale
+        );
+        const offered = ctaConversionFor(rendered);
+
+        return `<article class="md-doc"><h1>${escapeHtml(
+          article.title
+        )}</h1><p>${escapeHtml(meta)}</p>${withArticleCta(
+          rendered,
+          articleCtaHtml({
+            href: localePath(locale, offered.path),
+            action: catalogue.conversions[offered.id].label,
+            title: catalogue.ui['article.cta.title'],
+            blurb: catalogue.ui['article.cta.blurb'],
+          })
+        )}</article>`;
+      })(),
     });
   }
 }
