@@ -111,6 +111,7 @@ export const ui: Content['ui'] = {
   'header.nav.docs': 'Docs',
   'header.nav.documentation': 'Documentation',
   'header.nav.blog': 'Blog',
+  'header.nav.agents': 'Assistants IA',
   'header.menu.open': 'Menu',
   'header.menu.title': 'Menu',
   'header.menu.close': 'Fermer le menu',
@@ -475,6 +476,21 @@ export const ui: Content['ui'] = {
 
   'extension.store.chrome': 'L’ajouter à Chrome',
   'extension.store.firefox': 'L’ajouter à Firefox',
+
+  /*
+   * The landing pages for assistants, `/agents` and one per assistant under it. The copy button
+   * hands over the connector's address; the rest is the words around it.
+   */
+  'agents.copied': 'Copiée — collez-la dans les paramètres des connecteurs de votre assistant',
+  'agents.can': 'Il peut',
+  'agents.cannot': 'Il ne peut pas',
+  'agents.col.assistant': 'Assistant',
+  'agents.col.how': 'Mode de connexion',
+  'agents.col.status': 'État',
+  'agents.status.works': 'Fonctionne dès aujourd’hui',
+  'agents.status.testing': 'En cours de test',
+  'agents.claude.settings': 'Ouvrir les paramètres des connecteurs de Claude',
+  'agents.guide': 'Guide de configuration complet',
 
   /*
    * Un document que quelqu’un vous a envoyé, à /open/<token>.

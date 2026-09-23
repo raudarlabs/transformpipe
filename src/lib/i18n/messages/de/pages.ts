@@ -898,4 +898,450 @@ export const pages: Content['pages'] = {
         'Wie man TransformPipe als MCP-Connector zu Claude hinzufügt, was die elf Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
     },
   },
+
+  /*
+   * Die Landingpages für Assistenten. `sections` ist absichtlich leer: Sie werden aus `landing`
+   * gezeichnet, und der Prerenderer druckt dasselbe Objekt als Fließtext.
+   */
+  agents: {
+    label: 'KI-Assistenten',
+    title: 'Alles, was Ihr Assistent schreibt, an einem Ort, an dem Sie es wiederfinden',
+    lede: 'Assistenten schreiben den ganzen Tag Markdown — Release Notes, Spezifikationen, Zusammenfassungen — und lassen es in einem Chat liegen. Verbinden Sie TransformPipe einmal, und der Assistent speichert jedes Dokument in Ihrem Konto, wo Sie es auf jedem Gerät öffnen oder als Link verschicken können.',
+    sections: [],
+    landing: {
+      eyebrow: 'Für KI-Assistenten',
+      demo: {
+        from: 'Im Chat',
+        to: 'In Ihrem Konto',
+        title: 'Q3-Plan',
+        lines: [
+          'Den Importer vor der Preisänderung ausliefern.',
+          'Die Abrechnung zum neuen Anbieter umziehen',
+          'Den Migrationsleitfaden schreiben',
+        ],
+        shared: 'Geteilt mit anna@acme.com',
+        meta: 'v2 · aus Claude gespeichert',
+      },
+      useCases: {
+        heading: 'Wofür es gedacht ist',
+        intro: 'Vier Dinge, die keine lästige Pflicht mehr sind, sobald der Assistent an Ihr Konto herankommt.',
+        items: [
+          {
+            title: 'Behalten, was der Assistent schreibt',
+            body: 'Release Notes, eine Spezifikation, die Zusammenfassung eines langen Threads: Bitten Sie darum, es zu speichern, und es landet in Ihrem Konto unter einem Titel, nach dem Sie suchen können. Morgen ist es auf einem anderen Laptop oder auf Ihrem Telefon da, lange nachdem der Chat aus dem Blick gescrollt ist.',
+            ask: '„Speichere das als Q3-Plan.“',
+            result: 'Gespeichert · Q3-Plan',
+          },
+          {
+            title: 'Eine Seite schicken, keinen kopierten Text',
+            body: 'Der Assistent speichert das Dokument, teilt es und antwortet mit der Adresse. Wer es öffnet, sieht eine fertige Seite — Überschriften, Tabellen, Code — ohne Konto und ohne Sternchen. Teilen Sie es mit allen, die den Link haben, oder nur mit den Adressen, die Sie nennen, und widerrufen Sie die Freigabe, wann immer Sie möchten.',
+            ask: '„Veröffentliche es und gib mir den Link.“',
+            result: 'Link erstellt · transformpipe.com/s/…',
+          },
+          {
+            title: 'Wiederfinden, aus jedem Assistenten',
+            body: 'Jedes gespeicherte Dokument steht in einer einzigen Liste, gleich aus welchem Gespräch und von welchem Assistenten es stammt. Fragen Sie danach, worum es ging, und der Assistent sucht es heraus, statt dass Sie sich durch vierzig Chats scrollen.',
+            ask: '„Finde die Migrations-Spec von letzter Woche.“',
+            result: 'Gefunden · Migrations-Spec, 16. Sep.',
+          },
+          {
+            title: 'Umschreiben, ohne den ersten Entwurf zu verlieren',
+            body: 'Wenn der Assistent ein Dokument aktualisiert, wird der neue Text als Version neben dem alten aufbewahrt. Sie sehen, was was ersetzt hat, und können fragen, was sich zwischen beiden geändert hat.',
+            ask: '„Aktualisiere die Spec und behalte die alte Version.“',
+            result: 'v1 → v2 · beide behalten',
+          },
+        ],
+      },
+      compare: {
+        heading: 'Aus dem Chat kopieren oder einmal verbinden',
+        intro: 'Was mit einem Dokument geschieht, das ein Assistent geschrieben hat — so, wie die meisten es heute handhaben, und so, wie es mit dem Connector läuft.',
+        left: 'Kopieren und einfügen',
+        right: 'Mit TransformPipe',
+        rows: [
+          { label: 'Wo es landet', left: 'Im Chat oder in einer Notiz, in die Sie es eingefügt haben', right: 'In Ihrem Konto, unter einem Titel' },
+          { label: 'Später wiederfinden', left: 'Durch Gespräche zurückscrollen', right: 'Suchen oder den Assistenten danach fragen' },
+          { label: 'Aus einem anderen Assistenten', left: 'Eine andere App, ein anderer Verlauf', right: 'Dieselbe Liste, gleich welches Werkzeug es schrieb' },
+          { label: 'Jemandem schicken', left: 'Eingefügtes Markdown, samt Sternchen', right: 'Ein Link zu einer fertigen Seite' },
+          { label: 'Wer es öffnen kann', left: 'Wem auch immer Sie es weitergeleitet haben', right: 'Alle mit dem Link oder nur die Adressen, die Sie nennen' },
+          { label: 'Nach einer Überarbeitung', left: 'Der alte Text liegt, wo Sie ihn gelassen haben', right: 'Beide Versionen behalten, nebeneinander' },
+        ],
+      },
+      steps: {
+        heading: 'In drei Schritten verbunden',
+        items: [
+          {
+            title: 'Die Adresse kopieren',
+            body: 'Eine Adresse für jeden Assistenten. Es gibt keinen Schlüssel und nichts zu erzeugen.',
+          },
+          {
+            title: 'Beim Assistenten eintragen',
+            body: 'In Claude: „Settings“, „Connectors“, „Add custom connector“. Melden Sie sich mit Google an, wenn danach gefragt wird.',
+          },
+          {
+            title: 'In normalen Worten fragen',
+            body: 'Speichern, veröffentlichen, finden, aktualisieren. Das Dokument liegt in Ihrem Konto und öffnet sich auf jedem Gerät.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'Woran der Assistent kommt und woran nicht',
+        can: [
+          'Ein Dokument in Ihrem Konto speichern',
+          'Ihre Dokumente auflisten, öffnen und zusammenfassen',
+          'Eines per Link oder mit genannten Adressen teilen',
+          'Eine neue Version neben der alten behalten',
+        ],
+        cannot: [
+          'Ihr Konto oder seine Einstellungen ändern',
+          'Ihr Passwort sehen oder API-Schlüssel erstellen',
+          'An die Dokumente anderer herankommen',
+          'Etwas ohne Ihre ausdrückliche Bestätigung löschen',
+        ],
+        notes: [
+          {
+            title: 'Nur lesend, wenn Sie es wollen',
+            body: 'Eine Berechtigung lässt sich auf das Lesen beschränken. Das wird an der Berechtigung selbst durchgesetzt und hält deshalb, was auch immer ein Dokument, das der Assistent liest, ihm einzureden versucht.',
+          },
+          {
+            title: 'Kostenlos, mit schriftlich festgehaltenen Grenzen',
+            body: '500 Dokumente und 100 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
+          },
+        ],
+      },
+      clients: {
+        heading: 'Welche Assistenten sich verbinden lassen',
+        intro: 'Ein Konto und eine Liste von Dokumenten, gleich welcher dieser Assistenten sie geschrieben hat. Claude lässt sich heute verbinden; die übrigen werden getestet, und jeder bekommt eine eigene Seite, sobald das Verbinden nachweislich von Anfang bis Ende funktioniert.',
+        items: [
+          {
+            name: 'Claude',
+            how: 'Custom Connector · Anmeldung mit Google',
+            body: 'claude.ai, Claude Desktop und Claude Code. Fügen Sie einen Custom Connector hinzu, melden Sie sich an und bitten Sie Claude, ein Dokument zu speichern, zu veröffentlichen oder zu finden.',
+          },
+          {
+            name: 'ChatGPT',
+            how: 'Connector im Entwicklermodus',
+            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Die Anmeldung wird gerade gegen diesen Server erprobt.',
+          },
+          {
+            name: 'Cursor',
+            how: 'Remote-MCP-Server',
+            body: 'Cursor fügt Remote-MCP-Server mit Anmeldung hinzu, kehrt danach aber über ein eigenes Link-Schema in den Editor zurück, das dieser Server noch nicht akzeptiert. Daran wird gerade gearbeitet.',
+          },
+          {
+            name: 'Gemini',
+            how: 'Gemini CLI, Remote-MCP',
+            body: 'Gemini CLI fügt Remote-MCP-Server mit einer Anmeldung über den Browser hinzu, genau wie Claude Code, und ist als Nächstes an der Reihe.',
+          },
+          {
+            name: 'VS Code',
+            how: 'Copilot-Agent-Modus, Remote-MCP',
+            body: 'Der Agent-Modus von GitHub Copilot in VS Code verbindet sich mit Remote-MCP-Servern und meldet sich über den Browser an. Wird getestet.',
+          },
+          {
+            name: 'Windsurf',
+            how: 'Remote-MCP-Server',
+            body: 'Auch der Assistent von Windsurf nimmt Remote-MCP-Server an. Ob seine Anmeldung gegen diesen Server durchläuft, ist noch zu prüfen.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Fragen zum Verbinden eines Assistenten',
+        intro: 'Die kurzen Antworten. Den Rest enthält die vollständige Einrichtungsanleitung.',
+        items: [
+          {
+            question: 'Was ist ein MCP-Connector?',
+            answer:
+              'MCP, das Model Context Protocol, ist der Weg, auf dem ein KI-Assistent Werkzeuge außerhalb des Chats aufruft. TransformPipe betreibt unter `/api/mcp` einen MCP-Server; tragen Sie ihn bei Ihrem Assistenten als Custom Connector ein, erhält dieser eine Handvoll Werkzeuge — ein Dokument speichern, es als Link teilen, Gespeichertes auflisten und öffnen, Versionen behalten —, die er benutzt, wenn Sie in normalen Worten darum bitten.',
+          },
+          {
+            question: 'Ist es kostenlos?',
+            answer:
+              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
+          },
+          {
+            question: 'Muss ich mich zuerst registrieren?',
+            answer:
+              'Nein. Beim Hinzufügen des Connectors in Ihrem Assistenten durchlaufen Sie eine normale Anmeldung, und diese Anmeldung ist das Konto — es gibt keine gesonderte Registrierung, keinen API-Schlüssel zu erzeugen und nichts einzufügen. Dasselbe Konto funktioniert auf der Website; die Dokumente, die Ihr Assistent speichert, sind also da, wenn Sie sich auf einem anderen Gerät anmelden.',
+          },
+          {
+            question: 'Wie speichere ich, was ein Assistent geschrieben hat, als Dokument?',
+            answer:
+              'Bitten Sie im selben Gespräch darum: „speichere das“ oder „speichere das als Q3-Plan“. Der Assistent schickt das Markdown, das er geschrieben hat, in Ihr Konto, wo es einen Titel, einen Platz in einer durchsuchbaren Liste und einen Versionsverlauf bekommt — statt in einem Chat zu bleiben, durch den Sie zurückscrollen oder aus dem Sie es von Hand herauskopieren müssten.',
+          },
+          {
+            question: 'Wie teile ich die Ausgabe eines Assistenten als Link?',
+            answer:
+              'Bitten Sie den Assistenten, es zu veröffentlichen. Er speichert das Dokument, teilt es und antwortet mit der Adresse: eine fertige Seite mit gerenderten Überschriften, Tabellen und Code, kein rohes Markdown mit seinen Sternchen. Teilen Sie es mit allen, die den Link haben, oder machen Sie daraus einen nur lesbaren Dokumentlink, den ausschließlich die von Ihnen genannten E-Mail-Adressen öffnen können, und widerrufen Sie ihn jederzeit.',
+          },
+          {
+            question: 'Werden meine Dokumente zum Training von KI verwendet?',
+            answer:
+              'Nein. Dokumente, die Sie speichern, lesen wir nicht, und sie werden nicht zum Training irgendeines Modells verwendet. Sie liegen in Ihrem Konto, erreichbar für Sie und für die Assistenten, die Sie verbunden haben, bis Sie sie löschen — und Löschen entfernt ein Dokument, statt es nur zu verstecken.',
+          },
+          {
+            question: 'Kann der Assistent meine Dokumente löschen?',
+            answer:
+              'Nur ein Dokument auf einmal und nur mit einer ausdrücklichen Bestätigung in derselben Anfrage, sodass eine vage Anweisung kein Konto leeren kann. Eine nur lesende Berechtigung kann Ihre Dokumente auflisten, öffnen und zusammenfassen, aber nichts speichern, teilen oder löschen, und diese Grenze wird an der Berechtigung selbst durchgesetzt, nicht an dem, was man dem Assistenten sagt.',
+          },
+          {
+            question: 'Was passiert, wenn ich die Verbindung trenne?',
+            answer:
+              'Der Assistent verliert sofort den Zugriff: Das Entfernen des Connectors widerruft die Berechtigung. Ihre Dokumente bleiben in Ihrem Konto, und bereits geteilte Links funktionieren weiter, bis Sie sie selbst widerrufen. Verbinden Sie sich später erneut, finden Sie dasselbe Konto und dieselbe Liste von Dokumenten vor.',
+          },
+          {
+            question: 'Kann jemand, mit dem ich geteilt habe, das Dokument bearbeiten?',
+            answer:
+              'Nein. Ein geteiltes Dokument ist für alle, die es öffnen, schreibgeschützt: Sie können die Seite lesen und herunterladen, sie aber weder ändern noch löschen noch die Freigabe weitergeben. Dokumente, die andere mit Ihrer Adresse geteilt haben, erscheinen in Ihrer eigenen Liste, als mit Ihnen geteilt gekennzeichnet.',
+          },
+          {
+            question: 'Ist das eine offizielle Integration eines dieser Assistenten?',
+            answer:
+              'Nein. TransformPipe ist ein unabhängiger MCP-Server, kein Produkt von Anthropic, OpenAI, Google oder einem Editor-Hersteller. Jeder Assistent verbindet sich damit wie mit jedem Custom Connector, über die Standard-Anmeldung, die das Protokoll festlegt.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Probieren Sie es mit dem Nächsten, was Ihr Assistent schreibt',
+        text: 'Adresse kopieren, Connector hinzufügen und darum bitten, die Antwort zu speichern. Das dauert eine Minute.',
+      },
+      bottom: {
+        title: 'Ihr nächstes Dokument entsteht gerade in einem Chat',
+        text: 'Legen Sie es dort ab, wo es nächste Woche noch ist.',
+      },
+    },
+    action: 'Die Adresse kopieren',
+    seo: {
+      title: 'KI-Ausgabe speichern und als Link teilen — TransformPipe',
+      description:
+        'Ihr KI-Assistent schreibt Markdown und lässt es im Chat liegen. Mit TransformPipe speichert, versioniert und teilt er jedes Dokument, auf jedem Gerät erreichbar.',
+    },
+  },
+
+  'agents-claude': {
+    label: 'Claude',
+    title: 'Speichern und teilen, was Claude schreibt',
+    lede: 'Claude entwirft die Release Notes, die Spezifikation, die Zusammenfassung der Besprechung — und alles bleibt in diesem einen Gespräch. Fügen Sie TransformPipe als Connector hinzu, und Claude speichert jedes davon in Ihrem Konto, behält die Versionen und gibt Ihnen einen Link, der sich als fertige Seite öffnet.',
+    sections: [],
+    landing: {
+      eyebrow: 'Für Claude',
+      demo: {
+        from: 'Im Chat',
+        to: 'In Ihrem Konto',
+        title: 'Q3-Plan',
+        lines: [
+          'Den Importer vor der Preisänderung ausliefern.',
+          'Die Abrechnung zum neuen Anbieter umziehen',
+          'Den Migrationsleitfaden schreiben',
+        ],
+        shared: 'Geteilt mit anna@acme.com',
+        meta: 'v2 · aus Claude gespeichert',
+      },
+      useCases: {
+        heading: 'Worum Sie Claude bitten können',
+        intro: 'Vier Sätze, die etwas bewirken, sobald der Connector hinzugefügt ist — auf claude.ai, in Claude Desktop und in Claude Code gleichermaßen.',
+        items: [
+          {
+            title: 'Behalten, was Claude schreibt',
+            body: 'Das Dokument landet in Ihrem Konto unter einem Titel, den Claude wählt, und Sie können es später umbenennen. Es ist morgen da, auf einem anderen Gerät, wenn das Gespräch längst vorbei ist — und es hängt nicht davon ab, dass Sie sich erinnern, in welchem Chat es stand.',
+            ask: '„Speichere das als Q3-Plan.“',
+            result: 'Gespeichert · Q3-Plan',
+          },
+          {
+            title: 'Eine Seite schicken, keinen kopierten Text',
+            body: 'Claude speichert das Dokument, teilt es und antwortet mit der Adresse. Wer es öffnet, sieht eine fertige Seite und braucht kein Claude-Konto. Teilen Sie es mit allen, die den Link haben, oder nur mit den Adressen, die Sie nennen; widerrufen Sie die Freigabe, und der Link funktioniert nicht mehr, auch einer, der schon verschickt ist.',
+            ask: '„Veröffentliche es und gib mir den Link.“',
+            result: 'Link erstellt · transformpipe.com/s/…',
+          },
+          {
+            title: 'Wiederfinden, in jedem Gespräch',
+            body: 'Claude listet Ihre Dokumente auf und öffnet das, das Sie meinten — auch eines, das in einem anderen Gespräch, in Claude Code oder von einem ganz anderen Assistenten geschrieben wurde.',
+            ask: '„Finde die Migrations-Spec von letzter Woche.“',
+            result: 'Gefunden · Migrations-Spec, 16. Sep.',
+          },
+          {
+            title: 'Umschreiben, ohne den ersten Entwurf zu verlieren',
+            body: 'Eine Aktualisierung wird als neue Version neben der alten aufbewahrt, und Claude kann beide lesen und Ihnen sagen, was sich verschoben hat.',
+            ask: '„Aktualisiere die Spec und behalte die alte Version.“',
+            result: 'v1 → v2 · beide behalten',
+          },
+        ],
+      },
+      compare: {
+        heading: 'Warum nicht einfach ein Artifact',
+        intro: 'Ein Artifact ist eine gute Art, sich etwas anzusehen, solange das Gespräch offen ist. Ein Dokument hier ist für alles, was danach kommt.',
+        left: 'Claude-Artifact',
+        right: 'TransformPipe',
+        rows: [
+          { label: 'Wo es liegt', left: 'In dem Gespräch, das es erzeugt hat', right: 'In Ihrem Konto, außerhalb jedes Chats' },
+          { label: 'Später wiederfinden', left: 'Sich erinnern, welcher Chat es war', right: 'Suchen oder Claude in einem beliebigen Gespräch fragen' },
+          { label: 'Dokumente aus anderen Werkzeugen', left: 'Nur Claude', right: 'Eine Liste, gleich welcher Assistent es schrieb' },
+          { label: 'Teilen', left: 'Als öffentliche Seite veröffentlicht', right: 'Ein Link oder nur genannte Adressen; jederzeit widerrufbar' },
+          { label: 'Versionen', left: 'Innerhalb dieses Gesprächs', right: 'Über Gespräche und Werkzeuge hinweg behalten' },
+          { label: 'Woanders weiterverwenden', left: 'Den Inhalt herauskopieren', right: 'Als Markdown oder fertige HTML-Datei herunterladen' },
+        ],
+      },
+      steps: {
+        heading: 'In drei Schritten verbunden',
+        items: [
+          {
+            title: 'Die Adresse kopieren',
+            body: 'Eine Adresse, `https://transformpipe.com/api/mcp`. Es gibt keinen Schlüssel und nichts zu erzeugen.',
+          },
+          {
+            title: 'In Claude eintragen',
+            body: 'Auf claude.ai oder in Claude Desktop: „Settings“, „Connectors“, „Add custom connector“. Fügen Sie die Adresse ein und geben Sie dem Connector einen Namen.',
+          },
+          {
+            title: 'Anmelden und fragen',
+            body: 'Melden Sie sich mit Google an, wenn Claude danach fragt. Ab dem nächsten Gespräch tut „speichere das“, was es sagt.',
+          },
+        ],
+      },
+      command: {
+        heading: 'In Claude Code',
+        body: 'Ein Befehl, in jedem Terminal. Sobald zum ersten Mal ein Werkzeug benutzt wird, öffnet Claude Code dieselbe Anmeldung in Ihrem Browser.',
+        code: 'claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp',
+      },
+      trust: {
+        heading: 'Woran Claude kommt und woran nicht',
+        can: [
+          'Ein Dokument in Ihrem Konto speichern',
+          'Ihre Dokumente auflisten, öffnen und zusammenfassen',
+          'Eines per Link oder mit genannten Adressen teilen',
+          'Eine neue Version neben der alten behalten',
+        ],
+        cannot: [
+          'Ihr Konto oder seine Einstellungen ändern',
+          'Ihr Passwort sehen oder API-Schlüssel erstellen',
+          'An die Dokumente anderer herankommen',
+          'Etwas ohne Ihre ausdrückliche Bestätigung löschen',
+        ],
+        notes: [
+          {
+            title: 'Nur lesend, wenn Sie es wollen',
+            body: 'Eine Berechtigung lässt sich auf das Lesen beschränken. Das wird an der Berechtigung selbst durchgesetzt und hält deshalb, was auch immer ein Dokument, das der Assistent liest, ihm einzureden versucht.',
+          },
+          {
+            title: 'Mit einem Klick trennen',
+            body: 'Das Entfernen des Connectors in den Einstellungen von Claude widerruft den Zugriff sofort. Ihre Dokumente bleiben, bis Sie sie löschen.',
+          },
+          {
+            title: 'Kostenlos, mit schriftlich festgehaltenen Grenzen',
+            body: '500 Dokumente und 100 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
+          },
+        ],
+      },
+      clients: {
+        heading: 'Andere Assistenten, dieselben Dokumente',
+        intro: 'Was Claude speichert, werden die anderen finden können — ein Konto, gleich welches Werkzeug fragt. Diese werden als Nächstes getestet.',
+        items: [
+          {
+            name: 'Claude',
+            how: 'Custom Connector · Anmeldung mit Google',
+            body: 'claude.ai, Claude Desktop und Claude Code — heute schon verbunden, mit den Schritten auf dieser Seite.',
+          },
+          {
+            name: 'ChatGPT',
+            how: 'Connector im Entwicklermodus',
+            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Die Anmeldung wird gerade gegen diesen Server erprobt.',
+          },
+          {
+            name: 'Cursor',
+            how: 'Remote-MCP-Server',
+            body: 'Cursor fügt Remote-MCP-Server mit Anmeldung hinzu, kehrt danach aber über ein eigenes Link-Schema in den Editor zurück, das dieser Server noch nicht akzeptiert. Daran wird gerade gearbeitet.',
+          },
+          {
+            name: 'Gemini',
+            how: 'Gemini CLI, Remote-MCP',
+            body: 'Gemini CLI fügt Remote-MCP-Server mit einer Anmeldung über den Browser hinzu, genau wie Claude Code, und ist als Nächstes an der Reihe.',
+          },
+          {
+            name: 'VS Code',
+            how: 'Copilot-Agent-Modus, Remote-MCP',
+            body: 'Der Agent-Modus von GitHub Copilot in VS Code verbindet sich mit Remote-MCP-Servern und meldet sich über den Browser an. Wird getestet.',
+          },
+          {
+            name: 'Windsurf',
+            how: 'Remote-MCP-Server',
+            body: 'Auch der Assistent von Windsurf nimmt Remote-MCP-Server an. Ob seine Anmeldung gegen diesen Server durchläuft, ist noch zu prüfen.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Fragen zu Claude und TransformPipe',
+        intro: 'Die kurzen Antworten. Den Rest enthält die vollständige Einrichtungsanleitung.',
+        items: [
+          {
+            question: 'Was ist ein Custom Connector in Claude?',
+            answer:
+              'Über einen Custom Connector erreicht Claude ein Werkzeug außerhalb des Gesprächs, per MCP, dem Model Context Protocol. TransformPipe ist ein MCP-Server unter `https://transformpipe.com/api/mcp`; als Connector auf claude.ai, in Claude Desktop oder in Claude Code hinzugefügt, gibt er Claude Werkzeuge, um die Dokumente, die Claude schreibt, zu speichern, zu teilen, zu finden und zu versionieren.',
+          },
+          {
+            question: 'Ist es kostenlos?',
+            answer:
+              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
+          },
+          {
+            question: 'Muss ich mich zuerst registrieren?',
+            answer:
+              'Nein. Beim Hinzufügen des Connectors in Claude durchlaufen Sie eine normale Anmeldung, und diese Anmeldung ist das Konto — es gibt keine gesonderte Registrierung, keinen API-Schlüssel zu erzeugen und nichts einzufügen. Dasselbe Konto funktioniert auf der Website; was Claude speichert, ist also da, wenn Sie sich auf einem anderen Gerät anmelden.',
+          },
+          {
+            question: 'Wie exportiere ich, was Claude geschrieben hat, als Dokument?',
+            answer:
+              'Bitten Sie Claude, es zu speichern: „speichere das“ oder „speichere das als Release Notes“. Statt dass Sie Markdown aus dem Chat kopieren, schickt Claude es in Ihr Konto, wo es einen Titel, einen Platz in einer durchsuchbaren Liste und einen Versionsverlauf bekommt und sich als Markdown-Datei oder als fertige, eigenständige HTML-Seite herunterladen lässt.',
+          },
+          {
+            question: 'Wie teile ich die Ausgabe von Claude als Link?',
+            answer:
+              'Bitten Sie Claude, es zu veröffentlichen. Claude speichert das Dokument, teilt es und antwortet mit der Adresse: eine fertige Seite mit gerenderten Überschriften, Tabellen und Code, kein rohes Markdown. Teilen Sie es mit allen, die den Link haben, oder machen Sie daraus einen nur lesbaren Dokumentlink, den ausschließlich die von Ihnen genannten E-Mail-Adressen öffnen können, und widerrufen Sie ihn jederzeit.',
+          },
+          {
+            question: 'Werden meine Dokumente zum Training von KI verwendet?',
+            answer:
+              'Nein. Dokumente, die Sie speichern, lesen wir nicht, und sie werden nicht zum Training irgendeines Modells verwendet. Sie liegen in Ihrem Konto, erreichbar für Sie und für die Assistenten, die Sie verbunden haben, bis Sie sie löschen — und Löschen entfernt ein Dokument, statt es nur zu verstecken.',
+          },
+          {
+            question: 'Kann Claude meine Dokumente löschen?',
+            answer:
+              'Nur ein Dokument auf einmal und nur mit einer ausdrücklichen Bestätigung in derselben Anfrage, sodass eine vage Anweisung kein Konto leeren kann. Eine nur lesende Berechtigung kann Ihre Dokumente auflisten, öffnen und zusammenfassen, aber nichts speichern, teilen oder löschen, und diese Grenze wird an der Berechtigung selbst durchgesetzt, nicht an dem, was man Claude sagt.',
+          },
+          {
+            question: 'Was passiert, wenn ich die Verbindung trenne?',
+            answer:
+              'Claude verliert sofort den Zugriff: Das Entfernen des Connectors in den Einstellungen von Claude widerruft die Berechtigung. Ihre Dokumente bleiben in Ihrem Konto, und bereits geteilte Links funktionieren weiter, bis Sie sie selbst widerrufen. Verbinden Sie sich später erneut, finden Sie dasselbe Konto und dieselben Dokumente vor.',
+          },
+          {
+            question: 'Kann jemand, mit dem ich geteilt habe, das Dokument bearbeiten?',
+            answer:
+              'Nein. Ein geteiltes Dokument ist für alle, die es öffnen, schreibgeschützt: Sie können die Seite lesen und herunterladen, sie aber weder ändern noch löschen noch die Freigabe weitergeben — und zum Öffnen brauchen sie kein Claude-Konto.',
+          },
+          {
+            question: 'Funktioniert es auch in Claude Code?',
+            answer:
+              'Ja. Ein einziger Befehl fügt es hinzu — `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp` —, und der erste Werkzeugaufruf öffnet dieselbe Anmeldung in Ihrem Browser. Es ist dasselbe Konto: Ein aus Claude Code gespeichertes Dokument ist auf claude.ai und in Claude Desktop da, und umgekehrt.',
+          },
+          {
+            question: 'Stammt das von Anthropic?',
+            answer:
+              'Nein. TransformPipe ist ein unabhängiger MCP-Server, kein Produkt von Anthropic. Claude verbindet sich damit wie mit jedem Custom Connector, über die Standard-Anmeldung, die das Model Context Protocol festlegt.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Probieren Sie es mit dem Nächsten, was Claude schreibt',
+        text: 'Adresse kopieren, Connector hinzufügen und Claude bitten, die Antwort zu speichern. Das dauert eine Minute.',
+      },
+      bottom: {
+        title: 'Ihr nächstes Dokument entsteht gerade in einem Chat',
+        text: 'Legen Sie es dort ab, wo es nächste Woche noch ist.',
+      },
+    },
+    action: 'Die Adresse kopieren',
+    seo: {
+      title: 'Claude-Ausgabe speichern und als Link teilen — TransformPipe',
+      description:
+        'TransformPipe als Claude Connector: Es speichert, was Claude schreibt, in Ihrem Konto, behält Versionen und teilt jedes Dokument als Seite, die jeder öffnen kann.',
+    },
+  },
 };

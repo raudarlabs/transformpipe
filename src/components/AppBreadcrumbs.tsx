@@ -13,6 +13,30 @@ interface AppBreadcrumbsProps {
 }
 
 /**
+ * Which view a crumb's address is, when the app has it as a view — the front page, the blog, the
+ * changelog, in any language. Anything else, a page under which another sits, stays an ordinary
+ * link: sending it to the converter, which is what every crumb that was not the blog used to do,
+ * took the reader somewhere the crumb did not say.
+ */
+function viewFor(path: string): Destination | null {
+  const rest = path.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+
+  if (rest === '/') {
+    return 'converter';
+  }
+
+  if (rest === '/blog') {
+    return 'blog';
+  }
+
+  if (rest === '/changelog') {
+    return 'changelog';
+  }
+
+  return null;
+}
+
+/**
  * The trail from `src/lib/breadcrumbs.ts`, wired to this app's navigation.
  *
  * Rendered into the strip under the header when there is one — see `BreadcrumbSlot` — and where the
@@ -33,13 +57,15 @@ export function AppBreadcrumbs({
   const trail = (
     <Breadcrumbs
       className={slot?.node ? undefined : className}
-      items={items.map((crumb) => ({
-        label: crumb.label,
-        href: crumb.path,
-        onNavigate: crumb.path
-          ? () => onNavigate(crumb.path === '/blog' ? 'blog' : 'converter')
-          : undefined,
-      }))}
+      items={items.map((crumb) => {
+        const view = crumb.path ? viewFor(crumb.path) : null;
+
+        return {
+          label: crumb.label,
+          href: crumb.path,
+          onNavigate: view ? () => onNavigate(view) : undefined,
+        };
+      })}
     />
   );
 

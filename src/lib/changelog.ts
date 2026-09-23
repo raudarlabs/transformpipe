@@ -92,6 +92,19 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-24',
+    title: 'A page for the assistants, and one for Claude',
+    body:
+      '/agents says what the connector is for rather than how to add it: everything an assistant '
+      + 'writes, saved to your account, found again from any device and sent as a link to a '
+      + 'finished page. /agents/claude has the steps for claude.ai, Claude Desktop and Claude Code, '
+      + 'a side-by-side with artifacts, and what Claude can and cannot reach. Both copy the '
+      + 'connector\u2019s address in one click, and both list the assistants still being tested '
+      + '\u2014 ChatGPT, Cursor, Gemini, VS Code and Windsurf \u2014 which get a page each once '
+      + 'connecting them has been seen to work. A button in the header leads there, and a row in '
+      + 'the phone menu. In five languages.',
+  },
+  {
     date: '2026-09-23',
     title: 'Every article offers the conversion it is about',
     body:

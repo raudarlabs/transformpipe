@@ -111,7 +111,7 @@ export function ConversionPicker({
                 onChange(one.id);
               }}
               className={cn(
-                'group flex flex-col gap-1 rounded-lg border p-4 no-underline transition-colors',
+                'dot-grid group flex flex-col gap-1 rounded-lg border p-4 no-underline transition-colors',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-offset-2',
                 isCurrent
                   ? 'border-brand-tertiary bg-surface-accent'
@@ -160,7 +160,7 @@ export function ConversionPicker({
           <div
             key={soon.id}
             title={t('converter.picker.soon.title')}
-            className="flex cursor-default flex-col gap-1 rounded-lg border border-dashed border-stroke p-4"
+            className="dot-grid flex cursor-default flex-col gap-1 rounded-lg border border-dashed border-stroke p-4"
           >
             {/*
               * The badge sits under the label rather than beside it. Beside it, it took thirty

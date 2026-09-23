@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 22 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 24 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -99,6 +99,13 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 24 September
+
+- [x] **A page for the assistants, and one for Claude** — `/agents` and `/agents/claude`: what the
+      connector is for, the steps, what an assistant can and cannot reach, and a table of the
+      assistants still being tested. One page per assistant so each can be measured on its own;
+      a client gets its page once connecting it has been seen to work
 
 ### 22 September
 

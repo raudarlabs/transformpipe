@@ -23,6 +23,7 @@ import { LivePreviewPage } from './features/LivePreviewPage';
 import { NotFoundPage } from './features/NotFoundPage';
 import { SharedDocumentPage } from './features/SharedDocumentPage';
 import { StaticPage } from './features/StaticPage';
+import { AgentsPage } from './features/AgentsPage';
 import { staticPage, type StaticPageId } from './lib/pages';
 import { AuthProvider, useAuth } from './lib/auth';
 import { ConsentProvider } from './lib/consent';
@@ -633,7 +634,11 @@ function Shell() {
 
       <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">
         {view === 'page' && pageId ? (
-          <StaticPage page={staticPage(pageId)} onGoToConverter={startOver} />
+          staticPage(pageId).group === 'agents' ? (
+            <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
+          ) : (
+            <StaticPage page={staticPage(pageId)} onGoToConverter={startOver} />
+          )
         ) : view === 'docs' ? (
           <DocsPage onGoToConverter={startOver} />
         ) : view === 'blog' ? (

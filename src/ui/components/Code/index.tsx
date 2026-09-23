@@ -21,7 +21,7 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
     <pre
       data-language={language}
       className={cn(
-        'overflow-auto rounded-md border border-stroke bg-surface-card2 p-4',
+        'dot-grid overflow-auto rounded-md border border-stroke bg-surface-card2 p-4',
         'font-mono text-ink-body text-xs leading-relaxed',
         className
       )}

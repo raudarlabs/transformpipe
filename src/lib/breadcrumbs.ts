@@ -3,7 +3,7 @@ import type { Article } from './blog';
 import { articlePath, blogPath } from './blog';
 import type { Content } from './i18n/content';
 import { DEFAULT_LOCALE, localePath, type Locale } from './i18n/locales';
-import type { StaticPage, StaticPageId } from './pages';
+import { type StaticPage, type StaticPageId, staticPage } from './pages';
 
 /*
  * The trail for every page, in one place.
@@ -124,7 +124,15 @@ export function crumbsForStaticPage(
   content: Content,
   locale: Locale
 ): CrumbSpec[] {
-  return [home(content, locale), { label: content.pages[page.id].label }];
+  const parent = 'parent' in page && page.parent ? staticPage(page.parent) : null;
+
+  return [
+    home(content, locale),
+    ...(parent
+      ? [{ label: content.pages[parent.id].label, path: localePath(locale, parent.path) }]
+      : []),
+    { label: content.pages[page.id].label },
+  ];
 }
 
 

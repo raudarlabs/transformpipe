@@ -62,7 +62,7 @@ export function Dropzone({
       onDrop={handleDrop}
       className={cn(
         'flex flex-col items-center justify-center gap-4 rounded-xl border border-dropzone-border border-dashed px-6 py-14 text-center',
-        'bg-surface-card transition-colors duration-base',
+        'dot-grid bg-surface-card transition-colors duration-base',
         isDragging && 'border-dropzone-border-active bg-dropzone-bg-active',
         isBusy && 'pointer-events-none opacity-disabled'
       )}

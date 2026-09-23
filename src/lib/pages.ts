@@ -34,7 +34,9 @@ export type StaticPageId =
   | 'how-to-rtf'
   | 'how-to-enex'
   | 'how-to-zip'
-  | 'how-to-assistant';
+  | 'how-to-assistant'
+  | 'agents'
+  | 'agents-claude';
 
 /**
  * Which part of the footer a page belongs under.
@@ -43,7 +45,7 @@ export type StaticPageId =
  * edits in two files and forgetting the second one shipped a page nothing linked to. The group
  * travels with the page now.
  */
-export type PageGroup = 'company' | 'legal' | 'how-to';
+export type PageGroup = 'company' | 'legal' | 'how-to' | 'agents';
 
 export interface StaticPage {
   id: StaticPageId;
@@ -85,6 +87,11 @@ export interface StaticPage {
    * as it stands and is written out by `Intl` — see `formatDate` — in whatever language is reading.
    */
   updated?: string;
+  /**
+   * The page this one sits under, for the breadcrumb between home and here — `/agents/claude`
+   * is one of the assistants `/agents` lists, and says so.
+   */
+  parent?: StaticPageId;
 }
 
 /** The repository, named once: the header links to it, the footer links to it, and so do the pages. */
@@ -193,6 +200,18 @@ export const STATIC_PAGES: StaticPage[] = [
    * something rather than drop something.
    */
   { id: 'how-to-assistant', path: '/how-to/assistant', group: 'how-to', action: '/docs' },
+
+  /*
+   * The same connector as `how-to-assistant`, from the other end: not how to add it but why
+   * somebody would — everything an assistant writes, kept where it can be found again and sent.
+   *
+   * One page per assistant rather than one page for all of them, because each is searched for by
+   * its own name and each connects its own way, and because the point of these is to see which
+   * one people come for. The hub lists them; a client only gets a page once connecting it has
+   * actually been seen to work.
+   */
+  { id: 'agents', path: '/agents', group: 'agents' },
+  { id: 'agents-claude', path: '/agents/claude', group: 'agents', parent: 'agents' },
 ];
 
 /** The pages of one group, in the order declared — what the footer builds a column from. */

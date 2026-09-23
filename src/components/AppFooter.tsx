@@ -117,6 +117,7 @@ export function AppFooter({
          * blog, the live preview — and it is the way in that has to be installed.
          */
         page('extension'),
+        page('agents'),
         page('support'),
       ],
     },

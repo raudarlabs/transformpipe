@@ -43,6 +43,7 @@ import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, STATIC_PAGES } from '../src/lib/pages.js';
+import type { LandingWords } from '../src/lib/i18n/content.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
 import { hasTranslation } from '../src/lib/route.js';
 import {
@@ -283,6 +284,78 @@ function localiseLinks(html: string, locale: Locale): string {
   });
 }
 
+/*
+ * An assistant landing page, as prose.
+ *
+ * The app draws `landing` as a landing — a conversation, cards, steps, a row of assistants — and
+ * none of that layout matters to a crawler. Every word of it does, in order, with the headings as
+ * headings and the links as links: the connector's address, the guide, and the pages of the
+ * assistants that have one.
+ */
+function landingHtml(landing: LandingWords, locale: Locale, here: string): string {
+  const catalogue = CATALOGUES[locale];
+  const titled = (items: { title: string; body: string }[]) =>
+    items.map((item) => `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p>`).join('');
+  const claude = STATIC_PAGES.find((one) => one.id === 'agents-claude')!;
+  const guide = STATIC_PAGES.find((one) => one.id === 'how-to-assistant')!;
+
+  return [
+    `<p><code>https://transformpipe.com/api/mcp</code> · ${anchor(
+      localePath(locale, guide.path),
+      catalogue.ui['agents.guide']
+    )}</p>`,
+    `<section><h2>${escapeHtml(landing.useCases.heading)}</h2><p>${escapeHtml(
+      landing.useCases.intro
+    )}</p>${landing.useCases.items
+      .map(
+        (item) =>
+          `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p><p>${escapeHtml(item.ask)} — ${escapeHtml(item.result)}</p>`
+      )
+      .join('')}</section>`,
+    `<section><h2>${escapeHtml(landing.compare.heading)}</h2><p>${escapeHtml(
+      landing.compare.intro
+    )}</p><table><thead><tr><th></th><th>${escapeHtml(landing.compare.left)}</th><th>${escapeHtml(
+      landing.compare.right
+    )}</th></tr></thead><tbody>${landing.compare.rows
+      .map(
+        (row) =>
+          `<tr><th>${escapeHtml(row.label)}</th><td>${escapeHtml(row.left)}</td><td>${escapeHtml(
+            row.right
+          )}</td></tr>`
+      )
+      .join('')}</tbody></table></section>`,
+    `<section><h2>${escapeHtml(landing.steps.heading)}</h2>${titled(landing.steps.items)}</section>`,
+    landing.command
+      ? `<section><h2>${escapeHtml(landing.command.heading)}</h2><p>${escapeHtml(
+          landing.command.body
+        )}</p><pre><code>${escapeHtml(landing.command.code)}</code></pre></section>`
+      : '',
+    `<section><h2>${escapeHtml(landing.trust.heading)}</h2><h3>${escapeHtml(
+      catalogue.ui['agents.can']
+    )}</h3><ul>${landing.trust.can.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul><h3>${escapeHtml(
+      catalogue.ui['agents.cannot']
+    )}</h3><ul>${landing.trust.cannot
+      .map((line) => `<li>${escapeHtml(line)}</li>`)
+      .join('')}</ul>${titled(landing.trust.notes)}</section>`,
+    `<section><h2>${escapeHtml(landing.clients.heading)}</h2><p>${escapeHtml(
+      landing.clients.intro
+    )}</p>${landing.clients.items
+      .map(
+        (item, index) =>
+          `<h3>${
+            index === 0 && here !== claude.id
+              ? anchor(localePath(locale, claude.path), item.name)
+              : escapeHtml(item.name)
+          }</h3><p>${escapeHtml(item.how)}. ${escapeHtml(item.body)}</p>`
+      )
+      .join('')}</section>`,
+    `<section><h2>${escapeHtml(landing.faq.heading)}</h2>${landing.faq.items
+      .map((item) => `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p>`)
+      .join('')}</section>`,
+    `<p>${escapeHtml(landing.bottom.title)}. ${escapeHtml(landing.bottom.text)}</p>`,
+  ].join('');
+}
+
 function render(page: Page): string {
   const url = `${SITE}${page.path === '/' ? '' : page.path}`;
   const locale = page.locale ?? DEFAULT_LOCALE;
@@ -335,7 +408,7 @@ function render(page: Page): string {
  */
 function siteFooter(locale: Locale): string {
   const catalogue = CATALOGUES[locale];
-  const page = (id: 'extension' | 'support' | 'privacy' | 'terms' | 'cookies') => {
+  const page = (id: 'extension' | 'agents' | 'support' | 'privacy' | 'terms' | 'cookies') => {
     const one = STATIC_PAGES.find((each) => each.id === id)!;
 
     return anchor(localePath(locale, one.path), catalogue.pages[id].label);
@@ -348,6 +421,7 @@ function siteFooter(locale: Locale): string {
     anchor(localePath(locale, '/markdown-live-preview'), catalogue.ui['footer.live']),
     anchor(localePath(locale, '/changelog'), catalogue.ui['footer.changelog']),
     page('extension'),
+    page('agents'),
     page('support'),
     page('privacy'),
     page('terms'),
@@ -796,7 +870,24 @@ for (const locale of LOCALES) {
      * is that same day written out, which is `formatDate`'s job and not this file's.
      */
     lastmod: one.updated,
-    head: breadcrumbs(crumbsForStaticPage(one, catalogue, locale)),
+    /*
+     * The assistant pages carry their questions as an FAQPage too. The answers are on the page,
+     * in the accordion at its foot — the condition under which this markup is worth having.
+     */
+    head:
+      breadcrumbs(crumbsForStaticPage(one, catalogue, locale)) +
+      (said.landing
+        ? jsonLd({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            inLanguage: locale,
+            mainEntity: said.landing.faq.items.map((entry) => ({
+              '@type': 'Question',
+              name: entry.question,
+              acceptedAnswer: { '@type': 'Answer', text: entry.answer },
+            })),
+          })
+        : ''),
     body: `<h1>${escapeHtml(said.title)}</h1><p>${escapeHtml(said.lede)}</p>${
       /*
        * The extension page carries its store links here too, and not only in the app.
@@ -851,7 +942,7 @@ for (const locale of LOCALES) {
             )
           )}</p>`
         : ''
-    }${said.sections
+    }${said.landing ? landingHtml(said.landing, locale, one.id) : ''}${said.sections
       .map(
         (section) =>
           `<section><h2>${escapeHtml(section.heading)}</h2>${section.body

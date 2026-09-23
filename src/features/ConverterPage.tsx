@@ -366,7 +366,7 @@ export function ConverterPage({
         {/* Addressable: the footer links here, so it needs somewhere to land. */}
         <section
           id="faq"
-          className="mt-10 flex flex-col items-center gap-8 rounded-2xl border border-stroke bg-surface-card2/40 px-4 py-12 sm:px-10"
+          className="dot-grid mt-10 flex flex-col items-center gap-8 rounded-2xl border border-stroke bg-surface-card px-4 py-12 sm:px-10"
         >
           <SectionHeading
             align="center"

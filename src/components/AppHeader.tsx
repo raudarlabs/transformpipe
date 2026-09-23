@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Bot,
   Check,
   ChevronDown,
   History,
@@ -332,6 +333,27 @@ export function AppHeader({
                 );
               })}
             </nav>
+
+            {/*
+              * The assistants, as words rather than one more glyph.
+              *
+              * The icons beside it are places somebody already knows they want to go; this is the
+              * thing most visitors do not know the site does, so it says so. A name on a wide
+              * screen, the glyph alone where the bar is tighter, and a row in the phone's menu.
+              */}
+            <button
+              type="button"
+              onClick={() => onOpenPage('agents')}
+              title={t('header.nav.agents')}
+              className={cn(
+                'hidden h-9 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-stroke px-2.5 md:inline-flex xl:px-3',
+                'text-ink-body text-sm transition-colors hover:border-brand-tertiary hover:text-ink-primary',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand'
+              )}
+            >
+              <Bot className="size-4 shrink-0 text-brand-tertiary" />
+              <span className="hidden xl:inline">{t('header.nav.agents')}</span>
+            </button>
 
             {/*
               * Before the account, and outside it on purpose.

@@ -125,6 +125,7 @@ export const ui: Content['ui'] = {
   'header.nav.docs': 'Doku',
   'header.nav.documentation': 'Dokumentation',
   'header.nav.blog': 'Blog',
+  'header.nav.agents': 'KI-Assistenten',
   'header.menu.open': 'Menü',
   'header.menu.title': 'Menü',
   'header.menu.close': 'Menü schließen',
@@ -488,6 +489,21 @@ export const ui: Content['ui'] = {
 
   'extension.store.chrome': 'Zu Chrome hinzufügen',
   'extension.store.firefox': 'Zu Firefox hinzufügen',
+
+  /*
+   * The landing pages for assistants, `/agents` and one per assistant under it. The copy button
+   * hands over the connector's address; the rest is the words around it.
+   */
+  'agents.copied': 'Kopiert — fügen Sie die Adresse in die Connector-Einstellungen Ihres Assistenten ein',
+  'agents.can': 'Er kann',
+  'agents.cannot': 'Er kann nicht',
+  'agents.col.assistant': 'Assistent',
+  'agents.col.how': 'So wird er verbunden',
+  'agents.col.status': 'Status',
+  'agents.status.works': 'Funktioniert heute',
+  'agents.status.testing': 'Wird getestet',
+  'agents.claude.settings': 'Connector-Einstellungen von Claude öffnen',
+  'agents.guide': 'Vollständige Einrichtungsanleitung',
 
   /*
    * Ein Dokument, das jemand Ihnen geschickt hat, unter /open/<token>.

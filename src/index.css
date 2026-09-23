@@ -791,3 +791,48 @@ body,
   width: 0;
   height: 0;
 }
+
+/*
+ * The drop that runs down the pipe on the assistant pages, from the Markdown to the finished
+ * document. Decoration only, so it is not there at all for somebody who asked for less motion.
+ */
+@keyframes pipe-flow {
+  0% { top: -6%; opacity: 0; }
+  25% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.pipe-drop {
+  animation: pipe-flow 1.8s ease-in infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipe-drop {
+    display: none;
+  }
+}
+
+/*
+ * The worksheet texture: a faint dot grid in the border colour, so it follows the theme. On the
+ * blocks that hold something to use — a file to drop, a conversion to pick, code to copy, a table
+ * to read across, the questions, the connector's address — and not on prose, so it keeps meaning
+ * "this part is for doing".
+ */
+.dot-grid {
+  background-image: radial-gradient(hsl(var(--stroke-border)) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/*
+ * The same texture on a blog article's code and tables — here, on the article page, and not in
+ * `shared/md-doc-css.ts`, which is also the stylesheet of the document a person downloads. Their
+ * export should look like their document, not like this site. The dots are mixed from the document
+ * theme's own secondary ink — its stroke is too close to a code block's ground to be seen — so they
+ * follow whichever palette the article is drawn in.
+ */
+.article-body .md-doc pre,
+.article-body .md-doc table {
+  background-image: radial-gradient(color-mix(in srgb, var(--md-secondary) 30%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}

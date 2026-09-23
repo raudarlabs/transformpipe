@@ -319,7 +319,7 @@ export function ArticlePage({
             ))}
           </div>
         ) : (
-          <DocumentPreview html={html} className="md-article" />
+          <DocumentPreview html={html} className="md-article article-body" />
         )}
       </div>
 

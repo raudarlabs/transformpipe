@@ -27,7 +27,7 @@ export function DefinitionTable({ rows, className }: DefinitionTableProps) {
   return (
     <div
       className={cn(
-        'overflow-x-auto rounded-md border border-stroke',
+        'dot-grid overflow-x-auto rounded-md border border-stroke bg-surface-card',
         className
       )}
     >

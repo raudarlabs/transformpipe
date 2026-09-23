@@ -740,7 +740,9 @@ node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 docu
 
         <Section id="faq" title={titles.faq.title}>
           <p>{t('docs.faq.intro')}</p>
-          <Faq items={questions} />
+          <div className="dot-grid rounded-2xl border border-stroke bg-surface-card p-4 sm:p-6">
+            <Faq items={questions} />
+          </div>
         </Section>
 
         <footer className="border-stroke border-t pt-6 text-ink-secondary text-sm">

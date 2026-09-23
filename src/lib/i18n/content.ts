@@ -53,6 +53,74 @@ export interface PageSectionWords {
   items?: string[];
 }
 
+/** A title and the sentences under it — a card, a step, a use case without its example. */
+export interface TitledWords {
+  title: string;
+  body: string;
+}
+
+/**
+ * The words of an assistant landing page, `/agents` and the pages under it.
+ *
+ * Its own shape rather than `sections`, because the page is not a document: the use cases, the
+ * steps and the assistants still to come are each drawn their own way, and a list of headings and
+ * paragraphs would leave the renderer guessing which is which. Which picture goes with which use
+ * case is the renderer's business, by position — a picture is not language.
+ */
+export interface LandingWords {
+  /** The small line above the title. */
+  eyebrow: string;
+  /**
+   * The picture the page opens on, drawn from words: a document as it sits in a chat — Markdown,
+   * asterisks and all — and the same document as it sits in the account afterwards.
+   */
+  demo: {
+    /** Over the Markdown half, and over the finished half. */
+    from: string;
+    to: string;
+    title: string;
+    /** A line of prose, then two tasks — the first one done. */
+    lines: [string, string, string];
+    /** Who the finished document is shared with, and its versions. */
+    shared: string;
+    meta: string;
+  };
+  useCases: {
+    heading: string;
+    intro: string;
+    /** Each with the sentence somebody would type, and what it leaves behind. */
+    items: (TitledWords & { ask: string; result: string })[];
+  };
+  /**
+   * The objection a page like this invites, answered side by side: what somebody does today
+   * against what the connector does. Each row is one property, said both ways.
+   */
+  compare: {
+    heading: string;
+    intro: string;
+    /** The column headings: the thing it is compared with, and this. */
+    left: string;
+    right: string;
+    rows: { label: string; left: string; right: string }[];
+  };
+  steps: { heading: string; items: TitledWords[] };
+  /** The terminal client, where there is one: a command rather than a settings screen. */
+  command?: { heading: string; body: string; code: string };
+  /** What the connector may do and may not, side by side, and the notes under them. */
+  trust: { heading: string; can: string[]; cannot: string[]; notes: TitledWords[] };
+  /**
+   * The assistants, as a table: one row each, with how it connects and, opened, the detail. The
+   * first is Claude, which works today and links to its page; the rest are being tested. Which is
+   * which is the renderer's, by position.
+   */
+  clients: { heading: string; intro: string; items: { name: string; how: string; body: string }[] };
+  /** Drawn by the same block as the front page's questions, so the site has one FAQ, not three. */
+  faq: { heading: string; intro: string; items: { question: string; answer: string }[] };
+  /** The two invitations: halfway down, after the use cases, and at the end. */
+  middle: { title: string; text: string };
+  bottom: { title: string; text: string };
+}
+
 export interface PageWords {
   label: string;
   title: string;
@@ -60,6 +128,8 @@ export interface PageWords {
   sections: PageSectionWords[];
   /** The one button a how-to page ends on. Its address is in `src/lib/pages.ts`. */
   action?: string;
+  /** Present on the assistant landing pages, which draw it instead of `sections`. */
+  landing?: LandingWords;
   seo: { title: string; description: string };
 }
 

@@ -14,7 +14,7 @@ import {
   type ConversionId,
 } from '@shared/conversions';
 import { useI18n, useT } from '@/lib/i18n/context';
-import { pagesIn, type StaticPageId } from '@/lib/pages';
+import { pagesIn, type StaticPageId, staticPage } from '@/lib/pages';
 import type { AppView, Destination } from '@/lib/route';
 import { IconButton } from '@/ui/components/IconButton';
 import {
@@ -224,7 +224,7 @@ export function MobileNav({
             * in it is a list nobody reads.
             */}
           <section className="flex flex-col gap-1 border-stroke border-t pt-4">
-            {[...pagesIn('company'), ...pagesIn('legal')].map((one) => (
+            {[staticPage('agents'), ...pagesIn('company'), ...pagesIn('legal')].map((one) => (
               <button
                 key={one.id}
                 type="button"
