@@ -45,7 +45,7 @@ is worse than one that is honestly English.
 ### An entry can have a page of its own
 
 Most should not. A `slug` gives the entry an address — `/changelog/<slug>`, prerendered in five
-languages and listed in the sitemap — and it is for the entries somebody would search for: a
+languages — and it is for the entries somebody would search for: a
 format this now converts, a thing it now does. Not for a fix.
 
 ```ts
@@ -66,6 +66,13 @@ format this now converts, a thing it now does. Not for a fix.
 
 `changelogProblems()` enforces all of that and the prerenderer throws on it, so a bad entry fails
 the build rather than shipping an empty page.
+
+**A page is not an entry in the sitemap.** Since 24 September 2026 an entry page is listed and
+indexable only when its slug is in `INDEXED_ENTRIES` in `src/lib/changelog.ts`; every other one is
+served `noindex, follow`. Fifty-three pages in five languages were a third of the sitemap, and the
+Search Console report showed them queued ahead of the conversion pages that have to rank. Add a
+slug to that set only when people search for the thing and no other page here answers the search —
+never for a new conversion, whose own page (`/epub-to-markdown`) is the one that should rank.
 
 **Detail pages may be translated, and entries themselves still may not.** The reason the rule
 exists — five translations per entry, per release, forever — does not apply to a handful of pages

@@ -51,6 +51,30 @@ export interface ChangelogEntry {
   detail?: ChangelogDetail;
 }
 
+/*
+ * The entry pages a search engine is asked to index.
+ *
+ * A page each is right for the reader who follows a link from the list; it is wrong for a new
+ * site's crawl. Fifty-three entries in five languages were a third of the sitemap, Google left
+ * 204 of them "discovered, not indexed" in the September report, and the conversion pages that
+ * have to rank waited in the same queue. So the pages stay, at the addresses they were given, and
+ * only these are listed and indexable: things somebody searches for that no other page on the site
+ * answers. An entry about a conversion is not among them — `/epub-to-markdown` is the page for that
+ * search, and a release note competing with it for the same words helps neither.
+ *
+ * The rest are `noindex, follow`: readable, linked, and out of the queue.
+ */
+export const INDEXED_ENTRIES = new Set([
+  'markdown-to-pdf-api',
+  'markdown-to-word',
+  'mermaid-diagrams',
+  'math-in-markdown',
+  'syntax-highlighting',
+  'webhooks',
+  'embed-the-converter',
+  'document-versions',
+]);
+
 /** One entry's page, in English and in whatever else somebody has written. */
 export type ChangelogDetail = { en: ChangelogDetailText } & Partial<
   Record<Locale, ChangelogDetailText>

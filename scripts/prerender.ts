@@ -32,6 +32,7 @@ import {
   CHANGELOG_PAGES,
   changelogProblems,
   detailIn,
+  INDEXED_ENTRIES,
 } from '../src/lib/changelog.js';
 import {
   CONVERSIONS,
@@ -200,6 +201,11 @@ interface Page {
    * and says `noindex` instead.
    */
   addressless?: boolean;
+  /**
+   * At its own address, canonical, linked — and not to be indexed. The changelog entries outside
+   * `INDEXED_ENTRIES`, which a reader may follow a link to and a search engine need not queue.
+   */
+  noindex?: boolean;
   lastmod?: string;
   /** Which language this file is. English when absent, which is most of them. */
   locale?: Locale;
@@ -364,6 +370,7 @@ function render(page: Page): string {
     page.addressless
       ? '<meta name="robots" content="noindex" />'
       : `<link rel="canonical" href="${url}" />`,
+    page.noindex ? '<meta name="robots" content="noindex, follow" />' : '',
     page.addressless ? '' : alternates(splitLocale(page.path).rest, page.languages),
     `<meta property="og:type" content="${page.path.startsWith('/blog/') ? 'article' : 'website'}" />`,
     `<meta property="og:site_name" content="TransformPipe" />`,
@@ -1110,6 +1117,13 @@ if (changelogFaults.length > 0) {
   );
 }
 
+/* A name in the indexed set with no page behind it is a typo that would quietly index nothing. */
+for (const slug of INDEXED_ENTRIES) {
+  if (!CHANGELOG_PAGES.some((entry) => entry.slug === slug)) {
+    throw new Error(`INDEXED_ENTRIES names ${slug}, and no changelog entry has that slug`);
+  }
+}
+
 for (const entry of CHANGELOG_PAGES) {
   for (const locale of LOCALES) {
     const catalogue = CATALOGUES[locale];
@@ -1122,7 +1136,8 @@ for (const entry of CHANGELOG_PAGES) {
       path,
       title: `${piece.title ?? entry.title} — TransformPipe`,
       description: piece.description,
-      listed: true,
+      listed: INDEXED_ENTRIES.has(entry.slug!),
+      noindex: !INDEXED_ENTRIES.has(entry.slug!),
       lastmod: entry.date,
       head: [
         `<meta name="keywords" content="${escapeHtml(piece.keywords)}" />`,
