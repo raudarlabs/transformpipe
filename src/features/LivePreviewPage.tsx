@@ -195,9 +195,16 @@ export function LivePreviewPage({
       <div
         ref={frame}
         className={cn(
-          'grid gap-4 lg:grid-cols-2',
+          /*
+           * Rows that are a share of the frame, never the height of what is in them. A grid row is
+           * `auto` unless told otherwise, and an `auto` row grows to fit its content: the preview
+           * pane became as tall as the document, its `overflow-auto` had nothing to scroll, and in
+           * fullscreen — where the frame is exactly the screen — everything below the fold was
+           * simply cut off, with no scrollbar anywhere to reach it.
+           */
+          'grid gap-4 lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)]',
           isFullscreen
-            ? 'h-screen bg-surface-page p-4'
+            ? 'h-screen grid-rows-[minmax(0,1fr)_minmax(0,1fr)] bg-surface-page p-4'
             : 'lg:h-[74vh] lg:min-h-[34rem]',
           overlaid && OVERLAY
         )}
@@ -219,7 +226,7 @@ export function LivePreviewPage({
         )}
         <div
           className={cn(
-            'flex min-w-0 flex-col gap-2',
+            'flex min-h-0 min-w-0 flex-col gap-2',
             isFullscreen ? 'h-full' : 'h-[62vh] min-h-[26rem] lg:h-auto'
           )}
         >
@@ -256,7 +263,7 @@ export function LivePreviewPage({
 
         <div
           className={cn(
-            'flex min-w-0 flex-col gap-2',
+            'flex min-h-0 min-w-0 flex-col gap-2',
             isFullscreen ? 'h-full' : 'h-[62vh] min-h-[26rem] lg:h-auto'
           )}
         >

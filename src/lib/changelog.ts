@@ -116,6 +116,15 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-26',
+    title: 'The live preview scrolls in full screen',
+    body:
+      'Full screen gave the live preview the whole screen and then cut the document off at the '
+      + 'bottom of it: the pane grew as tall as what was in it, so there was nothing to scroll and '
+      + 'no way to reach the rest. Both panes now keep to the screen and scroll on their own, side '
+      + 'by side on a wide screen and one above the other on a narrow one.',
+  },
+  {
     date: '2026-09-24',
     title: 'A page for the assistants, and one for Claude',
     body:
