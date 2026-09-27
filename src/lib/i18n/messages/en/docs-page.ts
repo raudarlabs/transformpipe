@@ -42,7 +42,7 @@ export const docsPage = {
   'docs.chip.shared': 'Shared with me',
 
   'docs.start.signedOut':
-    'Drop a file on the converter and you have the converted document and a download. Signed out, nothing is stored and nothing is sent anywhere — the conversion runs in this browser, on your own machine.',
+    'Drop a file on the converter and you have the converted document and a download. Signed out, nothing is stored and no part of the file is sent anywhere — the conversion runs in this browser, on your own machine.',
   'docs.start.signedIn':
     'Sign in with Google and the same documents follow you between devices, can be shared by link or by address, and can be reached by a script with an API key. Whatever you converted before signing in moves into the account on the way.',
 

@@ -157,7 +157,7 @@ export const pages: Content['pages'] = {
     lede: 'Qué se guarda, dónde, y qué no se recoge en absoluto.',
     sections: [
       {
-        heading: 'Sin la sesión iniciada, no nos llega nada',
+        heading: 'Sin la sesión iniciada, no nos llega ningún archivo',
         body: [
           'Convertir ocurre en tu navegador. El archivo se lee, se convierte y se muestra en tu propia máquina, y no se envía ninguna parte de él a un servidor. El historial que ves es el almacenamiento del propio navegador, no una cuenta.',
         ],
@@ -173,6 +173,12 @@ export const pages: Content['pages'] = {
           'El Markdown en sí, en un almacén de blobs privado — privado quiere decir que no tiene ninguna URL pública y solo se lee mediante una petición que autorizamos.',
           'Las claves API como hashes, nunca la clave. Una clave se muestra una vez, al crearla, y después no se puede recuperar — ni tú ni nosotros.',
           'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace.',
+        ],
+      },
+      {
+        heading: 'Contar, sin saber quién',
+        body: [
+          'Contamos las visitas y unas pocas acciones — una página abierta, una conversión, una descarga, un guardado, un documento compartido — como totales diarios anónimos, en nuestro propio servidor y en nuestra propia base de datos. Contar no crea ninguna cookie ni guarda nada en tu navegador; los totales no conservan ningún identificador ni dirección IP, y de un documento nada más que la conversión o el formato. De dónde llegó una visita se registra solo como el nombre del sitio de procedencia — Product Hunt, Google, «directo» — o como la etiqueta de campaña del enlace que seguiste.',
         ],
       },
       {
@@ -232,7 +238,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Privacidad — TransformPipe',
       description:
-        'Sin sesión iniciada, ningún archivo sale de tu navegador. Con sesión guardamos el documento, sus metadatos y tu identidad de cuenta: analítica solo si la permites, sin píxeles de seguimiento y sin vender nada.',
+        'Sin sesión iniciada, ningún archivo sale de tu navegador. Con sesión guardamos el documento, sus metadatos y tu identidad de cuenta: Google Analytics solo si lo permites, sin píxeles de seguimiento y sin vender nada.',
     },
   },
   terms: {
@@ -313,6 +319,12 @@ export const pages: Content['pages'] = {
         heading: 'Almacenamiento del navegador, que no es una cookie',
         body: [
           'Dos cosas viven en el almacenamiento local de tu navegador y nunca se envían a ningún sitio: el tema que elegiste y —cuando no tienes la sesión iniciada— tus conversiones recientes, para que el historial tenga algo dentro. Borrar los datos del sitio en el navegador elimina las dos, y la aplicación sigue funcionando sin ellas.',
+        ],
+      },
+      {
+        heading: 'Contar sin cookies ni almacenamiento',
+        body: [
+          'Las visitas y unas pocas acciones se cuentan en nuestro propio servidor como totales diarios anónimos. Eso no crea ninguna cookie ni guarda nada en tu navegador, así que aquí no hay nada que permitir ni rechazar: la página de privacidad dice exactamente qué se cuenta.',
         ],
       },
       {

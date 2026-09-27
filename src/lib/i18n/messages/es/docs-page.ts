@@ -31,7 +31,7 @@ export const docsPage = {
   'docs.chip.shared': 'Compartido conmigo',
 
   'docs.start.signedOut':
-    'Suelta un archivo en el conversor y ya tienes el documento convertido y su descarga. Sin la sesión iniciada no se guarda nada y no se envía nada a ningún sitio — la conversión ocurre en este navegador, en tu propia máquina.',
+    'Suelta un archivo en el conversor y ya tienes el documento convertido y su descarga. Sin la sesión iniciada no se guarda nada y ninguna parte del archivo se envía a ningún sitio — la conversión ocurre en este navegador, en tu propia máquina.',
   'docs.start.signedIn':
     'Inicia sesión con Google y esos mismos documentos te siguen de un dispositivo a otro, se pueden compartir por enlace o por dirección, y un script puede llegar a ellos con una clave API. Lo que hubieras convertido antes de iniciar sesión pasa a la cuenta por el camino.',
 

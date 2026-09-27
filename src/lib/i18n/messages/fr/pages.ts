@@ -153,7 +153,7 @@ export const pages: Content['pages'] = {
     lede: 'Ce qui est conservé, où, et ce qui n’est jamais collecté du tout.',
     sections: [
       {
-        heading: 'Déconnecté, rien ne nous parvient',
+        heading: 'Déconnecté, aucun fichier ne nous parvient',
         body: [
           'La conversion se fait dans votre navigateur. Le fichier est lu, converti et rendu sur votre propre machine, et rien n’en est envoyé à un serveur. L’historique que vous voyez est le stockage de votre navigateur, pas un compte.',
         ],
@@ -169,6 +169,12 @@ export const pages: Content['pages'] = {
           'Le Markdown lui-même, dans un stockage d’objets privé — privé signifiant qu’il n’a pas d’URL publique et n’est lu qu’au travers d’une requête que nous autorisons.',
           'Les clés API sous forme de hachages, jamais la clé. Une clé n’est affichée qu’une fois, à sa création, et ne peut plus être retrouvée ensuite — ni par vous, ni par nous.',
           'Les réglages de partage : si un document est privé, ouvert par lien, ou adressé à des adresses e-mail précises, et le jeton que porte un lien.',
+        ],
+      },
+      {
+        heading: 'Compter, sans savoir qui',
+        body: [
+          'Nous comptons les visites et quelques actions — une page ouverte, une conversion lancée, un téléchargement, un enregistrement, un partage — sous forme de totaux quotidiens anonymes, sur notre propre serveur et dans notre propre base de données. Ce comptage ne pose aucun cookie et ne stocke rien dans votre navigateur ; les totaux ne gardent ni identifiant ni adresse IP, et rien d’un document hormis la conversion ou le format concernés. La provenance d’une visite n’est enregistrée que sous le nom du site d’origine — Product Hunt, Google, « direct » — ou sous l’étiquette de campagne du lien que vous avez suivi.',
         ],
       },
       {
@@ -228,7 +234,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Confidentialité — TransformPipe',
       description:
-        'Déconnecté, rien ne quitte le navigateur. Connecté, nous conservons le document, ses métadonnées et votre identité de compte — la mesure d’audience seulement si vous l’autorisez, aucun pixel de suivi, rien de vendu.',
+        'Déconnecté, rien ne quitte le navigateur. Connecté, nous conservons le document, ses métadonnées et votre identité de compte — Google Analytics seulement si vous l’autorisez, aucun pixel de suivi, rien de vendu.',
     },
   },
   terms: {
@@ -309,6 +315,12 @@ export const pages: Content['pages'] = {
         heading: 'Le stockage du navigateur, qui n’est pas un cookie',
         body: [
           'Deux choses vivent dans le stockage local de votre navigateur et ne sont jamais envoyées où que ce soit : le thème que vous avez choisi et — quand vous êtes déconnecté — vos conversions récentes, pour que l’historique ait quelque chose dedans. Effacer les données du site dans votre navigateur retire les deux, et l’application continue sans elles.',
+        ],
+      },
+      {
+        heading: 'Un comptage sans cookie ni stockage',
+        body: [
+          'Les visites et quelques actions sont comptées sur notre propre serveur, sous forme de totaux quotidiens anonymes. Cela ne pose aucun cookie et ne stocke rien dans votre navigateur : il n’y a donc rien à autoriser ni à refuser ici — la page confidentialité dit exactement ce qui est compté.',
         ],
       },
       {

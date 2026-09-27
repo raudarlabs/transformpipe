@@ -108,7 +108,13 @@ const UPDATED = '2026-09-08';
  * reads pages and keeps a token, which is exactly such a change — and the terms and the cookies
  * page did not change at all, so they keep the date they earned.
  */
-const PRIVACY_UPDATED = '2026-09-17';
+const PRIVACY_UPDATED = '2026-09-27';
+
+/*
+ * The cookies page moved on 27 September for the same reason the privacy page did: the counter
+ * sets no cookie, and a page about what is set in a browser should say that it does not.
+ */
+const COOKIES_UPDATED = '2026-09-27';
 
 /**
  * A store the extension can be installed from, and where.
@@ -153,7 +159,7 @@ export const STATIC_PAGES: StaticPage[] = [
   { id: 'extension', path: '/extension', group: 'company' },
   { id: 'privacy', path: '/privacy', group: 'legal', updated: PRIVACY_UPDATED },
   { id: 'terms', path: '/terms', group: 'legal', updated: UPDATED },
-  { id: 'cookies', path: '/cookies', group: 'legal', updated: UPDATED },
+  { id: 'cookies', path: '/cookies', group: 'legal', updated: COOKIES_UPDATED },
 
   /*
    * One page per extension the dropzone accepts, answering the question somebody types before they

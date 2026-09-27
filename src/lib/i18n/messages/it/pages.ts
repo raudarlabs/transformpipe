@@ -152,7 +152,7 @@ export const pages: Content['pages'] = {
     lede: 'Cosa viene conservato, dove, e cosa non viene raccolto affatto.',
     sections: [
       {
-        heading: 'Senza accesso, a noi non arriva niente',
+        heading: 'Senza accesso, nessun file arriva a noi',
         body: [
           'La conversione avviene nel browser. Il file viene letto, convertito e mostrato sulla tua macchina, e nessuna sua parte viene inviata a un server. La cronologia che vedi è la memoria del browser, non un account.',
         ],
@@ -168,6 +168,12 @@ export const pages: Content['pages'] = {
           'Il Markdown stesso, in un archivio blob privato — privato nel senso che non ha alcun URL pubblico e viene letto solo tramite una richiesta che autorizziamo noi.',
           'Le chiavi API come hash, mai la chiave. Una chiave viene mostrata una volta sola, alla creazione, e in seguito non è più recuperabile: né da te né da noi.',
           'Le impostazioni di condivisione: se un documento è privato, aperto per link o indirizzato a determinati indirizzi email, e il token che un link porta con sé.',
+        ],
+      },
+      {
+        heading: 'Contare, senza sapere chi',
+        body: [
+          'Contiamo le visite e poche azioni — una pagina aperta, una conversione, un download, un salvataggio, una condivisione — come totali giornalieri anonimi, sul nostro server e nel nostro database. Il conteggio non imposta alcun cookie e non salva nulla nel tuo browser; i totali non conservano alcun identificativo né indirizzo IP, e di un documento nient’altro che la conversione o il formato. La provenienza di una visita viene registrata solo come nome del sito di origine — Product Hunt, Google, «diretto» — oppure come etichetta di campagna del link che hai seguito.',
         ],
       },
       {
@@ -227,7 +233,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Privacy — TransformPipe',
       description:
-        'Senza accesso nessun file lascia il browser. Con l’accesso: documento, metadati e identità dell’account. Statistiche solo se le consenti, nessun pixel di tracciamento, niente in vendita.',
+        'Senza accesso nessun file lascia il browser. Con l’accesso: documento, metadati e identità dell’account. Google Analytics solo se lo consenti, nessun pixel di tracciamento, niente in vendita.',
     },
   },
   terms: {
@@ -308,6 +314,12 @@ export const pages: Content['pages'] = {
         heading: 'La memoria del browser, che non è un cookie',
         body: [
           'Due cose vivono nella memoria locale del browser e non vengono mai inviate da nessuna parte: il tema che hai scelto e — quando non hai effettuato l’accesso — le tue conversioni recenti, così la cronologia ha qualcosa dentro. Cancellando i dati del sito dal browser si rimuovono entrambe, e l’app va avanti senza di loro.',
+        ],
+      },
+      {
+        heading: 'Contare senza cookie né memoria',
+        body: [
+          'Le visite e poche azioni vengono contate sul nostro server come totali giornalieri anonimi. Questo non imposta alcun cookie e non salva nulla nel tuo browser, quindi qui non c’è niente da consentire o rifiutare: la pagina sulla privacy dice esattamente cosa viene contato.',
         ],
       },
       {

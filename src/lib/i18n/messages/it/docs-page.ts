@@ -24,7 +24,7 @@ export const docsPage = {
   'docs.chip.shared': 'Condivisi con me',
 
   'docs.start.signedOut':
-    'Trascina un file sul convertitore e hai il documento convertito e il download. Senza accesso non viene conservato niente e non viene inviato niente da nessuna parte: la conversione avviene in questo browser, sulla tua macchina.',
+    'Trascina un file sul convertitore e hai il documento convertito e il download. Senza accesso non viene conservato niente e nessuna parte del file viene inviata da nessuna parte: la conversione avviene in questo browser, sulla tua macchina.',
   'docs.start.signedIn':
     'Con l’accesso tramite Google gli stessi documenti ti seguono tra i dispositivi, si possono condividere per link o per indirizzo e si possono raggiungere da uno script con una chiave API. Quello che hai convertito prima di accedere passa nell’account per strada.',
 

@@ -117,6 +117,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-27',
+    title: 'Visits counted on our own server, anonymously',
+    body:
+      'TransformPipe now counts visits and a handful of actions \u2014 a page opened, a conversion '
+      + 'run, a download, a save, a share \u2014 as daily totals on its own server. No cookie, '
+      + 'nothing stored in your browser, no identifier and no IP address, and nothing about a '
+      + 'document beyond which conversion or format it was; where a visit came from is kept only '
+      + 'as the referring site\u2019s name, or the campaign tag in the link that was followed. The '
+      + '[privacy](/privacy) and [cookies](/cookies) pages say so, in five languages.',
+  },
+  {
+    date: '2026-09-27',
     title: 'The front page says where a document can go next',
     body:
       'The front page explained the converter and never mentioned the assistants. A line under '

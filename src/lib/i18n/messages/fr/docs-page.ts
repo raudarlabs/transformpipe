@@ -30,7 +30,7 @@ export const docsPage = {
   'docs.chip.shared': 'Partagés avec moi',
 
   'docs.start.signedOut':
-    'Déposez un fichier sur le convertisseur et vous avez le document converti et un téléchargement. Déconnecté, rien n’est conservé et rien n’est envoyé où que ce soit — la conversion tourne dans ce navigateur, sur votre propre machine.',
+    'Déposez un fichier sur le convertisseur et vous avez le document converti et un téléchargement. Déconnecté, rien n’est conservé et rien du fichier n’est envoyé où que ce soit — la conversion tourne dans ce navigateur, sur votre propre machine.',
   'docs.start.signedIn':
     'Connectez-vous avec Google et les mêmes documents vous suivent d’un appareil à l’autre, peuvent être partagés par lien ou par adresse, et sont accessibles à un script muni d’une clé API. Ce que vous avez converti avant de vous connecter passe dans le compte au passage.',
 

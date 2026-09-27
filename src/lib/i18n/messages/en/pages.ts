@@ -159,7 +159,7 @@ export const pages: Content['pages'] = {
     lede: 'What is stored, where, and what is never collected at all.',
     sections: [
       {
-        heading: 'Signed out, nothing reaches us',
+        heading: 'Signed out, your files never reach us',
         body: [
           'Converting happens in your browser. The file is read, converted and rendered on your own machine, and no part of it is sent to a server. The history you see is your browser’s own storage, not an account.',
         ],
@@ -175,6 +175,12 @@ export const pages: Content['pages'] = {
           'The Markdown itself, in a private blob store — private meaning it has no public URL and is read only through a request we authorise.',
           'API keys as hashes, never the key. A key is shown once, at creation, and cannot be recovered afterwards — not by you and not by us.',
           'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries.',
+        ],
+      },
+      {
+        heading: 'Counting, without knowing who',
+        body: [
+          'We count visits and a handful of actions — a page opened, a conversion run, a download, a save, a share — as anonymous daily totals, on our own server and in our own database. Counting sets no cookie and stores nothing in your browser; the totals keep no identifier and no IP address, and nothing about a document beyond which conversion or format it was. Where a visit came from is recorded only as the referring site’s name — Product Hunt, Google, “direct” — or as the campaign tag in the link you followed.',
         ],
       },
       {
@@ -234,7 +240,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Privacy — TransformPipe',
       description:
-        'Signed out, no file leaves your browser. Signed in, we store the document, its metadata and your account identity — analytics only if you allow it, no tracking pixels, nothing sold.',
+        'Signed out, no file leaves your browser. Signed in, we store the document, its metadata and your account identity — Google Analytics only if you allow it, no tracking pixels, nothing sold.',
     },
   },
   terms: {
@@ -315,6 +321,12 @@ export const pages: Content['pages'] = {
         heading: 'Browser storage, which is not a cookie',
         body: [
           'Two things live in your browser’s local storage and are never sent anywhere: the theme you picked, and — when you are signed out — your recent conversions, so the history has something in it. Clearing site data in your browser removes both, and the app carries on without them.',
+        ],
+      },
+      {
+        heading: 'Counting, which needs neither',
+        body: [
+          'Visits and a few actions are counted on our own server as anonymous daily totals. That sets no cookie and stores nothing in your browser, so there is nothing here to allow or refuse — the privacy page says exactly what is counted.',
         ],
       },
       {

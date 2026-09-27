@@ -44,7 +44,7 @@ export const docsPage = {
   'docs.chip.shared': 'Für mich geteilt',
 
   'docs.start.signedOut':
-    'Eine Datei auf den Konverter ziehen, und schon liegen das umgewandelte Dokument und ein Download bereit. Abgemeldet wird nichts gespeichert und nichts irgendwohin gesendet — die Umwandlung läuft in diesem Browser, auf dem eigenen Rechner.',
+    'Eine Datei auf den Konverter ziehen, und schon liegen das umgewandelte Dokument und ein Download bereit. Abgemeldet wird nichts gespeichert und kein Teil der Datei irgendwohin gesendet — die Umwandlung läuft in diesem Browser, auf dem eigenen Rechner.',
   'docs.start.signedIn':
     'Mit Google angemeldet folgen dieselben Dokumente einem von Gerät zu Gerät, lassen sich per Link oder per Adresse teilen und sind mit einem API-Schlüssel aus einem Skript erreichbar. Was vor der Anmeldung umgewandelt wurde, zieht dabei mit ins Konto.',
 

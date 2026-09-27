@@ -161,7 +161,7 @@ export const pages: Content['pages'] = {
     lede: 'Was gespeichert wird, wo, und was überhaupt nie erhoben wird.',
     sections: [
       {
-        heading: 'Abgemeldet erreicht uns nichts',
+        heading: 'Abgemeldet erreicht uns keine Datei',
         body: [
           'Die Umwandlung geschieht im Browser. Die Datei wird auf dem eigenen Rechner gelesen, umgewandelt und gerendert, und kein Teil davon wird an einen Server gesendet. Der Verlauf, der zu sehen ist, ist der Speicher des Browsers, kein Konto.',
         ],
@@ -177,6 +177,12 @@ export const pages: Content['pages'] = {
           'Das Markdown selbst, in einem privaten Blob-Speicher — privat heißt: er hat keine öffentliche URL und wird nur über eine Anfrage gelesen, die wir autorisieren.',
           'API-Schlüssel als Hashes, nie den Schlüssel. Ein Schlüssel wird einmal gezeigt, bei der Erstellung, und ist danach nicht wiederherstellbar — nicht durch Sie und nicht durch uns.',
           'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt.',
+        ],
+      },
+      {
+        heading: 'Gezählt, ohne zu wissen, wer',
+        body: [
+          'Wir zählen Besuche und einige wenige Aktionen — eine aufgerufene Seite, eine Umwandlung, einen Download, ein Speichern, ein Teilen — als anonyme Tagessummen, auf unserem eigenen Server und in unserer eigenen Datenbank. Dafür wird kein Cookie gesetzt und nichts in Ihrem Browser gespeichert; die Summen enthalten keine Kennung und keine IP-Adresse und über ein Dokument nichts außer der Umwandlung oder dem Format. Woher ein Besuch kam, wird nur als Name der verweisenden Website festgehalten — Product Hunt, Google, „direkt“ — oder als Kampagnenkennzeichen des Links, dem Sie gefolgt sind.',
         ],
       },
       {
@@ -236,7 +242,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Datenschutz — TransformPipe',
       description:
-        'Abgemeldet verlässt keine Datei den Browser. Angemeldet speichern wir Dokument, Metadaten und Konto-Identität — Analyse nur mit Ihrer Zustimmung, keine Tracking-Pixel, nichts wird verkauft.',
+        'Abgemeldet verlässt keine Datei den Browser. Angemeldet speichern wir Dokument, Metadaten und Konto-Identität — Google Analytics nur mit Ihrer Zustimmung, keine Tracking-Pixel, nichts wird verkauft.',
     },
   },
   terms: {
@@ -317,6 +323,12 @@ export const pages: Content['pages'] = {
         heading: 'Browser-Speicher, der kein Cookie ist',
         body: [
           'Zwei Dinge liegen im lokalen Speicher Ihres Browsers und werden nie irgendwohin gesendet: das gewählte Design und — solange Sie abgemeldet sind — Ihre letzten Umwandlungen, damit im Verlauf etwas steht. Das Löschen der Websitedaten im Browser entfernt beides, und die App läuft ohne sie weiter.',
+        ],
+      },
+      {
+        heading: 'Zählen ohne Cookie und ohne Speicher',
+        body: [
+          'Besuche und einige Aktionen werden auf unserem eigenen Server als anonyme Tagessummen gezählt. Dafür wird kein Cookie gesetzt und nichts in Ihrem Browser gespeichert, es gibt hier also nichts zuzulassen oder abzulehnen — die Datenschutzseite sagt genau, was gezählt wird.',
         ],
       },
       {
