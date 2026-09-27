@@ -26,7 +26,7 @@ export const conversions: Content['conversions'] = {
     seo: {
       title: 'TransformPipe — Markdown in HTML umwandeln',
       description:
-        'Markdown in HTML umwandeln: gerendertes Dokument und eigenständige .html zum Download. Läuft im Browser; per MCP-Connector gehen Ihre Dokumente direkt an Claude.',
+        'Markdown in HTML umwandeln, direkt im Browser: gerendertes Dokument und eigenständige .html. Dazu 14 weitere Formate nach Markdown und ein MCP-Connector für Claude.',
     },
   },
   'html-to-markdown': {

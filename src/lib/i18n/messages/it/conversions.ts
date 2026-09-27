@@ -19,7 +19,7 @@ export const conversions: Content['conversions'] = {
     seo: {
       title: 'Convertire Markdown in HTML — TransformPipe',
       description:
-        'Converti Markdown in HTML nel browser: il documento reso e un .html autosufficiente da scaricare. Il connettore MCP porta i tuoi documenti a Claude.',
+        'Da Markdown a HTML nel browser: il documento reso e un .html autosufficiente. In più 14 altre conversioni verso Markdown e un connettore MCP per Claude.',
     },
   },
   'html-to-markdown': {

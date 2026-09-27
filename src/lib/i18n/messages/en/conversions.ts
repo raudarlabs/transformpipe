@@ -24,7 +24,7 @@ export const conversions: Content['conversions'] = {
     seo: {
       title: 'TransformPipe — Markdown to HTML converter',
       description:
-        'Drop a Markdown file, get the rendered page and a self-contained .html. It converts in your browser, and the MCP connector takes your documents to Claude.',
+        'Markdown to HTML in your browser: the rendered page and a self-contained .html. Plus 14 more conversions to Markdown, and an MCP connector to Claude.',
     },
   },
   'html-to-markdown': {
