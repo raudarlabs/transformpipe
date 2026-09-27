@@ -191,7 +191,7 @@ export const docsPage = {
   'docs.assistant.intro':
     'TransformPipe ist ein MCP-Server und lässt sich darum als Connector zu Claude hinzufügen. Die Adresse ist dieses Deployment plus {path}:',
   'docs.assistant.adding':
-    'Auf claude.ai gehört das unter Einstellungen → Connectors → Eigenen Connector hinzufügen. Aus einem Terminal:',
+    'Auf claude.ai ist TransformPipe im Connector-Verzeichnis gelistet — `claude.ai/directory/tp`, dann „Verbinden“ — oder wird über die Adresse unter Einstellungen → Connectors → Eigenen Connector hinzufügen eingetragen. Aus einem Terminal:',
   'docs.assistant.auth':
     'Es gibt keinen Schlüssel zum Einfügen. Der erste Aufruf kommt unautorisiert zurück, Ihr Assistent folgt dem auf eine Seite hier, und Sie melden sich mit demselben Konto an, das Sie ohnehin nutzen, und genehmigen einen benannten Client — deshalb nennt die Seite die Adresse, als die er handeln will. Was er bekommt, ist ein Token von uns, gut für Ihre Dokumente und für nichts sonst: nicht für Ihr Konto, nicht für Ihre Anmeldung und nicht für Ihre API-Schlüssel. Im Kontomenü, unter MCP-Konnektor, wieder trennen, und beim nächsten Aufruf ist Schluss.',
   'docs.assistant.tools':

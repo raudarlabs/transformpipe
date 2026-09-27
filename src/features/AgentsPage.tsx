@@ -18,7 +18,7 @@ import { crumbsForStaticPage } from '@/lib/breadcrumbs';
 import type { LandingWords } from '@/lib/i18n/content';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { localePath } from '@/lib/i18n/locales';
-import { MCP_PATH } from '@/lib/mcp-facts';
+import { CLAUDE_DIRECTORY, MCP_PATH } from '@/lib/mcp-facts';
 import { staticPage, type StaticPage as Page } from '@/lib/pages';
 import {
   Accordion,
@@ -43,8 +43,6 @@ import { toast } from '@/ui/components/Toast';
  * sign-in, so asking for it on this page first would be a second door in front of the first one.
  */
 
-/** Where Claude's connector settings are, for the link beside the address. */
-const CLAUDE_CONNECTORS = 'https://claude.ai/settings/connectors';
 
 /*
  * The pictures, by position — a picture is not language. Drawn by `scripts/agents-art.mjs` and
@@ -106,8 +104,11 @@ function useCopy(text: string) {
   return { copied, copy };
 }
 
-/** The address and the button that copies it. */
-function CopyAddress({ label }: { label: string }) {
+/*
+ * The address and the button that copies it. `quiet` once the directory listing is the main way
+ * in: the address is still the answer for every other client, so it stays, a step back.
+ */
+function CopyAddress({ label, quiet = false }: { label: string; quiet?: boolean }) {
   const url = `${window.location.origin}${MCP_PATH}`;
   const { copied, copy } = useCopy(url);
 
@@ -119,11 +120,49 @@ function CopyAddress({ label }: { label: string }) {
       <button
         type="button"
         onClick={() => void copy()}
-        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white transition-colors hover:bg-brand-secondary"
+        className={
+          quiet
+            ? 'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-stroke px-4 py-2.5 font-semibold text-ink-body text-sm transition-colors hover:border-brand-tertiary hover:text-ink-primary'
+            : 'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white transition-colors hover:bg-brand-secondary'
+        }
       >
         {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         {label}
       </button>
+    </div>
+  );
+}
+
+/** The one-click way in: TransformPipe's listing in Claude's connector directory. */
+function AddToClaude({ centred = false }: { centred?: boolean }) {
+  const t = useT();
+
+  return (
+    <a
+      href={CLAUDE_DIRECTORY}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={`inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-5 py-3 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary ${
+        centred ? 'self-center' : 'self-start'
+      }`}
+    >
+      {t('agents.claude.add')}
+      <ExternalLink className="size-4" />
+    </a>
+  );
+}
+
+/** The two ways in, together: the directory first, the address under it for everything else. */
+function WaysIn({ action, centred = false }: { action: string; centred?: boolean }) {
+  const t = useT();
+
+  return (
+    <div className={`flex w-full flex-col gap-4 ${centred ? 'items-center' : ''}`}>
+      <AddToClaude centred={centred} />
+      <div className={`flex w-full flex-col gap-2 ${centred ? 'items-center' : ''}`}>
+        <span className="text-ink-inactive text-xs">{t('agents.other')}</span>
+        <CopyAddress label={action} quiet />
+      </div>
     </div>
   );
 }
@@ -288,15 +327,17 @@ function AddressBlock({
         </span>
         <span className="text-base text-ink-secondary">{text}</span>
       </div>
-      <CopyAddress label={action} />
+      <div className={centred ? 'w-full max-w-lg' : 'w-full max-w-lg lg:w-auto'}>
+        <WaysIn action={action} centred={centred} />
+      </div>
     </section>
   );
 }
 
 /*
- * What each of the three steps looks like, drawn small: the address, the screen it goes into, and
- * what comes back. The labels inside are Claude's own interface and an address, which stay as
- * they are in every language.
+ * What each of the three steps looks like, drawn small: the directory listing, the connection it
+ * asks for, and what comes back. The labels inside are Claude's own interface and addresses, which
+ * stay as they are in every language.
  */
 function StepPicture({ step, ask }: { step: number; ask: string }) {
   const frame =
@@ -305,11 +346,18 @@ function StepPicture({ step, ask }: { step: number; ask: string }) {
   if (step === 0) {
     return (
       <div className={frame}>
-        <div className="flex items-center gap-2 rounded-lg border border-stroke bg-surface-card px-3 py-2">
-          <Link2 className="size-3.5 shrink-0 text-brand-tertiary" />
-          <span className="truncate font-mono text-ink-body text-xs">transformpipe.com/api/mcp</span>
-          <span className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-md bg-brand-primary text-white">
-            <Copy className="size-3" />
+        <span className="font-mono text-[11px] text-ink-inactive">claude.ai/directory/tp</span>
+        <div className="flex items-center gap-2.5 rounded-lg border border-stroke bg-surface-card px-3 py-2">
+          <img
+            src="/icon-48.png"
+            alt=""
+            width={48}
+            height={48}
+            className="size-6 shrink-0 rounded-md"
+          />
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate font-semibold text-ink-primary text-xs">TransformPipe</span>
+            <span className="truncate text-[10px] text-ink-inactive">Connector directory</span>
           </span>
         </div>
       </div>
@@ -319,13 +367,16 @@ function StepPicture({ step, ask }: { step: number; ask: string }) {
   if (step === 1) {
     return (
       <div className={frame}>
-        <span className="font-mono text-[11px] text-ink-inactive">Settings › Connectors</span>
         <div className="flex items-center justify-between rounded-lg border border-stroke bg-surface-card px-3 py-2">
           <span className="font-mono text-ink-primary text-xs">TransformPipe</span>
           <span className="rounded-md bg-brand-primary px-2 py-0.5 font-semibold text-[11px] text-white">
             Connect
           </span>
         </div>
+        <span className="inline-flex items-center gap-1.5 self-start rounded-md border border-stroke bg-surface-card px-2 py-1 text-[11px] text-ink-secondary">
+          <Check className="size-3 text-brand-tertiary" />
+          Signed in with Google
+        </span>
       </div>
     );
   }
@@ -490,6 +541,17 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
                   <div className="flex max-w-2xl flex-col gap-3">
                     <span className="text-ink-secondary text-sm md:hidden">{item.how}</span>
                     <p className="text-ink-body text-sm leading-relaxed">{item.body}</p>
+                    {works && (
+                      <a
+                        href={CLAUDE_DIRECTORY}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="inline-flex items-center gap-1.5 self-start font-semibold text-brand-tertiary text-sm no-underline hover:underline"
+                      >
+                        {t('agents.claude.add')}
+                        <ExternalLink className="size-4" />
+                      </a>
+                    )}
                     {link && (
                       <a
                         href={localePath(locale, link.path)}
@@ -605,22 +667,24 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
       {/* ------------------------------------------------------------------ the opening */}
       <header className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <div className="flex flex-col gap-6">
-          <Label>{landing.eyebrow}</Label>
+          <div className="flex flex-wrap items-center gap-3">
+            <Label>{landing.eyebrow}</Label>
+            <a
+              href={CLAUDE_DIRECTORY}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/40 bg-surface-accent px-2.5 py-0.5 font-semibold text-[11px] text-brand-tertiary no-underline hover:border-brand-primary"
+            >
+              <Check className="size-3" />
+              {t('agents.listed')}
+            </a>
+          </div>
           <h1 className="font-semibold text-4xl text-ink-primary leading-[1.1] tracking-tight md:text-5xl">
             {words.title}
           </h1>
           <p className="text-ink-secondary text-lg leading-relaxed">{words.lede}</p>
-          <CopyAddress label={action} />
+          <WaysIn action={action} />
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <a
-              href={CLAUDE_CONNECTORS}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"
-            >
-              {t('agents.claude.settings')}
-              <ExternalLink className="size-3.5" />
-            </a>
             <a
               href={guide}
               className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 24 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 27 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -99,6 +99,12 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 27 September
+
+- [x] **In Claude's connector directory** — `claude.ai/directory/tp`. "Add to Claude" is the first
+      button on `/agents` and `/agents/claude`, the steps start at the listing, and the setup
+      guide, the docs and the connector dialog say so; the address stays for every other client
 
 ### 24 September
 

@@ -116,6 +116,16 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-27',
+    title: 'In Claude\u2019s connector directory',
+    body:
+      'TransformPipe is listed in Claude\u2019s connector directory, at claude.ai/directory/tp: open '
+      + 'the listing, press Connect, sign in, and Claude can save, share and find your documents. '
+      + 'No address to paste any more. The pages for assistants, the setup guide and the '
+      + 'documentation now start there, and the address stays for every other MCP client and for '
+      + 'an organisation that keeps the directory switched off.',
+  },
+  {
     date: '2026-09-26',
     title: 'The live preview scrolls in full screen',
     body:

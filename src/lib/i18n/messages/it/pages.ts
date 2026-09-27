@@ -854,7 +854,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Aggiungerlo',
         body: [
-          'Su claude.ai: Impostazioni, poi Connettori, poi Aggiungi connettore personalizzato, e indica `https://transformpipe.com/api/mcp`. Accedi quando te lo chiede, e gli strumenti compaiono nella conversazione successiva.',
+          'Su claude.ai, TransformPipe è nella directory dei connettori, all’indirizzo `claude.ai/directory/tp`: aprilo, premi Connetti e accedi quando te lo chiede — gli strumenti compaiono nella conversazione successiva. Dove la directory è disattivata, Impostazioni, poi Connettori, poi Aggiungi connettore personalizzato accetta lo stesso server tramite indirizzo, `https://transformpipe.com/api/mcp`.',
           'Da un terminale fa lo stesso un solo comando: `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp`.',
           'Non c’è altro da configurare. Il connettore si può rimuovere dalla stessa schermata, e rimuoverlo revoca l’accesso immediatamente.',
         ],
@@ -961,12 +961,12 @@ export const pages: Content['pages'] = {
         heading: 'Collegato in tre passaggi',
         items: [
           {
-            title: 'Copia l’indirizzo',
-            body: 'Un solo indirizzo per ogni assistente. Nessuna chiave, niente da generare.',
+            title: 'Trovalo, o copia l’indirizzo',
+            body: 'TransformPipe è nella directory dei connettori di Claude. Ovunque altro è un solo indirizzo, senza chiave e senza niente da generare.',
           },
           {
             title: 'Aggiungilo al tuo assistente',
-            body: 'In Claude: Impostazioni, Connettori, Aggiungi connettore personalizzato. Accedi con Google quando te lo chiede.',
+            body: 'In Claude, apri TransformPipe nella directory dei connettori e premi Connetti. Qualsiasi altro client MCP usa l’indirizzo. Accedi con Google quando te lo chiede.',
           },
           {
             title: 'Chiedi a parole tue',
@@ -1005,8 +1005,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Connettore personalizzato · accesso con Google',
-            body: 'claude.ai, Claude Desktop e Claude Code. Aggiungi un connettore personalizzato, accedi e chiedi a Claude di salvare, pubblicare o trovare un documento.',
+            how: 'Directory dei connettori · un clic',
+            body: 'claude.ai, Claude Desktop e Claude Code. TransformPipe è nella directory dei connettori di Claude: aprilo, premi Connetti, accedi e chiedi a Claude di salvare, pubblicare o trovare un documento.',
           },
           {
             name: 'ChatGPT',
@@ -1087,13 +1087,13 @@ export const pages: Content['pages'] = {
           {
             question: 'È un’integrazione ufficiale di uno di questi assistenti?',
             answer:
-              'No. TransformPipe è un server MCP indipendente, non un prodotto di Anthropic, OpenAI, Google o di un produttore di editor. Ogni assistente vi si collega come a qualsiasi connettore personalizzato, usando l’accesso standard definito dal protocollo.',
+              'No. TransformPipe è un server MCP indipendente realizzato da Raudar Labs, non un prodotto di Anthropic, OpenAI, Google o di un produttore di editor. È presente nella directory dei connettori di Claude; ogni altro assistente vi si collega tramite indirizzo, come a qualsiasi connettore personalizzato, usando l’accesso standard definito dal protocollo.',
           },
         ],
       },
       middle: {
         title: 'Provalo sulla prossima cosa che scrive il tuo assistente',
-        text: 'Copia l’indirizzo, aggiungi il connettore e chiedi di salvare la risposta. Ci vuole un minuto.',
+        text: 'Aggiungilo dalla directory dei connettori di Claude — o dai l’indirizzo a qualsiasi altro assistente — e chiedi di salvare la risposta. Ci vuole un minuto.',
       },
       bottom: {
         title: 'Il tuo prossimo documento sta nascendo in una chat, proprio adesso',
@@ -1175,12 +1175,12 @@ export const pages: Content['pages'] = {
         heading: 'Collegato in tre passaggi',
         items: [
           {
-            title: 'Copia l’indirizzo',
-            body: 'Un solo indirizzo, `https://transformpipe.com/api/mcp`. Nessuna chiave, niente da generare.',
+            title: 'Aprilo nella directory',
+            body: 'TransformPipe è nella directory dei connettori di Claude: il pulsante in questa pagina apre la sua scheda, oppure cercalo in Impostazioni, Connettori, Sfoglia connettori.',
           },
           {
-            title: 'Aggiungilo in Claude',
-            body: 'Su claude.ai o in Claude Desktop: Impostazioni, Connettori, Aggiungi connettore personalizzato. Incolla l’indirizzo e dagli un nome.',
+            title: 'Collegalo',
+            body: 'Premi Connetti, su claude.ai o in Claude Desktop. Nessuna chiave da incollare e nessun indirizzo da digitare — oppure aggiungi `https://transformpipe.com/api/mcp` come connettore personalizzato se la tua organizzazione tiene disattivata la directory.',
           },
           {
             title: 'Accedi e chiedi',
@@ -1228,8 +1228,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Connettore personalizzato · accesso con Google',
-            body: 'claude.ai, Claude Desktop e Claude Code — già collegabili oggi, con i passaggi di questa pagina.',
+            how: 'Directory dei connettori · un clic',
+            body: 'claude.ai, Claude Desktop e Claude Code — presente nella directory dei connettori di Claude, con i passaggi di questa pagina.',
           },
           {
             name: 'ChatGPT',
@@ -1263,9 +1263,9 @@ export const pages: Content['pages'] = {
         intro: 'Le risposte brevi. La guida completa alla configurazione ha il resto.',
         items: [
           {
-            question: 'Che cos’è un connettore personalizzato di Claude?',
+            question: 'TransformPipe è nella directory dei connettori di Claude?',
             answer:
-              'Un connettore personalizzato è il modo in cui Claude raggiunge uno strumento fuori dalla conversazione, tramite MCP, il Model Context Protocol. TransformPipe è un server MCP su `https://transformpipe.com/api/mcp`; aggiunto come connettore su claude.ai, in Claude Desktop o in Claude Code, dà a Claude gli strumenti per salvare, condividere, ritrovare e versionare i documenti che scrive.',
+              'Sì. È presente su `claude.ai/directory/tp`: apri la scheda, premi Connetti e accedi, su claude.ai o in Claude Desktop. Un connettore è il modo in cui Claude raggiunge uno strumento fuori dalla conversazione, tramite MCP, il Model Context Protocol; se la tua organizzazione tiene disattivata la directory, lo stesso server si può aggiungere tramite indirizzo come connettore personalizzato — `https://transformpipe.com/api/mcp`.',
           },
           {
             question: 'È gratuito?',
@@ -1315,13 +1315,13 @@ export const pages: Content['pages'] = {
           {
             question: 'È un prodotto di Anthropic?',
             answer:
-              'No. TransformPipe è un server MCP indipendente, non un prodotto di Anthropic. Claude vi si collega come a qualsiasi connettore personalizzato, usando l’accesso standard definito dal Model Context Protocol.',
+              'No. TransformPipe è un server MCP indipendente realizzato da Raudar Labs, non un prodotto di Anthropic. È presente nella directory dei connettori di Claude, e Claude vi si collega come a qualsiasi connettore, usando l’accesso standard definito dal Model Context Protocol.',
           },
         ],
       },
       middle: {
         title: 'Provalo sulla prossima cosa che scrive Claude',
-        text: 'Copia l’indirizzo, aggiungi il connettore e chiedi a Claude di salvare la sua risposta. Ci vuole un minuto.',
+        text: 'Aggiungilo dalla directory dei connettori di Claude e chiedi a Claude di salvare la sua risposta. Ci vuole un minuto.',
       },
       bottom: {
         title: 'Il tuo prossimo documento sta nascendo in una chat, proprio adesso',

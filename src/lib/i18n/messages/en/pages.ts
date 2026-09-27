@@ -861,7 +861,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Adding it',
         body: [
-          'On claude.ai: Settings, then Connectors, then Add custom connector, and give it `https://transformpipe.com/api/mcp`. Sign in when asked, and the tools appear in the next conversation.',
+          'On claude.ai, TransformPipe is listed in the connector directory at `claude.ai/directory/tp`: open it, press Connect, and sign in when asked — the tools appear in the next conversation. Where the directory is switched off, Settings, then Connectors, then Add custom connector takes the same server by address, `https://transformpipe.com/api/mcp`.',
           'From a terminal, one command does the same thing: `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp`.',
           'Nothing else is configured. The connector can be removed from the same screen, and removing it revokes the access immediately.',
         ],
@@ -968,12 +968,12 @@ export const pages: Content['pages'] = {
         heading: 'Connected in three steps',
         items: [
           {
-            title: 'Copy the address',
-            body: 'One address for every assistant. There is no key and nothing to generate.',
+            title: 'Find it, or copy the address',
+            body: 'TransformPipe is listed in Claude’s connector directory. Everywhere else it is one address, with no key and nothing to generate.',
           },
           {
             title: 'Add it to your assistant',
-            body: 'In Claude: Settings, Connectors, Add custom connector. Sign in with Google when it asks.',
+            body: 'In Claude, open TransformPipe in the connector directory and press Connect. Any other MCP client takes the address. Sign in with Google when it asks.',
           },
           {
             title: 'Ask in plain words',
@@ -1012,8 +1012,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Custom connector · sign in with Google',
-            body: 'claude.ai, Claude Desktop and Claude Code. Add one custom connector, sign in, and ask Claude to save, publish or find a document.',
+            how: 'Connector directory · one click',
+            body: 'claude.ai, Claude Desktop and Claude Code. TransformPipe is listed in Claude’s connector directory: open it, press Connect, sign in, and ask Claude to save, publish or find a document.',
           },
           {
             name: 'ChatGPT',
@@ -1094,13 +1094,13 @@ export const pages: Content['pages'] = {
           {
             question: 'Is this an official integration of any of these assistants?',
             answer:
-              'No. TransformPipe is an independent MCP server, not a product of Anthropic, OpenAI, Google or any editor vendor. Each assistant connects to it the way it connects to any custom connector, using the standard sign-in the protocol defines.',
+              'No. TransformPipe is an independent MCP server made by Raudar Labs, not a product of Anthropic, OpenAI, Google or any editor vendor. It is listed in Claude’s connector directory; every other assistant connects to it by address, the way it connects to any custom connector, using the standard sign-in the protocol defines.',
           },
         ],
       },
       middle: {
         title: 'Try it on the next thing your assistant writes',
-        text: 'Copy the address, add the connector, and ask for the answer to be saved. It takes a minute.',
+        text: 'Add it from Claude’s connector directory — or give any other assistant the address — and ask for the answer to be saved. It takes a minute.',
       },
       bottom: {
         title: 'Your next document is being written in a chat right now',
@@ -1182,12 +1182,12 @@ export const pages: Content['pages'] = {
         heading: 'Connected in three steps',
         items: [
           {
-            title: 'Copy the address',
-            body: 'One address, `https://transformpipe.com/api/mcp`. There is no key and nothing to generate.',
+            title: 'Open it in the directory',
+            body: 'TransformPipe is listed in Claude’s connector directory: the button on this page opens the listing, or search for it under Settings, Connectors, Browse connectors.',
           },
           {
-            title: 'Add it in Claude',
-            body: 'On claude.ai or in Claude Desktop: Settings, Connectors, Add custom connector. Paste the address and give it a name.',
+            title: 'Connect it',
+            body: 'Press Connect, on claude.ai or in Claude Desktop. There is no key to paste and no address to type — or add `https://transformpipe.com/api/mcp` as a custom connector if your organisation keeps the directory off.',
           },
           {
             title: 'Sign in and ask',
@@ -1235,8 +1235,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Custom connector · sign in with Google',
-            body: 'claude.ai, Claude Desktop and Claude Code — connected today, with the steps on this page.',
+            how: 'Connector directory · one click',
+            body: 'claude.ai, Claude Desktop and Claude Code — listed in Claude’s connector directory, with the steps on this page.',
           },
           {
             name: 'ChatGPT',
@@ -1270,9 +1270,9 @@ export const pages: Content['pages'] = {
         intro: 'The short answers. The full setup guide has the rest.',
         items: [
           {
-            question: 'What is a Claude custom connector?',
+            question: 'Is TransformPipe in Claude’s connector directory?',
             answer:
-              'A custom connector is how Claude reaches a tool outside the conversation, over MCP, the Model Context Protocol. TransformPipe is an MCP server at `https://transformpipe.com/api/mcp`; added as a connector on claude.ai, in Claude Desktop or in Claude Code, it gives Claude tools to save, share, find and version the documents it writes.',
+              'Yes. It is listed at `claude.ai/directory/tp`: open the listing, press Connect and sign in, on claude.ai or in Claude Desktop. A connector is how Claude reaches a tool outside the conversation, over MCP, the Model Context Protocol; if your organisation keeps the directory switched off, the same server can be added by address as a custom connector — `https://transformpipe.com/api/mcp`.',
           },
           {
             question: 'Is it free?',
@@ -1322,13 +1322,13 @@ export const pages: Content['pages'] = {
           {
             question: 'Is this made by Anthropic?',
             answer:
-              'No. TransformPipe is an independent MCP server, not an Anthropic product. Claude connects to it the way it connects to any custom connector, using the standard sign-in the Model Context Protocol defines.',
+              'No. TransformPipe is an independent MCP server made by Raudar Labs, not an Anthropic product. It is listed in Claude’s connector directory, and Claude connects to it the way it connects to any connector, using the standard sign-in the Model Context Protocol defines.',
           },
         ],
       },
       middle: {
         title: 'Try it on the next thing Claude writes',
-        text: 'Copy the address, add the connector, and ask Claude to save its answer. It takes a minute.',
+        text: 'Add it from Claude’s connector directory and ask Claude to save its answer. It takes a minute.',
       },
       bottom: {
         title: 'Your next document is being written in a chat right now',

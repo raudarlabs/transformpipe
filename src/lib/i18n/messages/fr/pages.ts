@@ -855,7 +855,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'L’ajouter',
         body: [
-          'Sur claude.ai : Paramètres, puis Connecteurs, puis Ajouter un connecteur personnalisé, et donnez-lui `https://transformpipe.com/api/mcp`. Connectez-vous quand on vous le demande, et les outils apparaissent dans la conversation suivante.',
+          'Sur claude.ai, TransformPipe figure dans l’annuaire des connecteurs à l’adresse `claude.ai/directory/tp` : ouvrez-le, cliquez sur Connecter et connectez-vous quand on vous le demande — les outils apparaissent dans la conversation suivante. Là où l’annuaire est désactivé, Paramètres, puis Connecteurs, puis Ajouter un connecteur personnalisé accepte le même serveur par son adresse, `https://transformpipe.com/api/mcp`.',
           'Depuis un terminal, une seule commande fait la même chose : `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp`.',
           'Rien d’autre n’est à configurer. Le connecteur se retire depuis le même écran, et le retirer révoque l’accès immédiatement.',
         ],
@@ -963,12 +963,12 @@ export const pages: Content['pages'] = {
         heading: 'Connecté en trois étapes',
         items: [
           {
-            title: 'Copier l’adresse',
-            body: 'Une seule adresse pour tous les assistants. Aucune clé, rien à générer.',
+            title: 'Le trouver, ou copier l’adresse',
+            body: 'TransformPipe figure dans l’annuaire des connecteurs de Claude. Partout ailleurs, c’est une seule adresse, sans clé et sans rien à générer.',
           },
           {
             title: 'L’ajouter à votre assistant',
-            body: 'Dans Claude : Paramètres, Connecteurs, Ajouter un connecteur personnalisé. Connectez-vous avec Google quand on vous le demande.',
+            body: 'Dans Claude, ouvrez TransformPipe dans l’annuaire des connecteurs et cliquez sur Connecter. Tout autre client MCP accepte l’adresse. Connectez-vous avec Google quand on vous le demande.',
           },
           {
             title: 'Demander en mots simples',
@@ -1007,8 +1007,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Connecteur personnalisé · connexion avec Google',
-            body: 'claude.ai, Claude Desktop et Claude Code. Ajoutez un connecteur personnalisé, connectez-vous, et demandez à Claude d’enregistrer, de publier ou de retrouver un document.',
+            how: 'Annuaire des connecteurs · un clic',
+            body: 'claude.ai, Claude Desktop et Claude Code. TransformPipe figure dans l’annuaire des connecteurs de Claude : ouvrez-le, cliquez sur Connecter, connectez-vous, et demandez à Claude d’enregistrer, de publier ou de retrouver un document.',
           },
           {
             name: 'ChatGPT',
@@ -1089,13 +1089,13 @@ export const pages: Content['pages'] = {
           {
             question: 'S’agit-il d’une intégration officielle de l’un de ces assistants ?',
             answer:
-              'Non. TransformPipe est un serveur MCP indépendant, pas un produit d’Anthropic, d’OpenAI, de Google ni d’aucun éditeur d’outils de développement. Chaque assistant s’y connecte comme à n’importe quel connecteur personnalisé, avec la connexion standard que définit le protocole.',
+              'Non. TransformPipe est un serveur MCP indépendant conçu par Raudar Labs, pas un produit d’Anthropic, d’OpenAI, de Google ni d’aucun éditeur d’outils de développement. Il figure dans l’annuaire des connecteurs de Claude ; tous les autres assistants s’y connectent par son adresse, comme à n’importe quel connecteur personnalisé, avec la connexion standard que définit le protocole.',
           },
         ],
       },
       middle: {
         title: 'Essayez-le sur le prochain texte qu’écrira votre assistant',
-        text: 'Copiez l’adresse, ajoutez le connecteur, et demandez que la réponse soit enregistrée. Cela prend une minute.',
+        text: 'Ajoutez-le depuis l’annuaire des connecteurs de Claude — ou donnez l’adresse à tout autre assistant — et demandez que la réponse soit enregistrée. Cela prend une minute.',
       },
       bottom: {
         title: 'Votre prochain document s’écrit en ce moment même dans une conversation',
@@ -1177,12 +1177,12 @@ export const pages: Content['pages'] = {
         heading: 'Connecté en trois étapes',
         items: [
           {
-            title: 'Copier l’adresse',
-            body: 'Une seule adresse, `https://transformpipe.com/api/mcp`. Aucune clé, rien à générer.',
+            title: 'L’ouvrir dans l’annuaire',
+            body: 'TransformPipe figure dans l’annuaire des connecteurs de Claude : le bouton de cette page ouvre sa fiche, ou cherchez-le dans Paramètres, Connecteurs, Parcourir les connecteurs.',
           },
           {
-            title: 'L’ajouter dans Claude',
-            body: 'Sur claude.ai ou dans Claude Desktop : Paramètres, Connecteurs, Ajouter un connecteur personnalisé. Collez l’adresse et donnez-lui un nom.',
+            title: 'Le connecter',
+            body: 'Cliquez sur Connecter, sur claude.ai ou dans Claude Desktop. Aucune clé à coller, aucune adresse à saisir — ou ajoutez `https://transformpipe.com/api/mcp` comme connecteur personnalisé si votre organisation laisse l’annuaire désactivé.',
           },
           {
             title: 'Se connecter et demander',
@@ -1230,8 +1230,8 @@ export const pages: Content['pages'] = {
         items: [
           {
             name: 'Claude',
-            how: 'Connecteur personnalisé · connexion avec Google',
-            body: 'claude.ai, Claude Desktop et Claude Code — connectés dès aujourd’hui, avec les étapes de cette page.',
+            how: 'Annuaire des connecteurs · un clic',
+            body: 'claude.ai, Claude Desktop et Claude Code — présent dans l’annuaire des connecteurs de Claude, avec les étapes de cette page.',
           },
           {
             name: 'ChatGPT',
@@ -1265,9 +1265,9 @@ export const pages: Content['pages'] = {
         intro: 'Les réponses courtes. Le guide de configuration complet contient le reste.',
         items: [
           {
-            question: 'Qu’est-ce qu’un connecteur personnalisé Claude ?',
+            question: 'TransformPipe figure-t-il dans l’annuaire des connecteurs de Claude ?',
             answer:
-              'Un connecteur personnalisé est la façon dont Claude atteint un outil en dehors de la conversation, via MCP, le Model Context Protocol. TransformPipe est un serveur MCP à l’adresse `https://transformpipe.com/api/mcp` ; ajouté comme connecteur sur claude.ai, dans Claude Desktop ou dans Claude Code, il donne à Claude des outils pour enregistrer, partager, retrouver et versionner les documents qu’il écrit.',
+              'Oui. Il figure à l’adresse `claude.ai/directory/tp` : ouvrez la fiche, cliquez sur Connecter et connectez-vous, sur claude.ai ou dans Claude Desktop. Un connecteur est la façon dont Claude atteint un outil en dehors de la conversation, via MCP, le Model Context Protocol ; si votre organisation laisse l’annuaire désactivé, le même serveur peut être ajouté par son adresse comme connecteur personnalisé — `https://transformpipe.com/api/mcp`.',
           },
           {
             question: 'Est-ce gratuit ?',
@@ -1317,13 +1317,13 @@ export const pages: Content['pages'] = {
           {
             question: 'Est-ce un produit d’Anthropic ?',
             answer:
-              'Non. TransformPipe est un serveur MCP indépendant, pas un produit d’Anthropic. Claude s’y connecte comme à n’importe quel connecteur personnalisé, avec la connexion standard que définit le Model Context Protocol.',
+              'Non. TransformPipe est un serveur MCP indépendant conçu par Raudar Labs, pas un produit d’Anthropic. Il figure dans l’annuaire des connecteurs de Claude, et Claude s’y connecte comme à n’importe quel connecteur, avec la connexion standard que définit le Model Context Protocol.',
           },
         ],
       },
       middle: {
         title: 'Essayez-le sur le prochain texte qu’écrira Claude',
-        text: 'Copiez l’adresse, ajoutez le connecteur, et demandez à Claude d’enregistrer sa réponse. Cela prend une minute.',
+        text: 'Ajoutez-le depuis l’annuaire des connecteurs de Claude et demandez à Claude d’enregistrer sa réponse. Cela prend une minute.',
       },
       bottom: {
         title: 'Votre prochain document s’écrit en ce moment même dans une conversation',

@@ -9,6 +9,15 @@
 
 export const MCP_PATH = '/api/mcp';
 
+/**
+ * TransformPipe's listing in Claude's connector directory, since 26 September 2026.
+ *
+ * The one-click way in: Claude opens the listing, "Connect" starts the same sign-in a custom
+ * connector would. The address above stays for every other client, and for a Claude whose
+ * organisation has the directory switched off.
+ */
+export const CLAUDE_DIRECTORY = 'https://claude.ai/directory/tp';
+
 export const MCP_TOOL_NAMES = [
   'tp_help',
   'tp_convert_markdown',

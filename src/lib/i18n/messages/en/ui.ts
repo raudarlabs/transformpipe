@@ -56,7 +56,7 @@ export const ui: Content['ui'] = {
     'Add TransformPipe to an assistant and it can convert, save and share documents in this account.',
   'dialog.mcp.address': 'Connector address',
   'dialog.mcp.nokey':
-    'On claude.ai: Settings → Connectors → Add custom connector. There is no key to paste — it signs in as you and can be disconnected here.',
+    'On claude.ai: open claude.ai/directory/tp and press Connect, or add this address under Settings → Connectors → Add custom connector. There is no key to paste — it signs in as you and can be disconnected here.',
   'dialog.mcp.command': 'From a terminal',
   'header.connector': 'MCP connector',
   'header.webhooks': 'Webhooks',
@@ -499,7 +499,9 @@ export const ui: Content['ui'] = {
   'agents.col.status': 'Status',
   'agents.status.works': 'Works today',
   'agents.status.testing': 'Being tested',
-  'agents.claude.settings': 'Open Claude’s connector settings',
+  'agents.claude.add': 'Add to Claude',
+  'agents.listed': 'Listed in Claude’s connector directory',
+  'agents.other': 'Any other MCP client takes the address:',
   'agents.guide': 'Full setup guide',
 
   /*
