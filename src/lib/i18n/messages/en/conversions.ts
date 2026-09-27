@@ -19,12 +19,12 @@ export const conversions: Content['conversions'] = {
     short: 'MD → HTML',
     title: 'Markdown to HTML',
     blurb:
-      'Upload a Markdown file — see the rendered HTML instantly and download it as a ready-to-use document.',
+      'Upload a Markdown file — see the rendered HTML instantly and download it as a ready-to-use document. Everything converts in your browser, and once you sign in, your documents reach Claude through the MCP connector — ChatGPT and other assistants are being tested.',
     hint: 'Upload an .md file and see exactly how it will look in HTML. Drop several and they are chained into one document, in the order you pick them.',
     seo: {
       title: 'TransformPipe — Markdown to HTML converter',
       description:
-        'Drop a Markdown file and get the rendered document and a self-contained .html to download. Converts in your browser; sign in to keep, share and publish documents.',
+        'Drop a Markdown file, get the rendered page and a self-contained .html. It converts in your browser, and the MCP connector takes your documents to Claude.',
     },
   },
   'html-to-markdown': {

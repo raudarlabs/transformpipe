@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-27',
+    title: 'The front page says where a document can go next',
+    body:
+      'The front page explained the converter and never mentioned the assistants. A line under '
+      + 'the heading now says that everything converts in your browser and that, signed in, your '
+      + 'documents reach Claude through the MCP connector — with ChatGPT and the other '
+      + 'assistants named as what they are: being tested. The description a search result shows '
+      + 'says the same about Claude. In five languages.',
+  },
+  {
+    date: '2026-09-27',
     title: 'A shared link to the changelog shows a picture',
     body:
       'A link to the changelog, to any entry on it, to the live preview or to the pages for '

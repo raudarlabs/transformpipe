@@ -21,12 +21,12 @@ export const conversions: Content['conversions'] = {
     short: 'MD → HTML',
     title: 'Markdown in HTML',
     blurb:
-      'Eine Markdown-Datei hochladen — das gerenderte HTML sofort sehen und als fertiges Dokument herunterladen.',
+      'Eine Markdown-Datei hochladen — das gerenderte HTML sofort sehen und als fertiges Dokument herunterladen. Umgewandelt wird im Browser, und sobald Sie angemeldet sind, erreichen Ihre Dokumente Claude über den MCP-Connector — ChatGPT und weitere Assistenten werden gerade getestet.',
     hint: 'Eine .md-Datei hochladen und genau sehen, wie sie in HTML aussehen wird. Mehrere zugleich ablegen, und sie werden in der gewählten Reihenfolge zu einem Dokument verkettet.',
     seo: {
       title: 'TransformPipe — Markdown in HTML umwandeln',
       description:
-        'Markdown in HTML umwandeln: gerendertes Dokument und eigenständige .html zum Download. Läuft im Browser; angemeldet speichern, teilen, veröffentlichen.',
+        'Markdown in HTML umwandeln: gerendertes Dokument und eigenständige .html zum Download. Läuft im Browser; per MCP-Connector gehen Ihre Dokumente direkt an Claude.',
     },
   },
   'html-to-markdown': {
