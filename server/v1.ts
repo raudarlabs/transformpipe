@@ -33,6 +33,7 @@ import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { deleteSources, putSource, readSource } from './source.js';
+import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 
 /*
  * The public API.
@@ -163,7 +164,16 @@ v1.use('*', async (c, next) => {
     );
   }
 
-  return next();
+  /*
+   * And once more in the daily totals, as the route and never the caller — see server/usage.ts.
+   * Alongside the request rather than before it, so the write costs the caller nothing.
+   */
+  const counted = c.req.header(INTERNAL_CALL_HEADER)
+    ? null
+    : countServerEvent('api', apiRouteKey(c.req.method, c.req.path), caller.via);
+
+  await next();
+  await counted;
 });
 
 /*

@@ -50,6 +50,7 @@ import { OVERLAY, useFullscreen } from '@/lib/use-fullscreen';
 import type { ConvertedDoc } from '@/lib/types';
 import { buildStandaloneHtml } from '@/lib/markdown';
 import { downloadDoc, printDoc, saveBlob } from '@/lib/download';
+import { count } from '@/lib/usage';
 import {
   type DocFormat,
   FORMAT_LABELS,
@@ -386,6 +387,7 @@ export function ConverterPage({
 
   const handleDownload = (format: DocFormat) => {
     downloadDoc(doc.name, doc.markdown, doc.createdAt, theme, format);
+    count('download', format);
 
     toast.success(t('converter.download.done', { format: FORMAT_LABELS[format] }), {
       description: toFileName(doc.name, format),
@@ -401,6 +403,7 @@ export function ConverterPage({
       const blob = await api.downloadDocx(doc.remoteId);
 
       saveBlob(`${doc.name.replace(/\.[^.]+$/, '')}.docx`, blob);
+      count('download', 'docx');
       toast.success(t('converter.download.done', { format: 'Word' }));
     } catch (cause) {
       toast.error(

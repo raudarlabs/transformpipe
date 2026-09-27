@@ -20,6 +20,7 @@ import {
   DOCUMENT_LIST_HTML,
   DOCUMENT_LIST_URI,
 } from './ui-card.js';
+import { countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 import v1 from './v1.js';
 
 /*
@@ -385,6 +386,9 @@ async function callApi(
       headers.set(name, value);
     }
   }
+
+  /* The tool call is what gets counted, not the API requests it makes — see server/usage.ts. */
+  headers.set(INTERNAL_CALL_HEADER, '1');
 
   const response = await v1.fetch(
     new Request(`${selfOrigin(c)}${path}`, { ...init, headers })
@@ -933,6 +937,7 @@ const TOOLS: Record<McpToolName, Tool> = {
             headers: {
               authorization: c.req.header('authorization') ?? '',
               cookie: c.req.header('cookie') ?? '',
+              [INTERNAL_CALL_HEADER]: '1',
             },
           })
         );
@@ -1489,14 +1494,24 @@ mcp.post('/', async (c) => {
       unknown
     >;
 
+    /*
+     * Counted by tool name and how the caller arrived, beside the call rather than ahead of it.
+     * Never the account: see server/usage.ts. It cannot reject, so it cannot fail the tool.
+     */
+    const counted = countServerEvent('mcp', name, caller.via);
+
     try {
-      return c.json(rpc(id ?? null, await tool.run(c, args, caller)));
+      const [result] = await Promise.all([tool.run(c, args, caller), counted]);
+
+      return c.json(rpc(id ?? null, result));
     } catch (cause) {
       /*
        * A thrown error is still a tool answer when it happened inside one: the client should get a
        * sentence it can act on, not a transport failure it cannot.
        */
       const why = cause instanceof Error ? cause.message : String(cause);
+
+      await counted;
 
       return c.json(rpc(id ?? null, say(`That did not work: ${why}`, true)));
     }

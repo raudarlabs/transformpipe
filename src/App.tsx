@@ -54,6 +54,7 @@ import {
   replaceDocument,
 } from './lib/route';
 import type { ConvertedDoc } from './lib/types';
+import { count, countView } from './lib/usage';
 import { useHistory } from './lib/use-history';
 import { toast, Toaster } from './ui/components/Toast';
 import { TooltipProvider } from './ui/components/Tooltip';
@@ -307,6 +308,7 @@ function Shell() {
         setConversionId(id);
         setViewState('converter');
         goToConversion(id);
+        count('convert', id);
 
         /*
          * Kept in this browser, and nowhere else. Converting is looking at something; the account
@@ -410,6 +412,8 @@ function Shell() {
       return null;
     }
 
+    count('save', doc.kind);
+
     setDoc((current) =>
       current?.id === doc.id
         ? { ...current, remoteId: stored.id, localId: undefined }
@@ -483,6 +487,7 @@ function Shell() {
       }
 
       downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+      count('download', format);
       toast.success(t('history.download.done'), {
         description: toFileName(entry.name, format),
       });
@@ -575,6 +580,7 @@ function Shell() {
         }
 
         downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+        count('download', format);
         saved += 1;
 
         // A browser handed a burst of downloads starts dropping them.
@@ -796,6 +802,19 @@ export default function App() {
       localePath(guess, rest) + window.location.search
     );
     setLocale(guess);
+  }, []);
+
+  /*
+   * The first page view, and every Back and Forward after it — after the language redirect above,
+   * so the page counted is the one the reader ends up on. Moves inside the app are counted where
+   * they happen, in route.ts.
+   */
+  useEffect(() => {
+    countView();
+
+    window.addEventListener('popstate', countView);
+
+    return () => window.removeEventListener('popstate', countView);
   }, []);
 
   const navigate = useCallback((path: string) => {

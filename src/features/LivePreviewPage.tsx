@@ -6,6 +6,7 @@ import { DocumentPreview } from '@/components/DocumentPreview';
 import { Hint } from '@/components/Hint';
 import { livePreviewCrumbs } from '@/lib/breadcrumbs';
 import { downloadDoc } from '@/lib/download';
+import { count } from '@/lib/usage';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { markdownToHtml } from '@/lib/markdown';
 import { looksLikeBareDiagram } from '@/lib/mermaid';
@@ -128,8 +129,10 @@ export function LivePreviewPage({
    * Markdown, which is what makes the file open in a browser with no styles of ours to fetch. What
    * is downloaded here and what is downloaded there are the same bytes for the same text.
    */
-  const download = () =>
+  const download = () => {
     downloadDoc(t('live.filename'), settled, Date.now(), theme, 'html');
+    count('download', 'html');
+  };
 
   return (
     /* No width of its own: the shell sets it, the same 80rem every other page gets. */

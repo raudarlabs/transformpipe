@@ -11,6 +11,7 @@ import {
 } from './pages';
 import { localePath, splitLocale, type Locale } from './i18n/locales';
 import { articlesFor, hasArticleIn } from './blog';
+import { countView } from './usage';
 
 /**
  * The app's addresses, kept in the URL rather than in memory.
@@ -250,6 +251,8 @@ function inCurrentLocale(path: string): string {
 function move(path: string, search = '') {
   if (window.location.pathname + window.location.search !== path + search) {
     window.history.pushState(null, '', path + search);
+    /* `pushState` raises no event, so the counter is told here — see src/lib/usage.ts. */
+    countView();
   }
 }
 

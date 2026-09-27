@@ -4,6 +4,7 @@ import { DocumentPreview } from '@/components/DocumentPreview';
 import { Dropzone } from '@/components/Dropzone';
 import { conversionForFiles, convertFile } from '@/lib/convert';
 import { downloadDoc } from '@/lib/download';
+import { count } from '@/lib/usage';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { buildStandaloneHtml, getDocStats, markdownToHtml } from '@/lib/markdown';
 import { mergeMarkdown, mergedName } from '@/lib/merge';
@@ -141,6 +142,7 @@ export function EmbedPage() {
         const bytes = files.reduce((total, file) => total + file.size, 0);
 
         setDoc({ name, markdown, html, bytes });
+        count('convert', id);
 
         /*
          * Both forms, because the host cannot ask for the other one later — this frame keeps no
@@ -234,9 +236,10 @@ export function EmbedPage() {
         <Button
           size="sm"
           leftSlot={<Download />}
-          onClick={() =>
-            downloadDoc(doc.name, doc.markdown, Date.now(), theme, format)
-          }
+          onClick={() => {
+            downloadDoc(doc.name, doc.markdown, Date.now(), theme, format);
+            count('download', format);
+          }}
         >
           {t('converter.download', { format })}
         </Button>

@@ -42,6 +42,7 @@ import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
 import { deleteSources, putSource, readSource } from './source.js';
+import { tallyRoute } from './usage.js';
 import v1 from './v1.js';
 
 type Env = { Variables: { user: SessionUser } };
@@ -197,6 +198,13 @@ api.post('/csp-report', async (c) => {
 
   return c.body(null, 204);
 });
+
+/*
+ * The first-party counter — see server/usage.ts. Unauthenticated for the reason the CSP report is:
+ * it counts whoever is reading the page, signed in or not, and it never looks at the session. It is
+ * not behind `throttle` either, because that counter keys on the address and writes it down.
+ */
+api.post('/tally', tallyRoute);
 
 /*
  * Key management is session-only, deliberately: a leaked key must not be able to mint its

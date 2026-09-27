@@ -2,6 +2,7 @@ import { Check, Copy, Link2, Lock, Mail, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api, type ShareMode, type ShareState } from '@/lib/api';
 import { useT } from '@/lib/i18n/context';
+import { count } from '@/lib/usage';
 import { FilterChips } from './FilterChips';
 import { Button } from '@/ui/components/Button';
 import { IconButton } from '@/ui/components/IconButton';
@@ -42,8 +43,27 @@ export interface ShareClient {
 /** The site's own: session cookie, same origin, links built from the address bar. */
 export const appShareClient: ShareClient = {
   get: (id) => api.getShare(id),
-  setMode: (id, mode) => api.setShareMode(id, mode),
-  add: (id, email) => api.addShareRecipient(id, email),
+  /*
+   * Counted here and not in the dialog, so the extension — which passes its own client — counts
+   * nothing: see "The browser extension" on the privacy page. Only what shares something counts,
+   * a public link turned on or an address added; never the address.
+   */
+  setMode: async (id, mode) => {
+    const state = await api.setShareMode(id, mode);
+
+    if (mode === 'link') {
+      count('share', 'link');
+    }
+
+    return state;
+  },
+  add: async (id, email) => {
+    const state = await api.addShareRecipient(id, email);
+
+    count('share', 'people');
+
+    return state;
+  },
   remove: (id, email) => api.removeShareRecipient(id, email),
   url: (token) => `${window.location.origin}/s/${token}`,
 };

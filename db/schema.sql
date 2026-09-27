@@ -339,3 +339,31 @@ create table if not exists m2h_webhook (
 );
 
 create index if not exists m2h_webhook_owner on m2h_webhook (user_id, created_at desc);
+
+-- Usage, as daily totals and nothing else.
+--
+-- A first-party count of visits, conversions, downloads, saves and shares from the app, and of
+-- MCP tool calls and API requests from the server — see shared/usage.ts and server/usage.ts. The
+-- row is the whole record: which day (UTC), what happened, to what, in which language and from
+-- where, and how many times. There is deliberately no column for a person, an account, an address,
+-- a user agent or a document, so there is nothing here to delete on request and nothing to leak.
+--
+-- `key` is a page's route (`/epub-to-markdown`, `/blog/<slug>`, `other`), a conversion id, a
+-- download format, a share kind, a tool name or an API route. `source` is a referrer bucketed to a
+-- site's name (`producthunt`, `google`, `direct`) for the browser's events and how the caller
+-- arrived (`oauth`, `key`, `session`) for the server's. `campaign` is `utm_source`, or `ref` when
+-- there is none, and empty for most rows. The server refuses every value it did not expect, and
+-- the checks below are the second lock on the same door.
+
+create table if not exists m2h_usage_daily (
+  day      date    not null,
+  event    text    not null check (char_length(event) <= 16),
+  key      text    not null check (char_length(key) <= 120),
+  lang     text    not null default '' check (char_length(lang) <= 2),
+  source   text    not null default '' check (char_length(source) <= 16),
+  campaign text    not null default '' check (char_length(campaign) <= 32),
+  count    integer not null default 0,
+  primary key (day, event, key, lang, source, campaign)
+);
+
+create index if not exists m2h_usage_daily_event on m2h_usage_daily (event, day);
