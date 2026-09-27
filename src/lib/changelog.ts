@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-27',
+    title: 'A shared link to the changelog shows a picture',
+    body:
+      'A link to the changelog, to any entry on it, to the live preview or to the pages for '
+      + 'assistants unfurled in Slack, LinkedIn or a chat as a grey box: each named a share image '
+      + 'that had never been drawn. They all have one now — the entries share the '
+      + 'changelog’s — and a page that names a picture which does not exist no longer '
+      + 'gets published.',
+  },
+  {
+    date: '2026-09-27',
     title: 'Fifteen conversions, and PDF only on the way out',
     body:
       'The front page’s questions, the documentation and the invitation on a shared document '

@@ -42,14 +42,23 @@ export function articleCardImage(slug: string): string {
  * Any other page's cover, by route.
  *
  * The front page is `home.jpg` rather than `index.jpg`, and a conversion page uses its own path
- * with the leading slash dropped. A route with no cover gets the front page's, which is better than
- * a share with no picture at all.
+ * with the leading slash dropped. Every changelog entry shares the changelog's one cover: there are
+ * fifty-odd of them and a new one most days, and a picture each would be fifty files to draw for
+ * pages that are mostly `noindex`.
+ *
+ * Nothing here can tell whether the file was ever drawn, so the prerenderer checks that every
+ * cover it names is in dist and fails the build when one is not — a route added without a line in
+ * `scripts/og-images.mjs` is caught there, not by somebody sharing a link to it.
  */
 export function pageCover(path: string): string {
   const clean = path.replace(/^\/+|\/+$/g, '');
 
   if (clean === '') {
     return '/og/home.jpg';
+  }
+
+  if (clean === 'changelog' || clean.startsWith('changelog/')) {
+    return '/og/changelog.jpg';
   }
 
   if (clean === 'markdown-to-html') {

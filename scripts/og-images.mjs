@@ -407,7 +407,7 @@ const BY_TOPIC = [
   [/obsidian|vault|wikilink/, 'graph'],
   [/confluence|wiki|documentation-that-lives|static-site/, 'book'],
   [/notion|zip|archive|export/, 'archive'],
-  [/summar|assistant|chatgpt|mcp|ai-output/, 'spark'],
+  [/summar|assistant|agents|chatgpt|mcp|ai-output/, 'spark'],
   [/excel|csv|tsv|spreadsheet|table/, 'grid'],
   [/json|database/, 'database'],
   [/command-line|\bcli\b|terminal|pandoc/, 'terminal'],
@@ -626,6 +626,14 @@ const PAGES = [
   ['about', 'What TransformPipe is', 'Company', ACCENTS.Converting],
   ['support', 'Support', 'Company', ACCENTS.Workflow],
   ['extension', 'The browser extension', 'Company', ACCENTS.Converting],
+  /*
+   * These four went out with no cover, and every share of them pointed at a file that was never
+   * drawn. The changelog's one picture is also every entry's — see `pageCover`.
+   */
+  ['changelog', 'What has shipped', 'Changelog', ACCENTS.Publishing],
+  ['markdown-live-preview', 'Markdown live preview', 'Tool', ACCENTS.Converting],
+  ['agents', 'Everything your assistant writes, in one place', 'AI assistants', ACCENTS.Automation],
+  ['agents/claude', 'TransformPipe for Claude', 'AI assistants', ACCENTS.Publishing],
   ['privacy', 'Privacy', 'Legal', ACCENTS.Safety],
   ['terms', 'Terms of use', 'Legal', ACCENTS.Safety],
   ['cookies', 'Cookies', 'Legal', ACCENTS.Safety],

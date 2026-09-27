@@ -13,7 +13,7 @@
  * Run through Vite (`vite build --ssr`) rather than plain node, so `import.meta.glob`, the path
  * aliases and the .js-to-.ts specifiers all mean here what they mean in the app.
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { markdownToHtml } from '../server/render.js';
 import { MD_DOC_STYLE, mdDocTheme } from '../shared/md-doc-css.js';
@@ -489,6 +489,29 @@ function assertOneOfEach(path: string, html: string) {
   }
 }
 
+/*
+ * Every share image a page names, and the pages that named it, when the file is not in dist.
+ *
+ * `pageCover` turns any route into `/og/<route>.jpg` and cannot know whether `npm run og` ever drew
+ * that file, so a page added without a cover pointed its `og:image` at a 404 — 285 pages did, every
+ * changelog entry among them, and a link to any of them unfurled in Slack or LinkedIn as a grey
+ * box. Collected rather than thrown one at a time, so the error lists every file that is missing.
+ */
+const missingCovers = new Map<string, string[]>();
+
+function checkCovers(path: string, html: string) {
+  for (const [, image] of html.matchAll(
+    /<meta (?:property="og:image"|name="twitter:image") content="https?:\/\/[^/"]+(\/[^"]*)"/g
+  )) {
+    const naming = missingCovers.get(image) ?? [];
+
+    // og:image and twitter:image are the same file, so a page is counted once.
+    if (!existsSync(join(DIST, image)) && !naming.includes(path)) {
+      missingCovers.set(image, [...naming, path]);
+    }
+  }
+}
+
 function write(page: Page) {
   const file =
     page.path === '/'
@@ -497,6 +520,7 @@ function write(page: Page) {
   const html = render(page);
 
   assertOneOfEach(page.path, html);
+  checkCovers(page.path, html);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html, 'utf8');
 }
@@ -1226,27 +1250,41 @@ for (const page of pages) {
  * and the screen changes. One file, five languages, no redirect.
  */
 const missing = CATALOGUES[DEFAULT_LOCALE].ui;
+const notFound = render({
+  path: '/404',
+  addressless: true,
+  title: `${missing['notfound.seo.title']} — TransformPipe`,
+  description: missing['notfound.seo.description'],
+  /*
+   * The front page's cover. Somebody who shares a mistyped address is sharing the site, and a
+   * picture drawn for "not found" would be the one cover nobody wants to see unfurled.
+   */
+  image: pageCover('/'),
+  body: [
+    `<h1>${escapeHtml(missing['notfound.title'])}</h1>`,
+    `<p>${escapeHtml(missing['notfound.lede'])}</p>`,
+    '<ul>',
+    `<li><a href="/">${escapeHtml(missing['notfound.converter'])}</a></li>`,
+    `<li><a href="/docs">${escapeHtml(missing['notfound.docs'])}</a></li>`,
+    `<li><a href="/blog">${escapeHtml(missing['notfound.blog'])}</a></li>`,
+    '</ul>',
+    `<p>${escapeHtml(missing['notfound.note'])}</p>`,
+  ].join(''),
+});
 
-writeFileSync(
-  join(DIST, '404.html'),
-  render({
-    path: '/404',
-    addressless: true,
-    title: `${missing['notfound.seo.title']} — TransformPipe`,
-    description: missing['notfound.seo.description'],
-    body: [
-      `<h1>${escapeHtml(missing['notfound.title'])}</h1>`,
-      `<p>${escapeHtml(missing['notfound.lede'])}</p>`,
-      '<ul>',
-      `<li><a href="/">${escapeHtml(missing['notfound.converter'])}</a></li>`,
-      `<li><a href="/docs">${escapeHtml(missing['notfound.docs'])}</a></li>`,
-      `<li><a href="/blog">${escapeHtml(missing['notfound.blog'])}</a></li>`,
-      '</ul>',
-      `<p>${escapeHtml(missing['notfound.note'])}</p>`,
-    ].join(''),
-  }),
-  'utf8'
-);
+assertOneOfEach('/404', notFound);
+checkCovers('/404', notFound);
+writeFileSync(join(DIST, '404.html'), notFound, 'utf8');
+
+if (missingCovers.size > 0) {
+  throw new Error(
+    `${missingCovers.size} share image(s) named by a page and not in dist — draw them in ` +
+      `scripts/og-images.mjs and run \`npm run og\`, or point the page at one that exists:\n` +
+      [...missingCovers]
+        .map(([image, on]) => `  ${image} ← ${on.slice(0, 3).join(', ')}${on.length > 3 ? ` and ${on.length - 3} more` : ''}`)
+        .join('\n')
+  );
+}
 
 // ---------------------------------------------------------------- sitemap and robots
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
