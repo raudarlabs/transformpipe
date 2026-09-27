@@ -6,6 +6,7 @@
  * Only the DOM differs. DOMPurify needs one, and the two runtimes get it from different places —
  * so each passes its own `sanitize` in, built from the shared config below.
  */
+import { CONVERSIONS } from './conversions.js';
 import { highlightCode } from './highlight.js';
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
 import katex from 'katex';
@@ -1042,11 +1043,11 @@ ${body}
   }</p>
 <section class="md-cta">
   <h2>This page was made with TransformPipe</h2>
-  <p>A web page, a Word file, a PDF, a spreadsheet or Markdown, turned into a clean document you can
-  read, download or share as a link like this one. The conversion runs in your browser — the file
+  <p>A web page, a Word file, a slide deck, a spreadsheet or Markdown, turned into a clean document
+  you can read, download or share as a link like this one. The conversion runs in your browser — the file
   never leaves it.</p>
   <ul>
-    <li>Ten formats, no upload</li>
+    <li>${CONVERSIONS.length} formats, no upload</li>
     <li>Free, and no account to try it</li>
     <li>An account keeps and shares them</li>
   </ul>

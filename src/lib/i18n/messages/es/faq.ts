@@ -12,7 +12,7 @@ export const faq: Content['faq'] = [
   {
     question: '¿Qué puede convertir?',
     answer:
-      'Diez cosas, cada una con su página bajo Conversor, en la cabecera: Markdown a HTML, y HTML, Word (.docx), Excel (.xlsx), CSV o TSV, JSON, texto plano, y una exportación de Notion, Confluence u Obsidian a Markdown. Todo menos la primera acaba en Markdown, que es la forma en que aquí se guarda, se previsualiza y se comparte un documento — así, un archivo de Word, una hoja de cálculo y la respuesta de una API se vuelven la misma cosa una vez dentro.',
+      'Quince cosas, cada una con su página bajo Conversor, en la cabecera: Markdown a HTML, y HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), OpenDocument (.odt), texto enriquecido (.rtf), EPUB, CSV o TSV, JSON, texto plano, y una exportación de Evernote, Notion, Confluence u Obsidian a Markdown. El PDF es solo una salida —lo genera el diálogo de impresión—, nunca una entrada. Todo menos la primera acaba en Markdown, que es la forma en que aquí se guarda, se previsualiza y se comparte un documento — así, un archivo de Word, una hoja de cálculo y la respuesta de una API se vuelven la misma cosa una vez dentro.',
   },
   {
     question: '¿Se sube mi archivo a algún sitio?',

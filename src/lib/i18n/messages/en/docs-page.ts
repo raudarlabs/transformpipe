@@ -33,7 +33,7 @@ export const docsPage = {
 
   'docs.title': 'Everything TransformPipe does',
   'docs.lede':
-    'Markdown, HTML, Word, Excel, CSV, JSON, plain text or a whole Notion, Confluence or Obsidian export in — a document out as HTML, Markdown, plain text or print. From this page, from a terminal, from a pull request or from an assistant. This is the whole of it; nothing here sits behind a plan.',
+    'Fifteen formats in, from Word, PowerPoint and Excel to a whole Notion, Confluence or Obsidian export — a document out as HTML, Markdown, plain text or print. From this page, from a terminal, from a pull request or from an assistant. This is the whole of it; nothing here sits behind a plan.',
 
   /* Under every screenshot, after the caption. */
   'docs.shot.enlarge': '— click to enlarge',
@@ -84,7 +84,7 @@ export const docsPage = {
   'docs.extension.intro':
     'Press the button in the toolbar and the extension reads the page you are looking at, picks the article out of the navigation and the cookie notices, makes every link and picture address absolute, and hands back Markdown. Copy it, download it, or save the page as a self-contained {html} file — its own design, its pictures inside the file, and no requests to anything.',
   'docs.extension.surfaces':
-    'Two surfaces and a menu entry. The toolbar button opens a compact panel over the page; the side panel is the same thing kept open beside it, following you from tab to tab and converting each page as you arrive; the right-click menu converts a selection. The ten conversions of this site run inside the extension too, so a file on your machine converts without being uploaded.',
+    'Two surfaces and a menu entry. The toolbar button opens a compact panel over the page; the side panel is the same thing kept open beside it, following you from tab to tab and converting each page as you arrive; the right-click menu converts a selection. The conversions of this site run inside the extension too, so a file on your machine converts without being uploaded.',
   'docs.extension.account':
     'Signed in — the same account as this site, through the same sign-in — Save puts a document where the rest of them are, and Share publishes a link or names the people who may read it.',
   'docs.extension.private':

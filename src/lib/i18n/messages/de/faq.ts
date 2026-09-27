@@ -14,7 +14,7 @@ export const faq: Content['faq'] = [
   {
     question: 'Was kann umgewandelt werden?',
     answer:
-      'Zehn Dinge, jedes mit seiner eigenen Seite unter Konverter in der Kopfzeile: Markdown in HTML, und HTML, Word (.docx), Excel (.xlsx), CSV oder TSV, JSON, reiner Text sowie ein Notion-, Confluence- oder Obsidian-Export in Markdown. Alles außer dem Ersten endet als Markdown, und als Markdown wird ein Dokument hier gespeichert, in der Vorschau gezeigt und geteilt — eine Word-Datei, eine Tabelle und eine API-Antwort werden also dieselbe Art von Ding, sobald sie drin sind.',
+      'Fünfzehn Dinge, jedes mit seiner eigenen Seite unter Konverter in der Kopfzeile: Markdown in HTML, und HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), OpenDocument (.odt), Rich Text (.rtf), EPUB, CSV oder TSV, JSON, reiner Text sowie ein Evernote-, Notion-, Confluence- oder Obsidian-Export in Markdown. Ein PDF ist hier nur der Weg hinaus — der Druckdialog erzeugt es —, nie der Weg hinein. Alles außer dem Ersten endet als Markdown, und als Markdown wird ein Dokument hier gespeichert, in der Vorschau gezeigt und geteilt — eine Word-Datei, eine Tabelle und eine API-Antwort werden also dieselbe Art von Ding, sobald sie drin sind.',
   },
   {
     question: 'Wird meine Datei irgendwohin hochgeladen?',

@@ -120,7 +120,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Auch Dateien, ohne sie hochzuladen',
         body: [
-          'Dieselben zehn Umwandlungen wie auf der Website — Word, PDF, Tabellen, HTML, CSV, JSON, EPUB und der Rest — laufen in der Erweiterung. Nichts wird hochgeladen, nichts braucht eine Verbindung, und mehrere auf einmal gewählte Dateien werden ein Dokument, in der Reihenfolge, in der Sie sie gewählt haben.',
+          'Die Umwandlungen der Website — Word, PowerPoint, Tabellen, EPUB, HTML, CSV, JSON und der Rest — laufen in der Erweiterung. Nichts wird hochgeladen, nichts braucht eine Verbindung, und mehrere auf einmal gewählte Dateien werden ein Dokument, in der Reihenfolge, in der Sie sie gewählt haben.',
         ],
       },
       {

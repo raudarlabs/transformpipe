@@ -122,7 +122,7 @@ const serverInfo = (c: Context) => {
     ...SERVER,
     title: 'TransformPipe',
     description:
-      'Convert documents to Markdown and back — Word, PDF, spreadsheets, HTML, CSV and more — and keep, search and share them on your own TransformPipe account.',
+      'Convert documents to Markdown and back — Word, PowerPoint, spreadsheets, HTML, CSV and more — and keep, search and share them on your own TransformPipe account.',
     websiteUrl: origin,
     icons: [
       { src: `${origin}/icon-192.png`, mimeType: 'image/png', sizes: ['192x192'] },

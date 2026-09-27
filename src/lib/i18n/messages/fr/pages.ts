@@ -112,7 +112,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Des fichiers aussi, sans les téléverser',
         body: [
-          'Les dix conversions du site — Word, PDF, tableurs, HTML, CSV, JSON, EPUB et le reste — tournent dans l’extension. Rien n’est téléversé, rien n’exige de connexion, et plusieurs fichiers choisis ensemble deviennent un seul document, dans l’ordre où vous les avez choisis.',
+          'Les conversions du site — Word, PowerPoint, tableurs, EPUB, HTML, CSV, JSON et le reste — tournent dans l’extension. Rien n’est téléversé, rien n’exige de connexion, et plusieurs fichiers choisis ensemble deviennent un seul document, dans l’ordre où vous les avez choisis.',
         ],
       },
       {

@@ -4,13 +4,14 @@
 
 # TransformPipe
 
-**Ten document conversions that run in your browser.** Word, Excel, PDF, HTML, CSV, JSON or a whole
-Notion, Confluence or Obsidian export in — a clean document out, as Markdown, HTML, plain text or
-print. Signed out, nothing is uploaded and nothing needs a network.
+**Fifteen document conversions that run in your browser.** Word, PowerPoint, Excel, EPUB, HTML, CSV,
+JSON or a whole Notion, Confluence, Obsidian or Evernote export in — a clean document out, as
+Markdown, HTML, Word, plain text or print. Signed out, nothing is uploaded and nothing needs a
+network.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-14a8af.svg)](LICENSE)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Ftransformpipe.com&label=transformpipe.com&color=14a8af)](https://transformpipe.com)
-[![Conversions](https://img.shields.io/badge/conversions-10-14a8af.svg)](https://transformpipe.com/docs#converting)
+[![Conversions](https://img.shields.io/badge/conversions-15-14a8af.svg)](https://transformpipe.com/docs#converting)
 [![MCP connector](https://img.shields.io/badge/MCP-connector-14a8af.svg)](https://transformpipe.com/docs#assistant)
 [![Browser extension](https://img.shields.io/badge/extension-Chrome%20%C2%B7%20Firefox-14a8af.svg)](https://transformpipe.com/extension)
 

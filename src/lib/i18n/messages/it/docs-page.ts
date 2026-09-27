@@ -15,7 +15,7 @@ export const docsPage = {
 
   'docs.title': 'Tutto quello che fa TransformPipe',
   'docs.lede':
-    'Markdown, HTML, Word, Excel, CSV, JSON, testo semplice o un intero export di Notion, Confluence o Obsidian in entrata — un documento in uscita come HTML, Markdown, testo semplice o stampa. Da questa pagina, da un terminale, da una pull request o da un assistente. È tutto qui; niente di tutto questo sta dietro a un piano a pagamento.',
+    'Quindici formati in entrata, da Word, PowerPoint ed Excel fino a un intero export di Notion, Confluence o Obsidian — un documento in uscita come HTML, Markdown, testo semplice o stampa. Da questa pagina, da un terminale, da una pull request o da un assistente. È tutto qui; niente di tutto questo sta dietro a un piano a pagamento.',
 
   /* Under every screenshot, after the caption. */
   'docs.shot.enlarge': '— fai clic per ingrandire',
@@ -66,7 +66,7 @@ export const docsPage = {
   'docs.extension.intro':
     'Premi il pulsante nella barra degli strumenti: l’estensione legge la pagina che stai guardando, estrae l’articolo dalla navigazione e dagli avvisi sui cookie, rende assoluto ogni indirizzo di link e immagine e restituisce Markdown. Copialo, scaricalo, oppure salva la pagina come file {html} autonomo, con il suo design e le sue immagini dentro il file e senza una sola richiesta.',
   'docs.extension.surfaces':
-    'Due superfici e una voce di menu. Il pulsante apre un pannello compatto sopra la pagina; il pannello laterale è la stessa cosa tenuta aperta di fianco, ti segue di scheda in scheda e converte ogni pagina appena arrivi; il menu contestuale converte una selezione. Anche le dieci conversioni di questo sito girano dentro l’estensione, quindi un file del tuo computer si converte senza caricarlo.',
+    'Due superfici e una voce di menu. Il pulsante apre un pannello compatto sopra la pagina; il pannello laterale è la stessa cosa tenuta aperta di fianco, ti segue di scheda in scheda e converte ogni pagina appena arrivi; il menu contestuale converte una selezione. Anche le conversioni di questo sito girano dentro l’estensione, quindi un file del tuo computer si converte senza caricarlo.',
   'docs.extension.account':
     'Con l’accesso fatto — lo stesso account di questo sito, con lo stesso accesso — Salva mette un documento dove stanno gli altri, e Condividi pubblica un link oppure nomina le persone che possono leggerlo.',
   'docs.extension.private':

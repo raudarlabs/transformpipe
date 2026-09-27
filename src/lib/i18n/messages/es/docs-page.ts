@@ -22,7 +22,7 @@ export const docsPage = {
 
   'docs.title': 'Todo lo que hace TransformPipe',
   'docs.lede':
-    'Entra Markdown, HTML, Word, Excel, CSV, JSON, texto plano o una exportación entera de Notion, Confluence u Obsidian — sale un documento en HTML, Markdown, texto plano o impreso. Desde esta página, desde un terminal, desde un pull request o desde un asistente. Esto es todo; nada de lo que hay aquí depende de un plan de pago.',
+    'Entran quince formatos, de Word, PowerPoint y Excel a una exportación entera de Notion, Confluence u Obsidian — sale un documento en HTML, Markdown, texto plano o impreso. Desde esta página, desde un terminal, desde un pull request o desde un asistente. Esto es todo; nada de lo que hay aquí depende de un plan de pago.',
 
   /* Debajo de cada captura, después del pie. */
   'docs.shot.enlarge': '— clic para ampliar',
@@ -73,7 +73,7 @@ export const docsPage = {
   'docs.extension.intro':
     'Pulsa el botón de la barra de herramientas: la extensión lee la página que estás viendo, saca el artículo de entre la navegación y los avisos de cookies, convierte en absoluta cada dirección de enlace e imagen y devuelve Markdown. Cópialo, descárgalo o guarda la página como un archivo {html} autónomo, con su diseño y sus imágenes dentro del archivo y sin una sola petición.',
   'docs.extension.surfaces':
-    'Dos superficies y una entrada de menú. El botón abre un panel compacto sobre la página; el panel lateral es lo mismo mantenido abierto al lado, te sigue de pestaña en pestaña y convierte cada página según llegas; el menú contextual convierte una selección. Las diez conversiones de este sitio también se ejecutan dentro de la extensión, así que un archivo de tu equipo se convierte sin subirlo.',
+    'Dos superficies y una entrada de menú. El botón abre un panel compacto sobre la página; el panel lateral es lo mismo mantenido abierto al lado, te sigue de pestaña en pestaña y convierte cada página según llegas; el menú contextual convierte una selección. Las conversiones de este sitio también se ejecutan dentro de la extensión, así que un archivo de tu equipo se convierte sin subirlo.',
   'docs.extension.account':
     'Con la sesión iniciada —la misma cuenta que este sitio, por el mismo acceso— Guardar deja un documento donde están los demás, y Compartir publica un enlace o nombra a quienes pueden leerlo.',
   'docs.extension.private':

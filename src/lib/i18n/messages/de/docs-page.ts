@@ -35,7 +35,7 @@ export const docsPage = {
 
   'docs.title': 'Alles, was TransformPipe tut',
   'docs.lede':
-    'Markdown, HTML, Word, Excel, CSV, JSON, reiner Text oder ein ganzer Notion-, Confluence- oder Obsidian-Export hinein — ein Dokument heraus, als HTML, Markdown, reiner Text oder Druck. Von dieser Seite aus, aus einem Terminal, aus einem Pull Request oder aus einem Assistenten. Das ist alles; nichts davon steckt hinter einem Tarif.',
+    'Fünfzehn Formate hinein, von Word, PowerPoint und Excel bis zum ganzen Notion-, Confluence- oder Obsidian-Export — ein Dokument heraus, als HTML, Markdown, reiner Text oder Druck. Von dieser Seite aus, aus einem Terminal, aus einem Pull Request oder aus einem Assistenten. Das ist alles; nichts davon steckt hinter einem Tarif.',
 
   /* Unter jedem Screenshot, hinter der Bildunterschrift. */
   'docs.shot.enlarge': '— zum Vergrößern klicken',
@@ -86,7 +86,7 @@ export const docsPage = {
   'docs.extension.intro':
     'Drücken Sie die Schaltfläche in der Symbolleiste: Die Erweiterung liest die Seite, die Sie ansehen, holt den Artikel aus Navigation und Cookie-Hinweisen heraus, macht jede Link- und Bildadresse absolut und gibt Markdown zurück. Kopieren, herunterladen — oder die Seite als eigenständige {html}-Datei sichern, mit ihrem Design und ihren Bildern in der Datei und ohne einen einzigen Netzwerkaufruf.',
   'docs.extension.surfaces':
-    'Zwei Oberflächen und ein Menüeintrag. Die Schaltfläche öffnet ein kompaktes Panel über der Seite; die Seitenleiste ist dasselbe, daneben offen gehalten, folgt Ihnen von Tab zu Tab und wandelt jede Seite um, sobald Sie ankommen; das Kontextmenü wandelt eine Auswahl um. Auch die zehn Umwandlungen dieser Website laufen in der Erweiterung, eine Datei auf Ihrem Rechner wird also ohne Hochladen umgewandelt.',
+    'Zwei Oberflächen und ein Menüeintrag. Die Schaltfläche öffnet ein kompaktes Panel über der Seite; die Seitenleiste ist dasselbe, daneben offen gehalten, folgt Ihnen von Tab zu Tab und wandelt jede Seite um, sobald Sie ankommen; das Kontextmenü wandelt eine Auswahl um. Auch die Umwandlungen dieser Website laufen in der Erweiterung, eine Datei auf Ihrem Rechner wird also ohne Hochladen umgewandelt.',
   'docs.extension.account':
     'Angemeldet — dasselbe Konto wie auf dieser Website, über dieselbe Anmeldung — legt Speichern ein Dokument dorthin, wo die anderen liegen, und Teilen veröffentlicht einen Link oder benennt die Personen, die lesen dürfen.',
   'docs.extension.private':

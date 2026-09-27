@@ -20,12 +20,12 @@ export const docs: Content['docs'] = {
   converting: {
     title: 'Umwandeln',
     summary:
-      'Die zehn Umwandlungen — Markdown in HTML, und HTML, Word, Excel, CSV, JSON, reiner Text sowie Notion-, Confluence- und Obsidian-Exporte in Markdown —, was jede annimmt, das Verketten mehrerer Dateien zu einem Dokument, der Quelltext-Reiter und die Formate, die ein Download herausgeben kann: Markdown, HTML, reiner Text oder ein gedrucktes PDF.',
+      'Die fünfzehn Umwandlungen — Markdown in HTML, und HTML, Word, PowerPoint, Excel, OpenDocument, Rich Text, EPUB, CSV, JSON, reiner Text sowie Evernote-, Notion-, Confluence- und Obsidian-Exporte in Markdown —, was jede annimmt, das Verketten mehrerer Dateien zu einem Dokument, der Quelltext-Reiter und die Formate, die ein Download herausgeben kann: Markdown, HTML, reiner Text oder ein gedrucktes PDF.',
   },
   extension: {
     title: 'Browser-Erweiterung',
     summary:
-      'Die geöffnete Seite als Markdown, mit einem Klick — und dieselben zehn Umwandlungen, im Browser.',
+      'Die geöffnete Seite als Markdown, mit einem Klick — und die Umwandlungen der Website, im Browser.',
   },
   history: {
     title: 'Verlauf',

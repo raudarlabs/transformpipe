@@ -118,7 +118,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Files too, without uploading them',
         body: [
-          'The same ten conversions the site has — Word, PDF, spreadsheets, HTML, CSV, JSON, EPUB and the rest — run inside the extension. Nothing is uploaded and nothing needs a network connection, and several files picked at once become one document, in the order you picked them.',
+          'The site’s conversions — Word, PowerPoint, spreadsheets, EPUB, HTML, CSV, JSON and the rest — run inside the extension. Nothing is uploaded and nothing needs a network connection, and several files picked at once become one document, in the order you picked them.',
         ],
       },
       {

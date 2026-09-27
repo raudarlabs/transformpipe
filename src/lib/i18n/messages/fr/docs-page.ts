@@ -21,7 +21,7 @@ export const docsPage = {
 
   'docs.title': 'Tout ce que fait TransformPipe',
   'docs.lede':
-    'Markdown, HTML, Word, Excel, CSV, JSON, texte brut ou un export Notion, Confluence ou Obsidian entier en entrée — un document en sortie, en HTML, en Markdown, en texte brut ou à l’impression. Depuis cette page, depuis un terminal, depuis une pull request ou depuis un assistant. C’est tout ce qu’il y a ; rien ici n’est derrière un abonnement.',
+    'Quinze formats en entrée, de Word, PowerPoint et Excel jusqu’à un export Notion, Confluence ou Obsidian entier — un document en sortie, en HTML, en Markdown, en texte brut ou à l’impression. Depuis cette page, depuis un terminal, depuis une pull request ou depuis un assistant. C’est tout ce qu’il y a ; rien ici n’est derrière un abonnement.',
 
   /* Sous chaque capture, après la légende. */
   'docs.shot.enlarge': '— cliquer pour agrandir',
@@ -72,7 +72,7 @@ export const docsPage = {
   'docs.extension.intro':
     'Appuyez sur le bouton de la barre d’outils : l’extension lit la page que vous regardez, extrait l’article de la navigation et des bandeaux de cookies, rend absolue chaque adresse de lien et d’image, et rend du Markdown. Copiez-le, téléchargez-le, ou enregistrez la page en un fichier {html} autonome — son design, ses images dans le fichier, et aucune requête vers quoi que ce soit.',
   'docs.extension.surfaces':
-    'Deux surfaces et une entrée de menu. Le bouton ouvre un panneau compact par-dessus la page ; le panneau latéral est la même chose gardée ouverte à côté, il vous suit d’un onglet à l’autre et convertit chaque page à votre arrivée ; le menu contextuel convertit une sélection. Les dix conversions de ce site tournent aussi dans l’extension : un fichier de votre machine se convertit sans être téléversé.',
+    'Deux surfaces et une entrée de menu. Le bouton ouvre un panneau compact par-dessus la page ; le panneau latéral est la même chose gardée ouverte à côté, il vous suit d’un onglet à l’autre et convertit chaque page à votre arrivée ; le menu contextuel convertit une sélection. Les conversions de ce site tournent aussi dans l’extension : un fichier de votre machine se convertit sans être téléversé.',
   'docs.extension.account':
     'Connecté — le même compte que ce site, par la même connexion — Enregistrer place un document là où sont les autres, et Partager publie un lien ou nomme les personnes autorisées à le lire.',
   'docs.extension.private':

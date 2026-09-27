@@ -117,6 +117,18 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-27',
+    title: 'Fifteen conversions, and PDF only on the way out',
+    body:
+      'The front page’s questions, the documentation and the invitation on a shared document '
+      + 'still said ten conversions a week after there were fifteen, and a few of them '
+      + 'listed PDF as something you could convert from. It is not: a PDF is what a document can '
+      + 'become, through the print dialog or the API, never what it starts as. They all name the '
+      + 'fifteen now — PowerPoint, OpenDocument, rich text, EPUB and Evernote included — '
+      + 'and the extension and the shared page count them rather than saying a number, so the '
+      + 'next conversion cannot leave them behind.',
+  },
+  {
+    date: '2026-09-27',
     title: 'In Claude\u2019s connector directory',
     body:
       'TransformPipe is listed in Claude\u2019s connector directory, at claude.ai/directory/tp: open '

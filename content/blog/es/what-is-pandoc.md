@@ -85,6 +85,6 @@ Y la última línea esconde una instalación. **Markdown a PDF no es uno de los 
 
 ## Dónde encaja este sitio
 
-TransformPipe convierte en el navegador: quince formatos de entrada, Markdown y un archivo HTML autónomo de salida, y el archivo no sale de la máquina. Eso cubre el centro de la última lista —un documento, ninguna instalación, un resultado que ves— y nada de la primera. Aquí no hay procesador de citas, ni lenguaje de plantillas, ni matriz de formatos, ni PDF en ninguna dirección.
+TransformPipe convierte en el navegador: quince formatos de entrada, Markdown y un archivo HTML autónomo de salida, y el archivo no sale de la máquina. Eso cubre el centro de la última lista —un documento, ninguna instalación, un resultado que ves— y nada de la primera. Aquí no hay procesador de citas, ni lenguaje de plantillas, ni matriz de formatos, y un PDF no puede entrar: sale uno, por el diálogo de impresión o por la API, pero no entra ninguno.
 
 El resumen honesto es que son herramientas distintas para dos mitades del mismo problema, y la frontera se dice fácil: si la conversión va a repetirse la semana que viene, escríbela con Pandoc. Si va a pasar una vez, en los próximos dos minutos, no deberías tener que instalar nada para hacerla.

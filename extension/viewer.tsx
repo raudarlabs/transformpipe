@@ -52,7 +52,7 @@ import '@/index.css';
  * converted — because a popup closes the moment a tab opens in front of it, and a `File` cannot be
  * handed from a closing page to a new one. So the picker lives here: the bytes are read in the page
  * that shows them and go nowhere else. With no account and no network, this is a complete
- * converter for all ten formats, which is what `src/lib/convert.ts` already was.
+ * converter for every format the site reads, which is what `src/lib/convert.ts` already was.
  */
 /** Every extension any conversion takes, in the order the conversions are declared. */
 const ACCEPTS = [...new Set(CONVERSIONS.flatMap((one) => one.extensions))];
@@ -417,7 +417,7 @@ function Viewer() {
         {!busy && !document_ && !error && (
           <Dropzone
             extensions={ACCEPTS}
-            title={t('ext.viewer.empty')}
+            title={t('ext.viewer.empty', { count: CONVERSIONS.length })}
             hint={t('ext.viewer.hint')}
             onFiles={(files) => void onFiles(files)}
           />

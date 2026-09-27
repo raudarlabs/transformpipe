@@ -85,6 +85,6 @@ And the last line hides an install. **Markdown to PDF is not one of Pandoc's wri
 
 ## Where this site sits
 
-TransformPipe converts in the browser: fifteen formats in, Markdown and a self-contained HTML file out, with the file never leaving the machine. That covers the middle of this article's last list — one document, no install, a result you can see — and none of the first. There is no citation processor here, no template language, no format matrix, and no PDF in either direction.
+TransformPipe converts in the browser: fifteen formats in, Markdown and a self-contained HTML file out, with the file never leaving the machine. That covers the middle of this article's last list — one document, no install, a result you can see — and none of the first. There is no citation processor here, no template language, no format matrix, and no way in for a PDF — one comes out, through the print dialog or the API, but none goes in.
 
 The honest summary is that they are different tools for different halves of the same problem, and the border is easy to state: if the conversion is going to happen again next week, script it with Pandoc. If it is going to happen once, in the next two minutes, you should not have to install anything to do it.

@@ -111,7 +111,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Anche i file, senza caricarli',
         body: [
-          'Le stesse dieci conversioni del sito — Word, PDF, fogli di calcolo, HTML, CSV, JSON, EPUB e le altre — girano dentro l’estensione. Niente viene caricato e niente richiede una connessione, e più file scelti insieme diventano un solo documento, nell’ordine in cui li hai scelti.',
+          'Le conversioni del sito — Word, PowerPoint, fogli di calcolo, EPUB, HTML, CSV, JSON e le altre — girano dentro l’estensione. Niente viene caricato e niente richiede una connessione, e più file scelti insieme diventano un solo documento, nell’ordine in cui li hai scelti.',
         ],
       },
       {

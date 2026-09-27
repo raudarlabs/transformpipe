@@ -179,7 +179,7 @@ export const ui: Content['ui'] = {
   'ext.html.text.detail': 'Converted and cleaned up, as the site downloads it',
   'ext.open': 'Open in a tab',
   'ext.files': 'Open files…',
-  'ext.viewer.empty': 'Choose files to convert — ten formats, all of it in this browser',
+  'ext.viewer.empty': 'Choose files to convert — {count} formats, all of it in this browser',
   'ext.viewer.hint':
     'Drop a file, or choose one — Word, Excel, CSV, JSON, HTML, plain text, or a Notion, Confluence or Obsidian export. Several files are chained into one document. Nothing leaves this browser.',
   'palette.title': 'Search',
@@ -522,7 +522,7 @@ export const ui: Content['ui'] = {
   'shared.save.done': 'A copy is on your account',
   'shared.save.error': 'The copy could not be saved',
   'shared.cta.title': 'This document was made with TransformPipe',
-  'shared.cta.body': 'A web page, a Word file, a PDF or a spreadsheet, turned into a clean document — converted in your browser, so the file never leaves it. An account keeps your documents and shares them the way this one was shared with you.',
+  'shared.cta.body': 'A web page, a Word file, a slide deck or a spreadsheet, turned into a clean document — converted in your browser, so the file never leaves it. An account keeps your documents and shares them the way this one was shared with you.',
   'shared.cta.primary': 'Convert a file — free',
   'shared.cta.secondary': 'Create an account',
 

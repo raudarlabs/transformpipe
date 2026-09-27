@@ -174,7 +174,7 @@ export const ui: Content['ui'] = {
   'ext.html.text.detail': 'Convertido y limpio, como lo descarga el sitio',
   'ext.open': 'Abrir en una pestaña',
   'ext.files': 'Abrir archivos…',
-  'ext.viewer.empty': 'Elige archivos para convertir: diez formatos, todo en este navegador',
+  'ext.viewer.empty': 'Elige archivos para convertir: {count} formatos, todo en este navegador',
   'ext.viewer.hint':
     'Suelta un archivo o elige uno: Word, Excel, CSV, JSON, HTML, texto plano o una exportación de Notion, Confluence u Obsidian. Varios archivos se encadenan en un solo documento. Nada sale de este navegador.',
   'palette.title': 'Buscar',
@@ -515,7 +515,7 @@ export const ui: Content['ui'] = {
   'shared.save.done': 'Hay una copia en tu cuenta',
   'shared.save.error': 'No se pudo guardar la copia',
   'shared.cta.title': 'Este documento se hizo con TransformPipe',
-  'shared.cta.body': 'Una página web, un archivo de Word, un PDF o una hoja de cálculo se convierten en un documento limpio: la conversión ocurre en tu navegador y el archivo no sale de él. Una cuenta guarda tus documentos y los comparte como han compartido este contigo.',
+  'shared.cta.body': 'Una página web, un archivo de Word, una presentación o una hoja de cálculo se convierten en un documento limpio: la conversión ocurre en tu navegador y el archivo no sale de él. Una cuenta guarda tus documentos y los comparte como han compartido este contigo.',
   'shared.cta.primary': 'Convertir un archivo — gratis',
   'shared.cta.secondary': 'Crear una cuenta',
 

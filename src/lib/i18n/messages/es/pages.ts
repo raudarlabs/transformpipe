@@ -116,7 +116,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'También archivos, sin subirlos',
         body: [
-          'Las mismas diez conversiones del sitio —Word, PDF, hojas de cálculo, HTML, CSV, JSON, EPUB y las demás— se ejecutan dentro de la extensión. Nada se sube y nada necesita conexión, y varios archivos elegidos a la vez se convierten en un solo documento, en el orden en que los elegiste.',
+          'Las conversiones del sitio —Word, PowerPoint, hojas de cálculo, EPUB, HTML, CSV, JSON y las demás— se ejecutan dentro de la extensión. Nada se sube y nada necesita conexión, y varios archivos elegidos a la vez se convierten en un solo documento, en el orden en que los elegiste.',
         ],
       },
       {
