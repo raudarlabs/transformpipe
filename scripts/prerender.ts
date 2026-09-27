@@ -440,23 +440,53 @@ function siteFooter(locale: Locale): string {
   ].join(' · ')}</nav>`;
 }
 
-  return SHELL.replace(
-    /<html lang="[a-z-]+"/,
-    `<html lang="${locale}"`
-  )
-    .replace(
-      /<title>[\s\S]*?<\/title>/,
-      `<title>${escapeHtml(page.title)}</title>`
-    )
+  /*
+   * Every replacement is a function, never a string.
+   *
+   * A replacement string is a template: `$&` in it is the text that matched, `` $` `` everything
+   * before the match and `$$` a single dollar. Articles about shell and regular expressions have
+   * those in their code samples, and as strings they did exactly that — `` $` `` in the CSV article
+   * pasted the whole shell into its body a second time, with a second title and canonical, and
+   * every `$$` in the maths articles came out as `$`. What a function returns is used as it stands.
+   */
+  return SHELL.replace(/<html lang="[a-z-]+"/, () => `<html lang="${locale}"`)
+    .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(page.title)}</title>`)
     .replace(
       /<meta\s+name="description"[\s\S]*?\/>/,
-      `<meta name="description" content="${escapeHtml(page.description)}" />`
+      () => `<meta name="description" content="${escapeHtml(page.description)}" />`
     )
-    .replace('</head>', `  ${HEAD_OPEN}\n    ${head}\n    ${HEAD_CLOSE}\n  </head>`)
+    .replace('</head>', () => `  ${HEAD_OPEN}\n    ${head}\n    ${HEAD_CLOSE}\n  </head>`)
     .replace(
       '<div id="root"></div>',
-      `${BODY_OPEN}<div id="prerender">${page.body}${siteFooter(locale)}</div>${BODY_CLOSE}`
+      () => `${BODY_OPEN}<div id="prerender">${page.body}${siteFooter(locale)}</div>${BODY_CLOSE}`
     );
+}
+
+/**
+ * A page has one doctype, one title, one canonical and one root — or it is not written.
+ *
+ * The `$` bug above shipped five pages with two of each and nothing noticed: in a browser React
+ * repaints the page, so it looked right to anybody who opened it, and only crawlers and link
+ * previews read the broken copy. Whatever makes the next one — a replacement run twice, a body
+ * that carries a shell of its own — stops the build here instead.
+ *
+ * A raw tag is always structure: an article that shows `<title>` in a code block has it escaped.
+ */
+function assertOneOfEach(path: string, html: string) {
+  const count = (pattern: RegExp) => html.match(pattern)?.length ?? 0;
+  const found: Array<[string, number]> = [
+    ['<!doctype>', count(/<!doctype\s/gi)],
+    ['<title>', count(/<title>/gi)],
+    ['canonical', count(/<link\s+rel="canonical"/gi)],
+    ['<div id="root">', count(/<div id="root">/g)],
+  ];
+  const twice = found.filter(([, times]) => times > 1);
+
+  if (twice.length > 0) {
+    throw new Error(
+      `${path} has ${twice.map(([what, times]) => `${times} × ${what}`).join(', ')} — a page has one of each.`
+    );
+  }
 }
 
 function write(page: Page) {
@@ -464,9 +494,11 @@ function write(page: Page) {
     page.path === '/'
       ? join(DIST, 'index.html')
       : join(DIST, page.path.slice(1), 'index.html');
+  const html = render(page);
 
+  assertOneOfEach(page.path, html);
   mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, render(page), 'utf8');
+  writeFileSync(file, html, 'utf8');
 }
 
 /*
