@@ -60,18 +60,21 @@ Free
 
 ## Gallery (1270 × 760, in this order)
 
-1. **The pipe.** The `/agents` hero: Markdown as it sits in a chat above, the finished document
-   in the account below. Caption: *What Claude writes, kept where you can find it again.*
-2. **One click in Claude.** The directory listing at `claude.ai/directory/tp` with Connect.
-   Caption: *Listed in Claude's connector directory — no key, no address to paste.*
-3. **The ask and the link.** A real Claude conversation: "publish these release notes and give
-   me a link", the two tool calls, the link in the reply. Caption: *Ask in plain words.*
-4. **The shared page, on a phone.** Caption: *A page, not a paste — for anyone, or only the
-   addresses you name.*
-5. **The fifteen conversions.** The converter's tile grid. Caption: *Word, PowerPoint, Excel,
-   EPUB, Notion, Confluence, Obsidian and more to Markdown — in your browser, never uploaded.*
-6. **The history.** Search, format chips, versions side by side. Caption: *Every document, from
-   every conversation, in one list.*
+Drawn by `node scripts/ph-art.mjs` from production into `brand/producthunt/`, at twice the size
+so they stay sharp. Upload in this order:
+
+1. `01-the-pipe.png` — What your assistant writes, kept
+2. `02-one-click-in-claude.png` — One click in Claude
+3. `03-ask-in-plain-words.png` — Ask in plain words
+4. `04-markdown-to-a-page.png` — Markdown in, a finished page out
+5. `05-fifteen-conversions.png` — Fifteen conversions, in your browser
+6. `06-any-file-to-markdown.png` — Any file to clean Markdown
+7. `07-live-preview.png` — Write Markdown, see the page
+8. `08-your-account.png` — Your documents, your account
+9. `09-one-library.png` — One library, not forty chats
+10. `10-the-extension.png` — Any web page, as Markdown
+
+The first one is the thumbnail people see in the feed, so it carries the idea on its own.
 
 A 30–60 second video beats a sixth screenshot if there is time: open Claude, "save this as the
 Q3 plan", open transformpipe.com on a phone, it is there.
