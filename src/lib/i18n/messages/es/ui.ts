@@ -478,6 +478,9 @@ export const ui: Content['ui'] = {
 
   'extension.store.chrome': 'Añadirla a Chrome',
   'extension.store.firefox': 'Añadirla a Firefox',
+  'about.producthunt.title': 'Nos lanzamos en Product Hunt',
+  'about.producthunt.body': 'TransformPipe sale en Product Hunt el 30 de septiembre. Si te ha servido, una visita — o un voto — es lo que más ayuda.',
+  'about.producthunt.cta': 'Verlo en Product Hunt',
 
   /*
    * The landing pages for assistants, `/agents` and one per assistant under it. The copy button

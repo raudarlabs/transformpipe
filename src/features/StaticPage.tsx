@@ -6,7 +6,12 @@ import { useConsent } from '@/lib/consent';
 import { formatDate } from '@/lib/format';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
-import { ISSUES_URL, publishedStores, type StaticPage as Page } from '@/lib/pages';
+import {
+  ISSUES_URL,
+  PRODUCT_HUNT_URL,
+  publishedStores,
+  type StaticPage as Page,
+} from '@/lib/pages';
 import { Button } from '@/ui/components/Button';
 import { Typography } from '@/ui/components/Typography';
 
@@ -134,6 +139,48 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
             </a>
           ))}
         </div>
+      )}
+
+      {/*
+        * The launch, on the page that says what this is.
+        *
+        * Product Hunt publishes an embed of its own, and it loads the product's logo from their
+        * CDN — so every reader of this page would be making a request to a third party, which is
+        * the one thing the privacy page promises does not happen. The card is ours instead: the
+        * same words, our own tokens, and nothing leaves until somebody clicks.
+        *
+        * Above the sections rather than under them, for the reason the extension's buttons are:
+        * a thing to act on that sits below five paragraphs is a thing nobody acts on.
+        */}
+      {page.id === 'about' && (
+        <aside className="flex flex-col gap-3 rounded-xl border border-stroke bg-surface-card2 p-5">
+          <Typography
+            variant="h2"
+            weight="semibold"
+            textColor="primary"
+            className="text-base"
+          >
+            {t('about.producthunt.title')}
+          </Typography>
+
+          <Typography
+            variant="p"
+            textColor="secondary"
+            className="text-sm leading-relaxed"
+          >
+            {t('about.producthunt.body')}
+          </Typography>
+
+          <a
+            href={PRODUCT_HUNT_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ff6154] px-4 py-2.5 font-semibold text-sm text-white no-underline transition-opacity hover:opacity-90"
+          >
+            {t('about.producthunt.cta')}
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </aside>
       )}
 
       <div className="flex flex-col gap-8">

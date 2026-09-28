@@ -100,6 +100,16 @@ export const REPO_URL = 'https://github.com/raudarlabs/transformpipe';
 /** Where a question goes. There is no support inbox yet; the repository is the honest answer. */
 export const ISSUES_URL = `${REPO_URL}/issues`;
 
+/**
+ * Where the launch lives.
+ *
+ * Product Hunt's own embed loads the product's logo from their CDN, which would make every visit
+ * to a page of ours a request to somebody else's server — the one thing the privacy page says we
+ * do not do. So the card is ours, drawn from our own tokens, and only the link leaves.
+ */
+export const PRODUCT_HUNT_URL =
+  'https://www.producthunt.com/products/transformpipe?utm_source=transformpipe&utm_medium=about';
+
 const UPDATED = '2026-09-08';
 
 /*
