@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 27 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 28 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be

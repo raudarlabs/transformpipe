@@ -489,9 +489,10 @@ check(
   JSON.stringify(info.icons)
 );
 check(
-  'the instructions warn about publishing and deleting',
+  'the instructions state the gate on publishing and deleting',
   /public web/.test(hello.body?.result?.instructions ?? '') &&
-    /no undo/.test(hello.body?.result?.instructions ?? '')
+    /no undo/.test(hello.body?.result?.instructions ?? '') &&
+    /confirm/.test(hello.body?.result?.instructions ?? '')
 );
 
 const older = await call(tokens.access_token, 'initialize', { protocolVersion: '1999-01-01' });
@@ -646,10 +647,34 @@ check('and drops the script', !/<script/.test(converted.text), converted.text.sl
 const empty = await tool(tokens.access_token, 'tp_convert_markdown', { markdown: '   ' });
 check('an empty conversion is refused in a sentence', empty.isError && /no Markdown/i.test(empty.text));
 
+/*
+ * The gate the directory's review asked for: publishing without `confirm` saves nothing. Checked
+ * before the save that does publish, so a regression here cannot be hidden by the document the
+ * next block goes on to create.
+ */
+const unconfirmedSave = await tool(tokens.access_token, 'tp_save_document', {
+  markdown: '# Not meant to be public\n\nNo.',
+  name: 'mcp-e2e-ungated.md',
+  share: 'link',
+});
+check(
+  'a save that would publish refuses without confirmation',
+  unconfirmedSave.isError &&
+    /confirm: true/.test(unconfirmedSave.text) &&
+    /public web/.test(unconfirmedSave.text),
+  unconfirmedSave.text.slice(0, 140)
+);
+check(
+  'and it saved nothing while refusing',
+  !/id [0-9a-f-]{36}/.test(unconfirmedSave.text),
+  unconfirmedSave.text.slice(0, 140)
+);
+
 const saved = await tool(tokens.access_token, 'tp_save_document', {
   markdown: '# From an assistant\n\nHello.',
   name: 'mcp-e2e.md',
   share: 'link',
+  confirm: true,
 });
 /*
  * A local checkout keeps a Vercel OIDC token that expires every few hours; without it the Blob
@@ -703,11 +728,27 @@ check('a document that is not yours is simply not found', missing.isError, missi
 if (blobless) {
   skip('sharing can be revoked', why);
 } else {
+  const ungatedShare = await tool(tokens.access_token, 'tp_share_document', {
+    id: savedId,
+    mode: 'link',
+  });
+  check(
+    'a share to the public web refuses without confirmation',
+    ungatedShare.isError &&
+      /confirm: true/.test(ungatedShare.text) &&
+      /public web/.test(ungatedShare.text),
+    ungatedShare.text.slice(0, 140)
+  );
+
   const shared = await tool(tokens.access_token, 'tp_share_document', {
     id: savedId,
     mode: 'private',
   });
-  check('sharing can be revoked', /private/.test(shared.text) && /no longer opens/.test(shared.text), shared.text);
+  check(
+    'and revoking is not gated, because it discloses nothing',
+    /private/.test(shared.text) && /no longer opens/.test(shared.text),
+    shared.text
+  );
 }
 
 const usage = await tool(tokens.access_token, 'tp_usage', {});

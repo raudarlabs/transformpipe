@@ -116,6 +116,17 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-28',
+    title: 'An assistant asks before it publishes',
+    body:
+      'Saving a document through the connector could publish it to the public web in the same '
+      + 'call, and the only thing standing in the way was a sentence in the tool\u2019s description '
+      + 'asking the model to be careful. Prose is not a gate. Publishing now takes the same '
+      + 'explicit confirmation deleting has taken all along: called without it, the tool changes '
+      + 'nothing and answers with the document\u2019s name and who would have been able to read '
+      + 'it. Revoking a link is not gated, because taking access away discloses nothing.',
+  },
+  {
     date: '2026-09-27',
     title: 'Visits counted on our own server, anonymously',
     body:

@@ -138,9 +138,11 @@ const MAX_TEXT = 40_000;
 
 const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
 
-Three things worth holding on to. tp_save_document with a share mode publishes a page on the public web, so share a document only when the person asked for it. tp_delete_document is permanent and has no undo. tp_convert_markdown returns the whole document through this conversation, so for anything long, save it and share the link instead.
+Three of them disclose or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to the addresses given; called without it, they return what would be disclosed and to whom, and change nothing. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
 
-tp_help answers questions about how TransformPipe works; use it rather than answering from memory.`;
+tp_convert_markdown and tp_convert_to_markdown return the converted document through the conversation and are bounded at 40,000 characters; tp_save_document returns an id, a size and — when shared — a URL instead.
+
+tp_help returns TransformPipe's own documentation as text: the Markdown it understands, what happens to a file, what is stored, how sharing works, the limits and the HTTP API.`;
 
 interface Rpc {
   jsonrpc?: string;
@@ -439,7 +441,7 @@ const describe = (document: {
 const TOOLS: Record<McpToolName, Tool> = {
   tp_help: {
     description:
-      'The TransformPipe documentation itself: what Markdown it understands, what happens to a file, what is stored and what is not, how sharing works, the limits, and the HTTP API. Use this to answer any question about how TransformPipe works INSTEAD of answering from memory. Ask a question to get the sections that answer it, or call it with nothing for all of them.',
+      'Returns TransformPipe\'s own documentation as text: what Markdown it understands, what happens to a file, what is stored and what is not, how sharing works, the limits, and the HTTP API. It is the authoritative description of this service\'s behaviour, kept in step with the running version. With `question`, returns the sections matching it; with no arguments, returns all of them.',
     annotations: { title: 'TransformPipe documentation', readOnlyHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
@@ -659,7 +661,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_save_document: {
     description:
-      'Save a document to this TransformPipe account, and optionally publish it in the same call. Markdown by default; pass `from` to send HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` narrows it to the addresses in `emails`, `"private"` is nobody but the owner. Publishing makes a page on the public web: share a document the person actually asked to share. `replaces` links this save to an earlier document as a new version of it — only when asked for; a save with nothing said about it is always a new, unrelated document.',
+      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `replaces` records this document as a new version of an earlier one; a save that omits it is an unrelated document.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Save a document',
@@ -703,6 +705,11 @@ const TOOLS: Record<McpToolName, Tool> = {
           description:
             'Id of an earlier document this is a new version of. tp_list_documents prints ids.',
         },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when `share` is "link" or "people". True when the person asked for this document to be published to that audience.',
+        },
       },
     },
     run: async (c, args) => {
@@ -737,6 +744,33 @@ const TOOLS: Record<McpToolName, Tool> = {
       }
 
       const share = args.share === 'link' || args.share === 'people' ? args.share : '';
+
+      /*
+       * Publishing is gated the way deleting is.
+       *
+       * The description used to ask for the same restraint in prose — "share a document the person
+       * actually asked to share" — and the directory's review named that for what it is: guidance
+       * to a model, not a gate. A sentence cannot refuse. This can, and it refuses before the save
+       * rather than after, so a document that was not meant to be public is never public for the
+       * length of a second call.
+       *
+       * "private" is not gated: it discloses nothing, and a save is the ordinary case.
+       */
+      if (share && args.confirm !== true) {
+        return say(
+          `Nothing was saved. \`share: "${share}"\` would ${
+            share === 'link'
+              ? 'publish this document as a page on the public web that anyone holding the URL can open'
+              : `send ${
+                  Array.isArray(args.emails) && args.emails.length
+                    ? `${args.emails.length} address${args.emails.length === 1 ? '' : 'es'}`
+                    : 'the addresses given'
+                } an email with a link to it`
+          } — ask the person, then call this again with confirm: true. To save it to the account without publishing, omit \`share\`.`,
+          true
+        );
+      }
+
       const query = new URLSearchParams({ name });
 
       if (kind) {
@@ -1070,7 +1104,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_share_document: {
     description:
-      'Change who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. `emails` REPLACES the list rather than adding to it. Returns the mode, the URL and the addresses as they now stand.',
+      'Changes who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list rather than adding to it. Returns the mode, the URL and the addresses as they now stand.',
     annotations: {
       title: 'Share a document',
       readOnlyHint: false,
@@ -1098,6 +1132,11 @@ const TOOLS: Record<McpToolName, Tool> = {
           items: { type: 'string' },
           description: 'The whole address list, for mode "people".',
         },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when `mode` is "link" or "people". True when the person asked for this document to be opened to that audience.',
+        },
       },
     },
     run: async (c, args) => {
@@ -1109,6 +1148,38 @@ const TOOLS: Record<McpToolName, Tool> = {
           'Give the document id and a mode of private, link or people.',
           true
         );
+      }
+
+      /*
+       * The same gate as saving and deleting, and for the same reason: `idempotentHint` says that
+       * sharing twice is one share, which is true and is not the point — the first one is the
+       * disclosure. The refusal reads the document first so it can name what would have been
+       * published, because a person can agree to "Q3-handbook.md" and can only guess at an id.
+       */
+      if (mode !== 'private' && args.confirm !== true) {
+        const found = await callApi(c, `/api/v1/documents/${segment(id)}`);
+
+        if (found.status !== 200) {
+          return say(
+            found.body?.error ?? `That document is not on this account (${found.status}).`,
+            true
+          );
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Nothing changed. ${found.body.document.name} would ${
+                mode === 'link'
+                  ? 'become a page on the public web that anyone holding the URL can open'
+                  : 'be emailed as a link to the addresses given'
+              } — ask the person, then call this again with confirm: true.`,
+            },
+          ],
+          structuredContent: forCard(c, found.body.document),
+          isError: true,
+        };
       }
 
       const changed = await callApi(c, `/api/v1/documents/${segment(id)}/share`, {

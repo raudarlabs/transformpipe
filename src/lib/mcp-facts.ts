@@ -42,7 +42,7 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_convert_to_markdown:
     'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
   tp_save_document:
-    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in.',
+    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in. Publishing it in the same call takes an explicit confirmation.',
   tp_list_documents: 'What is on the account, with the id each other tool takes.',
   tp_get_document: 'One document, as its Markdown source or as rendered HTML.',
   tp_summarize_document:
@@ -50,7 +50,7 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_document_versions:
     'Every document linked to this one as a version of the same thing, oldest first.',
   tp_share_document:
-    'Changes who may open a document: a link, named addresses, or nobody.',
+    'Changes who may open a document: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
   tp_usage: 'What the account is using against its limits.',
   tp_delete_document:
     'Deletes one document, permanently, and only with an explicit confirmation.',
