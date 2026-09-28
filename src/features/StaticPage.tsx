@@ -8,6 +8,7 @@ import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
 import {
   ISSUES_URL,
+  PRODUCT_HUNT_PHASE,
   PRODUCT_HUNT_URL,
   publishedStores,
   type StaticPage as Page,
@@ -160,7 +161,7 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
             textColor="primary"
             className="text-base"
           >
-            {t('about.producthunt.title')}
+            {t(`about.producthunt.${PRODUCT_HUNT_PHASE}.title`)}
           </Typography>
 
           <Typography
@@ -168,7 +169,7 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
             textColor="secondary"
             className="text-sm leading-relaxed"
           >
-            {t('about.producthunt.body')}
+            {t(`about.producthunt.${PRODUCT_HUNT_PHASE}.body`)}
           </Typography>
 
           <a
@@ -177,7 +178,7 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
             rel="noreferrer noopener"
             className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ff6154] px-4 py-2.5 font-semibold text-sm text-white no-underline transition-opacity hover:opacity-90"
           >
-            {t('about.producthunt.cta')}
+            {t(`about.producthunt.${PRODUCT_HUNT_PHASE}.cta`)}
             <span aria-hidden="true">&rarr;</span>
           </a>
         </aside>

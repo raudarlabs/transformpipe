@@ -468,9 +468,15 @@ export const ui: Content['ui'] = {
 
   'extension.store.chrome': 'Aggiungila a Chrome',
   'extension.store.firefox': 'Aggiungila a Firefox',
-  'about.producthunt.title': 'Lanciamo su Product Hunt',
-  'about.producthunt.body': "TransformPipe esce su Product Hunt il 30 settembre. Se ti è stato utile, un'occhiata — o un voto — è ciò che aiuta di più.",
-  'about.producthunt.cta': 'Guardalo su Product Hunt',
+  'about.producthunt.before.title': 'Lanciamo su Product Hunt',
+  'about.producthunt.before.body': 'TransformPipe esce su Product Hunt il 30 settembre. Se ti è stato utile, il lancio è un buon posto per dirlo — e uno migliore per dire che cosa dovrebbe saper fare dopo.',
+  'about.producthunt.before.cta': 'Guardalo su Product Hunt',
+  'about.producthunt.during.title': 'Oggi siamo su Product Hunt',
+  'about.producthunt.during.body': 'TransformPipe è uscito stamattina su Product Hunt. Lì rispondiamo alle domande tutto il giorno, quindi è il posto migliore per farne una, o per dire quale formato dovrebbe arrivare dopo.',
+  'about.producthunt.during.cta': 'Vedi il lancio',
+  'about.producthunt.after.title': 'Abbiamo lanciato su Product Hunt',
+  'about.producthunt.after.body': 'TransformPipe è uscito su Product Hunt il 30 settembre 2026. Le domande che ha fatto la gente e le risposte che hanno ricevuto sono ancora lì — una lettura più onesta di quanto lo sia una pagina che abbiamo scritto su noi stessi.',
+  'about.producthunt.after.cta': 'Leggi il lancio',
 
   /*
    * The landing pages for assistants, `/agents` and one per assistant under it. The copy button

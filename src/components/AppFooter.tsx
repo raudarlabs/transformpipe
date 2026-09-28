@@ -118,6 +118,11 @@ export function AppFooter({
          */
         page('extension'),
         page('agents'),
+        /*
+         * What this is, next to where to ask about it. `/about` had its own address and no way in
+         * from the chrome — the only links to it were the sitemap and a sentence on a blog page.
+         */
+        page('about'),
         page('support'),
       ],
     },
