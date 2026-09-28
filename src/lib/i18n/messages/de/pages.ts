@@ -25,38 +25,98 @@ export const pages: Content['pages'] = {
     lede: 'Ein Dokumentkonverter, der die Arbeit im Browser erledigt und Ihnen sonst nicht im Weg steht.',
     sections: [
       {
-        heading: 'Was er tut',
+        heading: 'Das Problem',
         body: [
-          'Fünfzehn Konvertierungen. Eine Word-Datei, ein Foliensatz, eine Tabelle, ein EPUB-Buch, eine OpenDocument- oder Rich-Text-Datei, ein Evernote-Export, eine gespeicherte HTML-Seite, eine CSV, eine JSON-Antwort oder das Zip, das Notion, Confluence und Obsidian beim Export ausgeben — aus jedem davon wird Markdown. Und aus Markdown wird eine fertige HTML-Seite, eine Word-Datei, reiner Text oder etwas Druckbares.',
-          'Alles normalisiert auf Markdown, weil Markdown ein Format ist, das man ohne das erzeugende Programm lesen, in einem Pull Request vergleichen und in zwanzig Jahren noch öffnen kann.',
+          'Ein Dokument kommt als .docx, als Präsentation, als Tabelle oder als Export-Zip, und was Sie davon wollen, sind die Wörter. Nicht die Schriften, nicht die Seitenumbrüche, nicht zwölf Jahre nachverfolgter Änderungen — die Wörter, in einer Form, die Sie in einen Pull Request einfügen, einem Static-Site-Generator übergeben, vergleichen, durchsuchen oder auf einem Rechner lesen können, auf dem das erzeugende Programm nicht liegt.',
+          'Der übliche Weg dorthin heißt: die Datei zu Fremden hochladen, etwas installieren, oder den Text kopieren und die Tabellen verlieren. TransformPipe ist die vierte Antwort — die Umwandlung passiert in der Seite, die Sie ohnehin offen haben.',
         ],
       },
       {
-        heading: 'Er läuft in Ihrem Browser',
+        heading: 'Was es tut',
         body: [
-          'Abgemeldet wird keine Datei irgendwohin geschickt. Es gibt keinen Upload, dem man vertrauen müsste, weil es keinen Upload gibt: die Konvertierung passiert auf Ihrem eigenen Rechner — deshalb wandelt sich eine Seite hinter dem Firmen-Login so leicht um wie eine öffentliche.',
-          'Melden Sie sich an, bleibt das Markdown in Ihrem Konto, sodass ein Dokument Ihnen auf einen anderen Rechner folgt. Es bleibt privat, bis Sie es teilen, und ein geteilter Link lässt sich widerrufen.',
+          'Fünfzehn Umwandlungen. Eine Word-Datei, eine Präsentation, eine Tabelle, ein EPUB-Buch, eine OpenDocument- oder Rich-Text-Datei, ein Evernote-Export, eine gespeicherte HTML-Seite, eine CSV, eine JSON-Antwort oder das Zip, das Notion, Confluence und Obsidian beim Export ausgeben — jedes davon wird Markdown. Und Markdown wird eine fertige HTML-Seite, eine Word-Datei, reiner Text oder etwas zum Ausdrucken.',
+          'Alles wird auf Markdown normalisiert, weil Markdown ein Format ist, das man ohne das erzeugende Werkzeug lesen, in einem Pull Request vergleichen und in zwanzig Jahren noch öffnen kann.',
+          'Die Bilder kommen mit. Eine Umwandlung, die in der Datei ein Bild findet, trägt es in das Ergebnis hinein, statt einen Verweis auf einen Ordner zu hinterlassen, den Sie nicht haben — heraus kommt eine Datei, die weiterhin zeigt, was sie gezeigt hat.',
         ],
       },
       {
-        heading: 'Was herauskommt, ist eine einzige Datei',
+        heading: 'Für wen es ist',
         body: [
-          'Das exportierte HTML trägt seine Stile, Bilder, Diagramme und Formeln in sich. Es fragt das Netz um nichts — und genau deshalb öffnet es sich in fünf Jahren auf einem Laptop ohne Verbindung genauso wie heute, und genau deshalb kann man es jemandem schicken, der es einmal öffnet und nie wieder daran denkt.',
+          'Für alle, die Dokumentation aus einem Wiki in ein Repository holen, wo der Nächste sie in einem Pull Request ändern kann statt in einem Rich-Text-Editor.',
+          'Für alle, die den ganzen Tag mit einem KI-Assistenten arbeiten und das Geschriebene an einem wirklichen Ort behalten wollen — als Seite mit einer Adresse statt als Verlauf eines Gesprächs, das endet.',
+          'Für alle, denen eine Datei in einem Format zugeschickt wurde, für das sie kein Programm installieren wollen, und die den Inhalt jetzt brauchen und nicht nach einem Download.',
+          'Und für alle, deren Dokumente nicht ihre eigenen zum Hochladen sind: ein Vertrag, eine Patientennotiz, unveröffentlichte Zahlen, alles unter einer Vereinbarung, die benennt, wer es verarbeiten darf.',
+        ],
+      },
+      {
+        heading: 'Es läuft in Ihrem Browser',
+        body: [
+          'Abgemeldet wird keine Datei irgendwohin geschickt. Es gibt keinen Upload, dem man trauen müsste, weil es keinen Upload gibt: Die Umwandlung passiert auf Ihrem eigenen Rechner — weshalb eine Seite hinter dem Firmen-Login genauso leicht konvertiert wie eine öffentliche.',
+          'Das ist eine Behauptung, die Sie prüfen können, statt sie zu glauben. Öffnen Sie den Netzwerk-Tab, wandeln Sie eine Datei um und sehen Sie zu, dass nichts mit ihr hinausgeht — und schalten Sie danach das Netz ab und wandeln Sie die nächste um.',
+          'Angemeldet wird das Markdown in Ihrem Konto behalten, ein Dokument folgt Ihnen also auf einen anderen Rechner. Es bleibt privat, bis Sie es teilen, und ein geteilter Link lässt sich widerrufen.',
+        ],
+      },
+      {
+        heading: 'Heraus kommt eine Datei',
+        body: [
+          'Das exportierte HTML hat seine Stile, seine Bilder, seine Diagramme und seine Formeln in sich. Es fragt das Netz um nichts — das ist es, was es in fünf Jahren auf einem Laptop ohne Verbindung genauso öffnen lässt wie heute, und was es unbedenklich macht, es jemandem zu schicken, der es einmal öffnet und nie wieder daran denkt.',
+        ],
+      },
+      {
+        heading: 'Worin es sich unterscheidet',
+        body: [
+          'Die meisten Konverter sind ein Server: Sie laden hoch, er arbeitet, Sie laden herunter — und eine Kopie Ihres Dokuments liegt so lange auf einem fremden Rechner, wie deren Richtlinie es sagt. Für manche Dokumente ist das der richtige Handel und für andere der falsche, und der Punkt ist, dass es eine Entscheidung sein sollte und keine Voreinstellung.',
+          'Die meisten Konverter lesen außerdem den Text und hören dann auf. Eine .pptx ist ein ZIP aus XML-Teilen, und die Sprechernotizen — meist die nützlichste Prosa einer Präsentation — liegen in einem anderen Teil als die Folien. Ein EPUB hält seine Lesereihenfolge in einem Spine, der mit den Dateinamen nichts zu tun hat. Ein Evernote-Export adressiert seine Bilder über eine Prüfsumme ihrer eigenen Bytes. Den Container zu lesen statt den Text ist das meiste dessen, was eine brauchbare Umwandlung von einer zu reparierenden trennt.',
+          'Und was es nicht tut, gehört ebenso gesagt: Es liest keine PDFs, kein LaTeX und keine Office-Formate von vor 2007, es wandelt nicht fünfhundert Dateien um, während Sie Tee kochen, und ein einzelnes gespeichertes Dokument endet bei vier Megabyte. Dafür sind Pandoc und die gehosteten Dienste das bessere Werkzeug, und der Vergleich von zehn Konvertern im Blog sagt, welches wofür.',
         ],
       },
       {
         heading: 'Und nicht nur im Browser',
         body: [
-          'Dieselben Konvertierungen erreichen ein Terminal, einen Pull Request, einen Browser-Tab und ein Gespräch: eine öffentliche API, ein Kommandozeilen-Client ohne Abhängigkeiten, eine GitHub Action, die das Markdown eines Pull Requests veröffentlicht, eine Browser-Erweiterung, die die gerade gelesene Seite umwandelt, und ein MCP-Server, damit ein Assistent in Ihrem Namen umwandeln und teilen kann. Hinter allen steht ein einziger Satz Konverter, damit eine Tabelle überall gleich herauskommt.',
+          'Dieselben Umwandlungen erreichen ein Terminal, einen Pull Request, einen Browser-Tab und ein Gespräch: eine öffentliche API, ein Kommandozeilen-Client ohne Abhängigkeiten, eine GitHub Action, die das von einem Pull Request geänderte Markdown veröffentlicht, eine Browser-Erweiterung, die die gerade gelesene Seite umwandelt, und ein MCP-Server, damit ein Assistent in Ihrem Namen umwandeln und teilen kann. Hinter allen liegt derselbe Satz Konverter, eine Tabelle kommt also überall gleich heraus.',
         ],
       },
       {
-        heading: 'Wer ihn baut',
+        heading: 'Wer es baut',
         body: [
-          'TransformPipe wird von Raudar Labs gebaut. Der Quelltext ist öffentlich und MIT-lizenziert — die Konvertierung, der Sie vertrauen, können Sie also nachlesen.',
+          'TransformPipe wird von Raudar Labs gebaut. Der Quelltext ist öffentlich und MIT-lizenziert, die Umwandlung, der Sie vertrauen, ist also eine, die Sie lesen können.',
         ],
       },
     ],
+    faq: {
+      heading: 'Fragen zu TransformPipe',
+      intro: 'Die kurzen Antworten. Den Rest hat die Dokumentation.',
+      items: [
+        {
+          question: 'Ist es kostenlos?',
+          answer: 'Ja, ohne Tarifwahl und ohne Karte. Das Anmelden ist freiwillig und verschafft Ihnen nur einen Ort zum Aufbewahren: Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument bis zu 4 MB. Wird eine Grenze erreicht, wird das Speichern abgelehnt und gesagt — statt stillschweigend ein älteres Dokument zu verwerfen, um Platz zu schaffen.',
+        },
+        {
+          question: 'Laden Sie meine Datei hoch?',
+          answer: 'Abgemeldet nicht. Die Umwandlung läuft in Ihrem Browser und die Datei verlässt den Rechner nie, was Sie im Netzwerk-Tab oder durch Trennen der Verbindung prüfen können. Angemeldet wird das Markdown — nicht die ursprüngliche Datei — in Ihrem Konto gespeichert, damit es auf Ihren anderen Geräten da ist; Sie können es löschen, was die Zeile und die gespeicherte Quelle zugleich entfernt.',
+        },
+        {
+          question: 'Welche Formate liest es?',
+          answer: 'Word, PowerPoint, Excel, EPUB, OpenDocument-Text, Rich Text, Evernote-Exporte, HTML, CSV, TSV, JSON, reinen Text sowie die Export-Zips von Notion, Confluence und Obsidian. Auf der anderen Seite heraus: HTML, Word, reiner Text und Druck. PDF fehlt auffällig — aus Zeichen an Koordinaten Struktur zu rekonstruieren ist ein anderes Handwerk, als einen Container zu lesen.',
+        },
+        {
+          question: 'Was passiert mit Tabellen, Bildern und Code?',
+          answer: 'Tabellen kommen durch, wo die Quelle echte Tabellen hat; verbundene Zellen sind der unangenehme Fall, weil Markdown keine Syntax dafür kennt. Bilder werden ins Ergebnis getragen statt verwiesen, bis zu zwei Megabyte je Dokument. Codeblöcke behalten ihre Sprache, wo die Quelle eine vermerkt hat, und Formeln und Diagramme überleben in das exportierte HTML.',
+        },
+        {
+          question: 'Kann mein KI-Assistent es nutzen?',
+          answer: 'Ja. TransformPipe steht in Claudes Connector-Verzeichnis unter claude.ai/directory/tp: Eintrag öffnen, „Verbinden“ drücken, anmelden — und der Assistent kann auf Ihrem Konto umwandeln, speichern, suchen und teilen. Alles, was ein Dokument vor andere Menschen bringt, fragt vorher nach.',
+        },
+        {
+          question: 'Warum Markdown und nicht etwas Reichhaltigeres?',
+          answer: 'Weil der Wert eines Dokumentformats darin liegt, wie viele Dinge es in zehn Jahren lesen können. Markdown ist reiner Text mit Konventionen: Ein Diff zeigt, was sich geändert hat, eine Suche findet es, ein Mensch kann die Datei selbst lesen, und jeder Static-Site-Generator, jedes Wiki und jeder Assistent versteht es bereits. Was es kostet, ist feine typografische Kontrolle — ein fairer Handel für ein Dokument, an dem gearbeitet und das nicht gedruckt werden soll.',
+        },
+        {
+          question: 'Ist es quelloffen?',
+          answer: 'Ja, MIT-lizenziert, unter github.com/raudarlabs/transformpipe. Die Umwandlungen, die API und der MCP-Server liegen alle in diesem Repository — eine Behauptung auf dieser Seite ist also eine, die Sie am Code nachprüfen können, der sie einlöst.',
+        },
+      ],
+    },
     seo: {
       title: 'Was TransformPipe ist — ein Dokumentkonverter, der im Browser läuft',
       description:

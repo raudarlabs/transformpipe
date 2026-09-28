@@ -130,6 +130,14 @@ export interface PageWords {
   action?: string;
   /** Present on the assistant landing pages, which draw it instead of `sections`. */
   landing?: LandingWords;
+  /**
+   * Questions under the sections, for a page somebody arrives at with one.
+   *
+   * The same shape the landing pages and the front page use, drawn by the same accordion, so the
+   * site has one FAQ with one behaviour rather than a third that opens differently. Optional: most
+   * of these pages are an answer already and a list of questions under them would be padding.
+   */
+  faq?: LandingWords['faq'];
   seo: { title: string; description: string };
 }
 

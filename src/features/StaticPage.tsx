@@ -14,6 +14,7 @@ import {
   type StaticPage as Page,
 } from '@/lib/pages';
 import { Button } from '@/ui/components/Button';
+import { Faq } from '@/ui/components/Faq';
 import { Typography } from '@/ui/components/Typography';
 
 interface StaticPageProps {
@@ -222,6 +223,38 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
           </section>
         ))}
       </div>
+
+      {/*
+        * The questions, in the same accordion as the front page's.
+        *
+        * Under the sections rather than among them: a reader who wants the prose reads down, and a
+        * reader who arrived with one question opens it without reading any. Only the pages that
+        * declare `faq` get this, which today is the one page people arrive at asking what this is.
+        */}
+      {words.faq && (
+        <section className="flex flex-col gap-5 rounded-2xl border border-stroke bg-surface-card p-5 sm:p-8">
+          <div className="flex flex-col gap-2">
+            <Typography
+              variant="h2"
+              weight="semibold"
+              textColor="primary"
+              className="text-base"
+            >
+              {words.faq.heading}
+            </Typography>
+
+            <Typography
+              variant="p"
+              textColor="secondary"
+              className="text-sm leading-relaxed"
+            >
+              {words.faq.intro}
+            </Typography>
+          </div>
+
+          <Faq items={words.faq.items} />
+        </section>
+      )}
 
       {/*
         * A how-to page ends on the thing it was describing.

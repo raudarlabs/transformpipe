@@ -943,12 +943,17 @@ for (const locale of LOCALES) {
      */
     head:
       breadcrumbs(crumbsForStaticPage(one, catalogue, locale)) +
-      (said.landing
+      /*
+       * Either kind of page can carry questions: a landing page keeps them in `landing.faq`, and a
+       * page of words keeps them in `faq` beside its sections. Same markup, same condition — the
+       * answers are on the page, in the accordion at its foot.
+       */
+      ((said.landing?.faq ?? said.faq)
         ? jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             inLanguage: locale,
-            mainEntity: said.landing.faq.items.map((entry) => ({
+            mainEntity: (said.landing?.faq ?? said.faq)!.items.map((entry) => ({
               '@type': 'Question',
               name: entry.question,
               acceptedAnswer: { '@type': 'Answer', text: entry.answer },

@@ -21,38 +21,98 @@ export const pages: Content['pages'] = {
     lede: 'Un conversor de documentos que hace el trabajo en tu navegador y no se mete en medio.',
     sections: [
       {
-        heading: 'Qué hace',
+        heading: 'El problema',
         body: [
-          'Quince conversiones. Un archivo de Word, una presentación, una hoja de cálculo, un libro EPUB, un archivo OpenDocument o de texto enriquecido, una exportación de Evernote, una página HTML guardada, un CSV, una respuesta JSON, o el zip que Notion, Confluence y Obsidian entregan al exportar: cada uno se convierte en Markdown. Y el Markdown se convierte en una página HTML terminada, un archivo de Word, texto plano o algo imprimible.',
-          'Todo se normaliza a Markdown, porque Markdown es un formato que se lee sin la herramienta que lo creó, se compara en una pull request y se seguirá abriendo dentro de veinte años.',
+          'Un documento llega como .docx, como presentación, como hoja de cálculo o como zip de exportación, y lo que quieres de él son las palabras. No las tipografías, no los saltos de página, no doce años de control de cambios — las palabras, en una forma que puedas pegar en una pull request, entregar a un generador de sitios estáticos, comparar, buscar o leer en una máquina que no tiene el programa que lo creó.',
+          'Llegar ahí suele significar subir el archivo a desconocidos, instalar algo, o pegar el texto y perder las tablas. TransformPipe es la cuarta respuesta: la conversión ocurre en la página que ya tienes abierta.',
         ],
       },
       {
-        heading: 'Funciona en tu navegador',
+        heading: 'Qué hace',
         body: [
-          'Sin sesión iniciada, ningún archivo se envía a ninguna parte. No hay una subida en la que confiar porque no hay subida: la conversión ocurre en tu propia máquina, y por eso una página tras el inicio de sesión de tu empresa se convierte igual de fácil que una pública.',
-          'Inicia sesión y el Markdown se guarda en tu cuenta, de modo que un documento te sigue a otra máquina. Sigue siendo privado hasta que lo compartas, y un enlace compartido se puede revocar.',
+          'Quince conversiones. Un archivo de Word, una presentación, una hoja de cálculo, un libro EPUB, un archivo OpenDocument o RTF, una exportación de Evernote, una página HTML guardada, un CSV, una respuesta JSON, o el zip que Notion, Confluence y Obsidian te entregan al exportar — cada uno se convierte en Markdown. Y el Markdown se convierte en una página HTML terminada, un archivo de Word, texto plano, o algo que puedes imprimir.',
+          'Todo se normaliza a Markdown, porque Markdown es un formato que puedes leer sin la herramienta que lo hizo, comparar en una pull request y seguir abriendo dentro de veinte años.',
+          'Las imágenes vienen con él. Una conversión que encuentra una imagen dentro del archivo la lleva al resultado en vez de dejar una referencia a una carpeta que no tienes, así que lo que obtienes es un solo archivo que sigue mostrando lo que mostraba.',
+        ],
+      },
+      {
+        heading: 'Para quién es',
+        body: [
+          'Para quien saca documentación de un wiki y la lleva a un repositorio, donde la siguiente persona podrá cambiarla en una pull request en lugar de en un editor de texto enriquecido.',
+          'Para quien trabaja todo el día con un asistente y quiere que lo que escribe quede en un sitio real — una página con dirección, y no el historial de una conversación que termina.',
+          'Para quien recibe un archivo en un formato para el que no quiere instalar un programa, y necesita el contenido ahora y no después de una descarga.',
+          'Y para cualquiera cuyos documentos no son suyos como para subirlos: un contrato, una nota clínica, unas cifras sin publicar, cualquier cosa cubierta por un acuerdo que nombre quién puede tratarla.',
+        ],
+      },
+      {
+        heading: 'Se ejecuta en tu navegador',
+        body: [
+          'Sin sesión iniciada, ningún archivo se envía a ninguna parte. No hay una subida en la que confiar porque no hay subida: la conversión ocurre en tu propia máquina, y por eso una página tras el inicio de sesión de tu empresa se convierte con la misma facilidad que una pública.',
+          'Es una afirmación que puedes comprobar en lugar de creer. Abre la pestaña de red, convierte un archivo y observa que no sale nada que lo lleve — y después desconecta la red y convierte otro.',
+          'Con sesión iniciada, el Markdown se guarda en tu cuenta, así que un documento te sigue a otra máquina. Sigue siendo privado hasta que lo compartas, y un enlace compartido se puede revocar.',
         ],
       },
       {
         heading: 'Lo que sale es un solo archivo',
         body: [
-          'El HTML exportado lleva dentro sus estilos, sus imágenes, sus diagramas y sus fórmulas. No le pide nada a la red, y eso es justo lo que hace que dentro de cinco años se abra igual en un portátil sin conexión que hoy, y lo que permite mandárselo a alguien que lo abrirá una vez y no volverá a pensar en ello.',
+          'El HTML exportado lleva dentro sus estilos, sus imágenes, sus diagramas y sus fórmulas. No le pide nada a la red, que es lo que hace que dentro de cinco años se abra igual en un portátil sin conexión que hoy — y lo que hace seguro enviárselo a alguien que lo abrirá una vez y no volverá a pensar en ello.',
+        ],
+      },
+      {
+        heading: 'En qué se diferencia',
+        body: [
+          'Casi todos los conversores son un servidor: subes, trabaja, descargas, y una copia de tu documento existe en una máquina que no controlas durante el tiempo que diga su política. Para algunos documentos es el trato correcto y para otros el equivocado, y la cuestión es que debería ser una decisión y no un valor por omisión.',
+          'Casi todos los conversores, además, leen el texto y paran. Un .pptx es un zip de partes XML, y las notas del orador — normalmente la prosa más útil de una presentación — están en una parte distinta de las diapositivas. Un EPUB guarda su orden de lectura en un spine que no tiene nada que ver con los nombres de archivo. Una exportación de Evernote direcciona sus imágenes por una suma de verificación de sus propios bytes. Leer el contenedor en vez del texto es casi todo lo que separa una conversión que puedes usar de una que tienes que reparar.',
+          'Y lo que no hace también merece decirse: no lee PDF, ni LaTeX, ni los formatos de Office anteriores a 2007, no convertirá quinientos archivos mientras te haces un té, y un documento guardado se detiene en cuatro megabytes. Para eso, Pandoc y los servicios alojados son la mejor herramienta, y la comparativa de diez conversores del blog dice cuál para qué trabajo.',
         ],
       },
       {
         heading: 'Y no solo en el navegador',
         body: [
-          'Las mismas conversiones llegan a un terminal, a una pull request, a una pestaña y a una conversación: una API pública, un cliente de línea de comandos sin dependencias, una GitHub Action que publica el Markdown que cambia una pull request, una extensión de navegador que convierte la página que estás leyendo, y un servidor MCP para que un asistente convierta y comparta en tu nombre. Un único conjunto de conversores detrás de todo, para que una tabla salga igual desde donde sea que la pidas.',
+          'Las mismas conversiones llegan a un terminal, a una pull request, a una pestaña del navegador y a una conversación: una API pública, un cliente de línea de comandos sin dependencias, una GitHub Action que publica el Markdown que cambió una pull request, una extensión de navegador que convierte la página que estás leyendo, y un servidor MCP para que un asistente convierta y comparta en tu nombre. El mismo conjunto de conversores detrás de todos ellos, así que una tabla sale igual donde sea que la pidas.',
         ],
       },
       {
         heading: 'Quién lo construye',
         body: [
-          'TransformPipe lo construye Raudar Labs. El código es público y con licencia MIT, así que la conversión en la que confías es una que puedes leer.',
+          'TransformPipe lo construye Raudar Labs. El código es público y tiene licencia MIT, lo que significa que la conversión en la que confías es una que puedes leer.',
         ],
       },
     ],
+    faq: {
+      heading: 'Preguntas sobre TransformPipe',
+      intro: 'Las respuestas cortas. La documentación tiene el resto.',
+      items: [
+        {
+          question: '¿Es gratis?',
+          answer: 'Sí, sin plan que elegir ni tarjeta que introducir. Iniciar sesión es opcional y solo te compra un sitio donde guardar cosas: una cuenta admite 500 documentos y 100 MB de Markdown, y un documento suelto puede llegar a 4 MB. Alcanzar un límite rechaza el guardado y lo dice, en vez de descartar en silencio un documento antiguo para hacer hueco.',
+        },
+        {
+          question: '¿Subís mi archivo?',
+          answer: 'Sin sesión iniciada, no. La conversión corre en tu navegador y el archivo nunca sale de la máquina, lo que puedes comprobar en la pestaña de red o desconectándote. Con sesión iniciada se guarda el Markdown — no el archivo original — en tu cuenta para que esté en tus otros dispositivos, y puedes borrarlo, lo que elimina la fila y la fuente guardada a la vez.',
+        },
+        {
+          question: '¿Qué formatos lee?',
+          answer: 'Word, PowerPoint, Excel, EPUB, texto OpenDocument, RTF, exportaciones de Evernote, HTML, CSV, TSV, JSON, texto plano, y los zips de exportación de Notion, Confluence y Obsidian. Por el otro lado: HTML, Word, texto plano e impresión. El PDF es la ausencia notable — reconstruir estructura a partir de glifos en coordenadas es una disciplina distinta de leer un contenedor.',
+        },
+        {
+          question: '¿Qué pasa con tablas, imágenes y código?',
+          answer: 'Las tablas se convierten donde el origen tiene tablas de verdad; las celdas combinadas son el caso incómodo, porque Markdown no tiene sintaxis para ellas. Las imágenes se llevan al resultado en vez de referenciarse, hasta dos megabytes por documento. Los bloques de código conservan su lenguaje donde el origen anotó uno, y las fórmulas y los diagramas sobreviven hasta el HTML exportado.',
+        },
+        {
+          question: '¿Puede usarlo mi asistente de IA?',
+          answer: 'Sí. TransformPipe está en el directorio de conectores de Claude, en claude.ai/directory/tp: abre la ficha, pulsa Conectar, inicia sesión, y el asistente podrá convertir, guardar, buscar y compartir en tu cuenta. Todo lo que pone un documento delante de otras personas te pregunta antes.',
+        },
+        {
+          question: '¿Por qué Markdown y no algo más rico?',
+          answer: 'Porque el valor de un formato documental está en cuántas cosas podrán leerlo dentro de diez años. Markdown es texto plano con convenciones: un diff muestra qué cambió, una búsqueda lo encuentra, una persona puede leer el archivo mismo, y todos los generadores de sitios, wikis y asistentes ya lo entienden. Lo que cuesta es el control tipográfico fino — un trato justo para un documento pensado para trabajarse y no para imprimirse.',
+        },
+        {
+          question: '¿Es de código abierto?',
+          answer: 'Sí, con licencia MIT, en github.com/raudarlabs/transformpipe. Las conversiones, la API y el servidor MCP están todos en ese repositorio, así que una afirmación hecha en esta página es una que puedes ir a comprobar contra el código que la sostiene.',
+        },
+      ],
+    },
     seo: {
       title: 'Qué es TransformPipe — un conversor de documentos que corre en el navegador',
       description:

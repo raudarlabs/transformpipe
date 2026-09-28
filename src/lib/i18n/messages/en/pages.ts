@@ -23,16 +23,34 @@ export const pages: Content['pages'] = {
     lede: 'A document converter that does the work in your browser, and stays out of the way.',
     sections: [
       {
+        heading: 'The problem',
+        body: [
+          'A document arrives as a .docx, a deck, a spreadsheet or an export zip, and the thing you want out of it is the words. Not the fonts, not the page breaks, not the twelve years of tracked changes — the words, in a form you can paste into a pull request, hand to a static site generator, diff, search, or read on a machine that does not have the program that made it.',
+          'Getting there usually means uploading the file to a stranger, installing something, or pasting the text and losing the tables. TransformPipe is the fourth answer: the conversion happens in the page you already have open.',
+        ],
+      },
+      {
         heading: 'What it does',
         body: [
           'Fifteen conversions. A Word file, a slide deck, a spreadsheet, an EPUB book, an OpenDocument or rich text file, an Evernote export, a page of saved HTML, a CSV, a JSON response, or the zip that Notion, Confluence and Obsidian hand you when you export — each of them becomes Markdown. And Markdown becomes a finished HTML page, a Word file, plain text, or something you can print.',
           'Everything normalises to Markdown, because Markdown is a format you can read without the tool that made it, diff in a pull request, and still open in twenty years.',
+          'The pictures come with it. A conversion that finds an image inside the file carries it into the output rather than leaving a reference to a folder you do not have, so what you get is one file that still shows what it showed.',
+        ],
+      },
+      {
+        heading: 'Who it is for',
+        body: [
+          'Somebody moving documentation out of a wiki and into a repository, where the next person to change it can do so in a pull request instead of a rich text editor.',
+          'Somebody who works with an AI assistant all day and wants what it writes kept somewhere real — as a page with an address, rather than scrollback in a conversation that ends.',
+          'Somebody handed a file in a format they do not want to install a program to read, who needs the contents now and not after a download.',
+          'And anybody whose documents are not theirs to upload: a contract, a patient note, an unannounced set of figures, anything covered by an agreement that names who may process it.',
         ],
       },
       {
         heading: 'It runs in your browser',
         body: [
           'Signed out, no file is sent anywhere. There is no upload to trust because there is no upload: the conversion happens on your own machine, which is why a page behind your company login converts as easily as one that is public.',
+          'This is a claim you can check rather than believe. Open the network tab, convert a file, and watch that nothing carrying it leaves — then turn the network off and convert another one.',
           'Sign in and the Markdown is kept in your account, so a document follows you to another machine. It stays private until you share it, and a shared link can be revoked.',
         ],
       },
@@ -40,6 +58,14 @@ export const pages: Content['pages'] = {
         heading: 'What comes out is one file',
         body: [
           'The exported HTML has its styles, its pictures, its diagrams and its formulas inside it. It asks the network for nothing, which is what makes it open the same on a laptop with no connection in five years as it does today — and what makes it safe to email to somebody who will open it once and never think about it again.',
+        ],
+      },
+      {
+        heading: 'How it differs',
+        body: [
+          'Most converters are a server: you upload, it works, you download, and a copy of your document exists on a machine you do not control for as long as their policy says. That is the right trade for some documents and the wrong one for others, and the point is that it should be a decision rather than a default.',
+          'Most converters also read the text and stop. A .pptx is a zip of XML parts, and the speaker notes — usually the most useful prose in a deck — are in a different part from the slides. An EPUB keeps its reading order in a spine that has nothing to do with the filenames. An Evernote export addresses its pictures by a checksum of their own bytes. Reading the container rather than the text is most of what separates a conversion you can use from one you have to repair.',
+          'And what it does not do is worth saying too: it does not read PDFs, LaTeX or the pre-2007 Office formats, it will not convert five hundred files while you make tea, and a single saved document stops at four megabytes. For those, Pandoc and the hosted services are the better tool, and the comparison of ten converters on the blog says which one for which job.',
         ],
       },
       {
@@ -55,6 +81,40 @@ export const pages: Content['pages'] = {
         ],
       },
     ],
+    faq: {
+      heading: 'Questions about TransformPipe',
+      intro: 'The short answers. The documentation has the rest.',
+      items: [
+        {
+          question: 'Is it free?',
+          answer: 'Yes, with no plan to pick and no card to enter. Signing in is optional and only buys you somewhere to keep things: an account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so, rather than quietly dropping an older document to make room.',
+        },
+        {
+          question: 'Do you upload my file?',
+          answer: 'Signed out, no. The conversion runs in your browser and the file never leaves the machine, which you can check in the network tab or by disconnecting. Signed in, the Markdown — not the original file — is stored in your account so it is there on your other devices, and you can delete it, which removes the row and the stored source together.',
+        },
+        {
+          question: 'What formats does it read?',
+          answer: 'Word, PowerPoint, Excel, EPUB, OpenDocument text, rich text, Evernote exports, HTML, CSV, TSV, JSON, plain text, and the export zips from Notion, Confluence and Obsidian. Out the other side: HTML, Word, plain text and print. PDF is the notable absence — reconstructing structure from glyphs at coordinates is a different discipline from reading a container.',
+        },
+        {
+          question: 'What happens to tables, images and code?',
+          answer: 'Tables convert where the source has real tables; merged cells are the awkward case, because Markdown has no syntax for them. Images are carried into the output rather than referenced, up to two megabytes per document. Code blocks keep their language where the source recorded one, and formulas and diagrams survive into the exported HTML.',
+        },
+        {
+          question: 'Can my AI assistant use it?',
+          answer: 'Yes. TransformPipe is in Claude’s connector directory at claude.ai/directory/tp: open the listing, press Connect, sign in, and the assistant can convert, save, search and share documents on your account. Anything that puts a document in front of other people asks you first.',
+        },
+        {
+          question: 'Why Markdown rather than something richer?',
+          answer: 'Because the value of a document format is how many things can read it in ten years. Markdown is plain text with conventions: a diff shows what changed, a search finds it, a person can read the file itself, and every static site generator, wiki and assistant already understands it. What it costs you is fine typographic control, which is a fair trade for a document that is meant to be worked on rather than printed.',
+        },
+        {
+          question: 'Is it open source?',
+          answer: 'Yes, MIT licensed, at github.com/raudarlabs/transformpipe. The conversions, the API and the MCP server are all in that repository, so a claim made on this page is one you can go and check against the code that makes it.',
+        },
+      ],
+    },
     seo: {
       title: 'What TransformPipe is — a document converter that runs in your browser',
       description:

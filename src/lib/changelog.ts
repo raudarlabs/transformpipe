@@ -117,6 +117,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-28',
+    title: 'The page that says what this is, saying rather more',
+    body:
+      '/about answered the question in four hundred words and five short sections, which is an '
+      + 'introduction rather than an answer. It now opens on the problem, says who it is for, '
+      + 'says what separates it from a converter that uploads your file \u2014 and says what it '
+      + 'does not do: no PDFs, no LaTeX, no five hundred files at once, four megabytes a '
+      + 'document. Seven questions at the foot, in the same accordion the front page uses, and '
+      + 'marked up so a search engine can show the answers. All of it in five languages.',
+  },
+  {
+    date: '2026-09-28',
     title: 'An assistant asks before it publishes',
     body:
       'Saving a document through the connector could publish it to the public web in the same '
