@@ -636,6 +636,7 @@ function Shell() {
         onConversionChange={chooseConversion}
         onOpenPage={openPage}
         onHome={startOver}
+        onAgentsPage={view === 'page' && pageId !== null && staticPage(pageId).group === 'agents'}
       />
 
       <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">

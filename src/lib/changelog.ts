@@ -137,6 +137,15 @@ const ENTRIES: ChangelogEntry[] = [
       + 'are unchanged.',
   },
   {
+    date: '2026-09-29',
+    title: 'The assistants link is an icon like its neighbours',
+    body:
+      'In the header it was a bordered pill with its name spelled out on a wide screen \u2014 the '
+      + 'loudest thing in the bar, for a list of one. It is a glyph now, the size of Docs and Blog '
+      + 'beside it, lit while you are on the assistants pages the way they are on theirs. The '
+      + 'name is in the tooltip, and the phone\u2019s menu still has it as a row.',
+  },
+  {
     date: '2026-09-28',
     title: 'The page that says what this is, saying rather more',
     body:

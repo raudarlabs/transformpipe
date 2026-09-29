@@ -46,6 +46,8 @@ interface AppHeaderProps {
   onOpenPage: (id: StaticPageId) => void;
   /** The logo doubles as "start over": back to the converter with no file open. */
   onHome: () => void;
+  /** On `/agents` or a page under it, so its glyph is lit the way Docs and Blog are on theirs. */
+  onAgentsPage: boolean;
 }
 
 /*
@@ -93,6 +95,7 @@ export function AppHeader({
   onConversionChange,
   onOpenPage,
   onHome,
+  onAgentsPage,
 }: AppHeaderProps) {
   const t = useT();
   const { content } = useI18n();
@@ -332,28 +335,35 @@ export function AppHeader({
                   </button>
                 );
               })}
-            </nav>
 
-            {/*
-              * The assistants, as words rather than one more glyph.
-              *
-              * The icons beside it are places somebody already knows they want to go; this is the
-              * thing most visitors do not know the site does, so it says so. A name on a wide
-              * screen, the glyph alone where the bar is tighter, and a row in the phone's menu.
-              */}
-            <button
-              type="button"
-              onClick={() => onOpenPage('agents')}
-              title={t('header.nav.agents')}
-              className={cn(
-                'hidden h-9 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-stroke px-2.5 md:inline-flex xl:px-3',
-                'text-ink-body text-sm transition-colors hover:border-brand-tertiary hover:text-ink-primary',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand'
-              )}
-            >
-              <Bot className="size-4 shrink-0 text-brand-tertiary" />
-              <span className="hidden xl:inline">{t('header.nav.agents')}</span>
-            </button>
+              {/*
+                * The assistants, as one more glyph beside Docs and Blog.
+                *
+                * It was a pill with a border and, on a wide screen, its name spelled out — sized
+                * for a list of assistants when the list is one: Claude. At that weight it was the
+                * loudest thing in the bar. Same box and spacing as its neighbours now; the teal is
+                * the one thing kept, because this is the place most visitors do not know the site
+                * goes. The name is in the tooltip and the label, and a row in the phone's menu.
+                *
+                * Not in `NAV_ITEMS`: those are views, and this opens a page.
+                */}
+              <button
+                type="button"
+                onClick={() => onOpenPage('agents')}
+                aria-current={onAgentsPage ? 'page' : undefined}
+                aria-label={t('header.nav.agents')}
+                title={t('header.nav.agents')}
+                className={cn(
+                  'relative flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
+                  onAgentsPage
+                    ? 'bg-surface-accent text-ink-highlight'
+                    : 'text-brand-tertiary hover:bg-state-hover'
+                )}
+              >
+                <Bot className="size-4 shrink-0" />
+              </button>
+            </nav>
 
             {/*
               * Before the account, and outside it on purpose.
