@@ -127,6 +127,16 @@ const ENTRIES: ChangelogEntry[] = [
       + 'ordinary reload to take effect. Offline still works.',
   },
   {
+    date: '2026-09-29',
+    title: 'A shared document gets more of the screen',
+    body:
+      'A shared page, and the .html file downloaded from one, held the document to 48rem, so on a '
+      + 'wide screen a five-column table scrolled sideways between two empty margins. The column '
+      + 'is 56rem now, the width the preview in the app already used in full screen, so the page '
+      + 'somebody is sent is no longer narrower than the one it was written in. Phones and print '
+      + 'are unchanged.',
+  },
+  {
     date: '2026-09-28',
     title: 'The page that says what this is, saying rather more',
     body:

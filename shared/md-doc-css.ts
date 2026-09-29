@@ -152,6 +152,25 @@ ${declare(LIGHT)}
 }
 
 /** Typography + block rules — identical in preview and export. */
+/**
+ * How wide a document is, wherever one is read on its own.
+ *
+ * Five rules have to agree on it: the shared page's bar, the document, the footer under it and the
+ * panel at its foot, and the preview in the app when it goes full screen. They used to agree by
+ * having a number typed into each, in two files — the shared page at 48rem and the full-screen
+ * preview at 56, so the view somebody was sent was narrower than the one its author edited in.
+ *
+ * A TypeScript constant rather than a CSS custom property. A property declared in one style block
+ * and read in another is undefined on any page that includes the second without the first, and an
+ * undefined `max-width` is not an error anybody sees: it is `none`, and a bar the width of the
+ * screen. A constant is substituted when the string is built and cannot be missing.
+ *
+ * 56rem is a line of about a hundred characters, which is the long end of comfortable for prose and
+ * the right trade here: shared documents are reports and specifications, dense with tables, and
+ * the complaint that moved this was a five-column table scrolling beside empty margins.
+ */
+export const MD_MEASURE = '56rem';
+
 export const MD_DOC_STYLE = `
 .md-doc {
   background: var(--md-card);
@@ -470,7 +489,7 @@ body {
 }
 
 .md-page {
-  max-width: 48rem;
+  max-width: ${MD_MEASURE};
   margin: 0 auto;
   padding: 2.5rem 3rem 3rem;
   border: 1px solid var(--md-stroke);
@@ -480,7 +499,7 @@ body {
 }
 
 .md-footer {
-  max-width: 48rem;
+  max-width: ${MD_MEASURE};
   margin: 1rem auto 0;
   color: var(--md-secondary);
   font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -563,7 +582,7 @@ export const MD_PREVIEW_STYLE = `
 
 .md-preview-frame:fullscreen .md-sheet {
   width: 100%;
-  max-width: 56rem;
+  max-width: ${MD_MEASURE};
   height: max-content;
   margin: 0 auto;
   padding: 3rem 3.5rem;

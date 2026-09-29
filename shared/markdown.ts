@@ -17,6 +17,7 @@ import {
   mdDocTheme,
   MD_DOC_PAGE_STYLE,
   MD_DOC_STYLE,
+  MD_MEASURE,
 } from './md-doc-css.js';
 
 const marked = new Marked({
@@ -693,7 +694,7 @@ const SHARED_CHROME_STYLE = `
   flex-wrap: wrap;
   gap: 1rem;
   box-sizing: border-box;
-  max-width: 48rem;
+  max-width: ${MD_MEASURE};
   margin: 0 auto 1.25rem;
   padding: 0.9rem 1.1rem;
   border: 1px solid var(--md-stroke);
@@ -847,7 +848,7 @@ const SHARED_CHROME_STYLE = `
  */
 .md-cta {
   box-sizing: border-box;
-  max-width: 48rem;
+  max-width: ${MD_MEASURE};
   margin: 2.5rem auto 3rem;
   padding: 1.5rem;
   border: 1px solid var(--md-stroke);
