@@ -1047,7 +1047,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Beim Assistenten eintragen',
-            body: 'In Claude öffnen Sie TransformPipe im Connector-Verzeichnis und drücken „Connect“. Jeder andere MCP-Client nimmt die Adresse. Melden Sie sich mit Google an, wenn danach gefragt wird.',
+            body: 'In Claude öffnen Sie TransformPipe im Connector-Verzeichnis und drücken „Connect“. Melden Sie sich mit Google an, wenn danach gefragt wird.',
           },
           {
             title: 'In normalen Worten fragen',

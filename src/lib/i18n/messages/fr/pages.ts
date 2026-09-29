@@ -1040,7 +1040,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'L’ajouter à votre assistant',
-            body: 'Dans Claude, ouvrez TransformPipe dans l’annuaire des connecteurs et cliquez sur Connecter. Tout autre client MCP accepte l’adresse. Connectez-vous avec Google quand on vous le demande.',
+            body: 'Dans Claude, ouvrez TransformPipe dans l’annuaire des connecteurs et cliquez sur Connecter. Connectez-vous avec Google quand on vous le demande.',
           },
           {
             title: 'Demander en mots simples',

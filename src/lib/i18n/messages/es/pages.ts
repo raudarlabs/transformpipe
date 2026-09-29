@@ -1043,7 +1043,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Añádela a tu asistente',
-            body: 'En Claude, abre TransformPipe en el directorio de conectores y pulsa «Connect». Cualquier otro cliente MCP acepta la dirección. Inicia sesión con Google cuando te lo pida.',
+            body: 'En Claude, abre TransformPipe en el directorio de conectores y pulsa «Connect». Inicia sesión con Google cuando te lo pida.',
           },
           {
             title: 'Pídelo con palabras normales',

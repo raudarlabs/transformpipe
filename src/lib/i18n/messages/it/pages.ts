@@ -1038,7 +1038,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Aggiungilo al tuo assistente',
-            body: 'In Claude, apri TransformPipe nella directory dei connettori e premi Connetti. Qualsiasi altro client MCP usa l’indirizzo. Accedi con Google quando te lo chiede.',
+            body: 'In Claude, apri TransformPipe nella directory dei connettori e premi Connetti. Accedi con Google quando te lo chiede.',
           },
           {
             title: 'Chiedi a parole tue',

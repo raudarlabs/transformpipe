@@ -1045,7 +1045,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Add it to your assistant',
-            body: 'In Claude, open TransformPipe in the connector directory and press Connect. Any other MCP client takes the address. Sign in with Google when it asks.',
+            body: 'In Claude, open TransformPipe in the connector directory and press Connect. Sign in with Google when it asks.',
           },
           {
             title: 'Ask in plain words',
