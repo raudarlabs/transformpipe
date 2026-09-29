@@ -973,8 +973,8 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'Asistentes de IA',
-    title: 'Todo lo que escribe tu asistente, en un sitio donde volver a encontrarlo',
-    lede: 'Los asistentes escriben Markdown todo el día —notas de versión, especificaciones, resúmenes— y lo dejan en un chat. Conecta TransformPipe una vez y el asistente guarda cada documento en tu cuenta, donde puedes abrirlo desde cualquier dispositivo o enviarlo como enlace.',
+    title: 'Comparte como enlace todo lo que escribe tu asistente',
+    lede: 'Tu asistente escribe Markdown todo el día —notas de versión, especificaciones, resúmenes— y todo se queda en el chat. Conecta TransformPipe con un clic y pide a Claude o a cualquier asistente MCP que comparta un documento: te da la dirección de una página terminada que cualquiera puede abrir, sin cuenta. O simplemente guárdalo y encuéntralo después desde cualquier dispositivo.',
     sections: [],
     landing: {
       eyebrow: 'Para asistentes de IA',
@@ -1002,19 +1002,19 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Envía una página, no un texto pegado',
-            body: 'El asistente guarda el documento, lo comparte y te responde con la dirección. Quien lo abre ve una página terminada —títulos, tablas, código— sin necesidad de cuenta y sin asteriscos. Compártelo con cualquiera que tenga el enlace o solo con las direcciones que indiques, y revócalo cuando quieras.',
+            body: 'El asistente guarda el documento, lo comparte y te responde con la dirección. Quien lo abre ve una página terminada —títulos, tablas, código— sin necesidad de cuenta. Compártelo con quien tenga el enlace o solo con las personas que indiques, y revócalo cuando quieras.',
             ask: '«Publícalo y dame el enlace.»',
             result: 'Enlace creado · transformpipe.com/s/…',
           },
           {
             title: 'Encuéntralo otra vez, desde cualquier asistente',
-            body: 'Cada documento guardado está en una sola lista, venga de la conversación y del asistente que venga. Pídelo por el tema que trataba y el asistente lo busca, en lugar de que tú repases cuarenta chats.',
+            body: 'Cada documento guardado está en una sola lista, venga de la conversación y del asistente que venga. Pídelo por su nombre o por algo que diga dentro, y el asistente lo busca, en lugar de que tú repases cuarenta chats para encontrarlo.',
             ask: '«Busca la especificación de la migración de la semana pasada.»',
             result: 'Encontrado · Especificación de migración, 16 sep',
           },
           {
             title: 'Reescribe sin perder el primer borrador',
-            body: 'Cuando el asistente actualiza un documento, el texto nuevo se guarda como una versión junto a la anterior. Puedes ver qué sustituyó a qué y preguntar qué cambió entre ellas.',
+            body: 'Cuando el asistente actualiza un documento, el texto nuevo se guarda como una versión junto a la anterior, en vez de encima. Puedes ver qué sustituyó a qué, preguntar qué cambió entre dos versiones y volver a abrir el primer borrador cuando quieras.',
             ask: '«Actualiza la especificación y conserva la versión anterior.»',
             result: 'v1 → v2 · se conservan las dos',
           },

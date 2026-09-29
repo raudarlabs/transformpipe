@@ -975,8 +975,8 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'AI assistants',
-    title: 'Everything your assistant writes, in one place you can find again',
-    lede: 'Assistants write Markdown all day — release notes, specs, summaries — and leave it in a chat. Connect TransformPipe once and the assistant saves each document to your account, where you can open it on any device or send it as a link.',
+    title: 'Share anything your assistant writes, as a link',
+    lede: 'Your assistant writes Markdown all day — release notes, specs, summaries — and it stays in the chat. Connect TransformPipe in one click, then ask Claude or any MCP assistant to share a document: it hands you the address of a finished page anyone can open, no account needed. Or just save it, and find it later from any device.',
     sections: [],
     landing: {
       eyebrow: 'For AI assistants',
@@ -1004,19 +1004,19 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Send a page, not a paste',
-            body: 'The assistant saves the document, shares it and answers with the address. Whoever opens it sees a finished page — headings, tables, code — with no account and no asterisks. Share it with anyone who has the link or only with the addresses you name, and revoke it whenever you like.',
+            body: 'The assistant saves the document, shares it and answers with the address. Whoever opens it sees a finished page — headings, tables, code — with no account needed. Share it with anyone holding the link or only the people you name, and revoke it any time.',
             ask: '“Publish it and give me the link.”',
             result: 'Link created · transformpipe.com/s/…',
           },
           {
             title: 'Find it again, from any assistant',
-            body: 'Every saved document is in one list, whichever conversation and whichever assistant it came from. Ask for it by what it was about and the assistant looks it up, instead of you scrolling through forty chats.',
+            body: 'Every saved document is in one list, whichever conversation and whichever assistant it came from. Ask for it by its name or by something written in it, and the assistant looks it up, instead of you scrolling back through forty chats to find it.',
             ask: '“Find the migration spec from last week.”',
             result: 'Found · Migration spec, 16 Sep',
           },
           {
             title: 'Rewrite without losing the first draft',
-            body: 'When the assistant updates a document, the new text is kept as a version beside the old one. You can see what replaced what, and ask what changed between them.',
+            body: 'When the assistant updates a document, the new text is kept as a version beside the old one rather than written over it. You can see what replaced what, ask what changed between two versions, and open the first draft again whenever you need it.',
             ask: '“Update the spec and keep the old version.”',
             result: 'v1 → v2 · both kept',
           },

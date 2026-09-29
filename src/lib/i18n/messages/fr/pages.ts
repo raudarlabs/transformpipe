@@ -970,8 +970,8 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'Assistants IA',
-    title: 'Tout ce qu’écrit votre assistant, au même endroit, facile à retrouver',
-    lede: 'Les assistants écrivent du Markdown toute la journée — notes de version, spécifications, résumés — et le laissent dans une conversation. Connectez TransformPipe une fois, et l’assistant enregistre chaque document dans votre compte, où vous pouvez l’ouvrir sur n’importe quel appareil ou l’envoyer sous forme de lien.',
+    title: 'Partagez tout ce qu’écrit votre assistant, en un lien',
+    lede: 'Votre assistant écrit du Markdown toute la journée — notes de version, spécifications, résumés — et tout reste dans la conversation. Connectez TransformPipe en un clic, puis demandez à Claude ou à tout assistant MCP de partager un document : il vous donne l’adresse d’une page finie que chacun peut ouvrir, sans compte. Ou enregistrez-le simplement, et retrouvez-le plus tard sur n’importe quel appareil.',
     sections: [],
     landing: {
       eyebrow: 'Pour les assistants IA',
@@ -999,19 +999,19 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Envoyer une page, pas un copier-coller',
-            body: 'L’assistant enregistre le document, le partage et répond avec l’adresse. Qui l’ouvre voit une page finie — titres, tableaux, code — sans compte et sans astérisques. Partagez-le avec toute personne disposant du lien ou uniquement avec les adresses que vous indiquez, et révoquez-le quand vous le souhaitez.',
+            body: 'L’assistant enregistre le document, le partage et répond avec l’adresse. Qui l’ouvre voit une page finie — titres, tableaux, code — sans avoir besoin de compte. Partagez-le avec quiconque a le lien ou seulement avec les personnes que vous nommez, et révoquez-le à tout moment.',
             ask: '« Publiez-le et donnez-moi le lien. »',
             result: 'Lien créé · transformpipe.com/s/…',
           },
           {
             title: 'Le retrouver, depuis n’importe quel assistant',
-            body: 'Chaque document enregistré figure dans une seule liste, quelle que soit la conversation et quel que soit l’assistant dont il vient. Demandez-le par son sujet et l’assistant le cherche, au lieu que vous fassiez défiler quarante conversations.',
+            body: 'Chaque document enregistré figure dans une seule liste, quelle que soit la conversation et quel que soit l’assistant dont il vient. Demandez-le par son nom ou par quelque chose qui y est écrit, et l’assistant le retrouve, au lieu que vous fassiez défiler quarante conversations.',
             ask: '« Retrouvez la spécification de migration de la semaine dernière. »',
             result: 'Trouvé · Spéc. de migration, 16 sept.',
           },
           {
             title: 'Réécrire sans perdre le premier jet',
-            body: 'Quand l’assistant met un document à jour, le nouveau texte est conservé comme une version à côté de l’ancienne. Vous voyez ce qui a remplacé quoi, et vous pouvez demander ce qui a changé entre les deux.',
+            body: 'Quand l’assistant met un document à jour, le nouveau texte est conservé comme une version à côté de l’ancienne plutôt que par-dessus. Vous voyez ce qui a remplacé quoi, pouvez demander ce qui a changé entre deux versions et rouvrir le premier jet quand vous voulez.',
             ask: '« Mettez à jour la spécification et gardez l’ancienne version. »',
             result: 'v1 → v2 · les deux conservées',
           },

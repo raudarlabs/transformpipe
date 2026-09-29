@@ -117,6 +117,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-29',
+    title: 'The assistants page leads with sharing',
+    body:
+      'It opened on finding a document again, when what most people come for is sending one: '
+      + 'the page now starts there, in all five languages. Add to Claude sits beside the '
+      + 'connector address rather than above it, copying the address is an icon inside its field, '
+      + 'and on a phone the address breaks after the host instead of being cut off. The four cards '
+      + 'on what it is for are one size, the comparison\u2019s headings sit over their columns, and '
+      + 'no card ends on a line of one word.',
+  },
+  {
+    date: '2026-09-29',
     title: 'A shared document downloads as Markdown too, whatever it is called',
     body:
       'The Download button on a shared page now has an arrow beside it, and behind it the '

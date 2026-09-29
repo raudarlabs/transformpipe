@@ -977,8 +977,8 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'KI-Assistenten',
-    title: 'Alles, was Ihr Assistent schreibt, an einem Ort, an dem Sie es wiederfinden',
-    lede: 'Assistenten schreiben den ganzen Tag Markdown — Release Notes, Spezifikationen, Zusammenfassungen — und lassen es in einem Chat liegen. Verbinden Sie TransformPipe einmal, und der Assistent speichert jedes Dokument in Ihrem Konto, wo Sie es auf jedem Gerät öffnen oder als Link verschicken können.',
+    title: 'Alles, was Ihr Assistent schreibt, als Link teilen',
+    lede: 'Ihr Assistent schreibt den ganzen Tag Markdown — Release Notes, Spezifikationen, Zusammenfassungen — und es bleibt im Chat. Verbinden Sie TransformPipe mit einem Klick und bitten Sie Claude oder einen anderen MCP-Assistenten, ein Dokument zu teilen: Sie erhalten die Adresse einer fertigen Seite, die jeder ohne Konto öffnen kann. Oder speichern Sie es einfach und finden Sie es später auf jedem Gerät wieder.',
     sections: [],
     landing: {
       eyebrow: 'Für KI-Assistenten',
@@ -1000,25 +1000,25 @@ export const pages: Content['pages'] = {
         items: [
           {
             title: 'Behalten, was der Assistent schreibt',
-            body: 'Release Notes, eine Spezifikation, die Zusammenfassung eines langen Threads: Bitten Sie darum, es zu speichern, und es landet in Ihrem Konto unter einem Titel, nach dem Sie suchen können. Morgen ist es auf einem anderen Laptop oder auf Ihrem Telefon da, lange nachdem der Chat aus dem Blick gescrollt ist.',
+            body: 'Release Notes, eine Spezifikation, die Zusammenfassung eines langen Threads: Bitten Sie ums Speichern, und es landet unter einem suchbaren Titel in Ihrem Konto. Morgen ist es auf einem anderen Laptop oder auf dem Telefon da, lange nachdem der Chat weggescrollt ist.',
             ask: '„Speichere das als Q3-Plan.“',
             result: 'Gespeichert · Q3-Plan',
           },
           {
             title: 'Eine Seite schicken, keinen kopierten Text',
-            body: 'Der Assistent speichert das Dokument, teilt es und antwortet mit der Adresse. Wer es öffnet, sieht eine fertige Seite — Überschriften, Tabellen, Code — ohne Konto und ohne Sternchen. Teilen Sie es mit allen, die den Link haben, oder nur mit den Adressen, die Sie nennen, und widerrufen Sie die Freigabe, wann immer Sie möchten.',
+            body: 'Der Assistent speichert das Dokument, teilt es und antwortet mit der Adresse. Wer es öffnet, sieht eine fertige Seite — Überschriften, Tabellen, Code — ganz ohne Konto. Teilen Sie es per Link oder nur mit den Personen, die Sie nennen, und widerrufen Sie es jederzeit.',
             ask: '„Veröffentliche es und gib mir den Link.“',
             result: 'Link erstellt · transformpipe.com/s/…',
           },
           {
             title: 'Wiederfinden, aus jedem Assistenten',
-            body: 'Jedes gespeicherte Dokument steht in einer einzigen Liste, gleich aus welchem Gespräch und von welchem Assistenten es stammt. Fragen Sie danach, worum es ging, und der Assistent sucht es heraus, statt dass Sie sich durch vierzig Chats scrollen.',
+            body: 'Jedes gespeicherte Dokument steht in einer einzigen Liste, gleich aus welchem Gespräch und von welchem Assistenten es stammt. Fragen Sie nach dem Namen oder nach etwas, das darin steht, und der Assistent sucht es heraus, statt dass Sie sich durch vierzig Chats zurückscrollen.',
             ask: '„Finde die Migrations-Spec von letzter Woche.“',
             result: 'Gefunden · Migrations-Spec, 16. Sep.',
           },
           {
             title: 'Umschreiben, ohne den ersten Entwurf zu verlieren',
-            body: 'Wenn der Assistent ein Dokument aktualisiert, wird der neue Text als Version neben dem alten aufbewahrt. Sie sehen, was was ersetzt hat, und können fragen, was sich zwischen beiden geändert hat.',
+            body: 'Wenn der Assistent ein Dokument aktualisiert, wird der neue Text als Version neben dem alten aufbewahrt, statt ihn zu überschreiben. Sie sehen, was was ersetzt hat, können fragen, was sich zwischen zwei Versionen geändert hat, und den ersten Entwurf jederzeit wieder öffnen.',
             ask: '„Aktualisiere die Spec und behalte die alte Version.“',
             result: 'v1 → v2 · beide behalten',
           },

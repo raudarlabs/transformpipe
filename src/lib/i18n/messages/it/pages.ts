@@ -968,8 +968,8 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'Assistenti AI',
-    title: 'Tutto quello che scrive il tuo assistente, in un posto dove ritrovarlo',
-    lede: 'Gli assistenti scrivono Markdown tutto il giorno — note di rilascio, specifiche, riassunti — e lo lasciano in una chat. Collega TransformPipe una volta sola e l’assistente salva ogni documento nel tuo account, dove puoi aprirlo da qualsiasi dispositivo o mandarlo come link.',
+    title: 'Condividi come link tutto quello che scrive il tuo assistente',
+    lede: 'Il tuo assistente scrive Markdown tutto il giorno — note di rilascio, specifiche, riassunti — e tutto resta nella chat. Collega TransformPipe con un clic, poi chiedi a Claude o a qualsiasi assistente MCP di condividere un documento: ti dà l’indirizzo di una pagina finita che chiunque può aprire, senza account. Oppure salvalo e basta, e ritrovalo più tardi da qualsiasi dispositivo.',
     sections: [],
     landing: {
       eyebrow: 'Per gli assistenti AI',
@@ -997,19 +997,19 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Manda una pagina, non un copia-incolla',
-            body: 'L’assistente salva il documento, lo condivide e risponde con l’indirizzo. Chi lo apre vede una pagina finita — titoli, tabelle, codice — senza account e senza asterischi. Condividilo con chiunque abbia il link o solo con gli indirizzi che indichi, e revoca la condivisione quando vuoi.',
+            body: 'L’assistente salva il documento, lo condivide e risponde con l’indirizzo. Chi lo apre vede una pagina finita — titoli, tabelle, codice — senza bisogno di account. Condividilo con chiunque abbia il link o solo con le persone che indichi, e revocalo quando vuoi.',
             ask: '“Pubblicalo e dammi il link.”',
             result: 'Link creato · transformpipe.com/s/…',
           },
           {
             title: 'Ritrovalo, da qualsiasi assistente',
-            body: 'Ogni documento salvato sta in un’unica lista, da qualunque conversazione e da qualunque assistente arrivi. Chiedilo per argomento e lo cerca l’assistente, invece di costringerti a scorrere quaranta chat.',
+            body: 'Ogni documento salvato sta in un’unica lista, da qualunque conversazione e da qualunque assistente arrivi. Chiedilo per nome o per qualcosa che c’è scritto dentro e lo cerca l’assistente, invece di costringerti a scorrere quaranta chat.',
             ask: '“Trova la specifica di migrazione della settimana scorsa.”',
             result: 'Trovato · Specifica di migrazione, 16 set',
           },
           {
             title: 'Riscrivi senza perdere la prima bozza',
-            body: 'Quando l’assistente aggiorna un documento, il nuovo testo viene conservato come versione accanto a quello vecchio. Puoi vedere cosa ha sostituito cosa, e chiedere cosa è cambiato tra le due.',
+            body: 'Quando l’assistente aggiorna un documento, il nuovo testo viene conservato come versione accanto a quello vecchio, non sopra. Puoi vedere cosa ha sostituito cosa, chiedere cosa è cambiato tra due versioni e riaprire la prima bozza quando vuoi.',
             ask: '“Aggiorna la specifica e tieni la versione precedente.”',
             result: 'v1 → v2 · entrambe conservate',
           },

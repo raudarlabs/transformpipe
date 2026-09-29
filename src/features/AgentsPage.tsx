@@ -28,6 +28,7 @@ import {
 } from '@/ui/components/Accordion';
 import { Faq } from '@/ui/components/Faq';
 import { SectionHeading } from '@/ui/components/SectionHeading';
+import { cn } from '@/ui/lib/utils';
 import { toast } from '@/ui/components/Toast';
 
 /*
@@ -105,36 +106,50 @@ function useCopy(text: string) {
 }
 
 /*
- * The address and the button that copies it. `quiet` once the directory listing is the main way
- * in: the address is still the answer for every other client, so it stays, a step back.
+ * The address, with the button that copies it inside the field.
+ *
+ * It used to be a field and, beside it, a bordered button spelling out "Copy the address" — as
+ * wide as the address and as loud as the way in, for the lesser of the two. An icon in the field's
+ * own corner is where a copy control is looked for; its words stay as the tooltip and the label a
+ * screen reader reads, and the tick after a copy says it worked.
  */
-function CopyAddress({ label, quiet = false }: { label: string; quiet?: boolean }) {
+function AddressField({ copyLabel }: { copyLabel: string }) {
   const url = `${window.location.origin}${MCP_PATH}`;
   const { copied, copy } = useCopy(url);
 
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2 rounded-xl border border-stroke bg-surface-card p-1.5 sm:flex-row sm:items-center">
-      <code className="min-w-0 flex-1 select-all truncate px-2.5 py-2 font-mono text-ink-body text-sm">
-        {url}
+    <div className="relative flex min-h-12 w-full min-w-0 items-center rounded-xl border border-stroke bg-surface-card">
+      {/*
+        * One line wherever there is room, and otherwise a break in the one place a person would
+        * put it — after the host, before the path. An ellipsis hid the part that says which
+        * server it is. `break-words` is only for a screen too narrow even for the host.
+        */}
+      <code className="min-w-0 flex-1 select-all break-words py-3 pr-12 pl-3.5 font-mono text-ink-body text-sm">
+        {window.location.origin}
+        <wbr />
+        {MCP_PATH}
       </code>
       <button
         type="button"
         onClick={() => void copy()}
-        className={
-          quiet
-            ? 'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-stroke px-4 py-2.5 font-semibold text-ink-body text-sm transition-colors hover:border-brand-tertiary hover:text-ink-primary'
-            : 'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 font-semibold text-sm text-white transition-colors hover:bg-brand-secondary'
-        }
+        aria-label={copyLabel}
+        title={copyLabel}
+        className={cn(
+          'absolute top-1/2 right-1.5 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg transition-colors',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
+          copied
+            ? 'text-brand-tertiary'
+            : 'text-ink-secondary hover:bg-state-hover hover:text-ink-primary'
+        )}
       >
         {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-        {label}
       </button>
     </div>
   );
 }
 
 /** The one-click way in: TransformPipe's listing in Claude's connector directory. */
-function AddToClaude({ centred = false }: { centred?: boolean }) {
+function AddToClaude() {
   const t = useT();
 
   return (
@@ -142,9 +157,7 @@ function AddToClaude({ centred = false }: { centred?: boolean }) {
       href={CLAUDE_DIRECTORY}
       target="_blank"
       rel="noreferrer noopener"
-      className={`inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-5 py-3 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary ${
-        centred ? 'self-center' : 'self-start'
-      }`}
+      className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-5 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary"
     >
       {t('agents.claude.add')}
       <ExternalLink className="size-4" />
@@ -152,16 +165,31 @@ function AddToClaude({ centred = false }: { centred?: boolean }) {
   );
 }
 
-/** The two ways in, together: the directory first, the address under it for everything else. */
+/*
+ * The two ways in, on one line: the address for every MCP client, and the directory for Claude.
+ *
+ * The button sits where the copy button used to — at the end of the field's row, the same height
+ * — when there is room for both; when there is not, it takes a line of its own, above, as wide
+ * as the address. "Room" is the row's own width, not the screen's: the same component sits in a
+ * narrow column beside the demo and in a wide block of its own, and a screen breakpoint was wrong
+ * for one or the other — at 1024px it put the button beside a field too narrow for the address.
+ *
+ * So no breakpoint. The field asks for 26rem, which is what the production address needs on one
+ * line; if the button does not fit beside that, it wraps, and `flex-wrap-reverse` puts the line it
+ * wraps onto on top. The grow factors do the widths: 1000 to 1 means that in a row the field takes
+ * the spare space and the button keeps its size, and alone on a line the button fills it.
+ */
 function WaysIn({ action, centred = false }: { action: string; centred?: boolean }) {
   const t = useT();
 
   return (
-    <div className={`flex w-full flex-col gap-4 ${centred ? 'items-center' : ''}`}>
-      <AddToClaude centred={centred} />
-      <div className={`flex w-full flex-col gap-2 ${centred ? 'items-center' : ''}`}>
+    <div className={cn('flex w-full flex-wrap-reverse items-start gap-3', centred && 'justify-center')}>
+      <div className={cn('flex min-w-0 flex-[1000_1_26rem] flex-col gap-2', centred && 'items-center')}>
         <span className="text-ink-inactive text-xs">{t('agents.other')}</span>
-        <CopyAddress label={action} quiet />
+        <AddressField copyLabel={action} />
+      </div>
+      <div className="flex flex-[1_0_auto]">
+        <AddToClaude />
       </div>
     </div>
   );
@@ -291,7 +319,10 @@ function UseCase({
           className="pointer-events-none absolute top-4 right-4 size-24 object-contain drop-shadow-lg"
         />
         <h3 className="font-semibold text-ink-primary text-xl tracking-tight">{item.title}</h3>
-        <p className="text-ink-secondary text-sm leading-relaxed">{item.body}</p>
+        {/* `pretty`: no last line that is one word long. The words are written to four lines at
+            full width; everywhere narrower they wrap wherever they wrap, and a lone "time." on a
+            line of its own made one card a line taller than the rest for the sake of one word. */}
+        <p className="text-ink-secondary text-sm leading-relaxed [text-wrap:pretty]">{item.body}</p>
       </div>
       <div className="px-6 pb-6">
         <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-accent px-2.5 py-1 font-mono text-brand-tertiary text-xs">
@@ -317,17 +348,20 @@ function AddressBlock({
 }) {
   return (
     <section
-      className={`dot-grid flex flex-col gap-6 rounded-3xl border border-stroke bg-surface-card px-6 py-10 md:px-12 md:py-14 ${
+      className={`dot-grid flex flex-col gap-6 rounded-3xl border border-stroke bg-surface-card px-4 py-10 sm:px-6 md:px-12 md:py-14 ${
         centred ? 'items-center text-center' : 'lg:flex-row lg:items-center lg:justify-between'
       }`}
     >
-      <div className={`flex max-w-xl flex-col gap-2 ${centred ? 'items-center' : ''}`}>
+      <div className={`flex max-w-xl flex-col gap-2 ${centred ? 'items-center' : 'lg:min-w-0 lg:flex-1'}`}>
         <span className="font-semibold text-2xl text-ink-primary tracking-tight md:text-3xl">
           {title}
         </span>
         <span className="text-base text-ink-secondary">{text}</span>
       </div>
-      <div className={centred ? 'w-full max-w-lg' : 'w-full max-w-lg lg:w-auto'}>
+      {/* 38rem beside the words, 42 on its own: room for the address on one line and the button
+          beside it (26rem + the button). Any narrower and `WaysIn` stacks them, which is right on
+          a phone and wrong on a desktop, where the button belongs where the copy button was. */}
+      <div className={centred ? 'w-full max-w-2xl' : 'w-full lg:w-[38rem] lg:shrink-0'}>
         <WaysIn action={action} centred={centred} />
       </div>
     </section>
@@ -585,11 +619,22 @@ function Compare({ words }: { words: LandingWords['compare'] }) {
       <div className="overflow-hidden rounded-3xl border border-stroke bg-surface-card">
         <div className="hidden grid-cols-[1fr_1.3fr_1.3fr] border-stroke border-b md:grid">
           <span className="px-6 py-4" />
-          <span className="px-6 py-4 font-mono text-ink-inactive text-xs uppercase tracking-wider">
+          {/*
+            * Each heading starts where its column's words start, not where its marks do.
+            *
+            * The rows open with a mark — a 12px dash, a 16px tick — and a 10px gap before the text,
+            * while the headings began at the column's edge, so they sat a mark's width left of the
+            * words under them. The same slot goes in front of each heading: empty over the dashes,
+            * and the accent bar centred in it over the ticks.
+            */}
+          <span className="flex items-center gap-2.5 px-6 py-4 font-mono text-ink-inactive text-xs uppercase tracking-wider">
+            <span aria-hidden="true" className="w-3 shrink-0" />
             {words.left}
           </span>
-          <span className="flex items-center gap-2 bg-surface-accent px-6 py-4 font-mono font-semibold text-brand-tertiary text-xs uppercase tracking-wider">
-            <span className="h-3.5 w-0.5 rounded-full bg-brand-primary" />
+          <span className="flex items-center gap-2.5 bg-surface-accent px-6 py-4 font-mono font-semibold text-brand-tertiary text-xs uppercase tracking-wider">
+            <span aria-hidden="true" className="flex w-4 shrink-0 justify-center">
+              <span className="h-3.5 w-0.5 rounded-full bg-brand-primary" />
+            </span>
             {words.right}
           </span>
         </div>
@@ -704,7 +749,17 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
       {/* ------------------------------------------------------------------ what it is for */}
       <section className="flex flex-col gap-10">
         <SectionHead title={landing.useCases.heading} intro={landing.useCases.intro} />
-        <div className="grid gap-4 md:grid-cols-2">
+        {/*
+          * Every row as tall as the tallest, not only the two cards in it.
+          *
+          * A grid stretches the cards sharing a row and nothing more, so four cards whose words
+          * ran to five, four, three and three lines came out as two tall and two short, with the
+          * result chips of one row sitting lower than the other's. The words are written to four
+          * lines in English; `auto-rows-fr` is what keeps the four the same size in the languages
+          * where they wrap differently. Two columns only — stacked on a phone, each card is as
+          * tall as its own words.
+          */}
+        <div className="grid gap-4 md:auto-rows-fr md:grid-cols-2">
           {landing.useCases.items.map((item, index) => (
             <UseCase key={item.title} item={item} art={USE_CASE_ART[index % USE_CASE_ART.length]} />
           ))}
