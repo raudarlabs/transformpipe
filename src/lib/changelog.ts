@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'The documentation copies as Markdown, for an assistant',
+    body:
+      'A Copy page button beside the documentation’s title puts the whole manual on the '
+      + 'clipboard as Markdown — made from the page you are reading, in your language, by the '
+      + 'same HTML to Markdown converter this site runs — ready to paste into Claude or any other '
+      + 'assistant. The arrow beside it opens the same Markdown as plain text in a new tab. The '
+      + 'questions at the foot come along with their answers, closed or not.',
+  },
+  {
+    date: '2026-09-30',
     title: 'On a phone, the menu scrolls and a long page has its contents',
     body:
       'The phone menu ran off the bottom of the screen and could not be scrolled, so the last '

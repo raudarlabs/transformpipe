@@ -451,6 +451,14 @@ export const ui: Content['ui'] = {
 
   /* Ein Artikel: das Beiwerk um Prosa, die englisch bleibt. */
   'article.toc': 'In diesem Artikel',
+  'page.copy.label': 'Seite kopieren',
+  'page.copy.more': 'Weitere Möglichkeiten, diese Seite zu kopieren',
+  'page.copy.markdown.title': 'Seite kopieren',
+  'page.copy.markdown.body': 'Als Markdown, bereit zum Einfügen in einen KI-Assistenten',
+  'page.copy.view.title': 'Als Markdown ansehen',
+  'page.copy.view.body': 'Die Seite als reiner Text in einem neuen Tab',
+  'page.copy.done': 'Als Markdown kopiert',
+  'page.copy.error': 'Die Seite ließ sich nicht in Markdown umwandeln',
   'article.meta': '{date} · {minutes} Min. Lesezeit',
   'article.meta.updated':
     '{date} · aktualisiert {updated} · {minutes} Min. Lesezeit',

@@ -431,6 +431,14 @@ export const ui: Content['ui'] = {
 
   /* One article: the furniture around a piece of prose that stays in English. */
   'article.toc': 'In questo articolo',
+  'page.copy.label': 'Copia pagina',
+  'page.copy.more': 'Altri modi per copiare questa pagina',
+  'page.copy.markdown.title': 'Copia pagina',
+  'page.copy.markdown.body': 'In Markdown, pronta da incollare in un assistente AI',
+  'page.copy.view.title': 'Vedi come Markdown',
+  'page.copy.view.body': 'La pagina come testo semplice, in una nuova scheda',
+  'page.copy.done': 'Copiata come Markdown',
+  'page.copy.error': 'Non è stato possibile convertire la pagina in Markdown',
   'article.meta': '{date} · {minutes} min di lettura',
   'article.meta.updated': '{date} · aggiornato il {updated} · {minutes} min di lettura',
   'article.share': 'Condividi',

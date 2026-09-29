@@ -11,8 +11,9 @@ import {
   Terminal,
   Webhook,
 } from 'lucide-react';
-import { Fragment, useMemo, type ReactNode } from 'react';
+import { Fragment, useMemo, useRef, type ReactNode } from 'react';
 import { AppBreadcrumbs } from '@/components/AppBreadcrumbs';
+import { CopyPageButton } from '@/components/CopyPageButton';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { docsCrumbs } from '@/lib/breadcrumbs';
 import { CONVERSIONS } from '@shared/conversions';
@@ -191,12 +192,13 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
   );
 
   const contents = SECTIONS.map(({ id, icon }) => ({ id, title: titles[id].title, icon }));
+  const page = useRef<HTMLDivElement>(null);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl gap-10">
       <TableOfContents items={contents} activeId={active} label={t('docs.toc')} />
 
-      <div className="min-w-0 max-w-3xl flex-1 space-y-12 pb-8">
+      <div ref={page} className="min-w-0 max-w-3xl flex-1 space-y-12 pb-8">
         <AppBreadcrumbs
           items={docsCrumbs(content, locale)}
           onNavigate={onGoToConverter}
@@ -207,12 +209,16 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             variant="span"
             textColor="light"
             className="block text-xxs uppercase tracking-wide"
+            data-copy-skip
           >
             {t('docs.eyebrow')}
           </Typography>
-          <Typography variant="h1" className="text-2xl md:text-2xl">
-            {t('docs.title')}
-          </Typography>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <Typography variant="h1" className="text-2xl md:text-2xl">
+              {t('docs.title')}
+            </Typography>
+            <CopyPageButton source={page} heading={t('docs.title')} />
+          </div>
           <Typography variant="p" textColor="secondary" className="text-sm">
             {t('docs.lede')}
           </Typography>
@@ -738,8 +744,23 @@ node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 docu
 
         <Section id="faq" title={titles.faq.title}>
           <p>{t('docs.faq.intro')}</p>
-          <div className="dot-grid rounded-2xl border border-stroke bg-surface-card p-4 sm:p-6">
+          <div
+            data-copy-skip
+            className="dot-grid rounded-2xl border border-stroke bg-surface-card p-4 sm:p-6"
+          >
             <Faq items={questions} />
+          </div>
+          {/*
+            * The answers as plain markup, for Copy page only: the accordion keeps a closed answer
+            * off the page, so the copy would have the questions and none of what they ask.
+            */}
+          <div hidden data-copy-only>
+            {questions.map((one) => (
+              <Fragment key={one.question}>
+                <h3>{one.question}</h3>
+                <p>{one.answer}</p>
+              </Fragment>
+            ))}
           </div>
         </Section>
 
