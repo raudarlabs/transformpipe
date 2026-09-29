@@ -33,6 +33,8 @@ interface SiteFooterProps {
   tagline: string;
   /** Who made it. Shown under the tagline, where a reader looks for it. */
   builtBy?: ReactNode;
+  /** Where else the product speaks — its accounts elsewhere, as marks under the tagline. */
+  follow?: ReactNode;
   columns: FooterColumn[];
   /** The bottom line: a copyright, usually. A node, because the name in it can be a link. */
   note?: ReactNode;
@@ -62,6 +64,7 @@ export function SiteFooter({
   brand,
   tagline,
   builtBy,
+  follow,
   columns,
   note,
   externalLabel = ' (opens in a new tab)',
@@ -82,6 +85,7 @@ export function SiteFooter({
             <Typography variant="p" textColor="secondary" className="text-sm">
               {tagline}
             </Typography>
+            {follow && <div className="flex flex-wrap gap-2">{follow}</div>}
             {builtBy && (
               <Typography variant="p" textColor="light" className="text-xs">
                 {builtBy}

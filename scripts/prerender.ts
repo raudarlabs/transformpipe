@@ -43,7 +43,7 @@ import {
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
-import { publishedStores, STATIC_PAGES } from '../src/lib/pages.js';
+import { publishedStores, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
 import type { LandingWords } from '../src/lib/i18n/content.js';
 import { CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
@@ -437,6 +437,8 @@ function siteFooter(locale: Locale): string {
     page('privacy'),
     page('terms'),
     page('cookies'),
+    // `me`: the account and the site vouch for each other, which is what the attribute says.
+    `<a href="${X_URL}" rel="me noopener">X</a>`,
   ].join(' · ')}</nav>`;
 }
 

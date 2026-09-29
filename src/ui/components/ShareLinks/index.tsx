@@ -44,6 +44,10 @@ interface Target {
   mark: ReactNode;
 }
 
+/** X's mark on the same 24-unit grid, exported so the footer's link to the account draws this one. */
+export const X_MARK_PATH =
+  'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z';
+
 const TARGETS: Target[] = [
   {
     label: 'X',
@@ -53,9 +57,7 @@ const TARGETS: Target[] = [
      */
     href: (url, title) =>
       `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-    mark: (
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    ),
+    mark: <path d={X_MARK_PATH} />,
   },
   {
     label: 'LinkedIn',

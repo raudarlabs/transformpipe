@@ -513,7 +513,6 @@ export const ui: Content['ui'] = {
   'agents.status.testing': 'Wird getestet',
   'agents.claude.add': 'Zu Claude hinzufügen',
   'agents.listed': 'Im Connector-Verzeichnis von Claude gelistet',
-  'agents.other': 'Jeder andere MCP-Client nimmt die Adresse:',
   'agents.guide': 'Vollständige Einrichtungsanleitung',
 
   /*
@@ -735,4 +734,5 @@ export const ui: Content['ui'] = {
   'footer.faq': 'FAQ',
   /* Wird nach dem eigenen Namen des Links vorgelesen, beginnt also mit dem trennenden Leerzeichen. */
   'footer.external': ' (öffnet in einem neuen Tab)',
+  'footer.x': 'TransformPipe auf X',
 };

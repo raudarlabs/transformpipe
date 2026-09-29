@@ -2,8 +2,10 @@ import { CONVERSIONS, type ConversionId } from '@shared/conversions';
 import { Logo } from '@/components/Logo';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { boundArrow } from '@/lib/labels';
-import { pagesIn, REPO_URL, STATIC_PAGES, type StaticPageId } from '@/lib/pages';
+import { pagesIn, REPO_URL, STATIC_PAGES, type StaticPageId, X_URL } from '@/lib/pages';
 import type { Destination } from '@/lib/route';
+import { cn } from '@/ui/lib/utils';
+import { X_MARK_PATH } from '@/ui/components/ShareLinks';
 import {
   SiteFooter,
   type FooterColumn,
@@ -136,6 +138,29 @@ export function AppFooter({
     <SiteFooter
       brand={<Logo />}
       tagline={t('footer.tagline')}
+      follow={
+        /*
+         * The account, as its mark — the same one and the same round shape as the share links
+         * beside an article, so X looks like one decision wherever it appears. The name is for a
+         * screen reader and for the tooltip, since a mark alone says nothing to either.
+         */
+        <a
+          href={X_URL}
+          target="_blank"
+          rel="me noopener noreferrer"
+          aria-label={`${t('footer.x')}${t('footer.external')}`}
+          title={t('footer.x')}
+          className={cn(
+            'flex size-9 items-center justify-center rounded-full border border-stroke text-ink-secondary',
+            'transition-colors hover:border-stroke-hover hover:bg-state-hover hover:text-ink-primary',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page'
+          )}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className="size-4">
+            <path d={X_MARK_PATH} />
+          </svg>
+        </a>
+      }
       columns={columns}
       /* The year is a number, not a word: it goes in as a value the sentence has a hole for. */
       note={linkToMaker(t('footer.note', { year: new Date().getFullYear() }))}

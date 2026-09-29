@@ -500,7 +500,6 @@ export const ui: Content['ui'] = {
   'agents.status.testing': 'En cours de test',
   'agents.claude.add': 'Ajouter à Claude',
   'agents.listed': 'Référencé dans l’annuaire des connecteurs de Claude',
-  'agents.other': 'Tout autre client MCP prend l’adresse :',
   'agents.guide': 'Guide de configuration complet',
 
   /*
@@ -721,4 +720,5 @@ export const ui: Content['ui'] = {
   'footer.faq': 'FAQ',
   /* Lu après le nom du lien, donc commence par l’espace qui les sépare. */
   'footer.external': ' (s’ouvre dans un nouvel onglet)',
+  'footer.x': 'TransformPipe sur X',
 };

@@ -492,7 +492,6 @@ export const ui: Content['ui'] = {
   'agents.status.testing': 'In fase di test',
   'agents.claude.add': 'Aggiungi a Claude',
   'agents.listed': 'Nella directory dei connettori di Claude',
-  'agents.other': 'Qualsiasi altro client MCP usa l’indirizzo:',
   'agents.guide': 'Guida completa alla configurazione',
 
   /*
@@ -708,4 +707,5 @@ export const ui: Content['ui'] = {
   'footer.faq': 'Domande frequenti',
   /* Read out after the link's own name, so it opens with the space that separates them. */
   'footer.external': ' (si apre in una nuova scheda)',
+  'footer.x': 'TransformPipe su X',
 };

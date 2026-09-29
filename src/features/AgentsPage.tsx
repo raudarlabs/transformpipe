@@ -180,12 +180,9 @@ function AddToClaude() {
  * the spare space and the button keeps its size, and alone on a line the button fills it.
  */
 function WaysIn({ action, centred = false }: { action: string; centred?: boolean }) {
-  const t = useT();
-
   return (
     <div className={cn('flex w-full flex-wrap-reverse items-start gap-3', centred && 'justify-center')}>
-      <div className={cn('flex min-w-0 flex-[1000_1_26rem] flex-col gap-2', centred && 'items-center')}>
-        <span className="text-ink-inactive text-xs">{t('agents.other')}</span>
+      <div className="flex min-w-0 flex-[1000_1_26rem]">
         <AddressField copyLabel={action} />
       </div>
       <div className="flex flex-[1_0_auto]">

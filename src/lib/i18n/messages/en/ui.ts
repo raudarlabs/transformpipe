@@ -510,7 +510,6 @@ export const ui: Content['ui'] = {
   'agents.status.testing': 'Being tested',
   'agents.claude.add': 'Add to Claude',
   'agents.listed': 'Listed in Claude’s connector directory',
-  'agents.other': 'Any other MCP client takes the address:',
   'agents.guide': 'Full setup guide',
 
   /*
@@ -726,4 +725,5 @@ export const ui: Content['ui'] = {
   'footer.faq': 'FAQ',
   /* Read out after the link's own name, so it opens with the space that separates them. */
   'footer.external': ' (opens in a new tab)',
+  'footer.x': 'TransformPipe on X',
 };
