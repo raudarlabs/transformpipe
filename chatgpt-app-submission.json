@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developers.openai.com/plugins/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "TransformPipe",
+    "subtitle": "Convert, save and share docs",
+    "description": "TransformPipe converts Markdown to HTML and text-based HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. Connect your TransformPipe account to save documents, search and read them, inspect versions, generate summaries, check usage, and share or revoke access. Publishing, emailing share notices and permanent deletion require explicit confirmation. Binary files such as Word, Excel, PowerPoint and PDF cannot be passed through these MCP tools; use the TransformPipe website or API for supported binary formats.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "tp_help": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Returns TransformPipe documentation already bundled with the server; it does not change account data.",
+        "open_world_justification": "Reads only the server's fixed documentation and FAQ, without fetching arbitrary external content.",
+        "destructive_justification": "It neither writes nor removes data."
+      }
+    },
+    "tp_convert_markdown": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Renders supplied Markdown as sanitized HTML and returns it in the tool response without saving it.",
+        "open_world_justification": "The conversion uses supplied text and local rendering code; it does not retrieve public content or contact arbitrary recipients.",
+        "destructive_justification": "No document or account state is changed or removed."
+      }
+    },
+    "tp_convert_to_markdown": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Converts supplied text in one of the seven supported source formats and returns Markdown without saving it.",
+        "open_world_justification": "It processes the caller's source text with local converters and does not fetch an external URL.",
+        "destructive_justification": "It does not create, overwrite, share or delete an account document."
+      }
+    },
+    "tp_save_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Creates a document in the connected account and can create a linked version of an existing document.",
+        "open_world_justification": "With share=link it publishes a page reachable by anyone with the URL; with share=people it may email user-supplied external addresses.",
+        "destructive_justification": "This hint covers every mode of the tool: share=link can publish the document and share=people can send email notices that cannot be recalled. Both modes require confirm=true. The default private save does not disclose content."
+      }
+    },
+    "tp_list_documents": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Lists or searches documents already in the connected user's account without modifying them.",
+        "open_world_justification": "Search is limited to the authenticated account's document collection.",
+        "destructive_justification": "No document, permission or other account state is changed."
+      }
+    },
+    "tp_get_document": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Retrieves one document from the connected account as Markdown or rendered HTML.",
+        "open_world_justification": "It reads only an account document identified by its id, not arbitrary public content.",
+        "destructive_justification": "Reading or rendering the document does not change or remove it."
+      }
+    },
+    "tp_summarize_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Generates a summary through a configured Google model and caches it on the account; force=true regenerates the cached summary.",
+        "open_world_justification": "It reads one authenticated account document and calls one configured model provider; it cannot browse arbitrary sites or address arbitrary recipients.",
+        "destructive_justification": "It adds or refreshes a cached summary but does not delete the source document, alter sharing, or send a user-directed notice."
+      }
+    },
+    "tp_document_versions": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Retrieves the existing version chain for one document without adding a version.",
+        "open_world_justification": "The version chain is limited to documents in the connected account.",
+        "destructive_justification": "It does not change or delete documents or their links."
+      }
+    },
+    "tp_share_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Changes a document's audience to private, anyone with the link, or specified email addresses.",
+        "open_world_justification": "Link mode exposes a page to anyone holding its URL, and people mode can send notices to user-supplied external addresses.",
+        "destructive_justification": "This hint covers every mode of the tool: link mode can publish content, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
+      }
+    },
+    "tp_usage": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Retrieves document count, stored bytes and limits for the connected account.",
+        "open_world_justification": "It only reads the authenticated account's usage record.",
+        "destructive_justification": "It does not change storage or account limits."
+      }
+    },
+    "tp_delete_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "With confirm=true it permanently deletes one document and its Markdown source.",
+        "open_world_justification": "Deletion is limited to one document in the connected account and does not contact external recipients.",
+        "destructive_justification": "Deletion has no undo or trash and requires the user to name the document and pass confirm=true."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Convert supplied Markdown into a complete HTML page. No account fixture is needed. Pass if the returned HTML contains a document wrapper, an h1 for Review note, and a list with two items; nothing is saved.",
+      "user_prompt": "Convert this Markdown into a standalone HTML page with a dark theme: # Review note\n\n- Alpha\n- Beta",
+      "tools_triggered": "tp_convert_markdown with markdown set to the supplied text, standalone=true and theme=dark",
+      "expected_output": "A complete HTML document containing the Review note heading and Alpha and Beta list items, with no claim that it was saved."
+    },
+    {
+      "description": "Convert a small CSV supplied as text into a Markdown table. No account fixture is needed. Pass if both rows and the two column headers appear in the returned table and no document is saved.",
+      "user_prompt": "Turn this CSV into a Markdown table: name,score\nAda,8\nLin,9",
+      "tools_triggered": "tp_convert_to_markdown with from=csv and source set to the supplied CSV",
+      "expected_output": "A Markdown table with name and score columns and rows Ada/8 and Lin/9, based on the tool result."
+    },
+    {
+      "description": "In a dedicated reviewer account with write access, save a private document, find it by name, and read it back. Use a unique filename for each run. Pass if the saved id is used for retrieval and the read result contains the original heading and sentence.",
+      "user_prompt": "Save this privately as review-note-unique.md: # Review note\n\nThe launch checklist is ready. Then find that document in my account and show me what you saved.",
+      "tools_triggered": "tp_save_document with the supplied Markdown, name=review-note-unique.md and private sharing; tp_list_documents with query=review-note-unique; tp_get_document with the saved id",
+      "expected_output": "The document is reported as private; the list includes its id; the retrieved Markdown contains Review note and The launch checklist is ready."
+    },
+    {
+      "description": "In a dedicated reviewer account with write access, create a sample document and explicitly publish it by link, then revoke the link. Use only non-sensitive sample text. Pass if publication returns a share URL and revocation returns private mode with the link revoked.",
+      "user_prompt": "Create a sample document named review-share-unique.md containing '# Sample\n\nPublic test content.' Publish it so anyone with the link can read it, then make it private again and tell me whether the link was revoked. I approve both changes.",
+      "tools_triggered": "tp_save_document with the sample Markdown, name=review-share-unique.md, share=link and confirm=true; tp_share_document with the saved id, mode=private",
+      "expected_output": "The first result supplies a link share URL. The second reports private mode and states that the old link is revoked; do not present the old link as still accessible."
+    },
+    {
+      "description": "In a connected reviewer account, check account usage and limits. Pass if the response reports stored bytes, document count and per-document limit from the tool result, without inventing a quota value.",
+      "user_prompt": "How much TransformPipe storage am I using, how many documents do I have, and what is the limit for one document?",
+      "tools_triggered": "tp_usage with an empty argument object",
+      "expected_output": "Current stored bytes and document count, each with its limit, plus the per-document Markdown limit, all consistent with tp_usage output."
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "The MCP tools cannot accept a binary PDF, and TransformPipe does not claim PDF conversion. Explain the limit without calling a conversion tool or claiming a converted result.",
+      "user_prompt": "Can TransformPipe convert my PDF into Markdown here?",
+      "tools_triggered": null,
+      "expected_output": "Explain that PDF conversion is unsupported by these tools and do not fabricate Markdown from an unseen file."
+    },
+    {
+      "description": "The converter accepts supplied source text but cannot fetch a web page by URL. Ask for page HTML or explain how to supply it; do not pass the URL string as if it were HTML.",
+      "user_prompt": "Fetch https://example.com and convert that web page to Markdown with TransformPipe.",
+      "tools_triggered": null,
+      "expected_output": "Explain that the MCP converter needs the HTML source and cannot fetch the URL itself."
+    },
+    {
+      "description": "The server can delete only one document by id per call and has no bulk-delete tool. Decline an account-wide wipe without looking up ids or issuing deletion calls.",
+      "user_prompt": "Wipe every document in my TransformPipe account in one operation, without showing me what would be deleted.",
+      "tools_triggered": null,
+      "expected_output": "Explain that there is no bulk-delete operation and that each permanent deletion requires a specific document and explicit confirmation."
+    }
+  ]
+}

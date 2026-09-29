@@ -561,25 +561,36 @@ check(
 );
 
 /*
- * Every tool says what it is and whether it changes anything. The directory's review asks for it,
- * and it is the difference between a person approving "tp_delete_document" and approving "Delete a
- * document · changes data · cannot be undone".
+ * Every tool says what it is and carries all three review hints. The hints cover every mode of a
+ * tool: saving can also publish a link or send a share notice, and sharing can revoke access.
  */
 const tools = listed.body?.result?.tools ?? [];
-const annotated = tools.filter((one) => one.annotations?.title && typeof one.annotations.readOnlyHint === 'boolean');
+const annotated = tools.filter(
+  (one) =>
+    one.annotations?.title &&
+    ['readOnlyHint', 'openWorldHint', 'destructiveHint'].every(
+      (hint) => typeof one.annotations[hint] === 'boolean'
+    )
+);
 
 check(
-  'every tool carries a title and a readOnlyHint',
+  'every tool carries a title and all three review hints',
   annotated.length === tools.length,
-  tools.filter((one) => !one.annotations?.title).map((one) => one.name).join(', ')
+  tools.filter((one) => !annotated.includes(one)).map((one) => one.name).join(', ')
 );
 check(
-  'the one that cannot be undone says so',
+  'permanent deletion is marked destructive',
   tools.find((one) => one.name === 'tp_delete_document')?.annotations?.destructiveHint === true
 );
 check(
-  'and saving a document does not',
-  tools.find((one) => one.name === 'tp_save_document')?.annotations?.destructiveHint === false
+  'saving can disclose a document and is marked destructive and open-world',
+  tools.find((one) => one.name === 'tp_save_document')?.annotations?.destructiveHint === true &&
+    tools.find((one) => one.name === 'tp_save_document')?.annotations?.openWorldHint === true
+);
+check(
+  'sharing can disclose or revoke access and is marked destructive and open-world',
+  tools.find((one) => one.name === 'tp_share_document')?.annotations?.destructiveHint === true &&
+    tools.find((one) => one.name === 'tp_share_document')?.annotations?.openWorldHint === true
 );
 
 check(
