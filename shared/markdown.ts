@@ -792,16 +792,33 @@ const SHARED_CHROME_STYLE = `
 
 /*
  * The split download button: the HTML on the left, the arrow that opens the other formats on the
- * right, drawn as one pill. The menu hangs from its right edge, which is where the bar puts it.
+ * right — one button with two places to press, not two buttons side by side.
+ *
+ * So the border belongs to the pair. The first version gave each half its own outline, and a
+ * hover lit only the half under the pointer: a pill with a teal left half and a grey right one,
+ * the seam showing. Now either half lights the whole outline and the line between them, and the
+ * half under the pointer takes a faint fill, which is what says which of the two a click will do.
+ * An open menu keeps it lit.
  */
-.md-bar .download { position: relative; display: inline-flex; }
+.md-bar .download {
+  position: relative;
+  display: inline-flex;
+  border: 1px solid var(--md-stroke);
+  border-radius: 999px;
+  transition: border-color 120ms ease;
+}
+
+.md-bar .download .main,
+.md-bar .formats > summary {
+  transition: background-color 120ms ease, color 120ms ease;
+}
 
 .md-bar .download .main {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border: 0;
+  border-radius: 999px 0 0 999px;
 }
 
 .md-bar .formats > summary {
@@ -810,17 +827,29 @@ const SHARED_CHROME_STYLE = `
   height: 100%;
   box-sizing: border-box;
   padding: 0 0.6rem;
-  border: 1px solid var(--md-stroke);
-  border-left: 0;
+  border-left: 1px solid var(--md-stroke);
   border-radius: 0 999px 999px 0;
   color: var(--md-ink);
   cursor: pointer;
   list-style: none;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .md-bar .formats > summary::-webkit-details-marker { display: none; }
+
+.md-bar .download:hover,
+.md-bar .download:focus-within,
+.md-bar .download:has(.formats[open]) { border-color: var(--md-brand-3); }
+
+.md-bar .download:hover .formats > summary,
+.md-bar .download:focus-within .formats > summary,
+.md-bar .download:has(.formats[open]) .formats > summary { border-left-color: var(--md-brand-3); }
+
+.md-bar .download .main:hover,
 .md-bar .formats > summary:hover,
-.md-bar .formats[open] > summary { border-color: var(--md-brand-3); color: var(--md-brand-3); }
+.md-bar .formats[open] > summary { background: var(--md-card-2); color: var(--md-brand-3); }
+
+.md-bar .download .main:focus-visible,
 .md-bar .formats > summary:focus-visible { outline: 2px solid var(--md-brand-3); outline-offset: 2px; }
 .md-bar .formats[open] > summary svg { transform: rotate(180deg); }
 
