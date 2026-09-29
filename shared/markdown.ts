@@ -794,11 +794,12 @@ const SHARED_CHROME_STYLE = `
  * The split download button: the HTML on the left, the arrow that opens the other formats on the
  * right — one button with two places to press, not two buttons side by side.
  *
- * So the border belongs to the pair. The first version gave each half its own outline, and a
- * hover lit only the half under the pointer: a pill with a teal left half and a grey right one,
- * the seam showing. Now either half lights the whole outline and the line between them, and the
- * half under the pointer takes a faint fill, which is what says which of the two a click will do.
- * An open menu keeps it lit.
+ * So it lights as one. The first version gave each half its own outline and lit only the half
+ * under the pointer — a teal left half beside a grey right one, the seam showing; the second lit
+ * the whole outline but still coloured only the hovered half's words and icon. Now pointing at
+ * either half, focusing it, or having the menu open turns all of it teal at once: outline, the
+ * line between the halves, the label, both icons. The divider and the pointer say which half a
+ * click lands on; the colour says it is one control.
  */
 .md-bar .download {
   position: relative;
@@ -845,9 +846,12 @@ const SHARED_CHROME_STYLE = `
 .md-bar .download:focus-within .formats > summary,
 .md-bar .download:has(.formats[open]) .formats > summary { border-left-color: var(--md-brand-3); }
 
-.md-bar .download .main:hover,
-.md-bar .formats > summary:hover,
-.md-bar .formats[open] > summary { background: var(--md-card-2); color: var(--md-brand-3); }
+.md-bar .download:hover .main,
+.md-bar .download:hover .formats > summary,
+.md-bar .download:focus-within .main,
+.md-bar .download:focus-within .formats > summary,
+.md-bar .download:has(.formats[open]) .main,
+.md-bar .download:has(.formats[open]) .formats > summary { color: var(--md-brand-3); }
 
 .md-bar .download .main:focus-visible,
 .md-bar .formats > summary:focus-visible { outline: 2px solid var(--md-brand-3); outline-offset: 2px; }
