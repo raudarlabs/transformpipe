@@ -1,6 +1,14 @@
-import type { LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { List, type LucideIcon } from 'lucide-react';
+import { type ReactNode, useRef, useState } from 'react';
 import { cn } from '../../lib/utils';
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '../Sheet';
 import { Typography } from '../Typography';
 
 export interface TocItem {
@@ -115,5 +123,117 @@ export function TableOfContents({
         <div className="mt-6 border-stroke border-t pt-4">{footer}</div>
       )}
     </nav>
+  );
+}
+
+/** Scrolls to a heading the way its anchor would, and puts the anchor in the address. */
+function jumpTo(id: string) {
+  const heading = document.getElementById(id);
+
+  if (heading) {
+    // `scroll-mt-*` on the heading keeps it clear of the sticky header, as the anchor does.
+    heading.scrollIntoView({ block: 'start' });
+    history.replaceState(history.state, '', `#${id}`);
+  }
+}
+
+/**
+ * The same contents, on a screen too narrow for the column.
+ *
+ * Below `lg` the list above is hidden, and a manual with eleven sections or an article with thirty
+ * headings became one long scroll with no way to see what is in it. So a button in the corner the
+ * back-to-top button leaves free — bottom left — names the section you are in and opens the whole
+ * list from the bottom of the screen, where a thumb already is. Fixed rather than sticky under the
+ * header, because the header's height changes with the page and a sticky bar would have to know it.
+ *
+ * A picked entry is scrolled to after the sheet has closed, not on the tap: while it is open the
+ * page underneath is locked, and a jump made then is undone when the lock lets go.
+ */
+export function TableOfContentsButton({
+  items,
+  activeId,
+  label = 'On this page',
+  className,
+}: Pick<TableOfContentsProps, 'items' | 'activeId' | 'label' | 'className'>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const pending = useRef<string | null>(null);
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const current = items.find((item) => item.id === activeId);
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <button
+          type="button"
+          aria-label={current ? `${label}: ${current.title}` : label}
+          className={cn(
+            'fixed bottom-6 left-4 z-40 flex h-12 max-w-[calc(100vw-7.5rem)] cursor-pointer items-center gap-2 rounded-full',
+            'border border-stroke bg-surface-card px-4 text-ink-body text-sm shadow-dropdown',
+            'transition-colors hover:bg-state-hover lg:hidden',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
+            className
+          )}
+        >
+          <List className="size-4 shrink-0 text-brand-tertiary" />
+          <span className="truncate">{current?.title ?? label}</span>
+        </button>
+      </SheetTrigger>
+
+      <SheetContent
+        side="bottom"
+        className="flex max-h-[75dvh] flex-col gap-0 rounded-t-2xl p-0"
+        onCloseAutoFocus={(event) => {
+          const id = pending.current;
+
+          pending.current = null;
+
+          if (id) {
+            // Focus back on the button would be a scroll back to it on some browsers.
+            event.preventDefault();
+            requestAnimationFrame(() => jumpTo(id));
+          }
+        }}
+      >
+        <SheetHeader className="px-5 pt-5 pb-2">
+          <SheetTitle className="text-base">{label}</SheetTitle>
+        </SheetHeader>
+
+        <SheetBody className="px-3 pb-6">
+          <ul className="space-y-0.5">
+            {items.map(({ id, title, level = 2, icon: Icon }) => {
+              const isActive = activeId === id;
+
+              return (
+                <li key={id}>
+                  <a
+                    href={`#${id}`}
+                    aria-current={isActive ? 'true' : undefined}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      pending.current = id;
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      'flex items-center gap-3 rounded-lg py-2.5 pr-3 text-sm transition-colors',
+                      level === 3 ? 'pl-8' : 'pl-3',
+                      isActive
+                        ? 'bg-surface-accent text-ink-highlight'
+                        : 'text-ink-body hover:bg-state-hover'
+                    )}
+                  >
+                    {Icon && <Icon className="size-4 shrink-0" />}
+                    <span className="min-w-0">{title}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </SheetBody>
+      </SheetContent>
+    </Sheet>
   );
 }

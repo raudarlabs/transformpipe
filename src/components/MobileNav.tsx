@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Bot,
   Check,
   History,
   Menu,
@@ -14,7 +15,9 @@ import {
   type ConversionId,
 } from '@shared/conversions';
 import { useI18n, useT } from '@/lib/i18n/context';
-import { pagesIn, type StaticPageId, staticPage } from '@/lib/pages';
+import { LOCALE_NAMES, LOCALES } from '@/lib/i18n/locales';
+import { pagesIn, type StaticPageId } from '@/lib/pages';
+import { LocaleFlag } from './LocaleFlag';
 import type { AppView, Destination } from '@/lib/route';
 import { IconButton } from '@/ui/components/IconButton';
 import {
@@ -33,6 +36,8 @@ interface MobileNavProps {
   view: AppView;
   conversionId: ConversionId;
   historyCount: number;
+  /** Whether the page open is one of the assistants pages, for the row that leads there. */
+  onAgentsPage: boolean;
   onViewChange: (view: Destination) => void;
   onConversionChange: (id: ConversionId) => void;
   onOpenPage: (id: StaticPageId) => void;
@@ -58,20 +63,28 @@ const DESTINATIONS: Array<{
  * labels, which left a row of four unnamed icons and a menu that had to be opened to find out
  * where you already were.
  *
- * A sheet has room to say all of it: the four conversions with the file types each takes and a tick
- * on the current one, then the three destinations, then the pages people look for at the bottom of
- * a site. Full-width rows, 44px tall, which is a thumb rather than a cursor.
+ * A sheet has room to say all of it. The destinations first — documentation, the blog, the
+ * assistants — because they are what a person opens a menu on a phone to find, and under fifteen
+ * conversions they were a long scroll away. Then the language, which the bar has no room for below
+ * `sm`, then the conversions with the file types each takes and a tick on the current one, then the
+ * pages people look for at the bottom of a site. Full-width rows, 44px tall, which is a thumb rather
+ * than a cursor.
+ *
+ * The sheet is a flex column so that its body is the part that scrolls. Without it the body grew
+ * to the height of every row, the sheet ran off the bottom of the screen, and the page behind it —
+ * whose scrolling the dialog locks — could not be scrolled either: the last rows were unreachable.
  */
 export function MobileNav({
   view,
   conversionId,
   historyCount,
+  onAgentsPage,
   onViewChange,
   onConversionChange,
   onOpenPage,
 }: MobileNavProps) {
   const t = useT();
-  const { content } = useI18n();
+  const { content, locale, setLocale } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   /* Going somewhere closes the sheet: it is a menu, not a second screen to dismiss. */
@@ -105,7 +118,7 @@ export function MobileNav({
         */}
       <SheetContent
         side="right"
-        className="w-[19rem] max-w-[85vw] p-0"
+        className="flex w-[19rem] max-w-[85vw] flex-col gap-0 p-0"
         isCloseButtonVisible={false}
       >
         <SheetHeader className="flex-row items-center justify-between px-4 pt-4 pb-2">
@@ -122,6 +135,108 @@ export function MobileNav({
         </SheetHeader>
 
         <SheetBody className="flex flex-col gap-6 px-3 pb-8">
+          <section className="flex flex-col gap-1">
+            <Typography
+              variant="span"
+              weight="semibold"
+              textColor="light"
+              className="px-3 text-xxs uppercase tracking-wide"
+            >
+              {t('header.menu.goto')}
+            </Typography>
+
+            {DESTINATIONS.map(({ id, label: key, icon: Icon }) => {
+              const isActive = view === id;
+              const label = t(key);
+
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={go(() => onViewChange(id))}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn(row, isActive && 'bg-surface-accent')}
+                >
+                  <Icon
+                    className={cn(
+                      'size-4 shrink-0',
+                      isActive ? 'text-brand-tertiary' : 'text-ink-secondary'
+                    )}
+                  />
+                  <Typography
+                    variant="span"
+                    weight="medium"
+                    textColor={isActive ? 'accent' : 'primary'}
+                    className="text-sm"
+                  >
+                    {label}
+                  </Typography>
+                  {id === 'history' && historyCount > 0 && (
+                    <span className="ml-auto rounded-full bg-surface-card2 px-2 py-0.5 text-ink-secondary text-xxs">
+                      {historyCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+
+            {/* A page rather than a view, so not in DESTINATIONS — but a destination all the same. */}
+            <button
+              type="button"
+              onClick={go(() => onOpenPage('agents'))}
+              aria-current={onAgentsPage ? 'page' : undefined}
+              className={cn(row, onAgentsPage && 'bg-surface-accent')}
+            >
+              <Bot className="size-4 shrink-0 text-brand-tertiary" />
+              <Typography
+                variant="span"
+                weight="medium"
+                textColor={onAgentsPage ? 'accent' : 'primary'}
+                className="text-sm"
+              >
+                {t('header.nav.agents')}
+              </Typography>
+            </button>
+          </section>
+
+          {/*
+            * The language, which the bar only has room for from `sm` up. Each named in itself with
+            * its flag, as in LanguageMenu, so somebody who landed in a language they cannot read
+            * can still find their own here.
+            */}
+          <section className="flex flex-col gap-2">
+            <Typography
+              variant="span"
+              weight="semibold"
+              textColor="light"
+              className="px-3 text-xxs uppercase tracking-wide"
+            >
+              {t('header.menu.language')}
+            </Typography>
+
+            <div className="flex flex-wrap gap-2 px-3">
+              {LOCALES.map((one) => (
+                <button
+                  key={one}
+                  type="button"
+                  lang={one}
+                  onClick={go(() => setLocale(one))}
+                  aria-current={one === locale ? 'true' : undefined}
+                  className={cn(
+                    'flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
+                    one === locale
+                      ? 'border-brand-tertiary bg-surface-accent text-ink-highlight'
+                      : 'border-stroke text-ink-body hover:bg-state-hover'
+                  )}
+                >
+                  <LocaleFlag locale={one} className="h-3 w-4" />
+                  {LOCALE_NAMES[one]}
+                </button>
+              ))}
+            </div>
+          </section>
+
           <section className="flex flex-col gap-1">
             <Typography
               variant="span"
@@ -171,52 +286,6 @@ export function MobileNav({
             })}
           </section>
 
-          <section className="flex flex-col gap-1">
-            <Typography
-              variant="span"
-              weight="semibold"
-              textColor="light"
-              className="px-3 text-xxs uppercase tracking-wide"
-            >
-              {t('header.menu.goto')}
-            </Typography>
-
-            {DESTINATIONS.map(({ id, label: key, icon: Icon }) => {
-              const isActive = view === id;
-              const label = t(key);
-
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={go(() => onViewChange(id))}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={cn(row, isActive && 'bg-surface-accent')}
-                >
-                  <Icon
-                    className={cn(
-                      'size-4 shrink-0',
-                      isActive ? 'text-brand-tertiary' : 'text-ink-secondary'
-                    )}
-                  />
-                  <Typography
-                    variant="span"
-                    weight="medium"
-                    textColor={isActive ? 'accent' : 'primary'}
-                    className="text-sm"
-                  >
-                    {label}
-                  </Typography>
-                  {id === 'history' && historyCount > 0 && (
-                    <span className="ml-auto rounded-full bg-surface-card2 px-2 py-0.5 text-ink-secondary text-xxs">
-                      {historyCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </section>
-
           {/*
             * The footer's columns are a long scroll away on a phone; these are the ones asked for.
             * The how-to pages are deliberately not among them: there are eight, they are answers to
@@ -224,7 +293,7 @@ export function MobileNav({
             * in it is a list nobody reads.
             */}
           <section className="flex flex-col gap-1 border-stroke border-t pt-4">
-            {[staticPage('agents'), ...pagesIn('company'), ...pagesIn('legal')].map((one) => (
+            {[...pagesIn('company'), ...pagesIn('legal')].map((one) => (
               <button
                 key={one.id}
                 type="button"

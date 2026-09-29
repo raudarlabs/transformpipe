@@ -131,6 +131,7 @@ export const ui: Content['ui'] = {
   'header.menu.close': 'Menü schließen',
   'header.menu.convert': 'Umwandeln',
   'header.menu.goto': 'Wechseln zu',
+  'header.menu.language': 'Sprache',
   'docs.webhooks.intro':
     'Im Konto-Menü gibt es den Eintrag {webhooks}: Sie hinterlegen eine URL, und sie erhält einen signierten POST, sobald ein Dokument angelegt oder mit benannten Personen geteilt wird. Das liegt bewusst hinter einer Sitzung und nicht unter {api} — ein Schlüssel, der Webhooks anlegen könnte, würde aus einem Leck einen dauerhaften Strom aller künftigen Dokumente machen statt des punktuellen Zugriffs von heute.',
   'docs.webhooks.signature':

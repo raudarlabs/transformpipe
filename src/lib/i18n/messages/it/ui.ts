@@ -115,6 +115,7 @@ export const ui: Content['ui'] = {
   'header.menu.close': 'Chiudi il menu',
   'header.menu.convert': 'Converti',
   'header.menu.goto': 'Vai a',
+  'header.menu.language': 'Lingua',
   'docs.webhooks.intro':
     'Nel menu dell’account c’è la voce {webhooks}: registri un URL e riceve un POST firmato quando un documento viene creato o condiviso con persone indicate. Sta dietro una sessione e non sotto {api} di proposito — una chiave in grado di registrare un webhook trasformerebbe una fuga in un flusso permanente di tutti i documenti futuri, invece dell’accesso puntuale di oggi.',
   'docs.webhooks.signature':

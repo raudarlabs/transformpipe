@@ -127,6 +127,7 @@ export const ui: Content['ui'] = {
   'header.menu.close': 'Close menu',
   'header.menu.convert': 'Convert',
   'header.menu.goto': 'Go to',
+  'header.menu.language': 'Language',
   'docs.webhooks.intro':
     'The account menu has a {webhooks} entry: register a URL and it receives a signed POST when a document is created, or shared with named people. It lives behind a session rather than under {api} on purpose — a key that could register a webhook would turn a leak into a standing feed of every future document instead of the point-in-time access it is now.',
   'docs.webhooks.signature':

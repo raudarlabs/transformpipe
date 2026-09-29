@@ -27,7 +27,10 @@ import { CodeBlock, InlineCode } from '@/ui/components/Code';
 import { DefinitionTable } from '@/ui/components/DefinitionTable';
 import { Faq } from '@/ui/components/Faq';
 import { Typography } from '@/ui/components/Typography';
-import { TableOfContents } from '@/ui/components/TableOfContents';
+import {
+  TableOfContents,
+  TableOfContentsButton,
+} from '@/ui/components/TableOfContents';
 import { ZoomableImage } from '@/ui/components/ZoomableImage';
 import { cn } from '@/ui/lib/utils';
 
@@ -187,17 +190,11 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
     [content.faq]
   );
 
+  const contents = SECTIONS.map(({ id, icon }) => ({ id, title: titles[id].title, icon }));
+
   return (
     <div className="mx-auto flex w-full max-w-5xl gap-10">
-      <TableOfContents
-        items={SECTIONS.map(({ id, icon }) => ({
-          id,
-          title: titles[id].title,
-          icon,
-        }))}
-        activeId={active}
-        label={t('docs.toc')}
-      />
+      <TableOfContents items={contents} activeId={active} label={t('docs.toc')} />
 
       <div className="min-w-0 max-w-3xl flex-1 space-y-12 pb-8">
         <AppBreadcrumbs
@@ -759,6 +756,7 @@ node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 docu
         </footer>
       </div>
 
+      <TableOfContentsButton items={contents} activeId={active} label={t('docs.toc')} />
       <ScrollToTop />
     </div>
   );

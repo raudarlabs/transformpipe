@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'On a phone, the menu scrolls and a long page has its contents',
+    body:
+      'The phone menu ran off the bottom of the screen and could not be scrolled, so the last '
+      + 'rows were out of reach; it scrolls now, and it opens on documentation, the blog and the '
+      + 'assistants instead of fifteen conversions, with the language beside them — the bar has '
+      + 'no room for it on a phone. The documentation and every article get a contents button in '
+      + 'the bottom corner that names the section you are in and lists the rest.',
+  },
+  {
+    date: '2026-09-30',
     title: 'A shared link can stop working on a date you pick',
     body:
       'The Share dialog now asks how long a link works: with no end, for an hour, a day, a week, a month, '

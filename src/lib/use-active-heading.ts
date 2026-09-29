@@ -36,8 +36,10 @@ export function useActiveHeading(ids: string[]): string {
         const element = document.getElementById(id);
 
         // 112px: the sticky header — bar, accent line and the breadcrumb strip — plus the
-        // breathing room `scroll-mt-28` leaves under it.
-        if (element && element.getBoundingClientRect().top <= 112) {
+        // breathing room `scroll-mt-28` leaves under it. Four more for sub-pixel layout: a jump to
+        // a heading lands it at 112.4, and at exactly 112 the section just opened read as the one
+        // before it.
+        if (element && element.getBoundingClientRect().top <= 116) {
           current = id;
         }
       }

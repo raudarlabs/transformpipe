@@ -381,6 +381,7 @@ export function AppHeader({
               view={view}
               conversionId={conversionId}
               historyCount={historyCount}
+              onAgentsPage={onAgentsPage}
               onViewChange={onViewChange}
               onConversionChange={onConversionChange}
               onOpenPage={onOpenPage}

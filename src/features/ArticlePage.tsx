@@ -8,7 +8,10 @@ import { localePath } from '@/lib/i18n/locales';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { headingsFromHtml } from '@/lib/toc';
 import { useActiveHeading } from '@/lib/use-active-heading';
-import { TableOfContents } from '@/ui/components/TableOfContents';
+import {
+  TableOfContents,
+  TableOfContentsButton,
+} from '@/ui/components/TableOfContents';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import {
   articleBody,
@@ -372,6 +375,11 @@ export function ArticlePage({
         </div>
       )}
 
+      <TableOfContentsButton
+        items={headings}
+        activeId={activeHeading}
+        label={t('article.toc')}
+      />
       <ScrollToTop />
       </div>
     </div>
