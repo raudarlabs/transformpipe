@@ -234,14 +234,14 @@ export const pages: Content['pages'] = {
           'For each document you keep: its name, which conversion made it, its size, counts of words, headings, links, code blocks, tables and images, and when it was created.',
           'The Markdown itself, in a private blob store — private meaning it has no public URL and is read only through a request we authorise.',
           'API keys as hashes, never the key. A key is shown once, at creation, and cannot be recovered afterwards — not by you and not by us.',
-          'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries, the day it stops working if one was set, and how many times it has been opened.',
+          'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries, the day it stops working if one was set, and when it has been opened.',
         ],
       },
       {
         heading: 'Counting, without knowing who',
         body: [
           'We count visits and a handful of actions — a page opened, a conversion run, a download, a save, a share — as anonymous daily totals, on our own server and in our own database. Counting sets no cookie and stores nothing in your browser; the totals keep no identifier and no IP address, and nothing about a document beyond which conversion or format it was. Where a visit came from is recorded only as the referring site’s name — Product Hunt, Google, “direct” — or as the campaign tag in the link you followed.',
-          'A shared link also counts how many times it was opened, for its owner to see. It is one number and one time on the document: the page asks our server for a one-pixel picture, and that request adds one to the count — no cookie, and nothing about who opened it. So that one machine cannot run the count up, a one-way hash of its address is kept beside a per-minute tally and deleted within a day.',
+          'A shared link also records its opens, for its owner to see: the time of each one, and whether it was the shared page or the app — nothing about who opened it. The page asks our server for a one-pixel picture, and that request is the whole of what is recorded; no cookie is set. So that one machine cannot run the count up, a one-way hash of its address is kept beside a per-minute tally and deleted within a day. The opens go with the link when it is revoked, and none is kept longer than a year.',
         ],
       },
       {

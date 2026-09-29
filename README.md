@@ -226,6 +226,7 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 | `GET /api/v1/documents/:id/versions` | every document in the same version chain, oldest first |
 | `DELETE /api/v1/documents/:id` | removes the row and its source |
 | `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[], expires_at}`; `private` drops the token, so a link already sent stops working. `expires_at` is an ISO 8601 date-time the link stops working at (410 after it), `null` for no end, and left out to keep the one it has. The answer also carries `views` and `last_viewed_at`: opens of the link, counted by the shared page's own one-pixel picture |
+| `GET /api/v1/documents/:id/views` | The link's recent opens, newest first: `{views, last_viewed_at, events: [{at, via}]}` — `via` is `page` or `app`, and nothing about who opened it is kept |
 | `POST /api/v1/documents/:id/summary` | a cached summary, generating it first if there is none; `?force=1` regenerates. Limited to 20 a day per account |
 
 A cookie works too, so the same endpoints can be tried from a signed-in browser. `GET

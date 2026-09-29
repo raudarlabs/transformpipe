@@ -288,6 +288,18 @@ export const ui: Content['ui'] = {
   'converter.summary.error': 'Dieses Dokument konnte nicht zusammengefasst werden.',
   'converter.summary.retry': 'Erneut versuchen',
   'converter.summary.regenerate': 'Neu erstellen',
+  'converter.tab.views': 'Aufrufe',
+  'views.error': 'Die Aufrufe ließen sich nicht laden.',
+  'views.private': 'Dieses Dokument ist nicht geteilt, also kann es niemand öffnen. Teilen Sie es per Link oder mit Personen, dann erscheint hier jeder Aufruf mit seiner Uhrzeit.',
+  'views.none.title': 'Noch keine Aufrufe',
+  'views.none': 'Noch hat niemand den Link geöffnet. Jeder Aufruf erscheint hier, mit seiner Uhrzeit.',
+  'views.total.one': 'Einmal geöffnet',
+  'views.total.many': '{count}-mal geöffnet',
+  'views.via.page': 'Geteilte Seite',
+  'views.via.app': 'In der App',
+  'views.more': 'Die neuesten {shown} von {count}.',
+  'views.note': 'Aufrufe, nicht Personen — Ihre eigenen zählen mit. Über die Person, die geöffnet hat, wird nichts gespeichert.',
+  'views.refresh': 'Aktualisieren',
 
   /*
    * Wenn eine Datei nicht durchkommt: was abgelegt wurde, was zu groß war, was die Umwandlung

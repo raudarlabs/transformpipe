@@ -282,6 +282,18 @@ export const ui: Content['ui'] = {
   'converter.summary.error': 'Could not summarise this document.',
   'converter.summary.retry': 'Try again',
   'converter.summary.regenerate': 'Regenerate',
+  'converter.tab.views': 'Views',
+  'views.error': 'Could not load the opens.',
+  'views.private': 'This document is not shared, so nobody can open it. Share it by link or with people and every open appears here, with its time.',
+  'views.none.title': 'No opens yet',
+  'views.none': 'Nobody has opened the link yet. Every open will appear here, with its time.',
+  'views.total.one': 'Opened once',
+  'views.total.many': 'Opened {count} times',
+  'views.via.page': 'Shared page',
+  'views.via.app': 'In the app',
+  'views.more': 'Showing the latest {shown} of {count}.',
+  'views.note': 'Opens, not people — your own count too. Nothing is kept about who opened it.',
+  'views.refresh': 'Refresh',
 
   /*
    * When a file does not come through: what was dropped, what was too big, what the conversion

@@ -111,6 +111,16 @@ export interface ShareState {
   lastViewedAt: string | null;
 }
 
+/** A document's recent opens, for the Views tab — see `recentViews` in server/share-gate.ts. */
+export interface DocumentViewsState {
+  mode: ShareMode;
+  views: number;
+  lastViewedAt: string | null;
+  events: Array<{ at: string; via: 'page' | 'app' }>;
+  /** The most the list holds; `views` above it means older opens are counted but not listed. */
+  limit: number;
+}
+
 export interface SharedDocument {
   name: string;
   markdown: string;
@@ -342,6 +352,8 @@ export const api = {
     ),
 
   getShare: (id: string) => request<ShareState>(`/api/documents/${id}/share`),
+
+  documentViews: (id: string) => request<DocumentViewsState>(`/api/documents/${id}/views`),
 
   setShareMode: (id: string, mode: ShareMode) =>
     request<ShareState>(`/api/documents/${id}/share`, {

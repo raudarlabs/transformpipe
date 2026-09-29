@@ -278,6 +278,18 @@ export const ui: Content['ui'] = {
   'converter.summary.error': 'No se pudo resumir este documento.',
   'converter.summary.retry': 'Reintentar',
   'converter.summary.regenerate': 'Regenerar',
+  'converter.tab.views': 'Vistas',
+  'views.error': 'No se pudieron cargar las aperturas.',
+  'views.private': 'Este documento no está compartido, así que nadie puede abrirlo. Compártelo por enlace o con personas y cada apertura aparecerá aquí, con su hora.',
+  'views.none.title': 'Aún sin aperturas',
+  'views.none': 'Nadie ha abierto el enlace todavía. Cada apertura aparecerá aquí, con su hora.',
+  'views.total.one': 'Abierto una vez',
+  'views.total.many': 'Abierto {count} veces',
+  'views.via.page': 'Página compartida',
+  'views.via.app': 'En la app',
+  'views.more': 'Las {shown} más recientes de {count}.',
+  'views.note': 'Aperturas, no personas: las tuyas también cuentan. No se guarda nada sobre quién lo abrió.',
+  'views.refresh': 'Actualizar',
 
   /*
    * Cuando un archivo no llega a pasar: qué se soltó, qué era demasiado grande, qué tuvo que decir

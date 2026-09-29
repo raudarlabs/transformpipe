@@ -257,6 +257,32 @@ try {
 
   check('one machine holding down reload counts ten a minute, not thirteen', paced === 10, `got ${paced}`);
 
+  const [{ events }] = await sql`
+    select count(*)::int as events from m2h_share_view where document_id = ${counted.id}
+  `;
+
+  check('each counted open is a row of its own, and only those', events === 10, `got ${events}`);
+
+  const fromApp = await shared();
+
+  await seen(fromApp.token, { headers: {}, method: 'GET' }).then(() =>
+    fetch(`${HOST}/s/${fromApp.token}/seen?via=app`, {
+      headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) check-share' },
+    })
+  );
+
+  const opens = await (await v1(`/documents/${fromApp.id}/views`)).json().catch(() => ({}));
+
+  check(
+    'the list says where each open came from, newest first',
+    opens.events?.length === 2 && opens.events[0].via === 'app' && opens.events[1].via === 'page',
+    JSON.stringify(opens.events)
+  );
+  check(
+    'and carries nothing but the time and where',
+    (opens.events ?? []).every((one) => Object.keys(one).sort().join() === 'at,via')
+  );
+
   const reportedViews = await (await v1(`/documents/${counted.id}/share`)).json().catch(() => ({}));
 
   check('the API reports the count', reportedViews.views === 10, JSON.stringify(reportedViews));
@@ -324,6 +350,14 @@ try {
   const [afterRevoke] = await sql`
     select share_token, share_expires_at, share_views, share_viewed_at from m2h_document where id = ${target.id}
   `;
+
+  await sql`insert into m2h_share_view (document_id) values (${target.id})`;
+
+  const revokedOpens = await put({ mode: 'private' }).then(() =>
+    sql`select count(*)::int as n from m2h_share_view where document_id = ${target.id}`
+  );
+
+  check('revoking deletes the list of opens with it', revokedOpens[0].n === 0, JSON.stringify(revokedOpens));
 
   check(
     'revoking clears the end and the count with the token',

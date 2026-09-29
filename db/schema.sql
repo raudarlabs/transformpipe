@@ -62,6 +62,21 @@ alter table m2h_document
 alter table m2h_document
   add column if not exists share_viewed_at timestamptz;
 
+-- Every open of a shared link, for the owner's Views tab.
+--
+-- When, and whether it was the shared page or the app's reader — and nothing else: no address, no
+-- browser, no account, which is what the privacy page says. It belongs to the link as the count
+-- does, so a revoke deletes it with the count, and deleting the document deletes it with that.
+
+create table if not exists m2h_share_view (
+  document_id uuid        not null references m2h_document (id) on delete cascade,
+  viewed_at   timestamptz not null default now(),
+  via         text        not null default 'page'
+);
+
+create index if not exists m2h_share_view_document
+  on m2h_share_view (document_id, viewed_at desc);
+
 -- Sources move out of the row.
 --
 -- `markdown` stays nullable rather than being dropped: rows written before the Blob store existed

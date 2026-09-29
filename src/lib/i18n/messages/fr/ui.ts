@@ -274,6 +274,18 @@ export const ui: Content['ui'] = {
   'converter.summary.error': 'Impossible de résumer ce document.',
   'converter.summary.retry': 'Réessayer',
   'converter.summary.regenerate': 'Régénérer',
+  'converter.tab.views': 'Vues',
+  'views.error': 'Impossible de charger les ouvertures.',
+  'views.private': 'Ce document n’est pas partagé, personne ne peut donc l’ouvrir. Partagez-le par lien ou avec des personnes, et chaque ouverture apparaîtra ici avec son heure.',
+  'views.none.title': 'Aucune ouverture pour l’instant',
+  'views.none': 'Personne n’a encore ouvert le lien. Chaque ouverture apparaîtra ici, avec son heure.',
+  'views.total.one': 'Ouvert une fois',
+  'views.total.many': 'Ouvert {count} fois',
+  'views.via.page': 'Page partagée',
+  'views.via.app': 'Dans l’application',
+  'views.more': 'Les {shown} plus récentes sur {count}.',
+  'views.note': 'Des ouvertures, pas des personnes — les vôtres comptent aussi. Rien n’est gardé sur qui a ouvert.',
+  'views.refresh': 'Actualiser',
 
   /*
    * Quand un fichier ne passe pas : ce qui a été déposé, ce qui était trop volumineux, ce que la

@@ -1,4 +1,5 @@
 import {
+  Activity,
   Check,
   ChevronDown,
   Copy,
@@ -22,6 +23,7 @@ import { DocStats } from '@/components/DocStats';
 import { checkDocument } from '@shared/check';
 import { DocumentCheck } from '@/components/DocumentCheck';
 import { DocumentPreview } from '@/components/DocumentPreview';
+import { DocumentViews } from '@/components/DocumentViews';
 import { Hint } from '@/components/Hint';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { ShareDialog } from '@/components/ShareDialog';
@@ -127,7 +129,7 @@ export function ConverterPage({
   /** What this conversion is called and says, in the reader's language. */
   const words = content.conversions[conversion.id];
   const [isCopied, setIsCopied] = useState(false);
-  const [tab, setTab] = useState<'preview' | 'source' | 'summary' | 'check'>(
+  const [tab, setTab] = useState<'preview' | 'source' | 'summary' | 'check' | 'views'>(
     'preview'
   );
 
@@ -660,7 +662,7 @@ export function ConverterPage({
       <Tabs
         value={tab}
         onValueChange={(value) =>
-          setTab(value as 'preview' | 'source' | 'summary' | 'check')
+          setTab(value as 'preview' | 'source' | 'summary' | 'check' | 'views')
         }
         className="flex flex-col gap-4"
       >
@@ -706,6 +708,13 @@ export function ConverterPage({
                 </span>
               )}
             </TabsTrigger>
+            {/* Only for a saved document: an unsaved one has no link for anybody to open. */}
+            {doc.remoteId && (
+              <TabsTrigger value="views">
+                <Activity className="size-4" />
+                {t('converter.tab.views')}
+              </TabsTrigger>
+            )}
             </TabsList>
           </div>
 
@@ -779,6 +788,15 @@ export function ConverterPage({
         <TabsContent value="check" className="outline-none">
           <DocumentCheck markdown={doc.markdown} />
         </TabsContent>
+
+        {doc.remoteId && (
+          <TabsContent value="views" className="outline-none">
+            {/* Mounted when the tab opens, so the list is fetched when somebody looks at it. */}
+            {tab === 'views' && (
+              <DocumentViews documentId={doc.remoteId} onShare={() => setIsShareOpen(true)} />
+            )}
+          </TabsContent>
+        )}
 
         <TabsContent value="summary" className="outline-none">
           <div className="flex flex-col items-start gap-4 rounded-xl border border-stroke bg-surface-page p-6">

@@ -48,7 +48,9 @@ import {
   edgeSeconds,
   normaliseEmail,
   readExpiry,
+  recentViews,
   shareGate,
+  VIEW_LIST_LIMIT,
   writtenUtc,
 } from './share-gate.js';
 import { tallyRoute } from './usage.js';
@@ -890,6 +892,38 @@ api.get('/documents/:id/share', async (c) => {
   return state ? c.json(state) : c.json({ error: 'Not found' }, 404);
 });
 
+/** Every recent open of this document's link, for its Views tab. The owner's session only. */
+api.get('/documents/:id/views', async (c) => {
+  const userId = c.get('user').id;
+  const id = c.req.param('id');
+
+  if (!looksLikeId(id)) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  const rows = (await sql()`
+    select id, share_mode, share_views, share_viewed_at from m2h_document
+    where user_id = ${userId} and id = ${id}
+  `) as Array<{
+    id: string;
+    share_mode: 'private' | 'link' | 'people';
+    share_views: number;
+    share_viewed_at: string | null;
+  }>;
+
+  if (rows.length === 0) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  return c.json({
+    mode: rows[0].share_mode,
+    views: rows[0].share_views ?? 0,
+    lastViewedAt: rows[0].share_viewed_at ? new Date(rows[0].share_viewed_at).toISOString() : null,
+    events: await recentViews(id),
+    limit: VIEW_LIST_LIMIT,
+  });
+});
+
 api.put('/documents/:id/share', async (c) => {
   const userId = c.get('user').id;
   const id = c.req.param('id');
@@ -923,12 +957,17 @@ api.put('/documents/:id/share', async (c) => {
      * Revoking drops the token as well: a link that was sent must stop working. The expiry and the
      * count go with it, because they belong to that link — the next one starts with neither.
      */
-    await sql()`
+    const revoked = (await sql()`
       update m2h_document
       set share_mode = 'private', share_token = null,
           share_expires_at = null, share_views = 0, share_viewed_at = null
       where user_id = ${userId} and id = ${id}
-    `;
+      returning id
+    `) as Array<{ id: string }>;
+
+    if (revoked.length > 0) {
+      await sql()`delete from m2h_share_view where document_id = ${id}`;
+    }
   } else {
     if (!(await ensureToken(userId, id))) {
       return c.json({ error: 'Not found' }, 404);
@@ -1333,11 +1372,25 @@ app.get('/s/:token/seen', async (c) => {
       const pace = await countCall(`seen:${machine}`).catch(() => null);
 
       if (pace && pace.calls <= OPENS_PER_MINUTE) {
+        const via = c.req.query('via') === 'app' ? 'app' : 'page';
+
         await sql()`
           update m2h_document
           set share_views = share_views + 1, share_viewed_at = now()
           where id = ${verdict.document.id}
         `.catch(() => undefined);
+
+        // The same open, as a row the Views tab lists: the time and where, and nothing else.
+        await sql()`
+          insert into m2h_share_view (document_id, via) values (${verdict.document.id}, ${via})
+        `.catch(() => undefined);
+
+        // A year is as far back as a list of opens is worth anything; swept on the way past.
+        if (Math.random() < 0.01) {
+          await sql()`
+            delete from m2h_share_view where viewed_at < now() - interval '1 year'
+          `.catch(() => undefined);
+        }
       }
     }
   }

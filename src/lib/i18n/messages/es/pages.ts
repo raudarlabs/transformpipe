@@ -232,14 +232,14 @@ export const pages: Content['pages'] = {
           'De cada documento que conservas: su nombre, qué conversión lo hizo, su tamaño, los recuentos de palabras, encabezados, enlaces, bloques de código, tablas e imágenes, y cuándo se creó.',
           'El Markdown en sí, en un almacén de blobs privado — privado quiere decir que no tiene ninguna URL pública y solo se lee mediante una petición que autorizamos.',
           'Las claves API como hashes, nunca la clave. Una clave se muestra una vez, al crearla, y después no se puede recuperar — ni tú ni nosotros.',
-          'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace, el día en que deja de funcionar si se fijó uno, y cuántas veces se ha abierto.',
+          'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace, el día en que deja de funcionar si se fijó uno, y cuándo se ha abierto.',
         ],
       },
       {
         heading: 'Contar, sin saber quién',
         body: [
           'Contamos las visitas y unas pocas acciones — una página abierta, una conversión, una descarga, un guardado, un documento compartido — como totales diarios anónimos, en nuestro propio servidor y en nuestra propia base de datos. Contar no crea ninguna cookie ni guarda nada en tu navegador; los totales no conservan ningún identificador ni dirección IP, y de un documento nada más que la conversión o el formato. De dónde llegó una visita se registra solo como el nombre del sitio de procedencia — Product Hunt, Google, «directo» — o como la etiqueta de campaña del enlace que seguiste.',
-          'Un enlace compartido también cuenta cuántas veces se ha abierto, para que lo vea su propietario. Es un número y una hora en el documento: la página pide a nuestro servidor una imagen de un píxel, y esa petición suma uno al contador — ninguna cookie, y nada sobre quién lo abrió. Para que una misma máquina no pueda inflar la cuenta, se guarda un hash de un solo sentido de su dirección junto a un recuento por minuto, y se borra en menos de un día.',
+          'Un enlace compartido también registra sus aperturas, para que las vea su propietario: la hora de cada una, y si fue la página compartida o la app — nada sobre quién lo abrió. La página pide a nuestro servidor una imagen de un píxel, y esa petición es todo lo que se registra; no se crea ninguna cookie. Para que una misma máquina no pueda inflar la cuenta, se guarda un hash de un solo sentido de su dirección junto a un recuento por minuto, y se borra en menos de un día. Las aperturas se van con el enlace cuando se revoca, y ninguna se guarda más de un año.',
         ],
       },
       {

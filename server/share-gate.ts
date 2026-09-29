@@ -172,3 +172,27 @@ export function readExpiry(value: unknown): ExpiryInput {
 
   return { ok: true, value: at };
 }
+
+/** How many opens a list shows: the newest ones, which are the ones anybody is asking about. */
+export const VIEW_LIST_LIMIT = 200;
+
+export interface ShareView {
+  at: string;
+  /** `page` is the shared page at /s/<token>; `app` is the app's reader behind /open/<token>. */
+  via: 'page' | 'app';
+}
+
+/** A document's recent opens, newest first — see `m2h_share_view` in db/schema.sql. */
+export async function recentViews(documentId: string): Promise<ShareView[]> {
+  const rows = (await sql()`
+    select viewed_at, via from m2h_share_view
+    where document_id = ${documentId}
+    order by viewed_at desc
+    limit ${VIEW_LIST_LIMIT}
+  `) as Array<{ viewed_at: string; via: string }>;
+
+  return rows.map((row) => ({
+    at: new Date(row.viewed_at).toISOString(),
+    via: row.via === 'app' ? 'app' : 'page',
+  }));
+}

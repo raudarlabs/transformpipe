@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'Every open of a shared link, in a tab of its own',
+    body:
+      'A saved document has a Views tab beside Check: every time its link was opened, grouped by '
+      + 'day, with whether it was the shared page or the app. It lists opens, not people, and '
+      + 'keeps nothing about who opened it — the time and the place are the whole of each row. '
+      + 'The opens go with the link when it is revoked, and the API lists them too, at '
+      + '`GET /api/v1/documents/:id/views`.',
+  },
+  {
+    date: '2026-09-30',
     title: 'The AI summary says more, and says it is working',
     body:
       'A summary was three to five sentences that said what a document was about and little you '

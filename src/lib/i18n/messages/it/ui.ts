@@ -270,6 +270,18 @@ export const ui: Content['ui'] = {
   'converter.summary.error': 'Impossibile riassumere questo documento.',
   'converter.summary.retry': 'Riprova',
   'converter.summary.regenerate': 'Rigenera',
+  'converter.tab.views': 'Visualizzazioni',
+  'views.error': 'Impossibile caricare le aperture.',
+  'views.private': 'Questo documento non è condiviso, quindi nessuno può aprirlo. Condividilo tramite link o con persone e ogni apertura comparirà qui, con il suo orario.',
+  'views.none.title': 'Ancora nessuna apertura',
+  'views.none': 'Nessuno ha ancora aperto il link. Ogni apertura comparirà qui, con il suo orario.',
+  'views.total.one': 'Aperto una volta',
+  'views.total.many': 'Aperto {count} volte',
+  'views.via.page': 'Pagina condivisa',
+  'views.via.app': 'Nell’app',
+  'views.more': 'Le {shown} più recenti su {count}.',
+  'views.note': 'Aperture, non persone: contano anche le tue. Non si conserva nulla su chi l’ha aperto.',
+  'views.refresh': 'Aggiorna',
 
   /*
    * When a file does not come through: what was dropped, what was too big, what the conversion

@@ -34,7 +34,7 @@ import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { deleteSources, putSource, readSource } from './source.js';
-import { readExpiry } from './share-gate.js';
+import { readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 
 /*
@@ -1043,6 +1043,23 @@ v1.get('/documents/:id/share', async (c) => {
   });
 });
 
+/** Every recent open of the document's link, newest first — the list the app's Views tab shows. */
+v1.get('/documents/:id/views', async (c) => {
+  const row = await findDocument(c.get('caller').id, c.req.param('id'));
+
+  if (!row) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  return c.json({
+    mode: row.share_mode,
+    views: row.share_views ?? 0,
+    last_viewed_at: isoOrNull(row.share_viewed_at),
+    events: await recentViews(row.id),
+    limit: VIEW_LIST_LIMIT,
+  });
+});
+
 v1.put('/documents/:id/share', async (c) => {
   const userId = c.get('caller').id;
   const id = c.req.param('id');
@@ -1089,6 +1106,7 @@ v1.put('/documents/:id/share', async (c) => {
           share_expires_at = null, share_views = 0, share_viewed_at = null
       where user_id = ${userId} and id = ${id}
     `;
+    await sql()`delete from m2h_share_view where document_id = ${id}`;
   } else {
     await sql()`
       update m2h_document

@@ -75,7 +75,7 @@ export function SharedDocumentPage({ token }: { token: string }) {
          * A reader of an addressed share lands here rather than there, and would otherwise not be
          * counted at all.
          */
-        new Image().src = `/s/${encodeURIComponent(token)}/seen`;
+        new Image().src = `/s/${encodeURIComponent(token)}/seen?via=app`;
       })
       .catch((cause: Error) =>
         setError({
