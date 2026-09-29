@@ -221,6 +221,16 @@ try {
 
   check('the downloaded file does not', !download.includes('/seen'));
 
+  /*
+   * The pace is counted per calendar minute, so a run that straddles one counts two allowances and
+   * reads as a broken limit. Everything from the first open to the last reload goes in one minute.
+   */
+  const second = new Date().getSeconds();
+
+  if (second > 40) {
+    await new Promise((resolve) => setTimeout(resolve, (61 - second) * 1000));
+  }
+
   const pixel = await seen(counted.token);
 
   check('the picture is a GIF', (pixel.headers.get('content-type') ?? '').startsWith('image/gif'));
@@ -282,6 +292,50 @@ try {
     'and carries nothing but the time and where',
     (opens.events ?? []).every((one) => Object.keys(one).sort().join() === 'at,via')
   );
+
+  check(
+    'an open of a link records nobody, signed in or not',
+    ((await sql`select count(*)::int as n from m2h_share_view where viewer is not null and document_id = any(${[counted.id, fromApp.id]}::uuid[])`)[0].n) === 0
+  );
+
+  /*
+   * A share addressed to people records which named address opened it. Opening one needs a signed-in
+   * session, which this cannot make, so the rows are written as /seen writes them and the list is
+   * read back through the API.
+   */
+  const addressedTo = await shared({ mode: 'people' });
+
+  await sql`
+    insert into m2h_document_share (document_id, email)
+    values (${addressedTo.id}, 'anna@example.com'), (${addressedTo.id}, 'marco@example.com')
+  `;
+  await sql`
+    insert into m2h_share_view (document_id, via, viewer)
+    values (${addressedTo.id}, 'page', 'anna@example.com'), (${addressedTo.id}, 'app', 'anna@example.com')
+  `;
+
+  const named = await (await v1(`/documents/${addressedTo.id}/views`)).json().catch(() => ({}));
+  const anna = named.people?.find((one) => one.email === 'anna@example.com');
+  const marco = named.people?.find((one) => one.email === 'marco@example.com');
+
+  check(
+    'a people share lists each address with its opens, the unopened too',
+    anna?.opens === 2 && Boolean(anna?.last_at) && marco?.opens === 0 && marco?.last_at === null,
+    JSON.stringify(named.people)
+  );
+  check(
+    'and each open says whose it was',
+    (named.events ?? []).every((one) => one.who === 'anna@example.com'),
+    JSON.stringify(named.events)
+  );
+
+  const unnamed = await (await v1(`/documents/${counted.id}/views`)).json().catch(() => ({}));
+
+  check('a link lists no people', Array.isArray(unnamed.people) && unnamed.people.length === 0);
+
+  const linkReader = await (await get(`/api/shared/${encodeURIComponent(counted.token)}`)).json().catch(() => ({}));
+
+  check('and a link reader is not told they are watched', linkReader.watched === false, JSON.stringify(linkReader.watched));
 
   const reportedViews = await (await v1(`/documents/${counted.id}/share`)).json().catch(() => ({}));
 

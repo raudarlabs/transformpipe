@@ -294,6 +294,12 @@ export const ui: Content['ui'] = {
   'views.more': 'Showing the latest {shown} of {count}.',
   'views.note': 'Opens, not people — your own count too. Nothing is kept about who opened it.',
   'views.refresh': 'Refresh',
+  'views.people': 'Who opened it',
+  'views.people.never': 'Not opened yet',
+  'views.people.one': 'Opened once, {date}',
+  'views.people.many': 'Opened {count} times, last {date}',
+  'views.you': 'You',
+  'views.note.people': 'Shared with specific people, so each open shows which of them it was — they are told so on the page. Your own opens count too.',
 
   /*
    * When a file does not come through: what was dropped, what was too big, what the conversion
@@ -546,6 +552,7 @@ export const ui: Content['ui'] = {
    */
   'shared.loading': 'Opening the document…',
   'shared.meta': 'shared · converted {date}',
+  'shared.watched': 'Shared with you by name: the person who shared it can see when you open it.',
   'shared.badge': 'Shared with you',
   'shared.save': 'Save a copy',
   'shared.saved': 'Saved to your account',

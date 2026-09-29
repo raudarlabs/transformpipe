@@ -290,6 +290,12 @@ export const ui: Content['ui'] = {
   'views.more': 'Las {shown} más recientes de {count}.',
   'views.note': 'Aperturas, no personas: las tuyas también cuentan. No se guarda nada sobre quién lo abrió.',
   'views.refresh': 'Actualizar',
+  'views.people': 'Quién lo abrió',
+  'views.people.never': 'Aún no lo ha abierto',
+  'views.people.one': 'Abierto una vez, {date}',
+  'views.people.many': 'Abierto {count} veces, la última {date}',
+  'views.you': 'Tú',
+  'views.note.people': 'Compartido con personas concretas, así que cada apertura muestra quién fue — la página se lo dice. Tus propias aperturas también cuentan.',
 
   /*
    * Cuando un archivo no llega a pasar: qué se soltó, qué era demasiado grande, qué tuvo que decir
@@ -539,6 +545,7 @@ export const ui: Content['ui'] = {
    */
   'shared.loading': 'Abriendo el documento…',
   'shared.meta': 'compartido · convertido el {date}',
+  'shared.watched': 'Compartido contigo por nombre: quien lo compartió puede ver cuándo lo abres.',
   'shared.badge': 'Compartido contigo',
   'shared.save': 'Guardar una copia',
   'shared.saved': 'Guardado en tu cuenta',

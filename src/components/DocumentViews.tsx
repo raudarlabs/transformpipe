@@ -1,4 +1,4 @@
-import { Globe, LayoutGrid, RefreshCw, Share2 } from 'lucide-react';
+import { Globe, LayoutGrid, RefreshCw, Share2, UserRound } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, type DocumentViewsState } from '@/lib/api';
 import { useI18n, useT } from '@/lib/i18n/context';
@@ -20,8 +20,9 @@ const dayOf = (at: Date) => new Date(at.getFullYear(), at.getMonth(), at.getDate
  * Every open of the document's link, newest first, a day at a time.
  *
  * What there is to show is what `m2h_share_view` keeps: when, and whether it was the shared page
- * or the app's reader. Not who — the rows hold nothing about a person, so the list says "opens"
- * and never "readers", and says that the owner's own opens are among them.
+ * or the app's reader. For a link, not who — those rows hold nothing about a person, so the list
+ * says "opens" and never "readers". For a share addressed to people, which of the named addresses
+ * it was: they signed in to open it, and the page they read told them the owner sees this.
  *
  * The day headings are `Intl`'s, so "today" and "yesterday" come in the reader's language without
  * a catalogue entry for each, and the times are in the reader's own zone.
@@ -60,7 +61,10 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
     const date = new Intl.DateTimeFormat(intl, { weekday: 'long', day: 'numeric', month: 'long' });
     const relative = new Intl.RelativeTimeFormat(intl, { numeric: 'auto' });
     const today = dayOf(new Date());
-    const groups = new Map<number, Array<{ key: string; time: string; via: 'page' | 'app' }>>();
+    const groups = new Map<
+      number,
+      Array<{ key: string; time: string; via: 'page' | 'app'; who?: string }>
+    >();
 
     state.events.forEach((event, index) => {
       const at = new Date(event.at);
@@ -68,7 +72,7 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
 
       groups.set(day, [
         ...(groups.get(day) ?? []),
-        { key: `${event.at}-${index}`, time: time.format(at), via: event.via },
+        { key: `${event.at}-${index}`, time: time.format(at), via: event.via, who: event.who },
       ]);
     });
 
@@ -81,6 +85,17 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
   }, [state, intl]);
 
   const frame = 'flex w-full flex-col gap-4 rounded-xl border border-stroke bg-surface-page p-6';
+
+  /* The owner's own opens say "you"; anybody else's is the address they were shared with. */
+  const whoLabel = (who: string) => (state && who === state.you ? t('views.you') : who);
+
+  const when = (iso: string) =>
+    new Intl.DateTimeFormat(intl, {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(iso));
 
   if (!state && isLoading) {
     return (
@@ -142,6 +157,44 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
         </Button>
       </div>
 
+      {/*
+        * Shared with named addresses: each of them, and whether they have opened it — the question
+        * a list of times alone cannot answer. A link records no reader, so it never has this.
+        */}
+      {state.people.length > 0 && (
+        <section className="flex flex-col gap-1.5">
+          <Typography
+            variant="span"
+            weight="semibold"
+            textColor="light"
+            className="text-xxs uppercase tracking-wide"
+          >
+            {t('views.people')}
+          </Typography>
+          <ul className="flex flex-col divide-y divide-stroke rounded-lg border border-stroke">
+            {state.people.map((one) => (
+              <li
+                key={one.email}
+                className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 px-3 py-2"
+              >
+                <span className="flex min-w-0 items-center gap-2 text-ink-body text-sm">
+                  <UserRound className="size-3.5 shrink-0 text-ink-secondary" />
+                  <span className="truncate">{one.email}</span>
+                </span>
+                <span className="text-ink-secondary text-xs">
+                  {one.opens === 0 || !one.lastAt
+                    ? t('views.people.never')
+                    : t(one.opens === 1 ? 'views.people.one' : 'views.people.many', {
+                        count: one.opens,
+                        date: when(one.lastAt),
+                      })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {state.events.length === 0 ? (
         <Typography variant="p" textColor="secondary" className="text-sm">
           {t('views.none')}
@@ -161,7 +214,12 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
               <ul className="flex flex-col divide-y divide-stroke rounded-lg border border-stroke">
                 {day.events.map((event) => (
                   <li key={event.key} className="flex items-center justify-between gap-3 px-3 py-2">
-                    <span className="font-mono text-ink-body text-sm tabular-nums">{event.time}</span>
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span className="font-mono text-ink-body text-sm tabular-nums">{event.time}</span>
+                      {event.who && (
+                        <span className="truncate text-ink-body text-sm">{whoLabel(event.who)}</span>
+                      )}
+                    </span>
                     <span className="flex items-center gap-1.5 text-ink-secondary text-xs">
                       {event.via === 'app' ? (
                         <LayoutGrid className="size-3.5" />
@@ -185,7 +243,7 @@ export function DocumentViews({ documentId, onShare }: DocumentViewsProps) {
       )}
 
       <Typography variant="p" textColor="light" className="text-xs">
-        {t('views.note')}
+        {t(state.mode === 'people' ? 'views.note.people' : 'views.note')}
       </Typography>
     </div>
   );

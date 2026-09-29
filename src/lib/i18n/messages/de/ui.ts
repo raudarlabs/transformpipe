@@ -300,6 +300,12 @@ export const ui: Content['ui'] = {
   'views.more': 'Die neuesten {shown} von {count}.',
   'views.note': 'Aufrufe, nicht Personen — Ihre eigenen zählen mit. Über die Person, die geöffnet hat, wird nichts gespeichert.',
   'views.refresh': 'Aktualisieren',
+  'views.people': 'Wer es geöffnet hat',
+  'views.people.never': 'Noch nicht geöffnet',
+  'views.people.one': 'Einmal geöffnet, {date}',
+  'views.people.many': '{count}-mal geöffnet, zuletzt {date}',
+  'views.you': 'Sie',
+  'views.note.people': 'Mit bestimmten Personen geteilt, daher zeigt jeder Aufruf, wer es war — das steht für sie auch auf der Seite. Ihre eigenen Aufrufe zählen mit.',
 
   /*
    * Wenn eine Datei nicht durchkommt: was abgelegt wurde, was zu groß war, was die Umwandlung
@@ -549,6 +555,7 @@ export const ui: Content['ui'] = {
    */
   'shared.loading': 'Dokument wird geöffnet…',
   'shared.meta': 'geteilt · umgewandelt {date}',
+  'shared.watched': 'Namentlich mit Ihnen geteilt: Die Person, die es geteilt hat, sieht, wann Sie es öffnen.',
   'shared.badge': 'Mit Ihnen geteilt',
   'shared.save': 'Kopie speichern',
   'shared.saved': 'In Ihrem Konto gespeichert',

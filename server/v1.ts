@@ -34,7 +34,7 @@ import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { deleteSources, putSource, readSource } from './source.js';
-import { readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
+import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 
 /*
@@ -1057,6 +1057,14 @@ v1.get('/documents/:id/views', async (c) => {
     last_viewed_at: isoOrNull(row.share_viewed_at),
     events: await recentViews(row.id),
     limit: VIEW_LIST_LIMIT,
+    people:
+      row.share_mode === 'people'
+        ? (await namedOpens(row.id)).map((one) => ({
+            email: one.email,
+            opens: one.opens,
+            last_at: one.lastAt,
+          }))
+        : [],
   });
 });
 

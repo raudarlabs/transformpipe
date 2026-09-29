@@ -334,6 +334,13 @@ export function SharedDocumentPage({ token }: { token: string }) {
                       )}
                     />
                   </div>
+
+                  {/* Counted by name, so told so — the same line the shared page carries. */}
+                  {document.watched && (
+                    <Typography variant="p" textColor="secondary" className="mt-1 text-xs">
+                      {t('shared.watched')}
+                    </Typography>
+                  )}
                 </div>
               </div>
 

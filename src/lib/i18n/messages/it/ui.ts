@@ -282,6 +282,12 @@ export const ui: Content['ui'] = {
   'views.more': 'Le {shown} più recenti su {count}.',
   'views.note': 'Aperture, non persone: contano anche le tue. Non si conserva nulla su chi l’ha aperto.',
   'views.refresh': 'Aggiorna',
+  'views.people': 'Chi l’ha aperto',
+  'views.people.never': 'Non ancora aperto',
+  'views.people.one': 'Aperto una volta, {date}',
+  'views.people.many': 'Aperto {count} volte, l’ultima {date}',
+  'views.you': 'Tu',
+  'views.note.people': 'Condiviso con persone precise, quindi ogni apertura mostra chi era — la pagina glielo dice. Contano anche le tue aperture.',
 
   /*
    * When a file does not come through: what was dropped, what was too big, what the conversion
@@ -528,6 +534,7 @@ export const ui: Content['ui'] = {
    */
   'shared.loading': 'Apertura del documento…',
   'shared.meta': 'condiviso · convertito il {date}',
+  'shared.watched': 'Condiviso con te per nome: chi l’ha condiviso può vedere quando lo apri.',
   'shared.badge': 'Condiviso con te',
   'shared.save': 'Salva una copia',
   'shared.saved': 'Salvato nel tuo account',

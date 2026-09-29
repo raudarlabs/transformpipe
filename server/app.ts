@@ -48,6 +48,7 @@ import {
   edgeSeconds,
   normaliseEmail,
   readExpiry,
+  namedOpens,
   recentViews,
   shareGate,
   VIEW_LIST_LIMIT,
@@ -109,6 +110,8 @@ api.get('/shared/:token', async (c) => {
       markdown: await readSource(document),
       created_at: document.created_at,
     },
+    /* Addressed to this reader by name, so the owner sees their opens — and the page says so. */
+    watched: verdict.reader !== null && !verdict.reader.isOwner,
   });
 });
 
@@ -921,6 +924,10 @@ api.get('/documents/:id/views', async (c) => {
     lastViewedAt: rows[0].share_viewed_at ? new Date(rows[0].share_viewed_at).toISOString() : null,
     events: await recentViews(id),
     limit: VIEW_LIST_LIMIT,
+    /* Each named address and its opens; empty for a link, which records no reader. */
+    people: rows[0].share_mode === 'people' ? await namedOpens(id) : [],
+    /* So the tab can call the owner's own opens "you" rather than print their address. */
+    you: normaliseEmail(c.get('user').email),
   });
 });
 
@@ -1315,6 +1322,7 @@ app.get('/s/:token', async (c) => {
        */
       openHref: `/open/${encodeURIComponent(token)}`,
       seenHref: `/s/${encodeURIComponent(token)}/seen`,
+      watched: verdict.reader !== null && !verdict.reader.isOwner,
       size: document.size,
       stats: document.stats ?? undefined,
     })
@@ -1380,9 +1388,14 @@ app.get('/s/:token/seen', async (c) => {
           where id = ${verdict.document.id}
         `.catch(() => undefined);
 
-        // The same open, as a row the Views tab lists: the time and where, and nothing else.
+        /*
+         * The same open, as a row the Views tab lists: the time and where — and, on a share
+         * addressed to people only, which of those addresses it was. The reader of such a share
+         * signed in to open it, and the page they read says the owner can see this.
+         */
         await sql()`
-          insert into m2h_share_view (document_id, via) values (${verdict.document.id}, ${via})
+          insert into m2h_share_view (document_id, via, viewer)
+          values (${verdict.document.id}, ${via}, ${verdict.reader?.email ?? null})
         `.catch(() => undefined);
 
         // A year is as far back as a list of opens is worth anything; swept on the way past.

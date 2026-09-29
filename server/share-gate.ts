@@ -35,8 +35,14 @@ export interface SharedDocument {
   share_expires_at: string | null;
 }
 
+/** Who is reading a share addressed to people — the gate made them sign in to find out. */
+export interface NamedReader {
+  email: string;
+  isOwner: boolean;
+}
+
 export type ShareVerdict =
-  | { ok: true; document: SharedDocument; expiresAt: Date | null }
+  | { ok: true; document: SharedDocument; expiresAt: Date | null; reader: NamedReader | null }
   | { ok: false; why: 'missing' }
   | { ok: false; why: 'expired'; expiredAt: Date }
   | { ok: false; why: 'sign-in' | 'not-yours' };
@@ -67,6 +73,8 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
     return { ok: false, why: 'expired', expiredAt: new Date(row.share_expires_at!) };
   }
 
+  let reader: NamedReader | null = null;
+
   if (row.share_mode === 'people') {
     const user = await currentUser(c);
 
@@ -74,8 +82,9 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
       return { ok: false, why: 'sign-in' };
     }
 
+    const isOwner = user.id === row.user_id;
     const allowed =
-      user.id === row.user_id ||
+      isOwner ||
       ((await sql()`
         select 1 from m2h_document_share
         where document_id = ${row.id}
@@ -85,6 +94,8 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
     if (!allowed) {
       return { ok: false, why: 'not-yours' };
     }
+
+    reader = { email: normaliseEmail(user.email), isOwner };
   }
 
   const { expired: _, ...document } = row;
@@ -93,6 +104,7 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
     ok: true,
     document: document as SharedDocument,
     expiresAt: row.share_expires_at ? new Date(row.share_expires_at) : null,
+    reader,
   };
 }
 
@@ -180,19 +192,49 @@ export interface ShareView {
   at: string;
   /** `page` is the shared page at /s/<token>; `app` is the app's reader behind /open/<token>. */
   via: 'page' | 'app';
+  /** The named address that opened it — only ever on a share addressed to people. */
+  who?: string;
+}
+
+export interface NamedOpens {
+  email: string;
+  opens: number;
+  lastAt: string | null;
 }
 
 /** A document's recent opens, newest first — see `m2h_share_view` in db/schema.sql. */
 export async function recentViews(documentId: string): Promise<ShareView[]> {
   const rows = (await sql()`
-    select viewed_at, via from m2h_share_view
+    select viewed_at, via, viewer from m2h_share_view
     where document_id = ${documentId}
     order by viewed_at desc
     limit ${VIEW_LIST_LIMIT}
-  `) as Array<{ viewed_at: string; via: string }>;
+  `) as Array<{ viewed_at: string; via: string; viewer: string | null }>;
 
   return rows.map((row) => ({
     at: new Date(row.viewed_at).toISOString(),
     via: row.via === 'app' ? 'app' : 'page',
+    ...(row.viewer ? { who: row.viewer } : {}),
+  }));
+}
+
+/**
+ * For a share addressed to people: each address on it, how often it opened the document and when
+ * last — the ones that never have, too, because "not opened yet" is half of what is being asked.
+ */
+export async function namedOpens(documentId: string): Promise<NamedOpens[]> {
+  const rows = (await sql()`
+    select s.email, count(v.viewed_at)::int as opens, max(v.viewed_at) as last_at
+    from m2h_document_share s
+    left join m2h_share_view v on v.document_id = s.document_id and v.viewer = s.email
+    where s.document_id = ${documentId}
+    group by s.email, s.created_at
+    order by s.created_at
+  `) as Array<{ email: string; opens: number; last_at: string | null }>;
+
+  return rows.map((row) => ({
+    email: row.email,
+    opens: row.opens,
+    lastAt: row.last_at ? new Date(row.last_at).toISOString() : null,
   }));
 }

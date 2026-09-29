@@ -116,15 +116,22 @@ export interface DocumentViewsState {
   mode: ShareMode;
   views: number;
   lastViewedAt: string | null;
-  events: Array<{ at: string; via: 'page' | 'app' }>;
+  /** `who` only on a share addressed to people: the named address that opened it. */
+  events: Array<{ at: string; via: 'page' | 'app'; who?: string }>;
   /** The most the list holds; `views` above it means older opens are counted but not listed. */
   limit: number;
+  /** Each address a people-share names, with its opens — empty for a link. */
+  people: Array<{ email: string; opens: number; lastAt: string | null }>;
+  /** The owner's own address, so their opens read as "you". */
+  you: string;
 }
 
 export interface SharedDocument {
   name: string;
   markdown: string;
   createdAt: number;
+  /** Addressed to this reader by name, so the owner sees their opens. */
+  watched: boolean;
 }
 
 export const api = {
@@ -480,14 +487,16 @@ export const api = {
 
   /** The public read: 404 when it was never shared, 401/403 when it was not shared with you. */
   getShared: async (token: string): Promise<SharedDocument> => {
-    const { document } = await request<{
+    const { document, watched } = await request<{
       document: { name: string; markdown: string; created_at: string };
+      watched?: boolean;
     }>(`/api/shared/${encodeURIComponent(token)}`);
 
     return {
       name: document.name,
       markdown: document.markdown,
       createdAt: new Date(document.created_at).getTime(),
+      watched: watched === true,
     };
   },
 };

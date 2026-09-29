@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'Shared with named people, the Views tab says which of them opened it',
+    body:
+      'For a document shared with specific addresses, the Views tab now lists each of them — '
+      + 'opened how often and when last, or not yet — and every open in the list says whose it '
+      + 'was, with your own as “you”. Those readers sign in to open it, and the page they '
+      + 'read tells them the person who shared it can see when they do. A link anyone can open '
+      + 'still records nobody.',
+  },
+  {
+    date: '2026-09-30',
     title: 'Every open of a shared link, in a tab of its own',
     body:
       'A saved document has a Views tab beside Check: every time its link was opened, grouped by '

@@ -736,6 +736,7 @@ const SHARED_CHROME_STYLE = `
 }
 
 .md-bar .doc-meta { font-size: 0.75rem; }
+.md-bar .doc-note { font-size: 0.75rem; color: var(--md-secondary); }
 
 .md-bar .doc-stats {
   display: flex;
@@ -1038,6 +1039,11 @@ interface SharedPageOptions {
    * for every time, and the bots that fetch a link to draw its preview do not load images.
    */
   seenHref?: string;
+  /**
+   * Addressed to this reader by name, so the owner can see their opens. Said on the page, because
+   * a reader who is being counted by name is owed knowing it.
+   */
+  watched?: boolean;
   /** Bytes of Markdown, as the app counts them. */
   size?: number;
   /** The counts the app shows under a document's name. Only the three that fit are used. */
@@ -1125,6 +1131,7 @@ export function buildSharedPage({
   reportHref,
   openHref,
   seenHref,
+  watched,
   size,
   stats,
 }: SharedPageOptions): string {
@@ -1167,6 +1174,11 @@ ${SHARED_CHROME_STYLE}
     </div>
     <div class="doc-meta">${size ? `${weigh(size)} · ` : ''}converted ${escapeHtml(stamp)}</div>
     ${counts ? `<div class="doc-stats">${counts}</div>` : ''}
+    ${
+      watched
+        ? '<div class="doc-note">Shared with you by name: the person who shared it can see when you open it.</div>'
+        : ''
+    }
   </div>
   <div class="actions">
     ${openHref ? `<a class="save" href="${escapeHtml(openHref)}">Save to your account</a>` : ''}

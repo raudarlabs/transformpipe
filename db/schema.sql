@@ -77,6 +77,15 @@ create table if not exists m2h_share_view (
 create index if not exists m2h_share_view_document
   on m2h_share_view (document_id, viewed_at desc);
 
+-- Which named address it was, for a document shared with specific people and nothing else.
+--
+-- A link anyone can open records no reader; a share addressed to people is opened only after the
+-- reader signs in as one of those addresses, and the owner named them — so the address is kept,
+-- the page tells the reader so, and the privacy page says it. The owner's own opens carry theirs.
+
+alter table m2h_share_view
+  add column if not exists viewer text;
+
 -- Sources move out of the row.
 --
 -- `markdown` stays nullable rather than being dropped: rows written before the Blob store existed
