@@ -1039,6 +1039,12 @@ api.delete('/documents', async (c) => {
  * It carries no scripts of its own, so it says so: `script-src 'none'` means an injection that
  * survived the sanitiser still cannot run, and `frame-ancestors 'none'` keeps the document out of
  * someone else's frame, where it could be dressed up as their page.
+ *
+ * `x-robots-tag` keeps it out of search on every answer the route gives — the page, both
+ * downloads, the notices — where the meta tag covers the page alone. A header rather than
+ * `Disallow: /s/` in robots.txt: a crawler told not to fetch a page never reads the noindex on it,
+ * and a link posted in public can then be listed as a bare URL anyway. `nofollow` because the links
+ * inside are somebody else's, and a shared page must not lend them this domain's standing.
  */
 const SHARED_PAGE_HEADERS: Record<string, string> = {
   'content-security-policy': [
@@ -1054,6 +1060,7 @@ const SHARED_PAGE_HEADERS: Record<string, string> = {
   ].join('; '),
   'x-content-type-options': 'nosniff',
   'referrer-policy': 'no-referrer',
+  'x-robots-tag': 'noindex, nofollow, noarchive',
 };
 
 app.get('/s/:token', async (c) => {

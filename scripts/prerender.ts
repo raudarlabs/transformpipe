@@ -1315,14 +1315,17 @@ writeFileSync(join(DIST, 'sitemap.xml'), sitemap, 'utf8');
 writeFileSync(
   join(DIST, 'robots.txt'),
   /*
-   * What a crawler has no business in: somebody else's shared document, which is linked to
-   * deliberately rather than crawled; the endpoints, which answer JSON and would be indexed as
+   * What a crawler has no business in: the endpoints, which answer JSON and would be indexed as
    * pages; and the history, which is a signed-in view that renders nothing for a stranger.
+   *
+   * Not `/s/`, on purpose. A shared document stays out of search through the `x-robots-tag` its
+   * every answer carries (see SHARED_PAGE_HEADERS in server/app.ts) — and a crawler that is not
+   * allowed to fetch a page never sees that header, so a link somebody posts in public could be
+   * listed as a bare address. Allowing the fetch is what makes the noindex readable.
    */
   [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /s/',
     'Disallow: /open/',
     'Disallow: /report/',
     'Disallow: /api/',
