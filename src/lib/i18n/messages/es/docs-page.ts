@@ -109,7 +109,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Cualquiera con el enlace',
   'docs.sharing.mode.people': 'Solo estas direcciones',
   'docs.sharing.revoking':
-    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. No se envía ningún correo — el enlace lo pasas tú.',
+    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. Un enlace también puede tener fecha de fin — después, la página dice que ha caducado, y una nueva fecha lo reabre. Una dirección añadida a un enlace para personas concretas recibe un correo con el enlace.',
   /** `{shared}` es el filtro que nombra `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Los documentos que otras personas te han dirigido aparecen bajo el filtro {shared}, con quién ha compartido cada uno. Son de solo lectura: abrir y descargar, sin eliminar y sin volver a compartir. Un enlace compartido pertenece a quien lo tenga, así que no aparece en la lista de nadie.',
@@ -135,7 +135,7 @@ export const docsPage = {
   'docs.api.one': 'Los metadatos y el Markdown de origen.',
   'docs.api.html': 'El documento autónomo. {theme} es opcional.',
   'docs.api.delete': 'Elimina la fila y el original guardado.',
-  'docs.api.share': '{modes}. {private} descarta el token.',
+  'docs.api.share': '{modes}. {private} descarta el token. {expiry} es una fecha y hora ISO 8601, o null para ninguna fecha de fin.',
   'docs.api.usage': 'Lo que está usando la cuenta, frente a los límites.',
   /** `{shape}` es el cuerpo del error mismo. */
   'docs.api.errors':

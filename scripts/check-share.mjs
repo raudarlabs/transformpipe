@@ -1,0 +1,302 @@
+/*
+ * What a shared link does, end to end against the running dev server and the real database.
+ *
+ * Like check-mcp, the half that needs a browser — signing in — cannot be driven from here, so the
+ * access token an assistant would hold is minted directly in its table, and the documents are
+ * written straight into theirs. Everything a reader or a script touches after that is the real
+ * code path: the page at /s/<token> with both downloads, the app's reader at /api/shared/<token>,
+ * the public API that sets and reports an expiry, and the MCP tools that report one.
+ *
+ * Every row it makes is removed at the end, pass or fail.
+ */
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { neon } from '@neondatabase/serverless';
+import { config } from 'dotenv';
+
+config({ path: ['.env.local', '.env'], quiet: true });
+
+const HOST = process.env.SHARE_HOST ?? 'http://127.0.0.1:5180';
+const sql = neon(process.env.DATABASE_URL);
+const hash = (t) => createHash('sha256').update(t).digest('hex');
+
+let passed = 0;
+let failed = 0;
+
+function check(name, ok, detail = '') {
+  if (ok) {
+    passed += 1;
+    console.log(`  ok   ${name}`);
+  } else {
+    failed += 1;
+    console.log(`  FAIL ${name}${detail ? ` — ${detail}` : ''}`);
+  }
+}
+
+const made = { documents: [], tokens: [] };
+
+/*
+ * Somebody who may publish: link sharing waits for a confirmed address, and the API refusing to
+ * publish for an unconfirmed one is a different check from the one this file makes.
+ */
+const [someone] = await sql`
+  select id from neon_auth."user" where "emailVerified" = true order by "createdAt" limit 1
+`;
+
+if (!someone) {
+  console.log('No confirmed account in this database to act as; nothing checked.');
+  process.exit(1);
+}
+
+const access = randomBytes(32).toString('base64url');
+
+await sql`
+  insert into m2h_oauth_token (token_hash, kind, client_id, user_id, scope, resource, grant_id, expires_at)
+  values (${hash(access)}, 'access', 'check-share', ${someone.id}, 'documents:read documents:write',
+          ${`${HOST}/api/mcp`}, ${randomUUID()}, now() + interval '1 hour')
+`;
+made.tokens.push(hash(access));
+
+/** A shared document, written as the app would have written it. `ends` is SQL for its expiry. */
+async function shared({ mode = 'link', endsInSeconds = null } = {}) {
+  const token = randomBytes(16).toString('base64url');
+  const markdown = `# Check share\n\nWritten by scripts/check-share.mjs at ${new Date().toISOString()}.`;
+  const [row] = await sql`
+    insert into m2h_document (user_id, name, size, markdown, stats, share_mode, share_token, share_expires_at)
+    values (${someone.id}, 'check-share.md', ${markdown.length}, ${markdown}, '{}'::jsonb, ${mode}, ${token},
+            ${endsInSeconds === null ? null : new Date(Date.now() + endsInSeconds * 1000).toISOString()}::timestamptz)
+    returning id
+  `;
+
+  made.documents.push(row.id);
+
+  return { id: row.id, token };
+}
+
+const get = (path, headers = {}) => fetch(`${HOST}${path}`, { headers, redirect: 'manual' });
+
+const v1 = (path, init = {}) =>
+  fetch(`${HOST}/api/v1${path}`, {
+    ...init,
+    headers: {
+      authorization: `Bearer ${access}`,
+      ...(init.body ? { 'content-type': 'application/json' } : {}),
+      ...init.headers,
+    },
+  });
+
+const tool = async (name, args) => {
+  const response = await fetch(`${HOST}/api/mcp`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${access}` },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'tools/call',
+      params: { name, arguments: args },
+    }),
+  });
+  const body = await response.json().catch(() => null);
+
+  return body?.result?.content?.map((part) => part.text).join('\n') ?? '';
+};
+
+try {
+  console.log('\n— a link with no end');
+
+  const open = await shared();
+  const page = await get(`/s/${open.token}`);
+  const cache = page.headers.get('cache-control') ?? '';
+
+  check('opens', page.status === 200, `got ${page.status}`);
+  check('is kept at the edge for a minute', /s-maxage=60\b/.test(cache), cache);
+  check(
+    'and never served stale after that minute',
+    !/stale-while-revalidate/.test(cache),
+    cache
+  );
+  check(
+    'and stays out of search',
+    (page.headers.get('x-robots-tag') ?? '').includes('noindex')
+  );
+
+  console.log('\n— a link that ends soon');
+
+  const soon = await shared({ endsInSeconds: 30 });
+  const soonPage = await get(`/s/${soon.token}`);
+  const soonAge = Number(/s-maxage=(\d+)/.exec(soonPage.headers.get('cache-control') ?? '')?.[1] ?? -1);
+
+  check('opens before it ends', soonPage.status === 200, `got ${soonPage.status}`);
+  check(
+    'and the edge keeps it no longer than it has left',
+    soonAge >= 0 && soonAge <= 30,
+    soonPage.headers.get('cache-control') ?? ''
+  );
+
+  console.log('\n— a link that has ended');
+
+  const ended = await shared({ endsInSeconds: -60 });
+
+  for (const [what, path] of [
+    ['the page', `/s/${ended.token}`],
+    ['the HTML download', `/s/${ended.token}?download`],
+    ['the Markdown download', `/s/${ended.token}?download=md`],
+  ]) {
+    const response = await get(path);
+
+    check(`${what} is 410`, response.status === 410, `got ${response.status}`);
+    check(
+      `${what} is not cached`,
+      (response.headers.get('cache-control') ?? '').includes('no-store'),
+      response.headers.get('cache-control') ?? ''
+    );
+  }
+
+  const endedPage = await (await get(`/s/${ended.token}`)).text();
+
+  check('and says it expired, not that it never existed', /has expired/.test(endedPage));
+  check('without the document in it', !/Written by scripts\/check-share/.test(endedPage));
+
+  const reader = await get(`/api/shared/${encodeURIComponent(ended.token)}`);
+
+  check('the app reader is 410 too', reader.status === 410, `got ${reader.status}`);
+
+  const addressed = await shared({ mode: 'people', endsInSeconds: -60 });
+  const addressedPage = await get(`/s/${addressed.token}`);
+
+  check(
+    'an addressed link that ended says so before asking anybody to sign in',
+    addressedPage.status === 410,
+    `got ${addressedPage.status}`
+  );
+
+  console.log('\n— setting an end through the API');
+
+  const target = await shared();
+  const later = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const put = (body) =>
+    v1(`/documents/${target.id}/share`, { method: 'PUT', body: JSON.stringify(body) });
+
+  const set = await put({ mode: 'link', expires_at: later });
+  const setBody = await set.json().catch(() => ({}));
+
+  check('a date in the future is taken', set.status === 200, `got ${set.status} ${JSON.stringify(setBody)}`);
+  check('and echoed back', setBody.expires_at === later, setBody.expires_at);
+
+  const read = await (await v1(`/documents/${target.id}/share`)).json().catch(() => ({}));
+
+  check('and read back', read.expires_at === later, read.expires_at);
+
+  const listed = await (await v1(`/documents/${target.id}`)).json().catch(() => ({}));
+
+  check(
+    'and carried on the document',
+    listed.document?.share?.expires_at === later,
+    JSON.stringify(listed.document?.share)
+  );
+
+  const kept = await (await put({ mode: 'link' })).json().catch(() => ({}));
+
+  check('leaving it out keeps it', kept.expires_at === later, kept.expires_at);
+
+  for (const [what, value] of [
+    ['a date in the past', new Date(Date.now() - 1000).toISOString()],
+    ['a date six years away', new Date(Date.now() + 6 * 365 * 24 * 60 * 60 * 1000).toISOString()],
+    ['something that is not a date', 'next tuesday'],
+    ['a number', 1234],
+  ]) {
+    const refused = await put({ mode: 'link', expires_at: value });
+
+    check(`${what} is refused`, refused.status === 400, `got ${refused.status}`);
+  }
+
+  const reported = await tool('tp_get_document', { id: target.id });
+
+  check(
+    'an assistant reading it is told when the link ends',
+    /The link stops working on/.test(reported),
+    reported.slice(0, 160)
+  );
+
+  const cleared = await (await put({ mode: 'link', expires_at: null })).json().catch(() => ({}));
+
+  check('null clears it', cleared.expires_at === null, String(cleared.expires_at));
+
+  await put({ mode: 'link', expires_at: later });
+  await sql`update m2h_document set share_views = 3, share_viewed_at = now() where id = ${target.id}`;
+
+  const revoked = await (await put({ mode: 'private' })).json().catch(() => ({}));
+  const [afterRevoke] = await sql`
+    select share_token, share_expires_at, share_views, share_viewed_at from m2h_document where id = ${target.id}
+  `;
+
+  check(
+    'revoking clears the end and the count with the token',
+    revoked.mode === 'private' &&
+      afterRevoke.share_token === null &&
+      afterRevoke.share_expires_at === null &&
+      afterRevoke.share_views === 0 &&
+      afterRevoke.share_viewed_at === null,
+    JSON.stringify(afterRevoke)
+  );
+
+  const reshared = await (await put({ mode: 'link' })).json().catch(() => ({}));
+
+  check(
+    'and the next link starts with no end',
+    reshared.mode === 'link' && reshared.expires_at === null && Boolean(reshared.url),
+    JSON.stringify(reshared)
+  );
+
+  const tools = await (
+    await fetch(`${HOST}/api/mcp`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${access}` },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+    })
+  ).json();
+
+  check(
+    'no tool lets an assistant set an end',
+    (tools.result?.tools ?? []).every(
+      (one) => !Object.keys(one.inputSchema?.properties ?? {}).some((key) => /expir/i.test(key))
+    )
+  );
+
+  console.log('\n— creating a document with an end');
+
+  const orphan = await v1(
+    `/documents?name=check-share.md&expires_at=${encodeURIComponent(later)}`,
+    { method: 'POST', body: JSON.stringify({ name: 'check-share.md', markdown: '# x' }) }
+  );
+
+  check('an end with nothing shared is refused', orphan.status === 400, `got ${orphan.status}`);
+
+  const created = await v1(
+    `/documents?name=check-share.md&share=link&expires_at=${encodeURIComponent(later)}`,
+    { method: 'POST', body: JSON.stringify({ name: 'check-share.md', markdown: '# Check share' }) }
+  );
+  const createdBody = await created.json().catch(() => ({}));
+
+  if (createdBody.document?.id) {
+    made.documents.push(createdBody.document.id);
+  }
+
+  check(
+    'a document published with an end carries it',
+    created.status === 201 || created.status === 200
+      ? createdBody.document?.share?.expires_at === later
+      : false,
+    `${created.status} ${JSON.stringify(createdBody).slice(0, 160)}`
+  );
+} finally {
+  /* Through the API where it can, so a source that went to blob storage goes with its row. */
+  for (const id of made.documents) {
+    await v1(`/documents/${id}`, { method: 'DELETE' }).catch(() => undefined);
+  }
+
+  await sql`delete from m2h_document where id = any(${made.documents}::uuid[])`;
+  await sql`delete from m2h_oauth_token where token_hash = any(${made.tokens})`;
+}
+
+console.log(`\n${passed} passed, ${failed} failed`);
+process.exit(failed === 0 ? 0 : 1);

@@ -34,6 +34,7 @@ import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { deleteSources, putSource, readSource } from './source.js';
+import { readExpiry } from './share-gate.js';
 import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 
 /*
@@ -200,6 +201,7 @@ interface DocumentRow {
   created_at: string;
   share_mode: 'private' | 'link' | 'people';
   share_token: string | null;
+  share_expires_at?: string | null;
   summary?: string | null;
   summary_created_at?: string | null;
   replaces?: string | null;
@@ -212,6 +214,10 @@ interface DocumentRow {
  */
 const shareUrl = (c: Context, token: string | null) =>
   token ? `${selfOrigin(c)}/s/${token}` : null;
+
+/** A timestamp column as the API spells it: ISO 8601 in UTC, whatever the driver handed back. */
+const isoOrNull = (value: string | Date | null | undefined) =>
+  value ? new Date(value).toISOString() : null;
 
 /** One document, as the API describes it. Kept flat and boring on purpose. */
 const asDocument = (
@@ -228,6 +234,8 @@ const asDocument = (
   share: {
     mode: row.share_mode,
     url: shareUrl(c, row.share_token),
+    // When the link stops working, or null for never. Past means it has already stopped.
+    expires_at: isoOrNull(row.share_expires_at),
   },
   // The text itself is not carried on every row — see the dedicated summary endpoint — only
   // whether one exists, which is enough for a list to show an indicator.
@@ -250,7 +258,7 @@ v1.get('/documents', async (c) => {
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
             and search @@ websearch_to_tsquery('simple', ${q})
@@ -258,7 +266,7 @@ v1.get('/documents', async (c) => {
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
           order by created_at desc
@@ -621,6 +629,17 @@ v1.post('/documents', async (c) => {
     return c.json({ error: 'share must be `link` or `people`' }, 400);
   }
 
+  /* `?expires_at=` ends the link it publishes; without `share` there is no link to end. */
+  const expiry = readExpiry(c.req.query('expires_at'));
+
+  if (!expiry.ok) {
+    return c.json({ error: expiry.error }, 400);
+  }
+
+  if (expiry.value && share === undefined) {
+    return c.json({ error: 'expires_at needs share=link or share=people: a private document has no link' }, 400);
+  }
+
   /*
    * The same rule as PUT /documents/:id/share, and this is the door that did not ask.
    *
@@ -670,7 +689,7 @@ v1.post('/documents', async (c) => {
   const stats = getDocStats(markdown, html);
 
   const created = (await sql()`
-    insert into m2h_document (user_id, name, kind, size, markdown, stats, share_mode, share_token, search, replaces)
+    insert into m2h_document (user_id, name, kind, size, markdown, stats, share_mode, share_token, share_expires_at, search, replaces)
     values (
       ${userId},
       ${documentName},
@@ -680,10 +699,11 @@ v1.post('/documents', async (c) => {
       ${JSON.stringify(stats)}::jsonb,
       ${share ?? 'private'},
       ${share ? randomBytes(16).toString('base64url') : null},
+      ${expiry.value?.toISOString() ?? null}::timestamptz,
       to_tsvector('simple', ${markdown}),
       ${replaces ?? null}
     )
-    returning id, name, kind, size, stats, created_at, share_mode, share_token, replaces
+    returning id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, replaces
   `) as DocumentRow[];
 
   try {
@@ -719,7 +739,7 @@ async function findDocument(userId: string, id: string) {
   }
 
   const rows = (await sql()`
-    select id, user_id, name, kind, size, stats, created_at, share_mode, share_token,
+    select id, user_id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at,
            markdown, blob_path, summary, summary_created_at, replaces
     from m2h_document
     where user_id = ${userId} and id = ${id}
@@ -1013,6 +1033,7 @@ v1.get('/documents/:id/share', async (c) => {
     mode: row.share_mode,
     url: shareUrl(c, row.share_token),
     emails: emails.map((entry) => entry.email),
+    expires_at: isoOrNull(row.share_expires_at),
   });
 });
 
@@ -1026,12 +1047,20 @@ v1.put('/documents/:id/share', async (c) => {
   type ShareBody = {
     mode?: 'private' | 'link' | 'people';
     emails?: string[];
+    expires_at?: unknown;
   };
 
   const body = await c.req.json<ShareBody>().catch(() => ({}) as ShareBody);
 
   if (!body.mode || !['private', 'link', 'people'].includes(body.mode)) {
     return c.json({ error: 'mode must be private, link or people' }, 400);
+  }
+
+  /* Left out keeps the expiry the link has; null clears it — see readExpiry. */
+  const expiry = readExpiry(body.expires_at);
+
+  if (!expiry.ok) {
+    return c.json({ error: expiry.error }, 400);
   }
 
   const row = await findDocument(userId, id);
@@ -1046,17 +1075,23 @@ v1.put('/documents/:id/share', async (c) => {
   }
 
   if (body.mode === 'private') {
-    // Revoking drops the token: a link already sent has to stop working.
+    // Revoking drops the token: a link already sent has to stop working. Its expiry and its count
+    // go with it — they belonged to that link.
     await sql()`
       update m2h_document
-      set share_mode = 'private', share_token = null
+      set share_mode = 'private', share_token = null,
+          share_expires_at = null, share_views = 0, share_viewed_at = null
       where user_id = ${userId} and id = ${id}
     `;
   } else {
     await sql()`
       update m2h_document
       set share_mode = ${body.mode},
-          share_token = coalesce(share_token, ${randomBytes(16).toString('base64url')})
+          share_token = coalesce(share_token, ${randomBytes(16).toString('base64url')}),
+          share_expires_at = case
+            when ${expiry.value !== undefined} then ${expiry.value?.toISOString() ?? null}::timestamptz
+            else share_expires_at
+          end
       where user_id = ${userId} and id = ${id}
     `;
   }
@@ -1134,6 +1169,7 @@ v1.put('/documents/:id/share', async (c) => {
           from: sender ?? 'Somebody',
           documentName: after.name,
           url,
+          expiresAt: after.share_expires_at,
         });
 
         if (sent.ok) {
@@ -1157,6 +1193,7 @@ v1.put('/documents/:id/share', async (c) => {
     mode: after?.share_mode,
     url,
     emails: emails.map((entry) => entry.email),
+    expires_at: isoOrNull(after?.share_expires_at),
     /* The addresses that were actually told, as the mailer reported it. */
     notified,
   });

@@ -43,6 +43,13 @@ import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
 import { deleteSources, putSource, readSource } from './source.js';
+import {
+  edgeSeconds,
+  normaliseEmail,
+  readExpiry,
+  shareGate,
+  writtenUtc,
+} from './share-gate.js';
 import { tallyRoute } from './usage.js';
 import v1 from './v1.js';
 
@@ -63,56 +70,33 @@ api.get('/health', (c) => c.json({ ok: true }));
 
 interface ShareRow {
   id: string;
-  name: string;
-  markdown: string;
-  created_at: string;
   share_mode: 'private' | 'link' | 'people';
   share_token: string | null;
+  share_expires_at: string | null;
 }
 
-const normaliseEmail = (value: unknown) =>
-  String(value ?? '')
-    .trim()
-    .toLowerCase();
-
 /**
- * A shared document, if this caller may have it.
- *
- * 'link' is anyone holding the token. 'people' is the owner plus the addresses on the document —
- * checked against the session, never against anything the caller says about themselves.
+ * A shared document, if this caller may have it — the app's reader behind /open/<token>, and the
+ * "Save a copy" that reads through it. The rules are `shareGate`'s, the same ones the page at
+ * /s/<token> asks, so a link that has ended ends here too.
  */
 api.get('/shared/:token', async (c) => {
-  const rows = (await sql()`
-    select id, user_id, name, markdown, blob_path, created_at, share_mode, share_token
-    from m2h_document
-    where share_token = ${c.req.param('token')}
-  `) as Array<ShareRow & { user_id: string; blob_path: string | null }>;
+  const verdict = await shareGate(c, c.req.param('token'));
 
-  const document = rows[0];
-
-  if (!document || document.share_mode === 'private') {
-    return c.json({ error: 'Not found' }, 404);
-  }
-
-  if (document.share_mode === 'people') {
-    const user = await currentUser(c);
-
-    if (!user) {
-      return c.json({ error: 'Sign in to open this document' }, 401);
-    }
-
-    const allowed =
-      user.id === document.user_id ||
-      ((await sql()`
-        select 1 from m2h_document_share
-        where document_id = ${document.id}
-          and email = ${normaliseEmail(user.email)}
-      `) as unknown[]).length > 0;
-
-    if (!allowed) {
-      return c.json({ error: 'This document was not shared with you' }, 403);
+  if (!verdict.ok) {
+    switch (verdict.why) {
+      case 'missing':
+        return c.json({ error: 'Not found' }, 404);
+      case 'expired':
+        return c.json({ error: 'This link has expired' }, 410);
+      case 'sign-in':
+        return c.json({ error: 'Sign in to open this document' }, 401);
+      case 'not-yours':
+        return c.json({ error: 'This document was not shared with you' }, 403);
     }
   }
+
+  const { document } = verdict;
 
   return c.json({
     document: {
@@ -363,6 +347,8 @@ api.get('/shared-with-me', async (c) => {
     where s.email = ${normaliseEmail(user.email)}
       and d.share_mode = 'people'
       and d.user_id <> ${user.id}
+      -- A link that has ended is not something anybody shares with you any more.
+      and (d.share_expires_at is null or d.share_expires_at > now())
     order by s.created_at desc
     limit ${QUOTA.documents}
   `) as Array<DocumentRow & { share_token: string; owner_email: string }>;
@@ -788,10 +774,10 @@ api.get('/documents/:id/versions', async (c) => {
 /** The document's sharing state, as the dialog needs it. */
 async function shareState(userId: string, documentId: string) {
   const rows = (await sql()`
-    select id, share_mode, share_token
+    select id, share_mode, share_token, share_expires_at
     from m2h_document
     where user_id = ${userId} and id = ${documentId}
-  `) as Array<Pick<ShareRow, 'id' | 'share_mode' | 'share_token'>>;
+  `) as ShareRow[];
 
   if (rows.length === 0) {
     return null;
@@ -807,6 +793,10 @@ async function shareState(userId: string, documentId: string) {
     mode: rows[0].share_mode,
     token: rows[0].share_token,
     emails: emails.map((row) => row.email),
+    /* An expired link is still reported, so the dialog can say it ended and offer a new date. */
+    expiresAt: rows[0].share_expires_at
+      ? new Date(rows[0].share_expires_at).toISOString()
+      : null,
   };
 }
 
@@ -831,12 +821,19 @@ api.get('/documents/:id/share', async (c) => {
 api.put('/documents/:id/share', async (c) => {
   const userId = c.get('user').id;
   const id = c.req.param('id');
-  const body = await c.req
-    .json<{ mode?: 'private' | 'link' | 'people' }>()
-    .catch(() => ({}) as { mode?: 'private' | 'link' | 'people' });
+  type ShareBody = { mode?: 'private' | 'link' | 'people'; expiresAt?: unknown };
+
+  const body = await c.req.json<ShareBody>().catch(() => ({}) as ShareBody);
 
   if (!body.mode || !['private', 'link', 'people'].includes(body.mode)) {
     return c.json({ error: 'mode must be private, link or people' }, 400);
+  }
+
+  /* Absent leaves the expiry as it is, null clears it — see readExpiry. */
+  const expiry = readExpiry(body.expiresAt);
+
+  if (!expiry.ok) {
+    return c.json({ error: expiry.error }, 400);
   }
 
   /*
@@ -850,10 +847,14 @@ api.put('/documents/:id/share', async (c) => {
   }
 
   if (body.mode === 'private') {
-    // Revoking drops the token as well: a link that was sent must stop working.
+    /*
+     * Revoking drops the token as well: a link that was sent must stop working. The expiry and the
+     * count go with it, because they belong to that link — the next one starts with neither.
+     */
     await sql()`
       update m2h_document
-      set share_mode = 'private', share_token = null
+      set share_mode = 'private', share_token = null,
+          share_expires_at = null, share_views = 0, share_viewed_at = null
       where user_id = ${userId} and id = ${id}
     `;
   } else {
@@ -863,7 +864,11 @@ api.put('/documents/:id/share', async (c) => {
 
     await sql()`
       update m2h_document
-      set share_mode = ${body.mode}
+      set share_mode = ${body.mode},
+          share_expires_at = case
+            when ${expiry.value !== undefined} then ${expiry.value?.toISOString() ?? null}::timestamptz
+            else share_expires_at
+          end
       where user_id = ${userId} and id = ${id}
     `;
   }
@@ -944,6 +949,7 @@ api.post('/documents/:id/share/people', async (c) => {
         from: owner ?? 'Somebody',
         documentName: document[0]?.name ?? 'a document',
         url: `${selfOrigin(c)}/s/${state.token}`,
+        expiresAt: state.expiresAt,
       });
 
       notified = sent.ok;
@@ -1028,7 +1034,9 @@ api.delete('/documents', async (c) => {
  * A link share is the same bytes for everyone, so it is built once and handed to the CDN with a
  * short s-maxage: repeat visitors never reach this function, and the database sees one read per
  * minute per document instead of one per visitor. The window is deliberately short — revoking a
- * share has to take effect in about a minute, not a day.
+ * share has to take effect in about a minute, not a day — and shorter still when the link expires
+ * sooner than that. No `stale-while-revalidate`: it served the old copy for up to ten minutes after
+ * the minute was up, so a revoked link kept opening. See `edgeSeconds` in server/share-gate.ts.
  *
  * An addressed share depends on who is asking, so it is never cached; a stranger is bounced to
  * the app, which knows how to ask them to sign in.
@@ -1077,25 +1085,9 @@ app.get('/s/:token', async (c) => {
    */
   const { markdownToHtml } = await import('./render.js');
 
-  const rows = (await sql()`
-    select id, user_id, name, markdown, blob_path, created_at, share_mode, size, stats
-    from m2h_document
-    where share_token = ${token}
-  `) as Array<{
-    id: string;
-    user_id: string;
-    name: string;
-    markdown: string | null;
-    blob_path: string | null;
-    created_at: string;
-    share_mode: 'private' | 'link' | 'people';
-    size: number;
-    stats: Record<string, number> | null;
-  }>;
+  const verdict = await shareGate(c, token);
 
-  const document = rows[0];
-
-  if (!document || document.share_mode === 'private') {
+  if (!verdict.ok && verdict.why === 'missing') {
     c.header('cache-control', 'no-store');
     c.status(404);
 
@@ -1107,31 +1099,40 @@ app.get('/s/:token', async (c) => {
     );
   }
 
-  if (document.share_mode === 'people') {
-    const user = await currentUser(c);
-    const allowed =
-      user &&
-      (user.id === document.user_id ||
-        ((await sql()`
-          select 1 from m2h_document_share
-          where document_id = ${document.id}
-            and email = ${normaliseEmail(user.email)}
-        `) as unknown[]).length > 0);
+  /*
+   * 410, not 404: the link was real and has ended, which is a different thing to tell a reader —
+   * and the date, because "ask them for a new one" lands better when you can see it was planned.
+   */
+  if (!verdict.ok && verdict.why === 'expired') {
+    c.header('cache-control', 'no-store');
+    c.status(410);
 
-    if (!allowed) {
-      // The app owns the sign-in flow; /open/<token> is the same page, client-side.
-      c.header('cache-control', 'no-store');
-
-      return c.redirect(`/open/${encodeURIComponent(token)}`, 302);
-    }
-
-    c.header('cache-control', 'private, no-store');
-  } else {
-    c.header(
-      'cache-control',
-      'public, max-age=0, s-maxage=60, stale-while-revalidate=600'
+    return c.html(
+      buildNoticePage(
+        'This link has expired',
+        `The person who shared it set it to stop working on ${writtenUtc(
+          verdict.expiredAt
+        )}. Ask them for a new one.`
+      )
     );
   }
+
+  if (!verdict.ok) {
+    // The app owns the sign-in flow; /open/<token> is the same page, client-side.
+    c.header('cache-control', 'no-store');
+
+    return c.redirect(`/open/${encodeURIComponent(token)}`, 302);
+  }
+
+  const { document } = verdict;
+  const keep = edgeSeconds(verdict.expiresAt);
+
+  c.header(
+    'cache-control',
+    document.share_mode === 'people' || keep === 0
+      ? 'private, no-store'
+      : `public, max-age=0, s-maxage=${keep}`
+  );
 
   const source = await readSource(document);
 

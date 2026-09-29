@@ -34,7 +34,7 @@ export const docs: Content['docs'] = {
   sharing: {
     title: 'Partage',
     summary:
-      'Un lien que tout le monde peut ouvrir, ou des adresses nommées qui demandent au lecteur de se connecter. La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner.',
+      'Un lien que tout le monde peut ouvrir, ou des adresses nommées qui demandent au lecteur de se connecter. La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner. Un lien peut cesser de fonctionner à une date choisie.',
   },
   account: {
     title: 'Compte',

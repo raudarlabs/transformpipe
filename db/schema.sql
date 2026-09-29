@@ -41,6 +41,27 @@ create table if not exists m2h_document_share (
   primary key (document_id, email)
 );
 
+-- What a link is allowed to do, beside who may use it.
+--
+-- `share_expires_at` ends the link at a moment the owner chose; it is checked where the token is
+-- read (server/share-gate.ts), so nothing has to run at that moment to end it. The other three are
+-- the view count and the password — added with it so the table is altered once. All four belong
+-- to the link rather than the document: revoking clears the expiry and the count along with the
+-- token, and a new link starts with neither. The password alone outlives a revoke, because
+-- removing it is a decision of its own.
+
+alter table m2h_document
+  add column if not exists share_expires_at timestamptz;
+
+alter table m2h_document
+  add column if not exists share_password_hash text;
+
+alter table m2h_document
+  add column if not exists share_views integer not null default 0;
+
+alter table m2h_document
+  add column if not exists share_viewed_at timestamptz;
+
 -- Sources move out of the row.
 --
 -- `markdown` stays nullable rather than being dropped: rows written before the Blob store existed

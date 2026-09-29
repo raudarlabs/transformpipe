@@ -458,8 +458,9 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
                   <Rich
                     text={t('docs.api.share')}
                     parts={{
-                      modes: <InlineCode>{'{mode, emails[]}'}</InlineCode>,
+                      modes: <InlineCode>{'{mode, emails[], expires_at}'}</InlineCode>,
                       private: <InlineCode>private</InlineCode>,
+                      expiry: <InlineCode>expires_at</InlineCode>,
                     }}
                   />
                 ),

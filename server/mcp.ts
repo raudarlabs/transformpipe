@@ -189,7 +189,7 @@ const forCard = (
     size: number;
     words?: number;
     created_at?: string;
-    share?: { mode?: string; url?: string | null };
+    share?: { mode?: string; url?: string | null; expires_at?: string | null };
   },
   markdown = ''
 ) => ({
@@ -202,6 +202,7 @@ const forCard = (
   created: document.created_at ?? '',
   share: document.share?.mode ?? 'private',
   shareUrl: document.share?.url ?? '',
+  shareExpires: document.share?.expires_at ?? '',
   url: `${selfOrigin(c)}${conversion(document.kind).path}?doc=${document.id}`,
   /* A glance, not the document: the card fades it out and the model already has the whole thing. */
   excerpt: markdown.slice(0, 600),
@@ -412,6 +413,23 @@ const bytes = (n: number) =>
       ? `${(n / 1024).toFixed(1)} kB`
       : `${(n / 1024 / 1024).toFixed(1)} MB`;
 
+/**
+ * When a link ends, as a line an assistant can repeat — or nothing, for a link with no end.
+ * Read-only on purpose: an assistant can say when a link stops working, and only the owner sets it.
+ */
+const linkEnds = (expiresAt: string | null | undefined) => {
+  if (!expiresAt) {
+    return null;
+  }
+
+  const at = new Date(expiresAt);
+  const written = `${at.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+
+  return at.getTime() <= Date.now()
+    ? `The link stopped working on ${written}; it opens for nobody until the owner sets a new end.`
+    : `The link stops working on ${written}.`;
+};
+
 const describe = (document: {
   id: string;
   name: string;
@@ -420,7 +438,7 @@ const describe = (document: {
   size: number;
   words?: number;
   created_at: string;
-  share: { mode: string; url: string | null };
+  share: { mode: string; url: string | null; expires_at?: string | null };
 }) =>
   [
     `${document.name}`,
@@ -429,6 +447,9 @@ const describe = (document: {
       document.created_at
     ).toISOString().slice(0, 10)} · ${document.share.mode}`,
     document.share.url ? `  ${document.share.url}` : null,
+    document.share.url && linkEnds(document.share.expires_at)
+      ? `  ${linkEnds(document.share.expires_at)}`
+      : null,
   ]
     .filter(Boolean)
     .join('\n');
@@ -996,7 +1017,14 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       return card(
         clip(
-          `${document.name} — ${bytes(document.size)}\n\n${document.markdown ?? ''}`
+          [
+            `${document.name} — ${bytes(document.size)}`,
+            document.share?.url ? linkEnds(document.share.expires_at) : null,
+            '',
+            document.markdown ?? '',
+          ]
+            .filter((line) => line !== null)
+            .join('\n')
         ),
         forCard(c, document, document.markdown ?? '')
       );
@@ -1202,6 +1230,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         [
           `Now ${changed.body.mode}.`,
           changed.body.url ? changed.body.url : 'The link is revoked, so one already sent no longer opens.',
+          changed.body.url ? linkEnds(changed.body.expires_at) : null,
           emails.length > 0 ? `Readers: ${emails.join(', ')}` : null,
         ]
           .filter(Boolean)

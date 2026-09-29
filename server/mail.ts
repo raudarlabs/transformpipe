@@ -28,6 +28,7 @@
  */
 
 import { markdownToHtml } from './render.js';
+import { writtenUtc } from './share-gate.js';
 
 const ENDPOINT = 'https://api.resend.com/emails';
 
@@ -221,8 +222,10 @@ export async function sendShareNotice(options: {
   from: string;
   documentName: string;
   url: string;
+  /** When the link stops working, if the sharer set a date. Said, so nobody saves it for later. */
+  expiresAt?: string | Date | null;
 }): Promise<Sent> {
-  const { to, from, documentName, url } = options;
+  const { to, from, documentName, url, expiresAt } = options;
   const safeName = asCode(documentName.slice(0, 200));
   const safeFrom = asCode(from.slice(0, 200));
 
@@ -245,6 +248,12 @@ export async function sendShareNotice(options: {
       `It was shared with ${to} specifically rather than published, so opening it means signing in`,
       'with that address. Nobody else can open the link.',
       '',
+      ...(expiresAt
+        ? [
+            `The link works until ${writtenUtc(expiresAt)}.`,
+            '',
+          ]
+        : []),
       '[TransformPipe](https://transformpipe.com) — a document converter that runs in your browser.',
     ].join('\n'),
   });

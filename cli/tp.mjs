@@ -140,6 +140,30 @@ function kindFor(name) {
   return KIND_BY_EXTENSION[dot === -1 ? '' : name.toLowerCase().slice(dot)] ?? null;
 }
 
+/**
+ * `--expires 7d`, `--expires 12h` or `--expires 2026-12-31`, as the instant the API takes.
+ *
+ * A bare date means the end of that day where the person typing it is — "until the 31st" is read
+ * the way it is said, and the server is given the exact moment so it never has to guess a zone.
+ */
+function expiresAt(value) {
+  const relative = /^(\d+)([hd])$/.exec(value);
+
+  if (relative) {
+    const hours = Number(relative[1]) * (relative[2] === 'd' ? 24 : 1);
+
+    return new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+  }
+
+  const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+  if (day) {
+    return new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]), 23, 59, 59).toISOString();
+  }
+
+  fail('--expires takes a length like 7d or 12h, or a date like 2026-12-31');
+}
+
 async function push() {
   const files = rest;
 
@@ -152,6 +176,12 @@ async function push() {
   if (share && share !== 'link' && share !== 'people') {
     fail('--share takes `link` or `people`');
   }
+
+  if (flags.expires && !share) {
+    fail('--expires ends a shared link. Add --share, or there is no link to end.');
+  }
+
+  const ends = flags.expires ? expiresAt(String(flags.expires)) : null;
 
   const sources = files.map((file) => {
     if (!existsSync(file)) {
@@ -224,6 +254,10 @@ async function push() {
       query.set('share', share);
     }
 
+    if (ends) {
+      query.set('expires_at', ends);
+    }
+
     if (flags.replaces) {
       query.set('replaces', flags.replaces);
     }
@@ -252,6 +286,10 @@ async function push() {
       `${document.name}  ${bytes(document.size)}  ${document.words} words`
     );
     console.log(`  ${document.share.url ?? `${HOST}/history (not shared)`}`);
+
+    if (document.share.expires_at) {
+      console.log(`  stops working ${new Date(document.share.expires_at).toLocaleString()}`);
+    }
   }
 }
 
@@ -371,6 +409,7 @@ if (!command || command === '--help' || command === '-h') {
       '  tp login tp_live_…               remember a key for this machine',
       '  tp push README.md --share         convert and publish; prints the link',
       '  tp push docs/*.md --merge --share chain several files into one document',
+      '  tp push notes.md --share --expires 7d  a link that stops working in a week',
       '  tp push v2.md --replaces <id>     link this push to an earlier document as a new version',
       '  tp list --q invoice               what is in the account, matching name or content',
       '  tp versions <id>                  every document in the same chain, oldest first',
@@ -378,7 +417,7 @@ if (!command || command === '--help' || command === '-h') {
       '  tp summary <id>                   a short summary, generated once and cached',
       '  tp usage                          how much room is left',
       '',
-      'Options: --key, --name, --share link|people, --merge, --replaces, --force, --json',
+      'Options: --key, --name, --share link|people, --expires 7d|12h|2026-12-31, --merge, --replaces, --force, --json',
       '',
       '`tp login` leaves the key in your shell history. TP_API_KEY in the environment does not.',
       `Host:    ${HOST}  (TP_HOST to point elsewhere)`,

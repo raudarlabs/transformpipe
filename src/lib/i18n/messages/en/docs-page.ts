@@ -120,7 +120,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Anyone with the link',
   'docs.sharing.mode.people': 'Only these addresses',
   'docs.sharing.revoking':
-    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. No email is ever sent — you pass the link on yourself.',
+    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. A link can also be given an end date — after it, the page says the link has expired, and a new date opens it again. Adding an address to a named share emails that person a notice with the link.',
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     "Documents other people addressed to you appear under the {shared} chip, with who shared each one. They are read-only: open and download, no delete, no re-share. A link share belongs to whoever holds the link, so it appears on no one's list.",
@@ -146,7 +146,7 @@ export const docsPage = {
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
   'docs.api.delete': 'Removes the row and its stored source.',
-  'docs.api.share': '{modes}. {private} drops the token.',
+  'docs.api.share': '{modes}. {private} drops the token. {expiry} is an ISO 8601 date-time, or null for no end.',
   'docs.api.usage': 'What the account is using, against the limits.',
   /** `{shape}` is the error body itself. */
   'docs.api.errors':

@@ -116,6 +116,17 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-30',
+    title: 'A shared link can stop working on a date you pick',
+    body:
+      'The Share dialog now asks how long a link works: with no end, for an hour, a day, a week, a month, '
+      + 'or until a day you choose. After it the page says the link has expired instead of opening '
+      + 'the document, and both downloads and Save a copy stop with it; a new date, or no end, '
+      + 'opens the same link again. The API takes `expires_at`, `tp push --share --expires 7d` does '
+      + 'it from a terminal, and an assistant is told when a link ends. A revoked link also stops '
+      + 'opening within a minute now — a cached copy could outlive the revoke by ten.',
+  },
+  {
     date: '2026-09-29',
     title: 'The assistants page leads with sharing',
     body:

@@ -35,7 +35,7 @@ export const docs: Content['docs'] = {
   sharing: {
     title: 'Teilen',
     summary:
-      'Ein Link, den jeder öffnen kann, oder benannte Adressen, die vom Leser eine Anmeldung verlangen. Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren.',
+      'Ein Link, den jeder öffnen kann, oder benannte Adressen, die vom Leser eine Anmeldung verlangen. Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren. Ein Link kann an einem festgelegten Datum enden.',
   },
   account: {
     title: 'Konto',

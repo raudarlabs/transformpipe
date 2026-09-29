@@ -21,6 +21,7 @@ interface V1Share {
   mode: ShareMode;
   url: string | null;
   emails: string[];
+  expires_at?: string | null;
 }
 
 /*
@@ -32,6 +33,7 @@ const asState = (share: V1Share): ShareState => ({
   mode: share.mode,
   token: share.url ? (share.url.split('/s/')[1] ?? null) : null,
   emails: share.emails ?? [],
+  expiresAt: share.expires_at ?? null,
 });
 
 async function ask(path: string, init?: RequestInit): Promise<ShareState> {
@@ -69,6 +71,13 @@ const write = (id: string, mode: ShareMode, emails?: string[]) =>
 export const extensionShareClient: ShareClient = {
   get: read,
   setMode: (id, mode) => write(id, mode),
+
+  setExpiry: (id, mode, expiresAt) =>
+    ask(`/documents/${id}/share`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ mode, expires_at: expiresAt }),
+    }),
 
   add: async (id, email) => {
     const now = await read(id);

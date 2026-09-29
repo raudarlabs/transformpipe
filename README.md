@@ -216,7 +216,7 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 
 | | |
 | --- | --- |
-| `POST /api/v1/documents` | Markdown as the body (`?name=`) or JSON `{name, markdown}`; `?share=link\|people` publishes it in the same call; `?kind=html-to-markdown\|csv-to-markdown\|json-to-markdown\|word-to-markdown\|notion-to-markdown\|confluence-to-markdown\|obsidian-to-markdown\|text-to-markdown\|excel-to-markdown\|powerpoint-to-markdown\|epub-to-markdown\|odt-to-markdown\|rtf-to-markdown\|evernote-to-markdown` converts the body first — for every format that is not plain text, post the file itself (`.docx`, `.zip`, `.xlsx`, `.pptx`, `.epub`, `.odt` or `.rtf`) as the body; `?replaces=<id>` links it to an earlier document as a new version, opt-in |
+| `POST /api/v1/documents` | Markdown as the body (`?name=`) or JSON `{name, markdown}`; `?share=link\|people` publishes it in the same call, and `?expires_at=` gives that link an end; `?kind=html-to-markdown\|csv-to-markdown\|json-to-markdown\|word-to-markdown\|notion-to-markdown\|confluence-to-markdown\|obsidian-to-markdown\|text-to-markdown\|excel-to-markdown\|powerpoint-to-markdown\|epub-to-markdown\|odt-to-markdown\|rtf-to-markdown\|evernote-to-markdown` converts the body first — for every format that is not plain text, post the file itself (`.docx`, `.zip`, `.xlsx`, `.pptx`, `.epub`, `.odt` or `.rtf`) as the body; `?replaces=<id>` links it to an earlier document as a new version, opt-in |
 | `GET /api/v1/documents` | the newest 500; `?q=` searches content as well as name, ranked by relevance |
 | `GET /api/v1/documents/:id` | metadata and the source |
 | `GET /api/v1/documents/:id.html` | the standalone document, `?theme=dark` optional |
@@ -224,7 +224,7 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 | `GET /api/v1/documents/:id.pdf` | a PDF, laid out from the same HTML by `pdfmake` — no headless browser |
 | `GET /api/v1/documents/:id/versions` | every document in the same version chain, oldest first |
 | `DELETE /api/v1/documents/:id` | removes the row and its source |
-| `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[]}`; `private` drops the token, so a link already sent stops working |
+| `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[], expires_at}`; `private` drops the token, so a link already sent stops working. `expires_at` is an ISO 8601 date-time the link stops working at (410 after it), `null` for no end, and left out to keep the one it has |
 | `POST /api/v1/documents/:id/summary` | a cached summary, generating it first if there is none; `?force=1` regenerates. Limited to 20 a day per account |
 
 A cookie works too, so the same endpoints can be tried from a signed-in browser. `GET
@@ -273,6 +273,7 @@ printing, because a tool people run in CI should not drag a package tree behind 
 node cli/tp.mjs login tp_live_…              # remembers the key in ~/.config/tp/config.json
 node cli/tp.mjs push README.md --share        # prints the link
 node cli/tp.mjs push docs/*.md --merge --share --name handbook.md
+node cli/tp.mjs push notes.md --share --expires 7d    # a link that stops working in a week
 node cli/tp.mjs list
 node cli/tp.mjs rm <id>
 node cli/tp.mjs summary <id>                  # generated once, cached; --force to regenerate
@@ -389,8 +390,9 @@ A single-page app is invisible to a crawler — every route answers with the sam
 title — so `npm run build` ends with `scripts/prerender.ts`. It runs in Node, renders each article
 with the server-side converter, and writes a real file per route: `dist/blog/<slug>/index.html` with
 its own title, description, canonical link and `BlogPosting` data, the home page with its `FAQPage`,
-plus `sitemap.xml` and `robots.txt` (shared documents are excluded — they are linked deliberately,
-not crawled). Vercel serves a matching file before it consults the rewrites, so those pages are
+plus `sitemap.xml` and `robots.txt` (shared documents are kept out of search by an
+`X-Robots-Tag: noindex` header on every answer under `/s/`, not by `robots.txt` — a crawler barred
+from a page never reads the noindex on it). Vercel serves a matching file before it consults the rewrites, so those pages are
 static; the bundle still loads and takes over, and in-app navigation never touches them.
 
 The FAQ is one list in `src/lib/faq.ts`, shown under the converter's dropzone and again in the docs.

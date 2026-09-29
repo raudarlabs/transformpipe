@@ -34,7 +34,7 @@ export const docs: Content['docs'] = {
   sharing: {
     title: 'Compartir',
     summary:
-      'Un enlace que cualquiera puede abrir, o direcciones concretas que piden al lector iniciar sesión. Revocar descarta el token, así que un enlace ya enviado deja de funcionar.',
+      'Un enlace que cualquiera puede abrir, o direcciones concretas que piden al lector iniciar sesión. Revocar descarta el token, así que un enlace ya enviado deja de funcionar. Un enlace puede dejar de funcionar en una fecha elegida.',
   },
   account: {
     title: 'Cuenta',

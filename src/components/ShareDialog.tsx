@@ -1,7 +1,9 @@
-import { Check, Copy, Link2, Lock, Mail, Users, X } from 'lucide-react';
+import { CalendarClock, Check, Copy, Link2, Lock, Mail, TimerOff, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api, type ShareMode, type ShareState } from '@/lib/api';
-import { useT } from '@/lib/i18n/context';
+import { formatDateTime } from '@/lib/format';
+import { useI18n, useT } from '@/lib/i18n/context';
+import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { count } from '@/lib/usage';
 import { FilterChips } from './FilterChips';
 import { Button } from '@/ui/components/Button';
@@ -34,6 +36,8 @@ import { Typography } from '@/ui/components/Typography';
 export interface ShareClient {
   get: (id: string) => Promise<ShareState>;
   setMode: (id: string, mode: ShareMode) => Promise<ShareState>;
+  /** When the link stops working; null for never. The mode goes along unchanged. */
+  setExpiry: (id: string, mode: ShareMode, expiresAt: string | null) => Promise<ShareState>;
   add: (id: string, email: string) => Promise<ShareState>;
   remove: (id: string, email: string) => Promise<ShareState>;
   /** The page a share token opens. The app is on the site; the extension is not. */
@@ -57,6 +61,7 @@ export const appShareClient: ShareClient = {
 
     return state;
   },
+  setExpiry: (id, mode, expiresAt) => api.setShareExpiry(id, mode, expiresAt),
   add: async (id, email) => {
     const state = await api.addShareRecipient(id, email);
 
@@ -67,6 +72,126 @@ export const appShareClient: ShareClient = {
   remove: (id, email) => api.removeShareRecipient(id, email),
   url: (token) => `${window.location.origin}/s/${token}`,
 };
+
+const HOUR_MS = 60 * 60 * 1000;
+
+/** A day as `<input type="date">` spells it, in the reader's own time zone. */
+const localDay = (at: Date) =>
+  `${at.getFullYear()}-${String(at.getMonth() + 1).padStart(2, '0')}-${String(at.getDate()).padStart(2, '0')}`;
+
+/** The last moment of a picked day, locally: "until the 7th" means the 7th still works. */
+const endOfDay = (day: string) => {
+  const [year, month, date] = day.split('-').map(Number);
+
+  return new Date(year, month - 1, date, 23, 59, 59).toISOString();
+};
+
+/**
+ * How long the link works, beside the link itself.
+ *
+ * A native select rather than chips: the choices are relative ("for 7 days") but what is stored is
+ * a date, so once one is chosen the honest thing to show is that date — which a chip reading
+ * "7 days" a week later would not be. The select shows it as its own first option instead.
+ *
+ * A picked day goes through a button, not on change: a date field reports a value while the year is
+ * still being typed, and year 0002 is a date in the past the server would refuse.
+ */
+function ExpiryRow({
+  state,
+  isBusy,
+  onChange,
+}: {
+  state: ShareState;
+  isBusy: boolean;
+  onChange: (expiresAt: string | null) => void;
+}) {
+  const t = useT();
+  const { locale } = useI18n();
+  const [isPicking, setIsPicking] = useState(false);
+  const [day, setDay] = useState('');
+
+  const ends = state.expiresAt ? Date.parse(state.expiresAt) : null;
+  const hasEnded = ends !== null && ends <= Date.now();
+  const when = ends !== null ? formatDateTime(ends, INTL_LOCALES[locale]) : '';
+
+  const choose = (value: string) => {
+    setIsPicking(value === 'pick');
+
+    if (value === 'never') {
+      onChange(null);
+    } else if (value !== 'pick' && value !== 'current') {
+      onChange(new Date(Date.now() + Number(value) * HOUR_MS).toISOString());
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="flex items-center justify-between gap-3">
+        <Typography variant="span" textColor="secondary" className="text-xs">
+          {t('dialog.share.expiry.label')}
+        </Typography>
+
+        <select
+          value={isPicking ? 'pick' : ends !== null ? 'current' : 'never'}
+          disabled={isBusy}
+          onChange={(event) => choose(event.target.value)}
+          className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs"
+        >
+          {ends !== null && (
+            <option value="current">{t('dialog.share.expiry.until', { date: when })}</option>
+          )}
+          <option value="never">{t('dialog.share.expiry.never')}</option>
+          {/* In hours, so the shortest and the longest are the same arithmetic. */}
+          <option value="1">{t('dialog.share.expiry.hour')}</option>
+          <option value="24">{t('dialog.share.expiry.day')}</option>
+          <option value="168">{t('dialog.share.expiry.week')}</option>
+          <option value="720">{t('dialog.share.expiry.month')}</option>
+          <option value="pick">{t('dialog.share.expiry.pick')}</option>
+        </select>
+      </label>
+
+      {isPicking && (
+        <div className="flex items-center justify-end gap-2">
+          <input
+            type="date"
+            min={localDay(new Date())}
+            value={day}
+            aria-label={t('dialog.share.expiry.date')}
+            onChange={(event) => setDay(event.target.value)}
+            className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs"
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={isBusy || !day || day < localDay(new Date())}
+            onClick={() => {
+              onChange(endOfDay(day));
+              setIsPicking(false);
+              setDay('');
+            }}
+          >
+            {t('dialog.share.expiry.set')}
+          </Button>
+        </div>
+      )}
+
+      {ends !== null && (
+        <Typography
+          variant="p"
+          textColor={hasEnded ? 'warning' : 'secondary'}
+          className="flex items-start gap-2 text-xs"
+        >
+          {hasEnded ? (
+            <TimerOff className="mt-0.5 size-4 shrink-0" />
+          ) : (
+            <CalendarClock className="mt-0.5 size-4 shrink-0" />
+          )}
+          {t(hasEnded ? 'dialog.share.expiry.ended' : 'dialog.share.expiry.ends', { date: when })}
+        </Typography>
+      )}
+    </div>
+  );
+}
 
 interface ShareDialogProps {
   /** The document's id in the account; sharing needs a server-side row. */
@@ -237,6 +362,14 @@ export function ShareDialog({
                   </>
                 )}
               </Typography>
+
+              <ExpiryRow
+                state={state}
+                isBusy={isBusy}
+                onChange={(expiresAt) =>
+                  void run(client.setExpiry(documentId, state.mode, expiresAt))
+                }
+              />
             </div>
           )}
 

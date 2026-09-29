@@ -26,6 +26,7 @@
     "reports": "node scripts/reports.mjs",
     "docs:shots": "node scripts/screenshots.mjs",
     "mcp:check": "node scripts/check-mcp.mjs",
+    "share:check": "node scripts/check-share.mjs",
     "usage:check": "node scripts/check-usage.mjs",
     "deploy:check": "node scripts/check-deploy.mjs",
     "store:check": "node scripts/check-store.mjs"

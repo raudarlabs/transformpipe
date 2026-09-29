@@ -109,7 +109,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Toute personne ayant le lien',
   'docs.sharing.mode.people': 'Seulement ces adresses',
   'docs.sharing.revoking':
-    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Aucun e-mail n’est jamais envoyé — vous transmettez le lien vous-même.',
+    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Un lien peut aussi recevoir une date de fin — ensuite, la page indique qu’il a expiré, et une nouvelle date le rouvre. Une adresse ajoutée à un partage nominatif reçoit un e-mail avec le lien.',
   /** `{shared}` est le filtre nommé dans `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Les documents que d’autres vous ont adressés apparaissent sous le filtre {shared}, avec le nom de qui a partagé chacun. Ils sont en lecture seule : ouvrir et télécharger, pas de suppression, pas de repartage. Un partage par lien appartient à qui détient le lien, il n’apparaît donc sur la liste de personne.',
@@ -136,7 +136,7 @@ export const docsPage = {
   'docs.api.one': 'Les métadonnées et la source Markdown.',
   'docs.api.html': 'Le document autonome. {theme} en option.',
   'docs.api.delete': 'Retire la ligne et sa source conservée.',
-  'docs.api.share': '{modes}. {private} abandonne le jeton.',
+  'docs.api.share': '{modes}. {private} abandonne le jeton. {expiry} est une date-heure ISO 8601, ou null pour aucune fin.',
   'docs.api.usage': 'Ce que le compte utilise, face aux limites.',
   /** `{shape}` est le corps d’erreur lui-même. */
   'docs.api.errors':

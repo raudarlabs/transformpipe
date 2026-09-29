@@ -104,6 +104,8 @@ export interface ShareState {
   mode: ShareMode;
   token: string | null;
   emails: string[];
+  /** When the link stops working, ISO 8601, or null for never. In the past means it has stopped. */
+  expiresAt: string | null;
 }
 
 export interface SharedDocument {
@@ -342,6 +344,13 @@ export const api = {
     request<ShareState>(`/api/documents/${id}/share`, {
       method: 'PUT',
       body: JSON.stringify({ mode }),
+    }),
+
+  /** The same call with an end date: null clears it, and the mode is sent as it stands. */
+  setShareExpiry: (id: string, mode: ShareMode, expiresAt: string | null) =>
+    request<ShareState>(`/api/documents/${id}/share`, {
+      method: 'PUT',
+      body: JSON.stringify({ mode, expiresAt }),
     }),
 
   addShareRecipient: (id: string, email: string) =>
