@@ -114,20 +114,24 @@ export const PRODUCT_HUNT_URL =
   'https://www.producthunt.com/products/transformpipe?utm_source=transformpipe&utm_medium=about';
 
 /**
- * Which of the three things the card says.
+ * Which of the three things the card says, or `hidden` for no card at all.
  *
  * The launch is one day, and a card reading "goes live on 30 September" on 1 October is worse than
  * no card: it is the site telling a reader something it can see is untrue. The three sets of words
  * are all written and translated; moving between them is this word, so the day itself costs one
  * edit and a deploy rather than fifteen strings under time pressure.
  *
+ * `hidden` since 30 September 2026, when the launch planned for that day was moved and no new
+ * date was set. The `before` copy still names 30 September in all five languages, so a new date
+ * means rewriting those five sentences before this goes back to `before`.
+ *
  * Not computed from the date. These pages are prerendered, so a build in September would bake
  * September's sentence into HTML a crawler keeps reading in October, and correcting it in the
  * browser after hydration would mean the page says two different things to two different readers.
  */
-export type ProductHuntPhase = 'before' | 'during' | 'after';
+export type ProductHuntPhase = 'hidden' | 'before' | 'during' | 'after';
 
-export const PRODUCT_HUNT_PHASE: ProductHuntPhase = 'before';
+export const PRODUCT_HUNT_PHASE: ProductHuntPhase = 'hidden';
 
 const UPDATED = '2026-09-08';
 

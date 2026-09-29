@@ -154,7 +154,7 @@ export function StaticPage({ page, onGoToConverter }: StaticPageProps) {
         * Above the sections rather than under them, for the reason the extension's buttons are:
         * a thing to act on that sits below five paragraphs is a thing nobody acts on.
         */}
-      {page.id === 'about' && (
+      {page.id === 'about' && PRODUCT_HUNT_PHASE !== 'hidden' && (
         <aside className="flex flex-col gap-3 rounded-xl border border-stroke bg-surface-card2 p-5">
           <Typography
             variant="h2"
