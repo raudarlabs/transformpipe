@@ -790,6 +790,69 @@ const SHARED_CHROME_STYLE = `
 .md-bar .keep:hover,
 .md-bar .save:hover { border-color: var(--md-brand-3); color: var(--md-brand-3); }
 
+/*
+ * The split download button: the HTML on the left, the arrow that opens the other formats on the
+ * right, drawn as one pill. The menu hangs from its right edge, which is where the bar puts it.
+ */
+.md-bar .download { position: relative; display: inline-flex; }
+
+.md-bar .download .main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.md-bar .formats > summary {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 0.6rem;
+  border: 1px solid var(--md-stroke);
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  color: var(--md-ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.md-bar .formats > summary::-webkit-details-marker { display: none; }
+.md-bar .formats > summary:hover,
+.md-bar .formats[open] > summary { border-color: var(--md-brand-3); color: var(--md-brand-3); }
+.md-bar .formats > summary:focus-visible { outline: 2px solid var(--md-brand-3); outline-offset: 2px; }
+.md-bar .formats[open] > summary svg { transform: rotate(180deg); }
+
+.md-bar .formats .menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 11rem;
+  padding: 0.3rem;
+  border: 1px solid var(--md-stroke);
+  border-radius: 0.75rem;
+  background: var(--md-card);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+}
+
+.md-bar .formats .menu a {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  color: var(--md-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.md-bar .formats .menu a:hover { background: var(--md-card-2); color: var(--md-brand-3); }
+.md-bar .formats .menu em { color: var(--md-secondary); font-style: normal; }
+
 /* The one thing this page wants a stranger to do, so it is the one thing that is painted. */
 .md-bar .save {
   border-color: transparent;
@@ -930,6 +993,8 @@ interface SharedPageOptions {
   createdAt?: number;
   /** Where the Download link points; omitted for a page nobody should save from. */
   downloadHref?: string;
+  /** The same document's Markdown source, offered beside the HTML in the download menu. */
+  markdownHref?: string;
   /** Where a reader can say this document should not be here. */
   reportHref?: string;
   /** The document in the app, where somebody signed in can keep a copy of it. */
@@ -979,11 +1044,45 @@ const weigh = (bytes: number): string => {
     : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const ICON_DOWNLOAD =
+  '<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>';
+const ICON_CHEVRON =
+  '<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+/*
+ * Download, as the app's own button: the HTML on the button, the other formats behind the arrow.
+ *
+ * Not the app's component, because this page runs no script — `script-src 'none'` is the fence
+ * around somebody else's document on our domain — so the menu is a `<details>`, which opens and
+ * closes with no JavaScript at all. The HTML stays the button because it is the one a reader can
+ * open anywhere; the Markdown is for somebody who means to keep working on the thing.
+ */
+function downloadMenu(htmlHref?: string, markdownHref?: string): string {
+  if (!htmlHref) {
+    return '';
+  }
+
+  if (!markdownHref) {
+    return `<a class="keep" href="${escapeHtml(htmlHref)}">Download .html</a>`;
+  }
+
+  return `<div class="download">
+      <a class="keep main" href="${escapeHtml(htmlHref)}">${ICON_DOWNLOAD}<span>Download .html</span></a>
+      <details class="formats">
+        <summary aria-label="More formats" title="More formats">${ICON_CHEVRON}</summary>
+        <div class="menu">
+          <a href="${escapeHtml(markdownHref)}">${ICON_DOWNLOAD}<span>Markdown <em>.md</em></span></a>
+        </div>
+      </details>
+    </div>`;
+}
+
 export function buildSharedPage({
   title,
   body,
   createdAt = Date.now(),
   downloadHref,
+  markdownHref,
   reportHref,
   openHref,
   size,
@@ -1031,7 +1130,7 @@ ${SHARED_CHROME_STYLE}
   </div>
   <div class="actions">
     ${openHref ? `<a class="save" href="${escapeHtml(openHref)}">Save to your account</a>` : ''}
-    ${downloadHref ? `<a class="keep" href="${escapeHtml(downloadHref)}">Download .html</a>` : ''}
+    ${downloadMenu(downloadHref, markdownHref)}
   </div>
 </div>
 <article class="md-page md-doc">

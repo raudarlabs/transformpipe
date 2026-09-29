@@ -117,6 +117,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-29',
+    title: 'A shared document downloads as Markdown too, whatever it is called',
+    body:
+      'The Download button on a shared page now has an arrow beside it, and behind it the '
+      + 'Markdown source, for somebody who means to keep working on the thing rather than read '
+      + 'it. And downloading works for every name: a document called anything outside the Latin '
+      + 'alphabet \u2014 Cyrillic, Greek, Japanese, an emoji \u2014 answered its HTML, Word and '
+      + 'PDF downloads with a bare server error, on the shared page, in the app and in the API. '
+      + 'The file now arrives under its own name.',
+  },
+  {
+    date: '2026-09-29',
     title: 'Coming back no longer means seeing an old version of the site',
     body:
       'Since 18 September the offline cache kept the site\u2019s stylesheet from your first visit '

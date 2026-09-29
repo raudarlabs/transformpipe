@@ -7,6 +7,7 @@ import {
   buildSharedPage,
   buildStandaloneHtml,
 } from '../shared/markdown.js';
+import { attachment } from './attachment.js';
 import { clientAddress, publicHost } from './address.js';
 import { authProxy, currentUser, selfOrigin, type SessionUser } from './auth.js';
 import { sendShareNotice, sendWelcome } from './mail.js';
@@ -588,7 +589,7 @@ api.get('/documents/:id/docx', async (c) => {
     'content-type',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   );
-  c.header('content-disposition', `attachment; filename="${fileName}"`);
+  c.header('content-disposition', attachment(fileName));
 
   return c.body(new Uint8Array(docx));
 });
@@ -629,7 +630,7 @@ api.get('/documents/:id/pdf', async (c) => {
   }
 
   c.header('content-type', 'application/pdf');
-  c.header('content-disposition', `attachment; filename="${fileName}"`);
+  c.header('content-disposition', attachment(fileName));
 
   return c.body(new Uint8Array(pdf));
 });
@@ -1139,16 +1140,43 @@ app.get('/s/:token', async (c) => {
     );
   }
 
-  const body = markdownToHtml(source);
   const createdAt = new Date(document.created_at).getTime();
+  const download = c.req.query('download');
+  const base = document.name.replace(/\.(md|markdown|mdown|mkd|txt)$/i, '');
 
-  if (c.req.query('download') !== undefined) {
-    const fileName = `${document.name.replace(/\.(md|markdown|mdown|mkd|txt)$/i, '')}.html`;
+  /*
+   * The source itself, for somebody who wants to keep working on it rather than read it. Before the
+   * HTML is rendered, because this answer does not need it. It passes the same checks the page did
+   * — a private document is a 404 and a "people" one only opens for them — because it is the same
+   * route, after them.
+   */
+  if (download === 'md') {
+    c.header('content-type', 'text/markdown; charset=utf-8');
+    c.header('content-disposition', attachment(`${base}.md`));
 
-    c.header('content-disposition', `attachment; filename="${fileName}"`);
+    return c.body(source);
+  }
+
+  const body = markdownToHtml(source);
+
+  /* `?download` alone is the address every earlier shared page printed, so it stays the HTML. */
+  if (download === '' || download === 'html') {
+    c.header('content-disposition', attachment(`${base}.html`));
 
     return c.html(
       buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' })
+    );
+  }
+
+  if (download !== undefined) {
+    c.header('cache-control', 'no-store');
+    c.status(400);
+
+    return c.html(
+      buildNoticePage(
+        'That is not a format this page downloads',
+        'A shared document downloads as HTML or as its Markdown source.'
+      )
     );
   }
 
@@ -1158,6 +1186,7 @@ app.get('/s/:token', async (c) => {
       body,
       createdAt,
       downloadHref: `/s/${encodeURIComponent(token)}?download`,
+      markdownHref: `/s/${encodeURIComponent(token)}?download=md`,
       reportHref: `/report/${encodeURIComponent(token)}`,
       /*
        * The same document in the app, which is where a copy can be kept: this page runs no script

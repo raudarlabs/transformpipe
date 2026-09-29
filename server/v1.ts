@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { Hono, type Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { buildStandaloneHtml, getDocStats } from '../shared/markdown.js';
+import { attachment } from './attachment.js';
 import { selfOrigin } from './auth.js';
 import { type Caller, cameFromUs, mayWrite, resolveCaller } from './caller.js';
 import { sendShareNotice } from './mail.js';
@@ -796,7 +797,7 @@ v1.get('/documents/:id', async (c) => {
       'content-type',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     );
-    c.header('content-disposition', `attachment; filename="${fileName}"`);
+    c.header('content-disposition', attachment(fileName));
 
     return c.body(new Uint8Array(docx));
   }
@@ -816,7 +817,7 @@ v1.get('/documents/:id', async (c) => {
     }
 
     c.header('content-type', 'application/pdf');
-    c.header('content-disposition', `attachment; filename="${fileName}"`);
+    c.header('content-disposition', attachment(fileName));
 
     return c.body(new Uint8Array(pdf));
   }
