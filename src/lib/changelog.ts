@@ -117,6 +117,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'A shared link says how often it was opened',
+    body:
+      'The Share dialog now shows how many times a link has been opened and when it last was, and '
+      + 'so do the API and the assistant tools. It counts opens, not people — your own included '
+      + '— and it knows nothing about who opened it: the shared page asks for a one-pixel '
+      + 'picture, and that request adds one to the count. The bots that fetch a link to draw its '
+      + 'preview in a chat are not counted, and a link that is revoked starts again at nought.',
+  },
+  {
+    date: '2026-09-30',
     title: 'The documentation copies as Markdown, for an assistant',
     body:
       'A Copy page button beside the documentation’s title puts the whole manual on the '

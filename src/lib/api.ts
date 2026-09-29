@@ -106,6 +106,9 @@ export interface ShareState {
   emails: string[];
   /** When the link stops working, ISO 8601, or null for never. In the past means it has stopped. */
   expiresAt: string | null;
+  /** How many times this link was opened — opens, not people, the owner's own included. */
+  views: number;
+  lastViewedAt: string | null;
 }
 
 export interface SharedDocument {

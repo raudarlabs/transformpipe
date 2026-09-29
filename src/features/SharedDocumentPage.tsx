@@ -70,6 +70,12 @@ export function SharedDocumentPage({ token }: { token: string }) {
       .then((shared) => {
         setDocument(shared);
         setError(null);
+        /*
+         * One open, counted the way the page at /s/<token> counts it: by asking for its picture.
+         * A reader of an addressed share lands here rather than there, and would otherwise not be
+         * counted at all.
+         */
+        new Image().src = `/s/${encodeURIComponent(token)}/seen`;
       })
       .catch((cause: Error) =>
         setError({

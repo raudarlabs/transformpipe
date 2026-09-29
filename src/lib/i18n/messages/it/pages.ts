@@ -227,13 +227,14 @@ export const pages: Content['pages'] = {
           'Per ogni documento conservato: il suo nome, quale conversione l’ha prodotto, la sua dimensione, il conteggio di parole, titoli, link, blocchi di codice, tabelle e immagini, e quando è stato creato.',
           'Il Markdown stesso, in un archivio blob privato — privato nel senso che non ha alcun URL pubblico e viene letto solo tramite una richiesta che autorizziamo noi.',
           'Le chiavi API come hash, mai la chiave. Una chiave viene mostrata una volta sola, alla creazione, e in seguito non è più recuperabile: né da te né da noi.',
-          'Le impostazioni di condivisione: se un documento è privato, aperto per link o indirizzato a determinati indirizzi email, e il token che un link porta con sé.',
+          'Le impostazioni di condivisione: se un documento è privato, aperto per link o indirizzato a determinati indirizzi email, e il token che un link porta con sé, il giorno in cui smette di funzionare se ne è stato fissato uno, e quante volte è stato aperto.',
         ],
       },
       {
         heading: 'Contare, senza sapere chi',
         body: [
           'Contiamo le visite e poche azioni — una pagina aperta, una conversione, un download, un salvataggio, una condivisione — come totali giornalieri anonimi, sul nostro server e nel nostro database. Il conteggio non imposta alcun cookie e non salva nulla nel tuo browser; i totali non conservano alcun identificativo né indirizzo IP, e di un documento nient’altro che la conversione o il formato. La provenienza di una visita viene registrata solo come nome del sito di origine — Product Hunt, Google, «diretto» — oppure come etichetta di campagna del link che hai seguito.',
+          'Un link condiviso conta anche quante volte è stato aperto, perché il proprietario lo veda. È un numero e un orario sul documento: la pagina chiede al nostro server un’immagine di un pixel, e quella richiesta aggiunge uno al contatore — nessun cookie, e niente su chi l’ha aperto. Perché una stessa macchina non possa gonfiare il conteggio, un hash a senso unico del suo indirizzo viene conservato accanto a un conteggio al minuto e cancellato entro un giorno.',
         ],
       },
       {

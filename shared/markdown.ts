@@ -1032,6 +1032,12 @@ interface SharedPageOptions {
   reportHref?: string;
   /** The document in the app, where somebody signed in can keep a copy of it. */
   openHref?: string;
+  /**
+   * The picture that counts an open. A one-pixel image rather than a count in the handler: the
+   * page itself is kept by the CDN and most opens never reach the server, but the image is asked
+   * for every time, and the bots that fetch a link to draw its preview do not load images.
+   */
+  seenHref?: string;
   /** Bytes of Markdown, as the app counts them. */
   size?: number;
   /** The counts the app shows under a document's name. Only the three that fit are used. */
@@ -1118,6 +1124,7 @@ export function buildSharedPage({
   markdownHref,
   reportHref,
   openHref,
+  seenHref,
   size,
   stats,
 }: SharedPageOptions): string {
@@ -1192,6 +1199,10 @@ ${body}
 ${
     worthAScrollLink(body)
       ? '<a class="md-top" href="#md-top-of-page" aria-label="Back to the top" title="Back to the top">↑</a>'
+      : ''
+  }${
+    seenHref
+      ? `\n<img src="${escapeHtml(seenHref)}" alt="" width="1" height="1" fetchpriority="low" style="position:absolute;left:-9999px">`
       : ''
   }
 </body>

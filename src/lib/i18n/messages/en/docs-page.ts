@@ -120,7 +120,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Anyone with the link',
   'docs.sharing.mode.people': 'Only these addresses',
   'docs.sharing.revoking':
-    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. A link can also be given an end date — after it, the page says the link has expired, and a new date opens it again. Adding an address to a named share emails that person a notice with the link.',
+    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. A link can also be given an end date — after it, the page says the link has expired, and a new date opens it again. Adding an address to a named share emails that person a notice with the link. The dialog also says how many times the link has been opened — opens rather than people, yours among them.',
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     "Documents other people addressed to you appear under the {shared} chip, with who shared each one. They are read-only: open and download, no delete, no re-share. A link share belongs to whoever holds the link, so it appears on no one's list.",

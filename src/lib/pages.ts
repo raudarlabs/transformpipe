@@ -141,7 +141,7 @@ const UPDATED = '2026-09-08';
  * reads pages and keeps a token, which is exactly such a change — and the terms and the cookies
  * page did not change at all, so they keep the date they earned.
  */
-const PRIVACY_UPDATED = '2026-09-27';
+const PRIVACY_UPDATED = '2026-09-30';
 
 /*
  * The cookies page moved on 27 September for the same reason the privacy page did: the counter

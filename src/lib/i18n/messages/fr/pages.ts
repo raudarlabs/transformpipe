@@ -228,13 +228,14 @@ export const pages: Content['pages'] = {
           'Pour chaque document conservé : son nom, la conversion qui l’a produit, sa taille, le nombre de mots, de titres, de liens, de blocs de code, de tableaux et d’images, et sa date de création.',
           'Le Markdown lui-même, dans un stockage d’objets privé — privé signifiant qu’il n’a pas d’URL publique et n’est lu qu’au travers d’une requête que nous autorisons.',
           'Les clés API sous forme de hachages, jamais la clé. Une clé n’est affichée qu’une fois, à sa création, et ne peut plus être retrouvée ensuite — ni par vous, ni par nous.',
-          'Les réglages de partage : si un document est privé, ouvert par lien, ou adressé à des adresses e-mail précises, et le jeton que porte un lien.',
+          'Les réglages de partage : si un document est privé, ouvert par lien, ou adressé à des adresses e-mail précises, et le jeton que porte un lien, le jour où il cesse de fonctionner s’il en a un, et le nombre de fois qu’il a été ouvert.',
         ],
       },
       {
         heading: 'Compter, sans savoir qui',
         body: [
           'Nous comptons les visites et quelques actions — une page ouverte, une conversion lancée, un téléchargement, un enregistrement, un partage — sous forme de totaux quotidiens anonymes, sur notre propre serveur et dans notre propre base de données. Ce comptage ne pose aucun cookie et ne stocke rien dans votre navigateur ; les totaux ne gardent ni identifiant ni adresse IP, et rien d’un document hormis la conversion ou le format concernés. La provenance d’une visite n’est enregistrée que sous le nom du site d’origine — Product Hunt, Google, « direct » — ou sous l’étiquette de campagne du lien que vous avez suivi.',
+          'Un lien partagé compte aussi combien de fois il a été ouvert, pour que son propriétaire le voie. C’est un nombre et une heure sur le document : la page demande à notre serveur une image d’un pixel, et cette requête ajoute un au compteur — aucun cookie, et rien sur la personne qui l’a ouvert. Pour qu’une même machine ne puisse pas gonfler le compteur, une empreinte à sens unique de son adresse est gardée à côté d’un décompte par minute, puis effacée dans la journée.',
         ],
       },
       {

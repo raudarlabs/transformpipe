@@ -22,6 +22,8 @@ interface V1Share {
   url: string | null;
   emails: string[];
   expires_at?: string | null;
+  views?: number;
+  last_viewed_at?: string | null;
 }
 
 /*
@@ -34,6 +36,8 @@ const asState = (share: V1Share): ShareState => ({
   token: share.url ? (share.url.split('/s/')[1] ?? null) : null,
   emails: share.emails ?? [],
   expiresAt: share.expires_at ?? null,
+  views: share.views ?? 0,
+  lastViewedAt: share.last_viewed_at ?? null,
 });
 
 async function ask(path: string, init?: RequestInit): Promise<ShareState> {

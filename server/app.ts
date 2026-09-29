@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import {
@@ -73,6 +73,8 @@ interface ShareRow {
   share_mode: 'private' | 'link' | 'people';
   share_token: string | null;
   share_expires_at: string | null;
+  share_views: number;
+  share_viewed_at: string | null;
 }
 
 /**
@@ -774,7 +776,7 @@ api.get('/documents/:id/versions', async (c) => {
 /** The document's sharing state, as the dialog needs it. */
 async function shareState(userId: string, documentId: string) {
   const rows = (await sql()`
-    select id, share_mode, share_token, share_expires_at
+    select id, share_mode, share_token, share_expires_at, share_views, share_viewed_at
     from m2h_document
     where user_id = ${userId} and id = ${documentId}
   `) as ShareRow[];
@@ -796,6 +798,11 @@ async function shareState(userId: string, documentId: string) {
     /* An expired link is still reported, so the dialog can say it ended and offer a new date. */
     expiresAt: rows[0].share_expires_at
       ? new Date(rows[0].share_expires_at).toISOString()
+      : null,
+    /* Opens of the link as it stands — a revoke starts the next one at nought. */
+    views: rows[0].share_views ?? 0,
+    lastViewedAt: rows[0].share_viewed_at
+      ? new Date(rows[0].share_viewed_at).toISOString()
       : null,
   };
 }
@@ -1201,10 +1208,74 @@ app.get('/s/:token', async (c) => {
        * and has nobody signed in, and /open/<token> knows how to ask.
        */
       openHref: `/open/${encodeURIComponent(token)}`,
+      seenHref: `/s/${encodeURIComponent(token)}/seen`,
       size: document.size,
       stats: document.stats ?? undefined,
     })
   );
+});
+
+/** A transparent 1×1 GIF: the smallest picture a browser loads and then draws as nothing. */
+const PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+
+/**
+ * What a preview bot or a crawler calls itself. None of them is somebody reading the link — and
+ * most never ask for the picture anyway, which is why the count is a picture in the first place.
+ */
+const NOT_A_READER =
+  /bot\b|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|discord|skype|embedly|preview/i;
+
+/** Opens counted from one address, for one link, in a minute. Past it is a reload held down. */
+const OPENS_PER_MINUTE = 10;
+
+/**
+ * One open of a shared link, counted.
+ *
+ * Asked for by the page's own picture, every time the page is shown — the page may come from the
+ * CDN, the picture never does. It passes the same gate as the page, so a revoked, expired or
+ * someone-else's link counts nothing, and it answers the same picture either way: a different
+ * answer would tell a stranger which tokens are live.
+ *
+ * What is kept is a number and a time on the document. No cookie and nothing about who opened
+ * it — which is what the privacy page says, and why this cannot count people, only opens.
+ */
+app.get('/s/:token/seen', async (c) => {
+  for (const [header, value] of Object.entries(SHARED_PAGE_HEADERS)) {
+    c.header(header, value);
+  }
+
+  c.header('cache-control', 'no-store');
+  c.header('content-type', 'image/gif');
+
+  const agent = c.req.header('user-agent') ?? '';
+
+  if (c.req.method === 'GET' && !NOT_A_READER.test(agent)) {
+    const token = c.req.param('token');
+    const verdict = await shareGate(c, token).catch(() => null);
+
+    if (verdict?.ok) {
+      /*
+       * Paced per machine per link, and the machine is a one-way hash, not its address: the
+       * privacy page says an open leaves nothing about who opened it, and the tally row lives a
+       * day. The hash tells one reload loop from the next; it tells nobody where it came from.
+       */
+      const machine = createHash('sha256')
+        .update(`${clientAddress(c)}|${token}`)
+        .digest('base64url')
+        .slice(0, 22);
+      const pace = await countCall(`seen:${machine}`).catch(() => null);
+
+      if (pace && pace.calls <= OPENS_PER_MINUTE) {
+        await sql()`
+          update m2h_document
+          set share_views = share_views + 1, share_viewed_at = now()
+          where id = ${verdict.document.id}
+        `.catch(() => undefined);
+      }
+    }
+  }
+
+  return c.body(new Uint8Array(PIXEL));
 });
 
 /*

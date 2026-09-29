@@ -430,6 +430,14 @@ const linkEnds = (expiresAt: string | null | undefined) => {
     : `The link stops working on ${written}.`;
 };
 
+/** How often a link was opened, as a line — opens, not people, and the owner's own among them. */
+const linkOpens = (views: number | undefined, lastViewedAt: string | null | undefined) =>
+  !views || !lastViewedAt
+    ? 'Nobody has opened the link yet.'
+    : `Opened ${views === 1 ? 'once' : `${views} times`}, last on ${new Date(lastViewedAt)
+        .toISOString()
+        .slice(0, 10)}.`;
+
 const describe = (document: {
   id: string;
   name: string;
@@ -438,7 +446,13 @@ const describe = (document: {
   size: number;
   words?: number;
   created_at: string;
-  share: { mode: string; url: string | null; expires_at?: string | null };
+  share: {
+    mode: string;
+    url: string | null;
+    expires_at?: string | null;
+    views?: number;
+    last_viewed_at?: string | null;
+  };
 }) =>
   [
     `${document.name}`,
@@ -449,6 +463,9 @@ const describe = (document: {
     document.share.url ? `  ${document.share.url}` : null,
     document.share.url && linkEnds(document.share.expires_at)
       ? `  ${linkEnds(document.share.expires_at)}`
+      : null,
+    document.share.url
+      ? `  ${linkOpens(document.share.views, document.share.last_viewed_at)}`
       : null,
   ]
     .filter(Boolean)
@@ -1020,6 +1037,9 @@ const TOOLS: Record<McpToolName, Tool> = {
           [
             `${document.name} — ${bytes(document.size)}`,
             document.share?.url ? linkEnds(document.share.expires_at) : null,
+            document.share?.url
+              ? linkOpens(document.share.views, document.share.last_viewed_at)
+              : null,
             '',
             document.markdown ?? '',
           ]
@@ -1231,6 +1251,7 @@ const TOOLS: Record<McpToolName, Tool> = {
           `Now ${changed.body.mode}.`,
           changed.body.url ? changed.body.url : 'The link is revoked, so one already sent no longer opens.',
           changed.body.url ? linkEnds(changed.body.expires_at) : null,
+          changed.body.url ? linkOpens(changed.body.views, changed.body.last_viewed_at) : null,
           emails.length > 0 ? `Readers: ${emails.join(', ')}` : null,
         ]
           .filter(Boolean)

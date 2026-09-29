@@ -202,6 +202,8 @@ interface DocumentRow {
   share_mode: 'private' | 'link' | 'people';
   share_token: string | null;
   share_expires_at?: string | null;
+  share_views?: number;
+  share_viewed_at?: string | null;
   summary?: string | null;
   summary_created_at?: string | null;
   replaces?: string | null;
@@ -236,6 +238,9 @@ const asDocument = (
     url: shareUrl(c, row.share_token),
     // When the link stops working, or null for never. Past means it has already stopped.
     expires_at: isoOrNull(row.share_expires_at),
+    // How many times the link was opened, and when last — opens, not people.
+    views: row.share_views ?? 0,
+    last_viewed_at: isoOrNull(row.share_viewed_at),
   },
   // The text itself is not carried on every row — see the dedicated summary endpoint — only
   // whether one exists, which is enough for a list to show an indicator.
@@ -258,7 +263,7 @@ v1.get('/documents', async (c) => {
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
             and search @@ websearch_to_tsquery('simple', ${q})
@@ -266,7 +271,7 @@ v1.get('/documents', async (c) => {
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
           order by created_at desc
@@ -740,6 +745,7 @@ async function findDocument(userId: string, id: string) {
 
   const rows = (await sql()`
     select id, user_id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at,
+           share_views, share_viewed_at,
            markdown, blob_path, summary, summary_created_at, replaces
     from m2h_document
     where user_id = ${userId} and id = ${id}
@@ -1034,6 +1040,8 @@ v1.get('/documents/:id/share', async (c) => {
     url: shareUrl(c, row.share_token),
     emails: emails.map((entry) => entry.email),
     expires_at: isoOrNull(row.share_expires_at),
+    views: row.share_views ?? 0,
+    last_viewed_at: isoOrNull(row.share_viewed_at),
   });
 });
 
@@ -1194,6 +1202,8 @@ v1.put('/documents/:id/share', async (c) => {
     url,
     emails: emails.map((entry) => entry.email),
     expires_at: isoOrNull(after?.share_expires_at),
+    views: after?.share_views ?? 0,
+    last_viewed_at: isoOrNull(after?.share_viewed_at),
     /* The addresses that were actually told, as the mailer reported it. */
     notified,
   });

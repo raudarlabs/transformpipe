@@ -21,6 +21,7 @@ const hash = (t) => createHash('sha256').update(t).digest('hex');
 
 let passed = 0;
 let failed = 0;
+let skipped = 0;
 
 function check(name, ok, detail = '') {
   if (ok) {
@@ -31,6 +32,19 @@ function check(name, ok, detail = '') {
     console.log(`  FAIL ${name}${detail ? ` — ${detail}` : ''}`);
   }
 }
+
+/*
+ * Said out loud and counted apart from a pass, as in check-mcp. Behind Vercel the CDN keeps
+ * `s-maxage` for itself and hands the browser `public, max-age=0`, so what the edge was told can
+ * only be read on a server with no CDN in front of it.
+ */
+function skip(name, why) {
+  skipped += 1;
+  console.log(`  skip ${name} — ${why}`);
+}
+
+/** Whether the answer came through Vercel's CDN, which strips the edge's own directives. */
+const behindCdn = (response) => response.headers.has('x-vercel-cache');
 
 const made = { documents: [], tokens: [] };
 
@@ -108,12 +122,18 @@ try {
   const cache = page.headers.get('cache-control') ?? '';
 
   check('opens', page.status === 200, `got ${page.status}`);
-  check('is kept at the edge for a minute', /s-maxage=60\b/.test(cache), cache);
-  check(
-    'and never served stale after that minute',
-    !/stale-while-revalidate/.test(cache),
-    cache
-  );
+
+  if (behindCdn(page)) {
+    skip('is kept at the edge for a minute', 'the CDN strips s-maxage on the way out');
+    skip('and never served stale after that minute', 'the CDN strips it on the way out');
+  } else {
+    check('is kept at the edge for a minute', /s-maxage=60\b/.test(cache), cache);
+    check(
+      'and never served stale after that minute',
+      !/stale-while-revalidate/.test(cache),
+      cache
+    );
+  }
   check(
     'and stays out of search',
     (page.headers.get('x-robots-tag') ?? '').includes('noindex')
@@ -126,11 +146,16 @@ try {
   const soonAge = Number(/s-maxage=(\d+)/.exec(soonPage.headers.get('cache-control') ?? '')?.[1] ?? -1);
 
   check('opens before it ends', soonPage.status === 200, `got ${soonPage.status}`);
-  check(
-    'and the edge keeps it no longer than it has left',
-    soonAge >= 0 && soonAge <= 30,
-    soonPage.headers.get('cache-control') ?? ''
-  );
+
+  if (behindCdn(soonPage)) {
+    skip('and the edge keeps it no longer than it has left', 'the CDN strips s-maxage on the way out');
+  } else {
+    check(
+      'and the edge keeps it no longer than it has left',
+      soonAge >= 0 && soonAge <= 30,
+      soonPage.headers.get('cache-control') ?? ''
+    );
+  }
 
   console.log('\n— a link that has ended');
 
@@ -168,6 +193,69 @@ try {
     addressedPage.status === 410,
     `got ${addressedPage.status}`
   );
+
+  console.log('\n— counting opens');
+
+  const counted = await shared();
+  const seen = (token, init = {}) =>
+    fetch(`${HOST}/s/${token}/seen`, {
+      ...init,
+      headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) check-share', ...init.headers },
+    });
+  const views = async (id) =>
+    (await sql`select share_views, share_viewed_at from m2h_document where id = ${id}`)[0];
+
+  const countedPage = await (await get(`/s/${counted.token}`)).text();
+
+  check('the page asks for its picture', countedPage.includes(`/s/${counted.token}/seen`));
+
+  const download = await (await get(`/s/${counted.token}?download`)).text();
+
+  check('the downloaded file does not', !download.includes('/seen'));
+
+  const pixel = await seen(counted.token);
+
+  check('the picture is a GIF', (pixel.headers.get('content-type') ?? '').startsWith('image/gif'));
+  check('and never cached', (pixel.headers.get('cache-control') ?? '').includes('no-store'));
+
+  const once = await views(counted.id);
+
+  check('one open counts one', once.share_views === 1 && once.share_viewed_at !== null, JSON.stringify(once));
+
+  await seen(counted.token, { headers: { 'user-agent': 'Slackbot-LinkExpanding 1.0' } });
+  await seen(counted.token, { method: 'HEAD' });
+
+  check('a preview bot and a HEAD count nothing', (await views(counted.id)).share_views === 1);
+
+  const stranger = await seen('no-such-token-at-all');
+
+  check(
+    'a token nobody holds answers the same picture',
+    stranger.status === 200 && (stranger.headers.get('content-type') ?? '').startsWith('image/gif')
+  );
+
+  await seen(ended.token);
+
+  check(
+    'a link that has ended counts nothing',
+    (await views(ended.id)).share_views === 0
+  );
+
+  for (let i = 0; i < 12; i += 1) {
+    await seen(counted.token);
+  }
+
+  const paced = (await views(counted.id)).share_views;
+
+  check('one machine holding down reload counts ten a minute, not thirteen', paced === 10, `got ${paced}`);
+
+  const reportedViews = await (await v1(`/documents/${counted.id}/share`)).json().catch(() => ({}));
+
+  check('the API reports the count', reportedViews.views === 10, JSON.stringify(reportedViews));
+
+  const toldViews = await tool('tp_get_document', { id: counted.id });
+
+  check('and so does an assistant', /Opened 10 times/.test(toldViews), toldViews.slice(0, 200));
 
   console.log('\n— setting an end through the API');
 
@@ -298,5 +386,5 @@ try {
   await sql`delete from m2h_oauth_token where token_hash = any(${made.tokens})`;
 }
 
-console.log(`\n${passed} passed, ${failed} failed`);
+console.log(`\n${passed} passed, ${failed} failed${skipped ? `, ${skipped} skipped` : ''}`);
 process.exit(failed === 0 ? 0 : 1);

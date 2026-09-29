@@ -236,13 +236,14 @@ export const pages: Content['pages'] = {
           'Zu jedem behaltenen Dokument: seinen Namen, welche Umwandlung es gemacht hat, seine Größe, die Zahl der Wörter, Überschriften, Links, Codeblöcke, Tabellen und Bilder und den Zeitpunkt seiner Erstellung.',
           'Das Markdown selbst, in einem privaten Blob-Speicher — privat heißt: er hat keine öffentliche URL und wird nur über eine Anfrage gelesen, die wir autorisieren.',
           'API-Schlüssel als Hashes, nie den Schlüssel. Ein Schlüssel wird einmal gezeigt, bei der Erstellung, und ist danach nicht wiederherstellbar — nicht durch Sie und nicht durch uns.',
-          'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt.',
+          'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt, der Tag, an dem er endet, falls einer gesetzt wurde, und wie oft er geöffnet wurde.',
         ],
       },
       {
         heading: 'Gezählt, ohne zu wissen, wer',
         body: [
           'Wir zählen Besuche und einige wenige Aktionen — eine aufgerufene Seite, eine Umwandlung, einen Download, ein Speichern, ein Teilen — als anonyme Tagessummen, auf unserem eigenen Server und in unserer eigenen Datenbank. Dafür wird kein Cookie gesetzt und nichts in Ihrem Browser gespeichert; die Summen enthalten keine Kennung und keine IP-Adresse und über ein Dokument nichts außer der Umwandlung oder dem Format. Woher ein Besuch kam, wird nur als Name der verweisenden Website festgehalten — Product Hunt, Google, „direkt“ — oder als Kampagnenkennzeichen des Links, dem Sie gefolgt sind.',
+          'Ein geteilter Link zählt außerdem, wie oft er geöffnet wurde, damit sein Besitzer es sieht. Das ist eine Zahl und ein Zeitpunkt am Dokument: Die Seite ruft bei unserem Server ein Bild von einem Pixel ab, und dieser Abruf erhöht die Zahl um eins — kein Cookie und nichts darüber, wer ihn geöffnet hat. Damit ein einzelner Rechner die Zahl nicht hochtreiben kann, wird ein Einweg-Hash seiner Adresse neben einer Zählung pro Minute gespeichert und innerhalb eines Tages gelöscht.',
         ],
       },
       {

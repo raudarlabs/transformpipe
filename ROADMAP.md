@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 28 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 30 September 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -56,9 +56,6 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 - [ ] **A password on a shared link**
       · hash on the row, one gate before the render — server-side, since the shared page has no
       scripts
-- [ ] **An expiry date, and a view count**
-      · two columns and a sweep. Answers "is this link still live" without asking anybody
-
 ### The desk
 
 - [ ] **A chosen address** instead of a token, and **a QR code** for it
@@ -99,6 +96,14 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 30 September
+
+- [x] **An expiry date, and a view count** — a link can end on a date its owner picks (an hour
+      to a month, or a day chosen), and says how often it was opened. No sweep in the end: the
+      date is checked where the token is read, in the one gate every reader of a token now asks,
+      so nothing has to run at the moment a link ends. The count is a one-pixel picture on the
+      shared page, because the page itself comes from the CDN and the picture never does
 
 ### 27 September
 

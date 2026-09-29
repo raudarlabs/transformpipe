@@ -123,7 +123,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Alle mit dem Link',
   'docs.sharing.mode.people': 'Nur diese Adressen',
   'docs.sharing.revoking':
-    'Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren; erneutes Teilen prägt ein anderes. Ein Link kann auch ein Enddatum bekommen — danach meldet die Seite, dass er abgelaufen ist, und ein neues Datum öffnet ihn wieder. Wer einer Freigabe für benannte Adressen hinzugefügt wird, erhält eine E-Mail mit dem Link.',
+    'Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren; erneutes Teilen prägt ein anderes. Ein Link kann auch ein Enddatum bekommen — danach meldet die Seite, dass er abgelaufen ist, und ein neues Datum öffnet ihn wieder. Wer einer Freigabe für benannte Adressen hinzugefügt wird, erhält eine E-Mail mit dem Link. Der Dialog zeigt außerdem, wie oft der Link geöffnet wurde — Aufrufe, nicht Personen, Ihre eigenen eingeschlossen.',
   /** `{shared}` ist der Chip, den `docs.chip.shared` benennt. */
   'docs.sharing.incoming':
     'Dokumente, die andere an eine Adresse gerichtet haben, erscheinen unter dem Chip {shared}, samt der Angabe, wer sie geteilt hat. Sie sind nur zum Lesen: öffnen und herunterladen, kein Löschen, kein Weiterteilen. Eine Link-Freigabe gehört dem, der den Link hat, und erscheint darum auf niemandes Liste.',

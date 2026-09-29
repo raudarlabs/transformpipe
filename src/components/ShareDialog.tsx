@@ -1,4 +1,4 @@
-import { CalendarClock, Check, Copy, Link2, Lock, Mail, TimerOff, Users, X } from 'lucide-react';
+import { CalendarClock, Check, Copy, Eye, Link2, Lock, Mail, TimerOff, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api, type ShareMode, type ShareState } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
@@ -211,6 +211,7 @@ export function ShareDialog({
   client = appShareClient,
 }: ShareDialogProps) {
   const t = useT();
+  const { locale } = useI18n();
   const [state, setState] = useState<ShareState | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [email, setEmail] = useState('');
@@ -370,6 +371,21 @@ export function ShareDialog({
                   void run(client.setExpiry(documentId, state.mode, expiresAt))
                 }
               />
+
+              {/* Opens of this link, counted by the page's own picture — not people, and yours too. */}
+              <Typography
+                variant="p"
+                textColor="secondary"
+                className="flex items-start gap-2 text-xs"
+              >
+                <Eye className="mt-0.5 size-4 shrink-0" />
+                {state.views === 0 || !state.lastViewedAt
+                  ? t('dialog.share.views.none')
+                  : t(state.views === 1 ? 'dialog.share.views.one' : 'dialog.share.views.many', {
+                      count: state.views,
+                      date: formatDateTime(Date.parse(state.lastViewedAt), INTL_LOCALES[locale]),
+                    })}
+              </Typography>
             </div>
           )}
 
