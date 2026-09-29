@@ -378,6 +378,62 @@ export const api = {
       { method: 'POST' }
     ),
 
+  /**
+   * The same summary as the model writes it: `onText` gets the whole text so far after every piece.
+   *
+   * A summary already kept comes back whole, as JSON, and is handed over in one go. A new one
+   * streams as plain text; if the model stops part-way the text ends with U+0000 and the reason,
+   * which is thrown here after `onText` has had what did arrive.
+   */
+  streamSummary: async (
+    id: string,
+    options: { force?: boolean; onText: (text: string) => void }
+  ): Promise<{ summary: string; summarized_at: string }> => {
+    const response = await fetch(
+      `/api/documents/${id}/summary?stream=1${options.force ? '&force=1' : ''}`,
+      { method: 'POST', credentials: 'same-origin' }
+    );
+
+    if (!response.ok) {
+      const detail = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      throw new Error(detail?.error ?? `Request failed (${response.status})`);
+    }
+
+    if ((response.headers.get('content-type') ?? '').includes('application/json') || !response.body) {
+      const kept = (await response.json()) as { summary: string; summarized_at: string };
+
+      options.onText(kept.summary);
+
+      return kept;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+
+    for (;;) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      text += decoder.decode(value, { stream: true });
+      options.onText(text.split('\u0000')[0]);
+    }
+
+    text += decoder.decode();
+
+    const [written, broke] = text.split('\u0000');
+
+    if (broke !== undefined) {
+      throw new Error(broke || 'The summary stopped part-way');
+    }
+
+    return { summary: written.trim(), summarized_at: new Date().toISOString() };
+  },
+
   /** A .docx of a saved document, built on request — see server/docx.ts. */
   downloadDocx: async (id: string): Promise<Blob> => {
     const response = await fetch(`/api/documents/${id}/docx`, {

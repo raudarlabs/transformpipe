@@ -178,7 +178,8 @@ step; a deployment made before them needs a redeploy to see them. The build is a
   so a new push stays the unrelated document it has always been unless told otherwise. Linked
   documents get a chain icon in the history and a line-level diff against the version before them.
 - **Sign-in** — Google, through Neon Auth.
-- **Summary** — a saved document gets a third tab: three to five sentences from Gemini, called
+- **Summary** — a saved document gets a third tab: a paragraph on what it is and where it lands,
+  then its specifics as a short list, from Gemini, streamed into the tab as it is written and called
   directly with a Google AI Studio key (`GOOGLE_GENERATIVE_AI_API_KEY` — free tier, no card
   needed). Generated once and cached on the row, so opening the tab again is free; "Regenerate"
   asks again. Metered separately from the ordinary API limits — 20 a day per account — because

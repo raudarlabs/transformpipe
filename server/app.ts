@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
+import { stream } from 'hono/streaming';
 import {
   buildNoticePage,
   buildReportPage,
@@ -31,7 +32,7 @@ import {
   releaseWelcome,
   usageOf,
 } from './limits.js';
-import { summarize, summaryEnabled } from './summarize.js';
+import { summarize, summarizeStream, summaryEnabled, summaryFailure } from './summarize.js';
 import {
   createWebhook,
   deliver,
@@ -624,6 +625,12 @@ api.get('/documents/:id/pdf', async (c) => {
 });
 
 /**
+ * What a streamed summary ends with when the model stopped part-way, followed by why. A character
+ * no summary contains, so the reader can tell a broken answer from a short one.
+ */
+const STREAM_BROKE = '\u0000';
+
+/**
  * Summarises a document for the app's own Summary tab — same behaviour as the public
  * `POST /api/v1/documents/:id/summary`, kept in step so a script and the app never disagree about
  * what a document's summary is.
@@ -684,14 +691,72 @@ api.post('/documents/:id/summary', async (c) => {
     return c.json({ error: 'The source of this document is missing' }, 410);
   }
 
+  /*
+   * `?stream=1`: the text as the model writes it, which is what the app's tab asks for. The first
+   * piece is awaited before the answer starts, so a model that fails outright is still a JSON error
+   * with a status; one that fails part-way can no longer change the status, so it ends the text
+   * with STREAM_BROKE and the reason, and nothing half-written is kept.
+   */
+  if (c.req.query('stream') !== undefined) {
+    const pieces = summarizeStream(markdown)[Symbol.asyncIterator]();
+    let first: IteratorResult<string>;
+
+    try {
+      first = await pieces.next();
+    } catch (cause) {
+      return c.json({ error: summaryFailure(cause) }, 502);
+    }
+
+    if (first.done) {
+      return c.json({ error: 'Could not summarise this document: the model returned nothing' }, 502);
+    }
+
+    c.header('content-type', 'text/plain; charset=utf-8');
+    c.header('cache-control', 'no-store');
+    // Some proxies hold a response until it ends; this asks them not to.
+    c.header('x-accel-buffering', 'no');
+
+    return stream(c, async (out) => {
+      let text = first.value;
+
+      await out.write(first.value);
+
+      try {
+        for (;;) {
+          const next = await pieces.next();
+
+          if (next.done) {
+            break;
+          }
+
+          text += next.value;
+          await out.write(next.value);
+        }
+      } catch (cause) {
+        await out.write(`${STREAM_BROKE}${summaryFailure(cause)}`);
+
+        return;
+      }
+
+      const written = text.trim();
+
+      // Kept before the answer closes, so the function is still alive to keep it.
+      if (written) {
+        await sql()`
+          update m2h_document
+          set summary = ${written}, summary_created_at = ${new Date().toISOString()}
+          where id = ${id}
+        `;
+      }
+    });
+  }
+
   let summary: string;
 
   try {
     summary = await summarize(markdown);
   } catch (cause) {
-    const why = cause instanceof Error ? cause.message : 'the model did not answer';
-
-    return c.json({ error: `Could not summarise this document: ${why}` }, 502);
+    return c.json({ error: summaryFailure(cause) }, 502);
   }
 
   const summarizedAt = new Date().toISOString();
@@ -1067,7 +1132,9 @@ const SHARED_PAGE_HEADERS: Record<string, string> = {
     "script-src 'none'",
     "style-src 'unsafe-inline' https://fonts.googleapis.com",
     'font-src https://fonts.gstatic.com',
-    'img-src https: data:',
+    // 'self' for the page's own counting picture — `https:` alone refused it wherever the site is
+    // served over plain http, which is every local checkout.
+    "img-src 'self' https: data:",
     "connect-src 'none'",
     "base-uri 'none'",
     "form-action 'self'",

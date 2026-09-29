@@ -274,6 +274,7 @@ export const ui: Content['ui'] = {
   'converter.fullscreen.exit': 'Salir de pantalla completa',
   'converter.summary.needsSave': 'Guarda este documento en tu cuenta para resumirlo.',
   'converter.summary.loading': 'Leyendo el documento…',
+  'converter.summary.writing': 'Escribiendo el resumen…',
   'converter.summary.error': 'No se pudo resumir este documento.',
   'converter.summary.retry': 'Reintentar',
   'converter.summary.regenerate': 'Regenerar',

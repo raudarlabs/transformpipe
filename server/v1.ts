@@ -20,7 +20,7 @@ import {
   RATE,
   usageOf,
 } from './limits.js';
-import { summarize, summaryEnabled } from './summarize.js';
+import { summarize, summaryEnabled, summaryFailure } from './summarize.js';
 import { deliver } from './webhooks.js';
 import {
   CONVERSIONS,
@@ -909,9 +909,7 @@ v1.post('/documents/:id/summary', async (c) => {
   try {
     summary = await summarize(markdown);
   } catch (cause) {
-    const why = cause instanceof Error ? cause.message : 'the model did not answer';
-
-    return c.json({ error: `Could not summarise this document: ${why}` }, 502);
+    return c.json({ error: summaryFailure(cause) }, 502);
   }
 
   const summarizedAt = new Date().toISOString();

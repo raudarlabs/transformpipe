@@ -266,6 +266,7 @@ export const ui: Content['ui'] = {
   'converter.fullscreen.exit': 'Esci da schermo intero',
   'converter.summary.needsSave': 'Salva questo documento nel tuo account per riassumerlo.',
   'converter.summary.loading': 'Lettura del documento…',
+  'converter.summary.writing': 'Scrittura del riassunto…',
   'converter.summary.error': 'Impossibile riassumere questo documento.',
   'converter.summary.retry': 'Riprova',
   'converter.summary.regenerate': 'Rigenera',

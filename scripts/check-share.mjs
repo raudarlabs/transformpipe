@@ -209,6 +209,14 @@ try {
 
   check('the page asks for its picture', countedPage.includes(`/s/${counted.token}/seen`));
 
+  const policy = (await get(`/s/${counted.token}`)).headers.get('content-security-policy') ?? '';
+
+  check(
+    "and its policy lets the picture load from here, over http too",
+    /img-src[^;]*'self'/.test(policy),
+    policy
+  );
+
   const download = await (await get(`/s/${counted.token}?download`)).text();
 
   check('the downloaded file does not', !download.includes('/seen'));

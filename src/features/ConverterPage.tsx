@@ -48,7 +48,7 @@ import { SectionHeading } from '@/ui/components/SectionHeading';
 import { useTheme } from '@/lib/theme';
 import { OVERLAY, useFullscreen } from '@/lib/use-fullscreen';
 import type { ConvertedDoc } from '@/lib/types';
-import { buildStandaloneHtml } from '@/lib/markdown';
+import { buildStandaloneHtml, markdownToHtml } from '@/lib/markdown';
 import { downloadDoc, printDoc, saveBlob } from '@/lib/download';
 import { count } from '@/lib/usage';
 import {
@@ -74,6 +74,8 @@ import {
   DropdownMenuTrigger,
 } from '@/ui/components/DropdownMenu';
 import { IconButton } from '@/ui/components/IconButton';
+import { Skeleton } from '@/ui/components/Skeleton';
+import { Spinner } from '@/ui/components/Spinner';
 import { Typography } from '@/ui/components/Typography';
 import { cn } from '@/ui/lib/utils';
 import { toast } from '@/ui/components/Toast';
@@ -144,33 +146,80 @@ export function ConverterPage({
   } = useFullscreen(previewFrame);
 
   const [summary, setSummary] = useState<string | null>(null);
+  /** Asked for, and nothing written yet. */
   const [summaryLoading, setSummaryLoading] = useState(false);
+  /** Arriving: the text so far is on the screen and more is coming. */
+  const [summaryWriting, setSummaryWriting] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  /*
+   * Which request is the current one. A summary streams for several seconds, and a reader who
+   * opens another document in that time must not have the first one's text land on the second.
+   */
+  const summaryRequest = useRef(0);
 
   // A different document — reset to a clean slate rather than showing a stale summary.
   useEffect(() => {
+    summaryRequest.current += 1;
     setSummary(null);
     setSummaryError(null);
     setSummaryLoading(false);
+    setSummaryWriting(false);
   }, [doc?.remoteId]);
 
+  /*
+   * Streamed, not fetched whole: a summary takes the model several seconds, and a box that sits
+   * empty for all of them and then fills at once reads as nothing happening followed by a jolt.
+   * The first words replace the placeholder as soon as they exist.
+   */
   const loadSummary = async (force = false) => {
     if (!doc?.remoteId) {
       return;
     }
 
+    const mine = ++summaryRequest.current;
+    /* Kept to put back if a regenerate fails before writing anything: the old one is still true. */
+    const previous = summary;
+    let arrived = false;
+
+    setSummary(null);
     setSummaryLoading(true);
+    setSummaryWriting(false);
     setSummaryError(null);
 
     try {
-      const result = await api.summarizeDocument(doc.remoteId, { force });
-      setSummary(result.summary);
+      const result = await api.streamSummary(doc.remoteId, {
+        force,
+        onText: (text) => {
+          if (mine !== summaryRequest.current || !text) {
+            return;
+          }
+
+          arrived = true;
+          setSummaryLoading(false);
+          setSummaryWriting(true);
+          setSummary(text);
+        },
+      });
+
+      if (mine === summaryRequest.current) {
+        setSummary(result.summary);
+      }
     } catch (cause) {
-      setSummaryError(
-        cause instanceof Error ? cause.message : t('converter.summary.error')
-      );
+      if (mine === summaryRequest.current) {
+        const why = cause instanceof Error ? cause.message : t('converter.summary.error');
+
+        if (previous && !arrived) {
+          setSummary(previous);
+          toast.error(why);
+        } else {
+          setSummaryError(why);
+        }
+      }
     } finally {
-      setSummaryLoading(false);
+      if (mine === summaryRequest.current) {
+        setSummaryLoading(false);
+        setSummaryWriting(false);
+      }
     }
   };
 
@@ -179,7 +228,14 @@ export function ConverterPage({
   // `tab` and the document's id: `summary`/`summaryLoading`/`summaryError` are this effect's own
   // output, and including them would make it re-run the moment it sets them.
   useEffect(() => {
-    if (tab === 'summary' && doc?.remoteId && !summary && !summaryLoading && !summaryError) {
+    if (
+      tab === 'summary' &&
+      doc?.remoteId &&
+      !summary &&
+      !summaryLoading &&
+      !summaryWriting &&
+      !summaryError
+    ) {
       void loadSummary();
     }
   }, [tab, doc?.remoteId]);
@@ -731,11 +787,26 @@ export function ConverterPage({
                 {t('converter.summary.needsSave')}
               </Typography>
             ) : summaryLoading ? (
-              <Typography variant="p" textColor="secondary">
-                {t('converter.summary.loading')}
-              </Typography>
+              /* Before the first words: say it is working, and show roughly the shape coming. */
+              <div className="flex w-full flex-col gap-3" role="status" aria-live="polite">
+                <span className="flex items-center gap-2 text-ink-secondary text-sm">
+                  <Spinner size="sm" />
+                  {t('converter.summary.loading')}
+                </span>
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-11/12" />
+                <Skeleton className="h-3 w-4/5" />
+                <Skeleton className="mt-2 h-3 w-2/3" />
+                <Skeleton className="h-3 w-3/4" />
+              </div>
             ) : summaryError ? (
               <>
+                {/* What did arrive stays, dimmed, above the reason it stopped. */}
+                {summary && (
+                  <div className="w-full opacity-60">
+                    <DocumentPreview html={markdownToHtml(summary)} className="md-article" />
+                  </div>
+                )}
                 <Typography variant="p" textColor="secondary">
                   {summaryError}
                 </Typography>
@@ -750,17 +821,28 @@ export function ConverterPage({
               </>
             ) : summary ? (
               <>
-                <Typography variant="p" textColor="primary">
-                  {summary}
-                </Typography>
-                <Button
-                  variant="tertiary"
-                  size="sm"
-                  leftSlot={<RefreshCw />}
-                  onClick={() => void loadSummary(true)}
-                >
-                  {t('converter.summary.regenerate')}
-                </Button>
+                <div className="w-full" aria-busy={summaryWriting}>
+                  <DocumentPreview html={markdownToHtml(summary)} className="md-article" />
+                </div>
+                {summaryWriting ? (
+                  <span
+                    className="flex items-center gap-2 text-ink-secondary text-sm"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <Spinner size="sm" />
+                    {t('converter.summary.writing')}
+                  </span>
+                ) : (
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    leftSlot={<RefreshCw />}
+                    onClick={() => void loadSummary(true)}
+                  >
+                    {t('converter.summary.regenerate')}
+                  </Button>
+                )}
               </>
             ) : null}
           </div>

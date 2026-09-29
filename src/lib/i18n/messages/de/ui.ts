@@ -284,6 +284,7 @@ export const ui: Content['ui'] = {
   'converter.summary.needsSave':
     'Speichern Sie dieses Dokument in Ihrem Konto, um es zusammenzufassen.',
   'converter.summary.loading': 'Dokument wird gelesen…',
+  'converter.summary.writing': 'Zusammenfassung wird geschrieben…',
   'converter.summary.error': 'Dieses Dokument konnte nicht zusammengefasst werden.',
   'converter.summary.retry': 'Erneut versuchen',
   'converter.summary.regenerate': 'Neu erstellen',

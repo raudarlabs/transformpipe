@@ -117,6 +117,18 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'The AI summary says more, and says it is working',
+    body:
+      'A summary was three to five sentences that said what a document was about and little you '
+      + 'could act on. It is now a paragraph on what the document is and where it lands, then its '
+      + 'specifics as a list — figures, names, decisions, dates, open questions — in the '
+      + 'document’s own language. While it is being written the tab says so instead of sitting '
+      + 'empty, and the text appears as it arrives. When the main model is busy a faster one steps '
+      + 'in, a failed regenerate keeps the summary you had, and an error reads as a sentence. '
+      + 'Summaries made before today stay as they were until you press Regenerate.',
+  },
+  {
+    date: '2026-09-30',
     title: 'A shared link says how often it was opened',
     body:
       'The Share dialog now shows how many times a link has been opened and when it last was, and '

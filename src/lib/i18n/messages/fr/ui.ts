@@ -270,6 +270,7 @@ export const ui: Content['ui'] = {
   'converter.summary.needsSave':
     'Enregistrez ce document dans votre compte pour le résumer.',
   'converter.summary.loading': 'Lecture du document…',
+  'converter.summary.writing': 'Rédaction du résumé…',
   'converter.summary.error': 'Impossible de résumer ce document.',
   'converter.summary.retry': 'Réessayer',
   'converter.summary.regenerate': 'Régénérer',
