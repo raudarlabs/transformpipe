@@ -116,6 +116,17 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-09-29',
+    title: 'Coming back no longer means seeing an old version of the site',
+    body:
+      'Since 18 September the offline cache kept the site\u2019s stylesheet from your first visit '
+      + 'and served it on every one after, so anybody coming back saw today\u2019s pages drawn with '
+      + 'old styles \u2014 the list of conversions in three columns where there are five, and any '
+      + 'other change to how things look missing until a hard refresh. The stylesheet now comes '
+      + 'from the network whenever there is one, and the old cache is cleared. It can take one '
+      + 'ordinary reload to take effect. Offline still works.',
+  },
+  {
     date: '2026-09-28',
     title: 'The page that says what this is, saying rather more',
     body:

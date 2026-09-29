@@ -16,16 +16,26 @@
  *     deploy points at files that no longer exist — the white screen every hand-rolled worker
  *     eventually ships. The cache is the fallback, not the source.
  *
- * What it does cache: `/assets/**`, which is content-hashed and therefore safe forever, the fonts
- * and icons, which change about twice a year and are fine slightly stale, and every page that has
- * actually been visited — under its own address, so a deep link opened offline comes back as that
- * page rather than as the home page wearing its URL.
+ * What it does cache: files under `/assets` whose names carry a build hash, which are safe forever,
+ * the fonts and icons, which change about twice a year and are fine slightly stale, and every page
+ * that has actually been visited — under its own address, so a deep link opened offline comes back
+ * as that page rather than as the home page wearing its URL.
+ *
+ * Not everything under `/assets` is hashed, and the first version of this worker assumed it was.
+ * The stylesheet is `assets/app.css` on every deploy — its name is fixed so that session replays
+ * keep their styles (see `vite.config.ts`) — and it was answered from this cache forever. So from
+ * the day the worker shipped, a returning visitor got today's markup and scripts with whichever
+ * stylesheet they first happened to load: a layout change was a hard refresh away, for everybody,
+ * and nobody could tell. An unhashed file under `/assets` now goes to the network first and uses
+ * the cache only when there is no network, which keeps the offline promise and not the old file.
  *
  * Every cache name carries VERSION. Bump it and the old one is deleted on the next activation,
  * which is the manual kill switch as well: a worker shipped with a bug is replaced by bumping this
  * and deploying, and `clients.claim()` means it takes over without waiting for every tab to close.
  */
-const VERSION = 'v1';
+/* v2: clears the tp-assets-v1 cache, which holds a stylesheet from whenever each visitor installed
+ * the worker. See "Not everything under /assets is hashed" above. */
+const VERSION = 'v2';
 const SHELL = `tp-shell-${VERSION}`;
 const ASSETS = `tp-assets-${VERSION}`;
 
@@ -74,10 +84,40 @@ function mine(url, request) {
   return !/^\/(api|s|open|report)(\/|$)/.test(url.pathname);
 }
 
-const hashed = (pathname) =>
-  pathname.startsWith('/assets/') ||
-  pathname.startsWith('/fonts/') ||
-  /^\/(icon|favicon|apple-touch)/.test(pathname);
+/*
+ * A build hash is Vite's eight characters before the extension: `index-CZx6NlDk.js`,
+ * `elk-276RUBZZ-CuA1whoD.js`. Decided by the name rather than by a list of exceptions, so the next
+ * file somebody gives a fixed name lands on the safe side without anybody remembering this rule.
+ */
+const contentHashed = (pathname) =>
+  /^\/assets\/.+-[A-Za-z0-9_-]{8}\.[a-z0-9]+$/.test(pathname);
+
+/* Not hashed, and fine to serve slightly stale. */
+const settled = (pathname) =>
+  pathname.startsWith('/fonts/') || /^\/(icon|favicon|apple-touch)/.test(pathname);
+
+/** The network when there is one; this cache when there is not. */
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+
+  try {
+    const response = await fetch(request);
+
+    if (response.ok) {
+      void cache.put(request, response.clone());
+    }
+
+    return response;
+  } catch (offline) {
+    const hit = await cache.match(request);
+
+    if (hit) {
+      return hit;
+    }
+
+    throw offline;
+  }
+}
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
@@ -86,8 +126,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  /*
+   * Unhashed, under /assets: the same URL across deploys, so the cache cannot be trusted to still be
+   * the file the page was built with. The host answers `max-age=0, must-revalidate` with an ETag,
+   * so going to the network is a 304 and costs a round trip, not a download.
+   */
+  if (url.pathname.startsWith('/assets/') && !contentHashed(url.pathname)) {
+    event.respondWith(networkFirst(event.request, ASSETS));
+
+    return;
+  }
+
   /* Hashed or good-as-hashed: answer from the cache and fill it on the way past. */
-  if (hashed(url.pathname)) {
+  if (contentHashed(url.pathname) || settled(url.pathname)) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(ASSETS);

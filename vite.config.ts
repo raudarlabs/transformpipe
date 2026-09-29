@@ -35,9 +35,11 @@ export default defineConfig({
    * and `index-CuR8xdKN.css` is gone, so every recording made before that deploy replays as
    * unstyled markup and reads like the site was broken for that visitor.
    *
-   * So: one stable name for the one file a replay needs. If long-lived caching is ever turned on
-   * for /assets, this file has to be excluded from it, or a visitor with yesterday's CSS and
-   * today's markup is the exact failure the hash was there to prevent.
+   * So: one stable name for the one file a replay needs. Anything that caches /assets for long
+   * has to treat this file differently, or a visitor with yesterday's CSS and today's markup is the
+   * exact failure the hash was there to prevent. Two days after this was written the service worker
+   * did cache /assets forever, and did exactly that to every returning visitor until 29 September;
+   * `public/sw.js` now decides by whether a name carries a hash, and sends this one to the network.
    */
   build: {
     rollupOptions: {
