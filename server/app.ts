@@ -1307,6 +1307,28 @@ app.get('/.well-known/security.txt', (c) =>
   )
 );
 
+/*
+ * Proof that whoever runs this app also runs this domain, for the ChatGPT app directory.
+ *
+ * In code for the same reason `security.txt` above is: `vercel.json` rewrites the whole
+ * `/.well-known/` prefix to this function, so a file in `public/.well-known/` would be built,
+ * deployed, and never answer — the verifier would read this function's 404 instead and report the
+ * domain as unverified, with nothing anywhere saying why.
+ *
+ * The body is the token and nothing else. No newline, no quotes, no surrounding whitespace: the
+ * check is a byte comparison, and `c.text` sends exactly what it is given. The value is not a
+ * secret — it is meant to be read by anybody who asks for this URL, which is the whole point of it.
+ *
+ * Short cache. It is read once, and a stale copy after the token is rotated would be a failure
+ * nobody could explain.
+ */
+app.get('/.well-known/openai-apps-challenge', (c) =>
+  c.text('WTolRjncIxerKrh0OnFt4cp0ZdCDZr2Yp-pXckkBVk4', 200, {
+    'content-type': 'text/plain; charset=utf-8',
+    'cache-control': 'public, max-age=300',
+  })
+);
+
 app.route('/', mcp);
 app.route('/', oauth);
 app.route('/', v1);
