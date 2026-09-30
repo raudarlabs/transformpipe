@@ -45,9 +45,10 @@ const OPENAI_BRIDGE = `
       ? Promise.resolve(openai().callTool(name, args))
       : request('tools/call', { name, arguments: args });
 
+  /* An empty object is what ChatGPT holds for a result with no structured content: nothing to draw. */
   const fromOpenAI = () => {
     const data = openai() && openai().toolOutput;
-    if (data && typeof data === 'object') draw(data);
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) draw(data);
   };
 
   window.addEventListener('openai:set_globals', fromOpenAI);
@@ -240,7 +241,7 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     if (message.method === 'ui/notifications/tool-result') {
       const data = message.params && message.params.structuredContent;
-      if (data) draw(data);
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) draw(data);
     }
   });
 
@@ -443,7 +444,7 @@ button.row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px
 
     if (message.method === 'ui/notifications/tool-result') {
       const data = message.params && message.params.structuredContent;
-      if (data) draw(data);
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) draw(data);
     }
   });
 
@@ -575,6 +576,14 @@ button[disabled] { opacity: 0.6; cursor: default; }
     const card = document.getElementById('card');
 
     card.textContent = '';
+
+    /* Deleted already: the host asked the person itself and the call went straight through. */
+    if (document_.deleted) {
+      card.append(el('h1', null, document_.name || 'Document'));
+      card.append(el('p', 'done', 'Deleted. It and its source are gone.'));
+      return;
+    }
+
     card.append(el('h1', null, document_.name || 'This document'));
 
     const meta = [
@@ -642,7 +651,7 @@ button[disabled] { opacity: 0.6; cursor: default; }
 
     if (message.method === 'ui/notifications/tool-result') {
       const data = message.params && message.params.structuredContent;
-      if (data) draw(data);
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) draw(data);
     }
   });
 

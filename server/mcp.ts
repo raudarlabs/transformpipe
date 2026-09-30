@@ -868,10 +868,17 @@ const TOOLS: Record<McpToolName, Tool> = {
           );
         }
 
-        return say(
+        // A card as well as the sentence: the view is drawn either way, and one given nothing
+        // waits on "Waiting for the document…" for ever.
+        return card(
           `Saved ${document.name} (id ${document.id}, ${bytes(document.size)}) and shared it with ${
             (shared.body.emails ?? []).join(', ') || 'nobody yet'
-          }.\n${shared.body.url ?? ''}`.trim()
+          }.\n${shared.body.url ?? ''}`.trim(),
+          forCard(
+            c,
+            { ...document, share: { mode: 'people', url: shared.body.url ?? null } },
+            markdown
+          )
         );
       }
 
@@ -1358,6 +1365,8 @@ const TOOLS: Record<McpToolName, Tool> = {
         };
       }
 
+      // Read first for its name, which the view shows over "Deleted" rather than an id.
+      const named = await callApi(c, `/api/v1/documents/${segment(id)}`);
       const gone = await callApi(c, `/api/v1/documents/${segment(id)}`, {
         method: 'DELETE',
       });
@@ -1369,7 +1378,17 @@ const TOOLS: Record<McpToolName, Tool> = {
         );
       }
 
-      return say(`Deleted. ${id} and its source are gone.`);
+      /*
+       * With something for the view to draw. A host that asks the person itself — ChatGPT does,
+       * before any tool marked destructive — calls this with confirm: true the first time, and the
+       * confirmation view is drawn beside the result; given no data it would keep offering to
+       * delete a document that is already gone.
+       */
+      return card(`Deleted. ${id} and its source are gone.`, {
+        id,
+        name: named.status === 200 ? named.body.document.name : undefined,
+        deleted: true,
+      });
     },
   },
 };

@@ -74,6 +74,7 @@ const tool = async (token, name, args = {}) => {
   return {
     text: body?.result?.content?.[0]?.text ?? '',
     isError: Boolean(body?.result?.isError),
+    data: body?.result?.structuredContent,
   };
 };
 
@@ -892,6 +893,16 @@ if (blobless) {
 } else {
   const deleted = await tool(tokens.access_token, 'tp_delete_document', { id: savedId, confirm: true });
   check('and with it, the document goes', /Deleted/.test(deleted.text), deleted.text);
+  /*
+   * With data for the view beside it. ChatGPT asks the person before a destructive tool and then
+   * calls it with confirm: true the first time, so the confirmation view is drawn next to a
+   * finished delete — and given nothing, it went on offering to delete what was already gone.
+   */
+  check(
+    'and the view is told it is gone, not asked to offer the button again',
+    deleted.data?.deleted === true && deleted.data?.id === savedId,
+    JSON.stringify(deleted.data ?? null)
+  );
 }
 
 const nonsenseId = await tool(tokens.access_token, 'tp_get_document', { id: '../usage' });
