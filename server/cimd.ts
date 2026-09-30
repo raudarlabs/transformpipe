@@ -156,7 +156,7 @@ function strings(value: unknown): string[] {
     : [];
 }
 
-function readDocument(url: string, body: string): ClientDocumentResult {
+export function parseClientDocument(url: string, body: string): ClientDocumentResult {
   let parsed: unknown;
 
   try {
@@ -194,14 +194,35 @@ function readDocument(url: string, body: string): ClientDocumentResult {
 
   /*
    * We have no way to authenticate a client, by design: a client that runs on somebody else's
-   * machine cannot keep a secret, and PKCE is what stands in its place. A document asking for
-   * `client_secret_basic` or `private_key_jwt` expects to be authenticated, and letting it through
-   * as a public client would quietly give it less protection than it asked for.
+   * machine cannot keep a secret, and PKCE is what stands in its place. A client that can only be
+   * authenticated is refused, because letting it through as a public one would quietly give it
+   * less protection than it asked for.
+   *
+   * "Can only" is the list, when there is one. `token_endpoint_auth_method` is RFC 7591's single
+   * field, the method a client would rather use; `token_endpoint_auth_methods_supported` is not in
+   * RFC 7591 at all, and ChatGPT's document carries it to say what else it can do. ChatGPT would
+   * rather sign with `private_key_jwt` and lists `none` beside it, so it connects as a public
+   * client under PKCE and an exact redirect_uri, like Claude Code. With no list, the single field
+   * binds, as it always did.
+   *
+   * What this gives up against checking the signature: a refresh token copied from ChatGPT's side
+   * works for whoever holds it, where a signed exchange would also want ChatGPT's key. Rotation
+   * and replay detection still end the chain the moment both copies are used. Verifying
+   * `private_key_jwt` is the next step, not this one.
    */
+  const methods = doc.token_endpoint_auth_methods_supported;
   const method = doc.token_endpoint_auth_method;
 
-  if (typeof method === 'string' && method !== 'none') {
-    return { ok: false, why: `it wants ${method}, and this server authenticates no client` };
+  if (methods !== undefined) {
+    if (!Array.isArray(methods) || !methods.every((one) => typeof one === 'string')) {
+      return { ok: false, why: 'its token endpoint authentication methods are invalid' };
+    }
+
+    if (!methods.includes('none')) {
+      return { ok: false, why: 'it does not support unauthenticated token exchange' };
+    }
+  } else if (method !== undefined && method !== 'none') {
+    return { ok: false, why: `it wants ${String(method)}, and this server authenticates no client` };
   }
 
   return {
@@ -295,7 +316,7 @@ async function fetchDocument(
     return fail('it is too large, or it stopped mid-way');
   }
 
-  const read = readDocument(url, body);
+  const read = parseClientDocument(url, body);
 
   return {
     result: read,

@@ -323,6 +323,27 @@ check(
   JSON.stringify(mirrored[0] ?? null)
 );
 
+/*
+ * ChatGPT's, for the same reason. Its document would rather sign with `private_key_jwt` and lists
+ * `none` beside it — the case that answered "Unknown client" until the list was read.
+ */
+const CHATGPT = 'https://chatgpt.com/oauth/client.json';
+
+const byChatGpt = await authorize({
+  client_id: CHATGPT,
+  redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+  state: 'st',
+});
+
+check(
+  'ChatGPT\'s document is accepted, though it would rather sign',
+  byChatGpt.status === 302 && (byChatGpt.headers.get('location') ?? '').includes('/?connect='),
+  `${byChatGpt.status} ${byChatGpt.headers.get('location') ?? (await byChatGpt.text()).slice(0, 80)}`
+);
+
 const strayFromDocument = await authorize({
   client_id: CIMD,
   redirect_uri: 'https://evil.example/callback',
