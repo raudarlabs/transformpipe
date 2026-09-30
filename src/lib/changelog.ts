@@ -52,31 +52,24 @@ export interface ChangelogEntry {
 }
 
 /*
- * The entry pages a search engine is asked to index.
+ * The entry pages kept out of search: the ones about a conversion that has a page of its own.
  *
- * A page each is right for the reader who follows a link from the list; it is wrong for a new
- * site's crawl. Fifty-three entries in five languages were a third of the sitemap, Google left
- * 204 of them "discovered, not indexed" in the September report, and the conversion pages that
- * have to rank waited in the same queue. So the pages stay, at the addresses they were given, and
- * only these are listed and indexable: things somebody searches for that no other page on the site
- * answers. An entry about a conversion is not among them — `/epub-to-markdown` is the page for that
- * search, and a release note competing with it for the same words helps neither.
- *
- * The rest are `noindex, follow`: readable, linked, and out of the queue.
+ * `/changelog/epub-to-markdown` and `/epub-to-markdown` answer the same search, and two pages of
+ * ours on one query compete — a short release note can outrank the page that has the converter on
+ * it. So these stay readable and linked, served `noindex, follow`, and every other entry page is
+ * listed and indexed. The owner's call, 30 September 2026: everything indexed but these.
  */
-export const INDEXED_ENTRIES = new Set([
-  'markdown-to-pdf-api',
-  'markdown-to-word',
-  'mermaid-diagrams',
-  'math-in-markdown',
-  'syntax-highlighting',
-  'webhooks',
-  'embed-the-converter',
-  'document-versions',
-  // Added 30 September 2026 at the owner's call: both are searched for, and no other page here
-  // says either — how to put a password on a shared link, and how to see who opened one.
-  'password-protected-links',
-  'shared-link-views',
+export const CONVERSION_ENTRIES = new Set([
+  'markdown-in-a-document-out',
+  'transformpipe-2-0',
+  'ten-conversions',
+  'plain-text-and-excel',
+  'notion-and-confluence-exports',
+  'obsidian-vault-to-markdown',
+  'powerpoint-to-markdown',
+  'epub-to-markdown',
+  'odt-and-rtf-to-markdown',
+  'evernote-to-markdown',
 ]);
 
 /** One entry's page, in English and in whatever else somebody has written. */

@@ -67,12 +67,14 @@ format this now converts, a thing it now does. Not for a fix.
 `changelogProblems()` enforces all of that and the prerenderer throws on it, so a bad entry fails
 the build rather than shipping an empty page.
 
-**A page is not an entry in the sitemap.** Since 24 September 2026 an entry page is listed and
-indexable only when its slug is in `INDEXED_ENTRIES` in `src/lib/changelog.ts`; every other one is
-served `noindex, follow`. Fifty-three pages in five languages were a third of the sitemap, and the
-Search Console report showed them queued ahead of the conversion pages that have to rank. Add a
-slug to that set only when people search for the thing and no other page here answers the search —
-never for a new conversion, whose own page (`/epub-to-markdown`) is the one that should rank.
+**An entry page is indexed unless it is about a conversion.** From 24 September 2026 only a
+chosen few were — the rest served `noindex, follow`, because fifty-three pages in five languages
+were a third of the sitemap and the Search Console report showed them queued ahead of the
+conversion pages. On 30 September 2026 the owner reversed most of that: every entry page is listed
+and indexed except the ones in `CONVERSION_ENTRIES` in `src/lib/changelog.ts` — the entries about a
+conversion that has a page of its own, since `/changelog/epub-to-markdown` would compete with
+`/epub-to-markdown` for the same search. A new entry about a new conversion goes in that set; any
+other entry with a slug is indexed as it stands.
 
 **Detail pages may be translated, and entries themselves still may not.** The reason the rule
 exists — five translations per entry, per release, forever — does not apply to a handful of pages

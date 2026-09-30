@@ -29,10 +29,10 @@ import { formatDate, formatMonth } from '../src/lib/format.js';
 import {
   CHANGELOG_UPDATED,
   changelogByYear,
+  CONVERSION_ENTRIES,
   CHANGELOG_PAGES,
   changelogProblems,
   detailIn,
-  INDEXED_ENTRIES,
 } from '../src/lib/changelog.js';
 import {
   CONVERSIONS,
@@ -203,8 +203,8 @@ interface Page {
    */
   addressless?: boolean;
   /**
-   * At its own address, canonical, linked — and not to be indexed. The changelog entries outside
-   * `INDEXED_ENTRIES`, which a reader may follow a link to and a search engine need not queue.
+   * At its own address, canonical, linked — and not to be indexed. The changelog entries about a
+   * conversion that has its own page (`CONVERSION_ENTRIES`), which would compete with it.
    */
   noindex?: boolean;
   lastmod?: string;
@@ -1184,10 +1184,10 @@ if (changelogFaults.length > 0) {
   );
 }
 
-/* A name in the indexed set with no page behind it is a typo that would quietly index nothing. */
-for (const slug of INDEXED_ENTRIES) {
+/* A name in the set with no page behind it is a typo that would quietly keep nothing out. */
+for (const slug of CONVERSION_ENTRIES) {
   if (!CHANGELOG_PAGES.some((entry) => entry.slug === slug)) {
-    throw new Error(`INDEXED_ENTRIES names ${slug}, and no changelog entry has that slug`);
+    throw new Error(`CONVERSION_ENTRIES names ${slug}, and no changelog entry has that slug`);
   }
 }
 
@@ -1203,8 +1203,9 @@ for (const entry of CHANGELOG_PAGES) {
       path,
       title: `${piece.title ?? entry.title} — TransformPipe`,
       description: piece.description,
-      listed: INDEXED_ENTRIES.has(entry.slug!),
-      noindex: !INDEXED_ENTRIES.has(entry.slug!),
+      // Indexed unless it is about a conversion with a page of its own — see CONVERSION_ENTRIES.
+      listed: !CONVERSION_ENTRIES.has(entry.slug!),
+      noindex: CONVERSION_ENTRIES.has(entry.slug!),
       lastmod: entry.date,
       head: [
         `<meta name="keywords" content="${escapeHtml(piece.keywords)}" />`,
