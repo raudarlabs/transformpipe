@@ -618,6 +618,11 @@ export const ui: Content['ui'] = {
   'dialog.share.add': 'Add',
   'dialog.share.remove.label': 'Remove {email}',
   'dialog.share.error': 'Sharing failed',
+  'dialog.share.revoke.title': 'Stop sharing this link?',
+  'dialog.share.revoke.body':
+    'Everyone who has the link loses access, for good. Share again and you get a new link; this one does not come back.',
+  'dialog.share.revoke.confirm': 'Make private',
+  'dialog.share.revoke.cancel': 'Keep sharing',
 
   /* API keys, and the assistants that have been let in. */
   'dialog.keys.title': 'API keys',

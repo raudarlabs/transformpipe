@@ -612,6 +612,11 @@ export const ui: Content['ui'] = {
   'dialog.share.add': 'Añadir',
   'dialog.share.remove.label': 'Quitar {email}',
   'dialog.share.error': 'No se pudo compartir',
+  'dialog.share.revoke.title': '¿Dejar de compartir este enlace?',
+  'dialog.share.revoke.body':
+    'Quien tenga el enlace pierde el acceso para siempre. Si vuelves a compartir, se crea un enlace nuevo; este no vuelve.',
+  'dialog.share.revoke.confirm': 'Hacer privado',
+  'dialog.share.revoke.cancel': 'Seguir compartiendo',
 
   /* Las claves API, y los asistentes a los que se ha dejado entrar. */
   'dialog.keys.title': 'Claves API',

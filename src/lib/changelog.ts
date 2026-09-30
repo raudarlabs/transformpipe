@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Making a shared document private asks first',
+    body:
+      'Switching a shared document to Private ends its link for good, and sharing again makes a '
+      + 'new one. The Share dialog now says so and waits for a yes, so an old link no longer stops '
+      + 'working without anybody meaning it to.',
+  },
+  {
+    date: '2026-10-01',
     title: 'Word and PDF downloads work again',
     body:
       'Downloading a saved document as Word or PDF answered with an error on transformpipe.com, '

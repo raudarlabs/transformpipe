@@ -1,5 +1,17 @@
-import { Check, Copy, Eye, Link2, Lock, type LucideIcon, Mail, TimerOff, Users, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import {
+  Check,
+  Copy,
+  Eye,
+  Link2,
+  Lock,
+  type LucideIcon,
+  Mail,
+  TimerOff,
+  TriangleAlert,
+  Users,
+  X,
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { api, type ShareMode, type ShareState } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
 import { useI18n, useT } from '@/lib/i18n/context';
@@ -517,6 +529,64 @@ function SharePanel({
   );
 }
 
+/**
+ * The one question the dialog asks before doing what it was told.
+ *
+ * Going private deletes the link's token, which is the only way revoking means anything — and it
+ * also means a link somebody sent last week is dead for good, and sharing again makes a different
+ * one. That surprised the person it was built for: links they had shared "stopped working", and
+ * the reason was a click on Private that looked like a setting rather than an ending. Every other
+ * change keeps the address, so this is the only one that asks.
+ *
+ * It stands where the panel stood and at its height, so the dialog does not change size under the
+ * pointer; the safe answer has the focus.
+ */
+function RevokeConfirm({
+  height,
+  isBusy,
+  onConfirm,
+  onCancel,
+}: {
+  height: number;
+  isBusy: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const t = useT();
+
+  return (
+    <div
+      role="alertdialog"
+      aria-labelledby="share-revoke-title"
+      aria-describedby="share-revoke-body"
+      className="flex flex-col justify-center gap-3 rounded-lg border border-stroke p-4"
+      style={height ? { minHeight: height } : undefined}
+    >
+      <Typography
+        id="share-revoke-title"
+        variant="p"
+        weight="semibold"
+        textColor="primary"
+        className="flex items-center gap-2 text-sm"
+      >
+        <TriangleAlert className="size-4 shrink-0 text-warning" />
+        {t('dialog.share.revoke.title')}
+      </Typography>
+      <Typography id="share-revoke-body" variant="p" textColor="secondary" className="text-xs">
+        {t('dialog.share.revoke.body')}
+      </Typography>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="primary" size="sm" disabled={isBusy} onClick={onConfirm}>
+          {t('dialog.share.revoke.confirm')}
+        </Button>
+        <Button variant="secondary" size="sm" disabled={isBusy} autoFocus onClick={onCancel}>
+          {t('dialog.share.revoke.cancel')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface ShareDialogProps {
   /** The document's id in the account; sharing needs a server-side row. */
   documentId: string | null;
@@ -538,11 +608,16 @@ export function ShareDialog({
   const [state, setState] = useState<ShareState | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  /** The panel's height while Private waits to be confirmed; null when nothing is being asked. */
+  const [confirming, setConfirming] = useState<number | null>(null);
+  const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open || !documentId) {
       return;
     }
+
+    setConfirming(null);
 
     setIsBusy(true);
     client
@@ -607,9 +682,19 @@ export function ShareDialog({
               { value: 'link', label: t('dialog.share.mode.link') },
               { value: 'people', label: t('dialog.share.mode.people') },
             ]}
-            onValueChange={(value) =>
-              void run(client.setMode(documentId, value as ShareMode))
-            }
+            onValueChange={(value) => {
+              const mode = value as ShareMode;
+
+              // Ending a live link is the one change that cannot be taken back; ask first.
+              if (mode === 'private' && state && state.mode !== 'private' && state.token) {
+                setConfirming(panel.current?.offsetHeight ?? 0);
+
+                return;
+              }
+
+              setConfirming(null);
+              void run(client.setMode(documentId, mode));
+            }}
           />
 
           {isBusy && !state ? (
@@ -619,18 +704,33 @@ export function ShareDialog({
                 {t('common.loading')}
               </Typography>
             </div>
-          ) : state ? (
-            <SharePanel
-              state={state}
+          ) : state && confirming !== null ? (
+            <RevokeConfirm
+              height={confirming}
               isBusy={isBusy}
-              isCopied={isCopied}
-              url={state.mode !== 'private' && state.token ? client.url(state.token) : null}
-              onCopy={() => void copyLink()}
-              onExpiry={(expiresAt) => void run(client.setExpiry(documentId, state.mode, expiresAt))}
-              onPassword={(password) => void run(client.setPassword(documentId, state.mode, password))}
-              onAdd={(address) => run(client.add(documentId, address))}
-              onRemove={(address) => void run(client.remove(documentId, address))}
+              onCancel={() => setConfirming(null)}
+              onConfirm={() =>
+                void run(client.setMode(documentId, 'private')).then((done) => {
+                  if (done) {
+                    setConfirming(null);
+                  }
+                })
+              }
             />
+          ) : state ? (
+            <div ref={panel}>
+              <SharePanel
+                state={state}
+                isBusy={isBusy}
+                isCopied={isCopied}
+                url={state.mode !== 'private' && state.token ? client.url(state.token) : null}
+                onCopy={() => void copyLink()}
+                onExpiry={(expiresAt) => void run(client.setExpiry(documentId, state.mode, expiresAt))}
+                onPassword={(password) => void run(client.setPassword(documentId, state.mode, password))}
+                onAdd={(address) => run(client.add(documentId, address))}
+                onRemove={(address) => void run(client.remove(documentId, address))}
+              />
+            </div>
           ) : null}
         </ModalBody>
       </ModalContent>

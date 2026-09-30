@@ -600,6 +600,11 @@ export const ui: Content['ui'] = {
   'dialog.share.add': 'Aggiungi',
   'dialog.share.remove.label': 'Rimuovi {email}',
   'dialog.share.error': 'Condivisione non riuscita',
+  'dialog.share.revoke.title': 'Interrompere questo link?',
+  'dialog.share.revoke.body':
+    'Chi ha il link perde l’accesso, per sempre. Se condividi di nuovo, nasce un link nuovo; questo non torna.',
+  'dialog.share.revoke.confirm': 'Rendi privato',
+  'dialog.share.revoke.cancel': 'Continua a condividere',
 
   /* API keys, and the assistants that have been let in. */
   'dialog.keys.title': 'Chiavi API',

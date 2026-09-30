@@ -610,6 +610,11 @@ export const ui: Content['ui'] = {
   'dialog.share.add': 'Ajouter',
   'dialog.share.remove.label': 'Retirer {email}',
   'dialog.share.error': 'Le partage a échoué',
+  'dialog.share.revoke.title': 'Arrêter ce lien ?',
+  'dialog.share.revoke.body':
+    'Toutes les personnes qui ont le lien perdent l’accès, définitivement. Si vous partagez de nouveau, un nouveau lien est créé ; celui-ci ne revient pas.',
+  'dialog.share.revoke.confirm': 'Rendre privé',
+  'dialog.share.revoke.cancel': 'Continuer le partage',
 
   /* Les clés API, et les assistants qui ont été admis. */
   'dialog.keys.title': 'Clés API',

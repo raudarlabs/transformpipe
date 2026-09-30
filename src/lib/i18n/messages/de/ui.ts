@@ -622,6 +622,11 @@ export const ui: Content['ui'] = {
   'dialog.share.add': 'Hinzufügen',
   'dialog.share.remove.label': '{email} entfernen',
   'dialog.share.error': 'Teilen fehlgeschlagen',
+  'dialog.share.revoke.title': 'Diesen Link beenden?',
+  'dialog.share.revoke.body':
+    'Alle, die den Link haben, verlieren den Zugriff, und zwar endgültig. Wenn Sie wieder teilen, entsteht ein neuer Link; dieser kommt nicht zurück.',
+  'dialog.share.revoke.confirm': 'Privat machen',
+  'dialog.share.revoke.cancel': 'Weiter teilen',
 
   /* API-Schlüssel und die Assistenten, die hereingelassen wurden. */
   'dialog.keys.title': 'API-Schlüssel',
