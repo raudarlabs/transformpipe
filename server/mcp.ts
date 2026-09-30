@@ -430,6 +430,13 @@ const linkEnds = (expiresAt: string | null | undefined) => {
     : `The link stops working on ${written}.`;
 };
 
+/*
+ * Said, never set: a password typed into a conversation is a password in its transcript, so no tool
+ * takes one — the owner sets it in the Share dialog — and none can remove it either. A share an
+ * assistant changes keeps the password it had.
+ */
+const LOCKED = 'The link asks for a password, which the owner sets and only they can change.';
+
 /** How often a link was opened, as a line — opens, not people, and the owner's own among them. */
 const linkOpens = (views: number | undefined, lastViewedAt: string | null | undefined) =>
   !views || !lastViewedAt
@@ -452,6 +459,7 @@ const describe = (document: {
     expires_at?: string | null;
     views?: number;
     last_viewed_at?: string | null;
+    has_password?: boolean;
   };
 }) =>
   [
@@ -467,6 +475,7 @@ const describe = (document: {
     document.share.url
       ? `  ${linkOpens(document.share.views, document.share.last_viewed_at)}`
       : null,
+    document.share.url && document.share.has_password ? `  ${LOCKED}` : null,
   ]
     .filter(Boolean)
     .join('\n');
@@ -1040,6 +1049,7 @@ const TOOLS: Record<McpToolName, Tool> = {
             document.share?.url
               ? linkOpens(document.share.views, document.share.last_viewed_at)
               : null,
+            document.share?.url && document.share.has_password ? LOCKED : null,
             '',
             document.markdown ?? '',
           ]
@@ -1252,6 +1262,7 @@ const TOOLS: Record<McpToolName, Tool> = {
           changed.body.url ? changed.body.url : 'The link is revoked, so one already sent no longer opens.',
           changed.body.url ? linkEnds(changed.body.expires_at) : null,
           changed.body.url ? linkOpens(changed.body.views, changed.body.last_viewed_at) : null,
+          changed.body.url && changed.body.has_password ? LOCKED : null,
           emails.length > 0 ? `Readers: ${emails.join(', ')}` : null,
         ]
           .filter(Boolean)

@@ -53,9 +53,6 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 - [ ] **The same app, useful** — a check run rather than a comment thread, and the Marketplace
       listing
       · comments pile up on a long review; a check run updates in place
-- [ ] **A password on a shared link**
-      · hash on the row, one gate before the render — server-side, since the shared page has no
-      scripts
 ### The desk
 
 - [ ] **A chosen address** instead of a token, and **a QR code** for it
@@ -99,6 +96,11 @@ says otherwise.
 
 ### 30 September
 
+- [x] **A password on a shared link** — a scrypt hash on the row and one gate before the render,
+      server-side as planned. The day-long cookie that remembers it is signed with the hash itself,
+      so there is no secret to keep and a new password ends every old cookie; the page, both
+      downloads and the app's reader ask the same question, and none of it is cached. No assistant
+      can set or remove one
 - [x] **An expiry date, and a view count** — a link can end on a date its owner picks (an hour
       to a month, or a day chosen), and says how often it was opened. No sweep in the end: the
       date is checked where the token is read, in the one gate every reader of a token now asks,

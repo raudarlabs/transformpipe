@@ -35,6 +35,7 @@ import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
+import { hashPassword, readPassword } from './share-password.js';
 import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 
 /*
@@ -204,6 +205,7 @@ interface DocumentRow {
   share_expires_at?: string | null;
   share_views?: number;
   share_viewed_at?: string | null;
+  share_password_hash?: string | null;
   summary?: string | null;
   summary_created_at?: string | null;
   replaces?: string | null;
@@ -241,6 +243,8 @@ const asDocument = (
     // How many times the link was opened, and when last — opens, not people.
     views: row.share_views ?? 0,
     last_viewed_at: isoOrNull(row.share_viewed_at),
+    // Whether the link asks for a password — never the hash.
+    has_password: Boolean(row.share_password_hash),
   },
   // The text itself is not carried on every row — see the dedicated summary endpoint — only
   // whether one exists, which is enough for a list to show an indicator.
@@ -263,7 +267,7 @@ v1.get('/documents', async (c) => {
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
             and search @@ websearch_to_tsquery('simple', ${q})
@@ -271,7 +275,7 @@ v1.get('/documents', async (c) => {
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces
           from m2h_document
           where user_id = ${c.get('caller').id}
           order by created_at desc
@@ -745,7 +749,7 @@ async function findDocument(userId: string, id: string) {
 
   const rows = (await sql()`
     select id, user_id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at,
-           share_views, share_viewed_at,
+           share_views, share_viewed_at, share_password_hash,
            markdown, blob_path, summary, summary_created_at, replaces
     from m2h_document
     where user_id = ${userId} and id = ${id}
@@ -1040,6 +1044,7 @@ v1.get('/documents/:id/share', async (c) => {
     expires_at: isoOrNull(row.share_expires_at),
     views: row.share_views ?? 0,
     last_viewed_at: isoOrNull(row.share_viewed_at),
+    has_password: Boolean(row.share_password_hash),
   });
 });
 
@@ -1079,6 +1084,7 @@ v1.put('/documents/:id/share', async (c) => {
     mode?: 'private' | 'link' | 'people';
     emails?: string[];
     expires_at?: unknown;
+    password?: unknown;
   };
 
   const body = await c.req.json<ShareBody>().catch(() => ({}) as ShareBody);
@@ -1092,6 +1098,23 @@ v1.put('/documents/:id/share', async (c) => {
 
   if (!expiry.ok) {
     return c.json({ error: expiry.error }, 400);
+  }
+
+  /*
+   * A password the same way, and in the body only: a password in a query string is a password in
+   * every log the request passes through.
+   */
+  const password = readPassword(body.password);
+
+  if (!password.ok) {
+    return c.json({ error: password.error }, 400);
+  }
+
+  if (typeof password.value === 'string' && body.mode !== 'link') {
+    return c.json(
+      { error: 'A password protects a link. A share with specific people asks each of them to sign in instead.' },
+      400
+    );
   }
 
   const row = await findDocument(userId, id);
@@ -1123,6 +1146,12 @@ v1.put('/documents/:id/share', async (c) => {
           share_expires_at = case
             when ${expiry.value !== undefined} then ${expiry.value?.toISOString() ?? null}::timestamptz
             else share_expires_at
+          end,
+          share_password_hash = case
+            when ${password.value !== undefined} then ${
+              typeof password.value === 'string' ? await hashPassword(password.value) : null
+            }
+            else share_password_hash
           end
       where user_id = ${userId} and id = ${id}
     `;
@@ -1228,6 +1257,7 @@ v1.put('/documents/:id/share', async (c) => {
     expires_at: isoOrNull(after?.share_expires_at),
     views: after?.share_views ?? 0,
     last_viewed_at: isoOrNull(after?.share_viewed_at),
+    has_password: Boolean(after?.share_password_hash),
     /* The addresses that were actually told, as the mailer reported it. */
     notified,
   });

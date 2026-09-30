@@ -183,6 +183,20 @@ async function push() {
 
   const ends = flags.expires ? expiresAt(String(flags.expires)) : null;
 
+  /*
+   * From the environment and never from the flag's value: an argument is kept in the shell's
+   * history, and in every process listing while it runs.
+   */
+  const password = flags.password ? process.env.TP_SHARE_PASSWORD : null;
+
+  if (flags.password && share !== 'link') {
+    fail('--password protects a link. Add --share, or --share link.');
+  }
+
+  if (flags.password && !password) {
+    fail('--password reads the password from TP_SHARE_PASSWORD, so it stays out of your shell history.');
+  }
+
   const sources = files.map((file) => {
     if (!existsSync(file)) {
       fail(`No such file: ${file}`);
@@ -273,6 +287,17 @@ async function push() {
       body: document.markdown,
     });
 
+    if (password) {
+      // Set after the document exists, in a body: a password in a query string is in every log.
+      const shared = await call(`/documents/${created.id}/share`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ mode: 'link', password }),
+      });
+
+      created.share = { ...created.share, has_password: shared.has_password === true };
+    }
+
     results.push(created);
   }
 
@@ -289,6 +314,10 @@ async function push() {
 
     if (document.share.expires_at) {
       console.log(`  stops working ${new Date(document.share.expires_at).toLocaleString()}`);
+    }
+
+    if (document.share.has_password) {
+      console.log('  asks for the password in TP_SHARE_PASSWORD');
     }
   }
 }
@@ -410,6 +439,7 @@ if (!command || command === '--help' || command === '-h') {
       '  tp push README.md --share         convert and publish; prints the link',
       '  tp push docs/*.md --merge --share chain several files into one document',
       '  tp push notes.md --share --expires 7d  a link that stops working in a week',
+      '  TP_SHARE_PASSWORD=… tp push notes.md --share --password  a link that asks for a password',
       '  tp push v2.md --replaces <id>     link this push to an earlier document as a new version',
       '  tp list --q invoice               what is in the account, matching name or content',
       '  tp versions <id>                  every document in the same chain, oldest first',
@@ -417,7 +447,7 @@ if (!command || command === '--help' || command === '-h') {
       '  tp summary <id>                   a short summary, generated once and cached',
       '  tp usage                          how much room is left',
       '',
-      'Options: --key, --name, --share link|people, --expires 7d|12h|2026-12-31, --merge, --replaces, --force, --json',
+      'Options: --key, --name, --share link|people, --expires 7d|12h|2026-12-31, --password (from TP_SHARE_PASSWORD), --merge, --replaces, --force, --json',
       '',
       '`tp login` leaves the key in your shell history. TP_API_KEY in the environment does not.',
       `Host:    ${HOST}  (TP_HOST to point elsewhere)`,

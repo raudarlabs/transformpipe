@@ -228,7 +228,7 @@ export const pages: Content['pages'] = {
           'Pour chaque document conservé : son nom, la conversion qui l’a produit, sa taille, le nombre de mots, de titres, de liens, de blocs de code, de tableaux et d’images, et sa date de création.',
           'Le Markdown lui-même, dans un stockage d’objets privé — privé signifiant qu’il n’a pas d’URL publique et n’est lu qu’au travers d’une requête que nous autorisons.',
           'Les clés API sous forme de hachages, jamais la clé. Une clé n’est affichée qu’une fois, à sa création, et ne peut plus être retrouvée ensuite — ni par vous, ni par nous.',
-          'Les réglages de partage : si un document est privé, ouvert par lien, ou adressé à des adresses e-mail précises, et le jeton que porte un lien, le jour où il cesse de fonctionner s’il en a un, et les moments où il a été ouvert.',
+          'Les réglages de partage : si un document est privé, ouvert par lien, ou adressé à des adresses e-mail précises, et le jeton que porte un lien, le jour où il cesse de fonctionner s’il en a un, et les moments où il a été ouvert, et — s’il a un mot de passe — une empreinte de celui-ci, jamais le mot de passe.',
         ],
       },
       {
@@ -268,7 +268,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cookies et stockage du navigateur',
         body: [
-          'Un seul cookie de session, posé par notre prestataire d’authentification quand vous vous connectez, propriétaire et HttpOnly. Un cookie de courte durée existe pendant l’aller-retour de connexion et expire au bout de dix minutes. C’est tout — il n’y a rien d’optionnel à désactiver. La page cookies donne le détail.',
+          'Un seul cookie de session, posé par notre prestataire d’authentification quand vous vous connectez, propriétaire et HttpOnly. Un cookie de courte durée existe pendant l’aller-retour de connexion et expire au bout de dix minutes. Un autre n’est posé que si vous ouvrez un lien partagé protégé par un mot de passe et le saisissez : il retient, pendant une journée, que vous l’avez fait. C’est tout — il n’y a rien d’optionnel à désactiver. La page cookies donne le détail.',
           'Votre thème et, quand vous êtes déconnecté, votre historique vivent dans le stockage local de votre navigateur. Ils n’en sortent jamais.',
         ],
       },
@@ -359,7 +359,7 @@ export const pages: Content['pages'] = {
         heading: 'La seule chose que vous choisissez',
         body: [
           'La plupart des pages cookies existent pour vous laisser refuser la mesure d’audience et la publicité. Ici, il n’y a aucune publicité. La mesure d’audience, c’est Google Analytics chargé via Google Tag Manager, et c’est le seul interrupteur du site : la bannière pose la question à la première visite, le bouton au bas de cette page rouvre la réponse, et tant que vous n’autorisez rien les balises de Google n’écrivent rien dans votre navigateur et envoient tout au plus des pings sans cookie.',
-          'Déconnecté, et avec la mesure d’audience refusée ou sans réponse, ce site ne pose aucun cookie.',
+          'Déconnecté, et avec la mesure d’audience refusée ou sans réponse, ce site ne pose aucun cookie — sauf si vous saisissez le mot de passe d’un lien partagé, qui pose celui décrit plus bas.',
         ],
       },
       {
@@ -370,6 +370,12 @@ export const pages: Content['pages'] = {
         items: [
           '__Secure-neon-auth.session_token — vous garde connecté. Sans lui, chaque chargement de page redemanderait la connexion. Il disparaît quand vous vous déconnectez.',
           '__Secure-neon-auth.session_challenge — existe pendant les dix minutes de l’aller-retour de connexion, pour que la réponse de Google puisse être rapprochée de la requête qui l’a lancée. C’est ce qui empêche la connexion de quelqu’un d’autre d’atterrir dans votre session.',
+        ],
+      },
+      {
+        heading: 'Un pour un lien protégé par un mot de passe',
+        body: [
+          'tp_unlock_ suivi d’un code propre au lien — posé quand vous saisissez le mot de passe d’un lien partagé, pour que le chargement suivant ne le redemande pas. Il est propriétaire et HttpOnly, et dure une journée. Il contient une signature qui prouve que le mot de passe a été saisi, jamais le mot de passe lui-même, et un nouveau mot de passe sur le lien le rend inutile.',
         ],
       },
       {

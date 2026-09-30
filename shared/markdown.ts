@@ -1262,20 +1262,12 @@ a { color: var(--md-brand-3); }
 `;
 }
 
-/** The form a reader fills in to say a shared document should not be here. */
-export function buildReportPage(token: string, problem?: string): string {
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<meta name="robots" content="noindex">
-<title>Report a document</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
-<style>
-${mdDocResponsiveTheme(':root')}
+/**
+ * The look of the two small forms a shared link has — reporting it, and entering its password: a
+ * card in the middle of the page, in the document's own colours, with no script on it.
+ */
+function formPageStyle(): string {
+  return `${mdDocResponsiveTheme(':root')}
 body {
   margin: 0;
   min-height: 100vh;
@@ -1322,7 +1314,23 @@ button {
   font-weight: 600;
   cursor: pointer;
 }
-.problem { color: #b91c1c; font-size: 0.8125rem; }
+.problem { color: #b91c1c; font-size: 0.8125rem; }`;
+}
+
+/** The form a reader fills in to say a shared document should not be here. */
+export function buildReportPage(token: string, problem?: string): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>Report a document</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
+<style>
+${formPageStyle()}
 </style>
 </head>
 <body>
@@ -1335,6 +1343,42 @@ button {
   <label for="reporter">Your email, if you want an answer (optional)</label>
   <input id="reporter" name="reporter" type="email" autocomplete="email">
   <button type="submit">Send report</button>
+</form>
+</body>
+</html>
+`;
+}
+
+/**
+ * The page a link with a password opens on, until the password is given.
+ *
+ * A form, not a script: the shared page runs none, and this is the same route, under the same
+ * policy. It posts back to the link itself, which checks the password, remembers it for a day and
+ * sends the reader on to the document.
+ */
+export function buildPasswordPage(token: string, problem?: string): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>This link has a password</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
+<style>
+${formPageStyle()}
+</style>
+</head>
+<body>
+<form method="post" action="/s/${escapeHtml(token)}">
+  <h1>This link has a password</h1>
+  <p>The person who shared this document set one. Enter it to read the document.</p>
+  ${problem ? `<p class="problem">${escapeHtml(problem)}</p>` : ''}
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+  <button type="submit">Open the document</button>
 </form>
 </body>
 </html>

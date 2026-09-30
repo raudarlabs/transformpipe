@@ -147,7 +147,7 @@ const PRIVACY_UPDATED = '2026-09-30';
  * The cookies page moved on 27 September for the same reason the privacy page did: the counter
  * sets no cookie, and a page about what is set in a browser should say that it does not.
  */
-const COOKIES_UPDATED = '2026-09-27';
+const COOKIES_UPDATED = '2026-09-30';
 
 /**
  * A store the extension can be installed from, and where.

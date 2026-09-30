@@ -1,9 +1,11 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
+import { setCookie } from 'hono/cookie';
 import { stream } from 'hono/streaming';
 import {
   buildNoticePage,
+  buildPasswordPage,
   buildReportPage,
   buildSharedPage,
   buildStandaloneHtml,
@@ -32,6 +34,14 @@ import {
   releaseWelcome,
   usageOf,
 } from './limits.js';
+import {
+  hashPassword,
+  passwordMatches,
+  readPassword,
+  UNLOCK_SECONDS,
+  unlockCookie,
+  unlockValue,
+} from './share-password.js';
 import { summarize, summarizeStream, summaryEnabled, summaryFailure } from './summarize.js';
 import {
   createWebhook,
@@ -79,6 +89,7 @@ interface ShareRow {
   share_expires_at: string | null;
   share_views: number;
   share_viewed_at: string | null;
+  share_password_hash: string | null;
 }
 
 /**
@@ -99,6 +110,13 @@ api.get('/shared/:token', async (c) => {
         return c.json({ error: 'Sign in to open this document' }, 401);
       case 'not-yours':
         return c.json({ error: 'This document was not shared with you' }, 403);
+      case 'password':
+        // The app has no form for it; the link does, and entering it there opens this too.
+        return c.json(
+          { error: 'This link has a password. Open the link itself and enter it there.', password: true },
+          401,
+          { 'cache-control': 'private, no-store' }
+        );
     }
   }
 
@@ -846,7 +864,8 @@ api.get('/documents/:id/versions', async (c) => {
 /** The document's sharing state, as the dialog needs it. */
 async function shareState(userId: string, documentId: string) {
   const rows = (await sql()`
-    select id, share_mode, share_token, share_expires_at, share_views, share_viewed_at
+    select id, share_mode, share_token, share_expires_at, share_views, share_viewed_at,
+           share_password_hash
     from m2h_document
     where user_id = ${userId} and id = ${documentId}
   `) as ShareRow[];
@@ -874,6 +893,8 @@ async function shareState(userId: string, documentId: string) {
     lastViewedAt: rows[0].share_viewed_at
       ? new Date(rows[0].share_viewed_at).toISOString()
       : null,
+    /* Whether there is one — never the hash, and never the password, which nobody can read back. */
+    hasPassword: Boolean(rows[0].share_password_hash),
   };
 }
 
@@ -934,7 +955,7 @@ api.get('/documents/:id/views', async (c) => {
 api.put('/documents/:id/share', async (c) => {
   const userId = c.get('user').id;
   const id = c.req.param('id');
-  type ShareBody = { mode?: 'private' | 'link' | 'people'; expiresAt?: unknown };
+  type ShareBody = { mode?: 'private' | 'link' | 'people'; expiresAt?: unknown; password?: unknown };
 
   const body = await c.req.json<ShareBody>().catch(() => ({}) as ShareBody);
 
@@ -947,6 +968,20 @@ api.put('/documents/:id/share', async (c) => {
 
   if (!expiry.ok) {
     return c.json({ error: expiry.error }, 400);
+  }
+
+  /* The same for a password, which only a link takes — see readPassword. */
+  const password = readPassword(body.password);
+
+  if (!password.ok) {
+    return c.json({ error: password.error }, 400);
+  }
+
+  if (typeof password.value === 'string' && body.mode !== 'link') {
+    return c.json(
+      { error: 'A password protects a link. A share with specific people asks each of them to sign in instead.' },
+      400
+    );
   }
 
   /*
@@ -986,6 +1021,12 @@ api.put('/documents/:id/share', async (c) => {
           share_expires_at = case
             when ${expiry.value !== undefined} then ${expiry.value?.toISOString() ?? null}::timestamptz
             else share_expires_at
+          end,
+          share_password_hash = case
+            when ${password.value !== undefined} then ${
+              typeof password.value === 'string' ? await hashPassword(password.value) : null
+            }
+            else share_password_hash
           end
       where user_id = ${userId} and id = ${id}
     `;
@@ -1237,6 +1278,13 @@ app.get('/s/:token', async (c) => {
     );
   }
 
+  if (!verdict.ok && verdict.why === 'password') {
+    c.header('cache-control', 'private, no-store');
+    c.status(401);
+
+    return c.html(buildPasswordPage(token));
+  }
+
   if (!verdict.ok) {
     // The app owns the sign-in flow; /open/<token> is the same page, client-side.
     c.header('cache-control', 'no-store');
@@ -1247,9 +1295,14 @@ app.get('/s/:token', async (c) => {
   const { document } = verdict;
   const keep = edgeSeconds(verdict.expiresAt);
 
+  /*
+   * Never kept by the CDN once it is behind a password: a cached copy of the unlocked page is the
+   * document handed to anybody who asks. A public copy made before the password was set lives out
+   * its minute, the same minute a revoke takes.
+   */
   c.header(
     'cache-control',
-    document.share_mode === 'people' || keep === 0
+    document.share_mode === 'people' || keep === 0 || verdict.locked
       ? 'private, no-store'
       : `public, max-age=0, s-maxage=${keep}`
   );
@@ -1327,6 +1380,76 @@ app.get('/s/:token', async (c) => {
       stats: document.stats ?? undefined,
     })
   );
+});
+
+/** Wrong passwords from one machine for one link, in a minute, before it is asked to wait. */
+const PASSWORD_TRIES_PER_MINUTE = 10;
+
+/** And from everywhere at once, for one link: a guess spread across machines still stops. */
+const PASSWORD_TRIES_PER_LINK = 30;
+
+/**
+ * The password form's answer. Right, and the reader gets a cookie that says so for a day and is
+ * sent on to the document with a 303, so reloading it does not post the password again; wrong, and
+ * the same form comes back with one sentence that is the same for every wrong answer.
+ *
+ * Paced twice — per machine and per link — before the password is even looked at, and the machine
+ * is a one-way hash, as it is for counting opens. A form anybody can post is a form somebody will
+ * post a dictionary at.
+ */
+app.post('/s/:token', async (c) => {
+  for (const [header, value] of Object.entries(SHARED_PAGE_HEADERS)) {
+    c.header(header, value);
+  }
+
+  c.header('cache-control', 'private, no-store');
+
+  const token = c.req.param('token');
+  const back = `/s/${encodeURIComponent(token)}`;
+  const verdict = await shareGate(c, token);
+
+  // Open already, gone, expired, or not a link with a password: the page says which.
+  if (verdict.ok || verdict.why !== 'password') {
+    return c.redirect(back, 303);
+  }
+
+  const machine = createHash('sha256')
+    .update(`${clientAddress(c)}|${token}`)
+    .digest('base64url')
+    .slice(0, 22);
+  const link = createHash('sha256').update(token).digest('base64url').slice(0, 22);
+  const mine = await countCall(`unlock:${machine}`).catch(() => null);
+  const all = await countCall(`unlock-link:${link}`).catch(() => null);
+
+  if (
+    !mine ||
+    !all ||
+    mine.calls > PASSWORD_TRIES_PER_MINUTE ||
+    all.calls > PASSWORD_TRIES_PER_LINK
+  ) {
+    c.status(429);
+
+    return c.html(buildPasswordPage(token, 'Too many tries. Wait a minute and try again.'));
+  }
+
+  const form = await c.req.parseBody().catch(() => ({}) as Record<string, unknown>);
+  const password = String(form.password ?? '').slice(0, 200);
+
+  if (!password || !(await passwordMatches(password, verdict.hash))) {
+    c.status(401);
+
+    return c.html(buildPasswordPage(token, 'That is not the password.'));
+  }
+
+  setCookie(c, unlockCookie(token), unlockValue(token, verdict.hash), {
+    path: '/',
+    httpOnly: true,
+    secure: selfOrigin(c).startsWith('https:'),
+    sameSite: 'Lax',
+    maxAge: UNLOCK_SECONDS,
+  });
+
+  return c.redirect(back, 303);
 });
 
 /** A transparent 1×1 GIF: the smallest picture a browser loads and then draws as nothing. */

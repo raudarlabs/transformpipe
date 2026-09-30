@@ -232,7 +232,7 @@ export const pages: Content['pages'] = {
           'De cada documento que conservas: su nombre, qué conversión lo hizo, su tamaño, los recuentos de palabras, encabezados, enlaces, bloques de código, tablas e imágenes, y cuándo se creó.',
           'El Markdown en sí, en un almacén de blobs privado — privado quiere decir que no tiene ninguna URL pública y solo se lee mediante una petición que autorizamos.',
           'Las claves API como hashes, nunca la clave. Una clave se muestra una vez, al crearla, y después no se puede recuperar — ni tú ni nosotros.',
-          'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace, el día en que deja de funcionar si se fijó uno, y cuándo se ha abierto.',
+          'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace, el día en que deja de funcionar si se fijó uno, y cuándo se ha abierto, y — si tiene contraseña — un hash de ella, nunca la contraseña.',
         ],
       },
       {
@@ -272,7 +272,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cookies y almacenamiento del navegador',
         body: [
-          'Una cookie de sesión, que pone nuestro proveedor de autenticación cuando inicias sesión, propia y HttpOnly. Existe otra de vida corta durante el ida y vuelta del inicio de sesión, que caduca en diez minutos. Esas son todas — no hay nada opcional que desactivar. La página de cookies tiene el detalle.',
+          'Una cookie de sesión, que pone nuestro proveedor de autenticación cuando inicias sesión, propia y HttpOnly. Existe otra de vida corta durante el ida y vuelta del inicio de sesión, que caduca en diez minutos. Otra solo se pone si abres un enlace compartido con contraseña y la escribes: recuerda, durante un día, que lo hiciste. Esas son todas — no hay nada opcional que desactivar. La página de cookies tiene el detalle.',
           'Tu tema y, sin la sesión iniciada, tu historial viven en el almacenamiento local de tu navegador. Nunca salen de ahí.',
         ],
       },
@@ -363,7 +363,7 @@ export const pages: Content['pages'] = {
         heading: 'Lo único que eliges',
         body: [
           'La mayoría de las páginas de cookies existen para que puedas rechazar la analítica y la publicidad. Aquí no hay publicidad ninguna. La analítica es Google Analytics, cargado mediante Google Tag Manager, y es el único interruptor del sitio: el aviso pregunta en la primera visita, el botón al pie de esta página reabre la respuesta, y hasta que la permitas las etiquetas de Google no escriben nada en tu navegador y envían como mucho pings sin cookies.',
-          'Sin la sesión iniciada, y con la analítica rechazada o sin responder, este sitio no pone ninguna cookie.',
+          'Sin la sesión iniciada, y con la analítica rechazada o sin responder, este sitio no pone ninguna cookie — salvo si escribes la contraseña de un enlace compartido, que pone la que se describe abajo.',
         ],
       },
       {
@@ -374,6 +374,12 @@ export const pages: Content['pages'] = {
         items: [
           '__Secure-neon-auth.session_token — mantiene la sesión iniciada. Sin ella, cada carga de página volvería a pedirte que inicies sesión. Desaparece al cerrar sesión.',
           '__Secure-neon-auth.session_challenge — existe durante los diez minutos del ida y vuelta del inicio de sesión, para que la respuesta de Google pueda emparejarse con la petición que la originó. Es lo que evita que el inicio de sesión de otra persona acabe en tu sesión.',
+        ],
+      },
+      {
+        heading: 'Una para un enlace con contraseña',
+        body: [
+          'tp_unlock_ seguido de un código del enlace — se pone cuando escribes la contraseña de un enlace compartido, para que la siguiente carga de página no vuelva a pedirla. Es propia y HttpOnly, y dura un día. Guarda una firma que demuestra que se escribió la contraseña, nunca la contraseña, y una contraseña nueva en el enlace la deja sin valor.',
         ],
       },
       {

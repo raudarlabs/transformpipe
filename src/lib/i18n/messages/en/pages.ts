@@ -234,7 +234,7 @@ export const pages: Content['pages'] = {
           'For each document you keep: its name, which conversion made it, its size, counts of words, headings, links, code blocks, tables and images, and when it was created.',
           'The Markdown itself, in a private blob store — private meaning it has no public URL and is read only through a request we authorise.',
           'API keys as hashes, never the key. A key is shown once, at creation, and cannot be recovered afterwards — not by you and not by us.',
-          'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries, the day it stops working if one was set, and when it has been opened.',
+          'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries, the day it stops working if one was set, and when it has been opened, and — if it has a password — a hash of it, never the password.',
         ],
       },
       {
@@ -274,7 +274,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cookies and browser storage',
         body: [
-          'One session cookie, set by our authentication provider when you sign in, first-party and HttpOnly. A short-lived cookie exists during the sign-in round trip and expires in ten minutes. That is all of them — there is nothing optional to turn off. The cookies page has the detail.',
+          'One session cookie, set by our authentication provider when you sign in, first-party and HttpOnly. A short-lived cookie exists during the sign-in round trip and expires in ten minutes. One more is set only if you open a shared link that has a password and enter it: it remembers, for a day, that you did. That is all of them — there is nothing optional to turn off. The cookies page has the detail.',
           'Your theme and, when signed out, your history live in your browser’s local storage. They never leave it.',
         ],
       },
@@ -365,7 +365,7 @@ export const pages: Content['pages'] = {
         heading: 'The one thing you choose',
         body: [
           'Most cookie pages exist to let you decline analytics and advertising. There is no advertising here at all. Analytics is Google Analytics, loaded through Google Tag Manager, and it is the single switch on this site: the banner asks on a first visit, the button at the foot of this page reopens the answer, and until you allow it Google’s tags write nothing to your browser and send cookieless pings at most.',
-          'Signed out, with analytics refused or unanswered, this site sets no cookies at all.',
+          'Signed out, with analytics refused or unanswered, this site sets no cookies at all — unless you enter the password of a shared link, which sets the one below.',
         ],
       },
       {
@@ -376,6 +376,12 @@ export const pages: Content['pages'] = {
         items: [
           '__Secure-neon-auth.session_token — keeps you signed in. Without it, every page load would ask you to sign in again. It goes when you sign out.',
           '__Secure-neon-auth.session_challenge — exists for the ten minutes of a sign-in round trip, so the reply from Google can be matched to the request that started it. It is what stops somebody else’s sign-in landing in your session.',
+        ],
+      },
+      {
+        heading: 'One for a link with a password',
+        body: [
+          'tp_unlock_ followed by a code for the link — set when you enter the password of a shared link, so the next page load does not ask again. It is first-party and HttpOnly, and lasts a day. It holds a signature that proves the password was entered, never the password itself, and a new password on the link makes it worthless.',
         ],
       },
       {

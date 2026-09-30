@@ -102,7 +102,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Chiunque abbia il link',
   'docs.sharing.mode.people': 'Solo questi indirizzi',
   'docs.sharing.revoking':
-    'La revoca elimina il token, così un link già inviato smette di funzionare; condividendo di nuovo se ne genera uno diverso. Un link può anche avere una data di fine — dopo, la pagina dice che è scaduto, e una nuova data lo riapre. Un indirizzo aggiunto a una condivisione nominativa riceve un’email con il link. La finestra dice anche quante volte il link è stato aperto — aperture, non persone, comprese le tue.',
+    'La revoca elimina il token, così un link già inviato smette di funzionare; condividendo di nuovo se ne genera uno diverso. Un link può anche avere una data di fine — dopo, la pagina dice che è scaduto, e una nuova data lo riapre. Un indirizzo aggiunto a una condivisione nominativa riceve un’email con il link. La finestra dice anche quante volte il link è stato aperto — aperture, non persone, comprese le tue. Un link può anche chiedere una password, impostata nella stessa finestra; viene conservata solo come hash, quindi si può cambiare ma mai più mostrare.',
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     'I documenti che altre persone hanno indirizzato a te compaiono sotto il filtro {shared}, con il nome di chi li ha condivisi. Sono in sola lettura: si aprono e si scaricano, non si eliminano e non si ricondividono. Una condivisione per link appartiene a chi ha il link, quindi non compare nell’elenco di nessuno.',

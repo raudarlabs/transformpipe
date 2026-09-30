@@ -109,6 +109,8 @@ export interface ShareState {
   /** How many times this link was opened — opens, not people, the owner's own included. */
   views: number;
   lastViewedAt: string | null;
+  /** Whether the link asks for a password. The password itself cannot be read back by anybody. */
+  hasPassword: boolean;
 }
 
 /** A document's recent opens, for the Views tab — see `recentViews` in server/share-gate.ts. */
@@ -366,6 +368,13 @@ export const api = {
     request<ShareState>(`/api/documents/${id}/share`, {
       method: 'PUT',
       body: JSON.stringify({ mode }),
+    }),
+
+  /** A password on a link, or null to take it off. Only a link has one. */
+  setSharePassword: (id: string, password: string | null) =>
+    request<ShareState>(`/api/documents/${id}/share`, {
+      method: 'PUT',
+      body: JSON.stringify({ mode: 'link', password }),
     }),
 
   /** The same call with an end date: null clears it, and the mode is sent as it stands. */

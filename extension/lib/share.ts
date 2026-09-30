@@ -24,6 +24,7 @@ interface V1Share {
   expires_at?: string | null;
   views?: number;
   last_viewed_at?: string | null;
+  has_password?: boolean;
 }
 
 /*
@@ -38,6 +39,7 @@ const asState = (share: V1Share): ShareState => ({
   expiresAt: share.expires_at ?? null,
   views: share.views ?? 0,
   lastViewedAt: share.last_viewed_at ?? null,
+  hasPassword: share.has_password === true,
 });
 
 async function ask(path: string, init?: RequestInit): Promise<ShareState> {
@@ -75,6 +77,13 @@ const write = (id: string, mode: ShareMode, emails?: string[]) =>
 export const extensionShareClient: ShareClient = {
   get: read,
   setMode: (id, mode) => write(id, mode),
+
+  setPassword: (id, password) =>
+    ask(`/documents/${id}/share`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ mode: 'link', password }),
+    }),
 
   setExpiry: (id, mode, expiresAt) =>
     ask(`/documents/${id}/share`, {

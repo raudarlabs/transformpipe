@@ -446,6 +446,146 @@ try {
     )
   );
 
+  console.log('\n— a link with a password');
+
+  const locked = await shared();
+  const setPassword = (id, password, mode = 'link') =>
+    v1(`/documents/${id}/share`, { method: 'PUT', body: JSON.stringify({ mode, password }) });
+
+  const lockedAnswer = await setPassword(locked.id, 'correct horse battery');
+  const lockedBody = await lockedAnswer.text();
+
+  check('a password is taken', lockedAnswer.status === 200 && JSON.parse(lockedBody).has_password === true, lockedBody.slice(0, 160));
+  check('and never comes back, not even as its hash', !/scrypt\$|correct horse/.test(lockedBody));
+
+  const short = await setPassword(locked.id, 'short');
+
+  check('a password under eight characters is refused', short.status === 400, `got ${short.status}`);
+
+  const onPeople = await setPassword(locked.id, 'correct horse battery', 'people');
+
+  check('a share with specific people takes no password', onPeople.status === 400, `got ${onPeople.status}`);
+
+  for (const [what, path] of [
+    ['the page', `/s/${locked.token}`],
+    ['the HTML download', `/s/${locked.token}?download`],
+    ['the Markdown download', `/s/${locked.token}?download=md`],
+  ]) {
+    const response = await get(path);
+    const text = await response.text();
+
+    check(`${what} asks for it`, response.status === 401 && /has a password/.test(text), `got ${response.status}`);
+    check(`${what} is not cached`, (response.headers.get('cache-control') ?? '').includes('no-store'));
+    check(`${what} does not leak the document`, !/Written by scripts\/check-share/.test(text));
+  }
+
+  const lockedReader = await get(`/api/shared/${encodeURIComponent(locked.token)}`);
+
+  check('the app reader asks too', lockedReader.status === 401, `got ${lockedReader.status}`);
+
+  await seen(locked.token);
+
+  check('an open that has not given it counts nothing', (await views(locked.id)).share_views === 0);
+
+  const unlock = (token, password, cookie) =>
+    fetch(`${HOST}/s/${token}`, {
+      method: 'POST',
+      redirect: 'manual',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        ...(cookie ? { cookie } : {}),
+      },
+      body: new URLSearchParams({ password }).toString(),
+    });
+
+  const wrong = await unlock(locked.token, 'not the one');
+
+  check('a wrong password is refused in a sentence', wrong.status === 401 && /not the password/.test(await wrong.text()));
+
+  const right = await unlock(locked.token, 'correct horse battery');
+  const cookie = (right.headers.getSetCookie?.() ?? []).map((one) => one.split(';')[0]).join('; ');
+
+  check(
+    'the right one sends the reader on, with a cookie',
+    right.status === 303 && (right.headers.get('location') ?? '').endsWith(`/s/${locked.token}`) && /tp_unlock_/.test(cookie),
+    `${right.status} ${cookie}`
+  );
+
+  const inside = await get(`/s/${locked.token}`, { cookie });
+
+  check('and with it the page opens', inside.status === 200 && /Written by scripts\/check-share/.test(await inside.text()));
+  check('but is still never cached', (inside.headers.get('cache-control') ?? '').includes('no-store'), inside.headers.get('cache-control') ?? '');
+
+  const insideMd = await get(`/s/${locked.token}?download=md`, { cookie });
+
+  check('the download opens with it too', insideMd.status === 200, `got ${insideMd.status}`);
+
+  const insideReader = await get(`/api/shared/${encodeURIComponent(locked.token)}`, { cookie });
+
+  check('and so does the app reader', insideReader.status === 200, `got ${insideReader.status}`);
+
+  await seen(locked.token, { headers: { cookie, 'user-agent': 'Mozilla/5.0 (Macintosh) check-share' } });
+
+  check('an open that has given it counts', (await views(locked.id)).share_views === 1);
+
+  const other = await shared();
+
+  await setPassword(other.id, 'another long password');
+
+  const borrowed = await get(`/s/${other.token}`, { cookie });
+
+  check("one link's cookie does not open another", borrowed.status === 401, `got ${borrowed.status}`);
+
+  await setPassword(locked.id, 'a different password now');
+
+  const stale = await get(`/s/${locked.token}`, { cookie });
+
+  check('a new password ends every cookie the old one gave', stale.status === 401, `got ${stale.status}`);
+
+  const listedTools = await (
+    await fetch(`${HOST}/api/mcp`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${access}` },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+    })
+  ).json();
+
+  check(
+    'no tool takes a password',
+    (listedTools.result?.tools ?? []).every(
+      (one) => !Object.keys(one.inputSchema?.properties ?? {}).some((key) => /pass/i.test(key))
+    )
+  );
+
+  const toldLocked = await tool('tp_get_document', { id: locked.id });
+
+  check('an assistant is told the link asks for one', /asks for a password/.test(toldLocked), toldLocked.slice(0, 200));
+
+  await setPassword(locked.id, null);
+
+  const reopened = await get(`/s/${locked.token}`);
+
+  check('removing it opens the link to anybody again', reopened.status === 200, `got ${reopened.status}`);
+
+  /* The same minute, as for counting opens: ten tries are allowed a minute from one machine. */
+  const tick = new Date().getSeconds();
+
+  if (tick > 40) {
+    await new Promise((resolve) => setTimeout(resolve, (61 - tick) * 1000));
+  }
+
+  const guessed = await shared();
+
+  await setPassword(guessed.id, 'the real password');
+
+  let last = 0;
+
+  for (let i = 0; i < 11; i += 1) {
+    last = (await unlock(guessed.token, `guess number ${i}`)).status;
+  }
+
+  check('the eleventh guess in a minute is told to wait', last === 429, `got ${last}`);
+
   console.log('\n— creating a document with an end');
 
   const orphan = await v1(

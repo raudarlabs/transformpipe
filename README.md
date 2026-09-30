@@ -225,7 +225,7 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 | `GET /api/v1/documents/:id.pdf` | a PDF, laid out from the same HTML by `pdfmake` — no headless browser |
 | `GET /api/v1/documents/:id/versions` | every document in the same version chain, oldest first |
 | `DELETE /api/v1/documents/:id` | removes the row and its source |
-| `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[], expires_at}`; `private` drops the token, so a link already sent stops working. `expires_at` is an ISO 8601 date-time the link stops working at (410 after it), `null` for no end, and left out to keep the one it has. The answer also carries `views` and `last_viewed_at`: opens of the link, counted by the shared page's own one-pixel picture |
+| `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[], expires_at}`; `private` drops the token, so a link already sent stops working. `expires_at` is an ISO 8601 date-time the link stops working at (410 after it), `null` for no end, and left out to keep the one it has. The answer also carries `views` and `last_viewed_at`: opens of the link, counted by the shared page's own one-pixel picture. `password` sets one on a link (8 to 200 characters, in the body only) and `null` removes it; the answer says `has_password`, never the hash |
 | `GET /api/v1/documents/:id/views` | The link's recent opens, newest first: `{views, last_viewed_at, events: [{at, via}]}` — `via` is `page` or `app`. A link keeps nothing about who opened it; a share addressed to people adds `who` to each open and a `people` list — each named address, its opens and its last one |
 | `POST /api/v1/documents/:id/summary` | a cached summary, generating it first if there is none; `?force=1` regenerates. Limited to 20 a day per account |
 
@@ -276,6 +276,7 @@ node cli/tp.mjs login tp_live_…              # remembers the key in ~/.config/
 node cli/tp.mjs push README.md --share        # prints the link
 node cli/tp.mjs push docs/*.md --merge --share --name handbook.md
 node cli/tp.mjs push notes.md --share --expires 7d    # a link that stops working in a week
+TP_SHARE_PASSWORD=… node cli/tp.mjs push notes.md --share --password  # a link that asks for it
 node cli/tp.mjs list
 node cli/tp.mjs rm <id>
 node cli/tp.mjs summary <id>                  # generated once, cached; --force to regenerate

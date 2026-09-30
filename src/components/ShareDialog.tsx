@@ -20,6 +20,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@/ui/components/Modal';
+import { PasswordInput } from '@/ui/components/PasswordInput';
 import { Spinner } from '@/ui/components/Spinner';
 import { toast } from '@/ui/components/Toast';
 import { Typography } from '@/ui/components/Typography';
@@ -38,6 +39,8 @@ export interface ShareClient {
   setMode: (id: string, mode: ShareMode) => Promise<ShareState>;
   /** When the link stops working; null for never. The mode goes along unchanged. */
   setExpiry: (id: string, mode: ShareMode, expiresAt: string | null) => Promise<ShareState>;
+  /** A password on the link, or null to remove it. */
+  setPassword: (id: string, password: string | null) => Promise<ShareState>;
   add: (id: string, email: string) => Promise<ShareState>;
   remove: (id: string, email: string) => Promise<ShareState>;
   /** The page a share token opens. The app is on the site; the extension is not. */
@@ -62,6 +65,7 @@ export const appShareClient: ShareClient = {
     return state;
   },
   setExpiry: (id, mode, expiresAt) => api.setShareExpiry(id, mode, expiresAt),
+  setPassword: (id, password) => api.setSharePassword(id, password),
   add: async (id, email) => {
     const state = await api.addShareRecipient(id, email);
 
@@ -189,6 +193,126 @@ function ExpiryRow({
           {t(hasEnded ? 'dialog.share.expiry.ended' : 'dialog.share.expiry.ends', { date: when })}
         </Typography>
       )}
+    </div>
+  );
+}
+
+const PASSWORD_MIN = 8;
+
+/**
+ * A password on a link — set, changed or taken off, and never shown, because it is not kept: the
+ * server holds a hash of it. So the row says only whether there is one, and changing it means
+ * typing a new one rather than editing the old.
+ *
+ * Link mode only. A share with specific people already asks each reader to sign in as themselves,
+ * and a password on top would be a second key to the same door.
+ */
+function PasswordRow({
+  state,
+  isBusy,
+  onChange,
+}: {
+  state: ShareState;
+  isBusy: boolean;
+  onChange: (password: string | null) => void;
+}) {
+  const t = useT();
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState('');
+  const tooShort = draft.length > 0 && draft.length < PASSWORD_MIN;
+
+  const save = () => {
+    if (draft.length >= PASSWORD_MIN) {
+      onChange(draft);
+      setDraft('');
+      setIsEditing(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between gap-3">
+        <Typography variant="span" textColor="secondary" className="text-xs">
+          {t('dialog.share.password.label')}
+        </Typography>
+
+        {!isEditing &&
+          (state.hasPassword ? (
+            <span className="flex items-center gap-1">
+              <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => setIsEditing(true)}>
+                {t('dialog.share.password.change')}
+              </Button>
+              <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => onChange(null)}>
+                {t('dialog.share.password.remove')}
+              </Button>
+            </span>
+          ) : (
+            <Button
+              variant="tertiary"
+              size="sm"
+              leftSlot={<Lock />}
+              disabled={isBusy}
+              onClick={() => setIsEditing(true)}
+            >
+              {t('dialog.share.password.add')}
+            </Button>
+          ))}
+      </div>
+
+      {isEditing && (
+        /*
+          * Not a <form>: the field's own show/hide button has no type, so inside a form Enter
+          * pressed it — the password turned visible instead of being saved. Enter is handled here.
+          */
+        <div className="flex items-start gap-2">
+          <PasswordInput
+            autoFocus
+            autoComplete="new-password"
+            value={draft}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                save();
+              }
+            }}
+            minLength={PASSWORD_MIN}
+            maxLength={200}
+            placeholder={t('dialog.share.password.placeholder')}
+            aria-label={t('dialog.share.password.label')}
+            onChange={(event) => setDraft(event.target.value)}
+            inputGroupProps={{
+              size: 'sm',
+              isInvalid: tooShort,
+              errorText: tooShort ? t('dialog.share.password.short') : undefined,
+            }}
+            className="flex-1"
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={isBusy || draft.length < PASSWORD_MIN}
+            onClick={save}
+          >
+            {t('dialog.share.expiry.set')}
+          </Button>
+          <Button
+            type="button"
+            variant="tertiary"
+            size="sm"
+            onClick={() => {
+              setDraft('');
+              setIsEditing(false);
+            }}
+          >
+            {t('dialog.share.password.cancel')}
+          </Button>
+        </div>
+      )}
+
+      <Typography variant="p" textColor="secondary" className="flex items-start gap-2 text-xs">
+        <Lock className="mt-0.5 size-4 shrink-0" />
+        {t(state.hasPassword ? 'dialog.share.password.on' : 'dialog.share.password.off')}
+      </Typography>
     </div>
   );
 }
@@ -371,6 +495,14 @@ export function ShareDialog({
                   void run(client.setExpiry(documentId, state.mode, expiresAt))
                 }
               />
+
+              {state.mode === 'link' && (
+                <PasswordRow
+                  state={state}
+                  isBusy={isBusy}
+                  onChange={(password) => void run(client.setPassword(documentId, password))}
+                />
+              )}
 
               {/* Opens of this link, counted by the page's own picture — not people, and yours too. */}
               <Typography

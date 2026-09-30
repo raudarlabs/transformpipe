@@ -109,7 +109,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Toute personne ayant le lien',
   'docs.sharing.mode.people': 'Seulement ces adresses',
   'docs.sharing.revoking':
-    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Un lien peut aussi recevoir une date de fin — ensuite, la page indique qu’il a expiré, et une nouvelle date le rouvre. Une adresse ajoutée à un partage nominatif reçoit un e-mail avec le lien. La fenêtre indique aussi combien de fois le lien a été ouvert — des ouvertures, pas des personnes, les vôtres comprises.',
+    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Un lien peut aussi recevoir une date de fin — ensuite, la page indique qu’il a expiré, et une nouvelle date le rouvre. Une adresse ajoutée à un partage nominatif reçoit un e-mail avec le lien. La fenêtre indique aussi combien de fois le lien a été ouvert — des ouvertures, pas des personnes, les vôtres comprises. Un lien peut aussi demander un mot de passe, défini dans la même fenêtre ; il n’est gardé que sous forme d’empreinte, donc on peut le changer mais jamais le réafficher.',
   /** `{shared}` est le filtre nommé dans `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Les documents que d’autres vous ont adressés apparaissent sous le filtre {shared}, avec le nom de qui a partagé chacun. Ils sont en lecture seule : ouvrir et télécharger, pas de suppression, pas de repartage. Un partage par lien appartient à qui détient le lien, il n’apparaît donc sur la liste de personne.',

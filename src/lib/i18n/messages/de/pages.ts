@@ -236,7 +236,7 @@ export const pages: Content['pages'] = {
           'Zu jedem behaltenen Dokument: seinen Namen, welche Umwandlung es gemacht hat, seine Größe, die Zahl der Wörter, Überschriften, Links, Codeblöcke, Tabellen und Bilder und den Zeitpunkt seiner Erstellung.',
           'Das Markdown selbst, in einem privaten Blob-Speicher — privat heißt: er hat keine öffentliche URL und wird nur über eine Anfrage gelesen, die wir autorisieren.',
           'API-Schlüssel als Hashes, nie den Schlüssel. Ein Schlüssel wird einmal gezeigt, bei der Erstellung, und ist danach nicht wiederherstellbar — nicht durch Sie und nicht durch uns.',
-          'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt, der Tag, an dem er endet, falls einer gesetzt wurde, und wann er geöffnet wurde.',
+          'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt, der Tag, an dem er endet, falls einer gesetzt wurde, und wann er geöffnet wurde, und — falls er ein Passwort hat — ein Hash davon, nie das Passwort.',
         ],
       },
       {
@@ -276,7 +276,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cookies und Browser-Speicher',
         body: [
-          'Ein Sitzungscookie, gesetzt von unserem Authentifizierungsanbieter bei der Anmeldung, First-Party und HttpOnly. Ein kurzlebiges Cookie besteht während des Hin und Her der Anmeldung und läuft nach zehn Minuten ab. Das sind alle — es gibt nichts Optionales zum Abschalten. Die Cookie-Seite hat die Einzelheiten.',
+          'Ein Sitzungscookie, gesetzt von unserem Authentifizierungsanbieter bei der Anmeldung, First-Party und HttpOnly. Ein kurzlebiges Cookie besteht während des Hin und Her der Anmeldung und läuft nach zehn Minuten ab. Ein weiteres wird nur gesetzt, wenn Sie einen geteilten Link mit Passwort öffnen und es eingeben: Es merkt sich einen Tag lang, dass Sie das getan haben. Das sind alle — es gibt nichts Optionales zum Abschalten. Die Cookie-Seite hat die Einzelheiten.',
           'Ihr Design und, abgemeldet, Ihr Verlauf liegen im lokalen Speicher Ihres Browsers. Sie verlassen ihn nie.',
         ],
       },
@@ -367,7 +367,7 @@ export const pages: Content['pages'] = {
         heading: 'Das eine, das Sie wählen',
         body: [
           'Die meisten Cookie-Seiten bestehen, damit man Analyse und Werbung ablehnen kann. Werbung gibt es hier überhaupt nicht. Die Analyse ist Google Analytics, geladen über den Google Tag Manager, und sie ist der einzige Schalter dieser Seite: Beim ersten Besuch fragt das Banner, der Knopf am Fuß dieser Seite öffnet die Antwort wieder, und bis Sie zustimmen schreiben Googles Tags nichts in Ihren Browser und senden höchstens cookielose Pings.',
-          'Abgemeldet und mit abgelehnter oder unbeantworteter Analyse setzt diese Seite überhaupt keine Cookies.',
+          'Abgemeldet und mit abgelehnter oder unbeantworteter Analyse setzt diese Seite überhaupt keine Cookies — es sei denn, Sie geben das Passwort eines geteilten Links ein, das setzt das eine unten.',
         ],
       },
       {
@@ -378,6 +378,12 @@ export const pages: Content['pages'] = {
         items: [
           '__Secure-neon-auth.session_token — hält Sie angemeldet. Ohne es würde jeder Seitenaufruf erneut eine Anmeldung verlangen. Es geht, wenn Sie sich abmelden.',
           '__Secure-neon-auth.session_challenge — besteht für die zehn Minuten des Hin und Her einer Anmeldung, damit die Antwort von Google der Anfrage zugeordnet werden kann, die sie ausgelöst hat. Es ist das, was verhindert, dass die Anmeldung eines anderen in Ihrer Sitzung landet.',
+        ],
+      },
+      {
+        heading: 'Eines für einen Link mit Passwort',
+        body: [
+          'tp_unlock_ gefolgt von einem Code für den Link — gesetzt, wenn Sie das Passwort eines geteilten Links eingeben, damit der nächste Seitenaufruf nicht erneut fragt. Es ist First-Party und HttpOnly und gilt einen Tag. Es enthält eine Signatur, die belegt, dass das Passwort eingegeben wurde, nie das Passwort selbst, und ein neues Passwort am Link macht es wertlos.',
         ],
       },
       {

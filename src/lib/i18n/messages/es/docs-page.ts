@@ -109,7 +109,7 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Cualquiera con el enlace',
   'docs.sharing.mode.people': 'Solo estas direcciones',
   'docs.sharing.revoking':
-    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. Un enlace también puede tener fecha de fin — después, la página dice que ha caducado, y una nueva fecha lo reabre. Una dirección añadida a un enlace para personas concretas recibe un correo con el enlace. El diálogo también dice cuántas veces se ha abierto el enlace — aperturas, no personas, las tuyas incluidas.',
+    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. Un enlace también puede tener fecha de fin — después, la página dice que ha caducado, y una nueva fecha lo reabre. Una dirección añadida a un enlace para personas concretas recibe un correo con el enlace. El diálogo también dice cuántas veces se ha abierto el enlace — aperturas, no personas, las tuyas incluidas. Un enlace también puede pedir una contraseña, que se fija en el mismo diálogo; solo se guarda como hash, así que se puede cambiar pero nunca volver a mostrar.',
   /** `{shared}` es el filtro que nombra `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Los documentos que otras personas te han dirigido aparecen bajo el filtro {shared}, con quién ha compartido cada uno. Son de solo lectura: abrir y descargar, sin eliminar y sin volver a compartir. Un enlace compartido pertenece a quien lo tenga, así que no aparece en la lista de nadie.',

@@ -1,6 +1,8 @@
 import type { Context } from 'hono';
+import { getCookie } from 'hono/cookie';
 import { currentUser } from './auth.js';
 import { sql } from './db.js';
+import { unlockCookie, unlocked } from './share-password.js';
 
 /*
  * Who may open a shared document, decided in one place.
@@ -33,6 +35,7 @@ export interface SharedDocument {
   size: number;
   stats: Record<string, number> | null;
   share_expires_at: string | null;
+  share_password_hash: string | null;
 }
 
 /** Who is reading a share addressed to people — the gate made them sign in to find out. */
@@ -42,23 +45,35 @@ export interface NamedReader {
 }
 
 export type ShareVerdict =
-  | { ok: true; document: SharedDocument; expiresAt: Date | null; reader: NamedReader | null }
+  | {
+      ok: true;
+      document: SharedDocument;
+      expiresAt: Date | null;
+      reader: NamedReader | null;
+      /** Behind a password — so never kept by a cache, which would hand it to everyone. */
+      locked: boolean;
+    }
   | { ok: false; why: 'missing' }
   | { ok: false; why: 'expired'; expiredAt: Date }
-  | { ok: false; why: 'sign-in' | 'not-yours' };
+  | { ok: false; why: 'sign-in' | 'not-yours' }
+  /** The hash comes along for the one caller that checks a password against it. */
+  | { ok: false; why: 'password'; hash: string };
 
 /**
  * Whether this caller may read the document behind this token, and the document if so.
  *
  * In this order: a token nobody holds, then an expired link, then — for a share addressed to named
- * people — whether the session is one of them. The clock is the database's (`<= now()`), not this
+ * people — whether the session is one of them, and for a link with a password, whether this
+ * browser has entered it (see server/share-password.ts). A password guards a link only: a share
+ * addressed to people already asks each reader to sign in as themselves. The clock is the database's (`<= now()`), not this
  * function's, so the moment a link ends is the moment the row says rather than whichever instance
  * happens to answer.
  */
 export async function shareGate(c: Context, token: string): Promise<ShareVerdict> {
   const rows = (await sql()`
     select id, user_id, name, markdown, blob_path, created_at, share_mode, size, stats,
-           share_expires_at, coalesce(share_expires_at <= now(), false) as expired
+           share_expires_at, share_password_hash,
+           coalesce(share_expires_at <= now(), false) as expired
     from m2h_document
     where share_token = ${token}
   `) as Array<Omit<SharedDocument, 'share_mode'> & { share_mode: ShareMode; expired: boolean }>;
@@ -98,6 +113,12 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
     reader = { email: normaliseEmail(user.email), isOwner };
   }
 
+  const locked = row.share_mode === 'link' && Boolean(row.share_password_hash);
+
+  if (locked && !unlocked(token, row.share_password_hash!, getCookie(c, unlockCookie(token)))) {
+    return { ok: false, why: 'password', hash: row.share_password_hash! };
+  }
+
   const { expired: _, ...document } = row;
 
   return {
@@ -105,6 +126,7 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
     document: document as SharedDocument,
     expiresAt: row.share_expires_at ? new Date(row.share_expires_at) : null,
     reader,
+    locked,
   };
 }
 

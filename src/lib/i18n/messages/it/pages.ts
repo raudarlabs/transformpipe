@@ -227,7 +227,7 @@ export const pages: Content['pages'] = {
           'Per ogni documento conservato: il suo nome, quale conversione l’ha prodotto, la sua dimensione, il conteggio di parole, titoli, link, blocchi di codice, tabelle e immagini, e quando è stato creato.',
           'Il Markdown stesso, in un archivio blob privato — privato nel senso che non ha alcun URL pubblico e viene letto solo tramite una richiesta che autorizziamo noi.',
           'Le chiavi API come hash, mai la chiave. Una chiave viene mostrata una volta sola, alla creazione, e in seguito non è più recuperabile: né da te né da noi.',
-          'Le impostazioni di condivisione: se un documento è privato, aperto per link o indirizzato a determinati indirizzi email, e il token che un link porta con sé, il giorno in cui smette di funzionare se ne è stato fissato uno, e quando è stato aperto.',
+          'Le impostazioni di condivisione: se un documento è privato, aperto per link o indirizzato a determinati indirizzi email, e il token che un link porta con sé, il giorno in cui smette di funzionare se ne è stato fissato uno, e quando è stato aperto, e — se ha una password — un hash di essa, mai la password.',
         ],
       },
       {
@@ -267,7 +267,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cookie e memoria del browser',
         body: [
-          'Un solo cookie di sessione, impostato dal nostro fornitore di autenticazione al momento dell’accesso, di prima parte e HttpOnly. Durante il giro di andata e ritorno dell’accesso esiste un cookie di breve durata, che scade in dieci minuti. Sono tutti qui — non c’è niente di opzionale da disattivare. La pagina sui cookie ha i dettagli.',
+          'Un solo cookie di sessione, impostato dal nostro fornitore di autenticazione al momento dell’accesso, di prima parte e HttpOnly. Durante il giro di andata e ritorno dell’accesso esiste un cookie di breve durata, che scade in dieci minuti. Un altro viene impostato solo se apri un link condiviso protetto da password e la inserisci: ricorda, per un giorno, che l’hai fatto. Sono tutti qui — non c’è niente di opzionale da disattivare. La pagina sui cookie ha i dettagli.',
           'Il tema e, senza accesso, la cronologia vivono nella memoria locale del browser. Non la lasciano mai.',
         ],
       },
@@ -358,7 +358,7 @@ export const pages: Content['pages'] = {
         heading: 'L’unica cosa che scegli',
         body: [
           'La maggior parte delle pagine sui cookie esiste per permettere di rifiutare analisi statistiche e pubblicità. Qui non c’è alcuna pubblicità. Le statistiche sono Google Analytics, caricato tramite Google Tag Manager, e sono l’unico interruttore del sito: il banner chiede alla prima visita, il pulsante in fondo a questa pagina riapre la risposta, e finché non le consenti i tag di Google non scrivono nulla nel browser e inviano al massimo ping senza cookie.',
-          'Senza accesso, e con le statistiche rifiutate o senza risposta, questo sito non imposta alcun cookie.',
+          'Senza accesso, e con le statistiche rifiutate o senza risposta, questo sito non imposta alcun cookie — a meno che tu non inserisca la password di un link condiviso, che imposta quello descritto sotto.',
         ],
       },
       {
@@ -369,6 +369,12 @@ export const pages: Content['pages'] = {
         items: [
           '__Secure-neon-auth.session_token — ti mantiene autenticato. Senza di esso, ogni caricamento di pagina chiederebbe di accedere di nuovo. Se ne va quando esci.',
           '__Secure-neon-auth.session_challenge — esiste per i dieci minuti del giro di andata e ritorno dell’accesso, così la risposta di Google può essere abbinata alla richiesta che l’ha avviata. È ciò che impedisce che l’accesso di qualcun altro finisca nella tua sessione.',
+        ],
+      },
+      {
+        heading: 'Uno per un link con password',
+        body: [
+          'tp_unlock_ seguito da un codice del link — impostato quando inserisci la password di un link condiviso, così il caricamento successivo non la richiede di nuovo. È di prima parte e HttpOnly, e dura un giorno. Contiene una firma che prova che la password è stata inserita, mai la password stessa, e una nuova password sul link lo rende inutile.',
         ],
       },
       {

@@ -117,6 +117,52 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'A shared link can ask for a password',
+    slug: 'password-protected-links',
+    body:
+      'In the Share dialog a link can now be given a password. Whoever opens it is asked for it '
+      + 'first — before the page, both downloads and Save a copy — and entering it once keeps '
+      + 'it open in that browser for a day. It is kept only as a hash, so it can be changed or taken '
+      + 'off but never shown, and a new one ends every earlier entry at once. It is set in the dialog '
+      + 'or the API; no assistant can set or remove it.',
+    detail: {
+      en: {
+        description:
+          'Put a password on a shared document link: a reader enters it before the page, the downloads or a copy open, and it is kept only as a hash.',
+        keywords:
+          'password protect a shared link, password protected markdown document, share a document with a password, protect a shared page with a password, share a link that asks for a password',
+        body: `A link anyone can open is the right thing most of the time. When it is not — a draft for one client, notes that should not travel further than the chat they were pasted into — a link can now ask for a password first.
+
+## Setting one
+
+Open the Share dialog, choose **Anyone with the link**, and press **Add a password**. It takes eight characters or more. From then on the dialog says the link has a password and offers to change it or take it off; it never shows it, because it is not kept. What is stored is a scrypt hash with a salt of its own, so nobody — the owner included — can read it back.
+
+A password protects a link only. A document shared with specific people already asks each of them to sign in as themselves, and a password on top of that would be a second key to the same door.
+
+## What the reader sees
+
+The link opens on a small form instead of the document. The right password sends them on to it, and a cookie remembers for a day that they gave it, so a reload does not ask again. The wrong one comes back with one sentence, the same for every wrong answer. Ten tries a minute from one machine, and thirty for the link from everywhere at once, and then the form asks them to wait.
+
+Everything behind the link asks the same question: the page, its HTML and Markdown downloads, and the app's own reader, which is what **Save to your account** goes through. None of it is kept by the CDN once there is a password, because a cached copy of the unlocked page would be the document handed to anybody.
+
+Changing the password ends every earlier entry at the moment it is changed: the cookie is a signature made with the password's hash, so a new hash makes every old signature worthless. Taking it off opens the link to anybody again.
+
+## From a script
+
+\`PUT /api/v1/documents/:id/share\` takes \`password\` in the body — never in the address, where it would sit in every log the request passed through — and \`null\` removes it. The answer says \`has_password\`, never the hash. The command line reads it from the environment for the same reason, since an argument lives in the shell's history:
+
+\`\`\`
+TP_SHARE_PASSWORD=… tp push notes.md --share --password
+\`\`\`
+
+## What an assistant can do
+
+Say that a link has a password, and nothing else. No tool takes one: a password typed into a conversation is a password in its transcript. A share an assistant changes keeps the password it had.`,
+      },
+    },
+  },
+  {
+    date: '2026-09-30',
     title: 'Shared with named people, the Views tab says which of them opened it',
     body:
       'For a document shared with specific addresses, the Views tab now lists each of them — '
@@ -128,12 +174,44 @@ const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
     title: 'Every open of a shared link, in a tab of its own',
+    slug: 'shared-link-views',
     body:
       'A saved document has a Views tab beside Check: every time its link was opened, grouped by '
       + 'day, with whether it was the shared page or the app. It lists opens, not people, and '
       + 'keeps nothing about who opened it — the time and the place are the whole of each row. '
       + 'The opens go with the link when it is revoked, and the API lists them too, at '
       + '`GET /api/v1/documents/:id/views`.',
+    detail: {
+      en: {
+        description:
+          'See how often a shared document link was opened and when, in a Views tab — and, for a document shared with named people, which of them opened it.',
+        keywords:
+          'see who viewed a shared document, shared link view count, track opens of a shared link, document link analytics without tracking, know when a shared document was opened',
+        body: `Sending a link is half of sharing a document. The other half is knowing whether it was read — and that should not mean following the reader around the web.
+
+## The count
+
+The Share dialog says how many times the link has been opened and when it last was. The API says the same, in \`views\` and \`last_viewed_at\`, and an assistant connected over MCP is told it when it reads the document.
+
+## The Views tab
+
+A saved document has a **Views** tab beside Check: every open of its link, newest first, grouped by day in your own time zone, each marked with where it happened — the shared page, or the app's reader behind **Save to your account**. \`GET /api/v1/documents/:id/views\` gives a script the same list.
+
+## Who, when you named them
+
+A document shared with specific people is opened only after the reader signs in as one of the addresses you gave. So for those, and only those, the tab also says which of them it was: each address with how often it opened the document and when last, or that it has not yet — and every open in the list names its reader, with your own as "you". The page they read tells them that the person who shared it can see when they open it.
+
+## What it does not know
+
+A link anyone can open records no reader at all. Each row is a time and a place, and nothing else: no cookie, no address, no browser. The shared page asks our server for a one-pixel picture, and that request is the whole of what is counted — which is also why the bots that fetch a link to draw its preview in a chat are not counted, since they do not load pictures.
+
+The count is of opens, not people, and yours are among them. One machine counts at most ten opens a minute for a link, so holding down reload does not run it up; to tell one machine from another, the server keeps a one-way hash of its address for a day, and nothing it could be read back from.
+
+## How long it lasts
+
+The opens belong to the link. Revoking it deletes them with the count, deleting the document deletes them with that, and none is kept longer than a year.`,
+      },
+    },
   },
   {
     date: '2026-09-30',
