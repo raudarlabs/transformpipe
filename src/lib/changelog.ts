@@ -114,11 +114,12 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
-    title: 'Connecting from ChatGPT no longer fails',
+    title: 'ChatGPT connects',
     body:
-      'Adding TransformPipe as a connector in ChatGPT stopped at “Unknown client” before sign-in, '
-      + 'and once that was fixed, failed after you approved it with an error about JSON — '
-      + 'TransformPipe was handing back a shortened copy of what ChatGPT had sent. Both are fixed.',
+      'Add a connector at https://transformpipe.com/api/mcp in ChatGPT’s developer mode, sign in, and '
+      + 'ChatGPT saves, finds and shares documents on your account, with the same cards Claude draws. '
+      + 'It stopped at “Unknown client” before sign-in until today, and then failed after you '
+      + 'approved it with an error about JSON; both are fixed.',
   },
   {
     date: '2026-09-30',

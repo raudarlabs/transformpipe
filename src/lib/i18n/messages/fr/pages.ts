@@ -1082,7 +1082,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Quels assistants se connectent',
-        intro: 'Un seul compte et une seule liste de documents, quel que soit celui qui les a écrits. Claude se connecte dès aujourd’hui ; les autres sont en cours de test, et chacun aura sa propre page une fois sa connexion vérifiée de bout en bout.',
+        intro: 'Un seul compte et une seule liste de documents, quel que soit celui qui les a écrits. Claude et ChatGPT se connectent dès aujourd’hui ; les autres sont en cours de test.',
         items: [
           {
             name: 'Claude',
@@ -1092,7 +1092,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connecteur en mode développeur',
-            body: 'ChatGPT accepte les connecteurs MCP personnalisés en mode développeur, sur les offres qui le proposent. La connexion est en cours d’essai avec ce serveur.',
+            body: 'ChatGPT accepte les connecteurs MCP personnalisés en mode développeur, sur les offres qui le proposent. Ajoutez un connecteur à l’adresse https://transformpipe.com/api/mcp et connectez-vous : les documents s’affichent en cartes dans la conversation.',
           },
           {
             name: 'Cursor',
@@ -1305,7 +1305,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'D’autres assistants, les mêmes documents',
-        intro: 'Ce que Claude enregistre, les autres pourront le retrouver — un seul compte, quel que soit l’outil qui le demande. Ceux-ci sont les prochains à être testés.',
+        intro: 'Ce que Claude enregistre, ChatGPT le retrouve aussi, et les autres le pourront bientôt — un seul compte, quel que soit l’outil qui le demande.',
         items: [
           {
             name: 'Claude',
@@ -1315,7 +1315,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connecteur en mode développeur',
-            body: 'ChatGPT accepte les connecteurs MCP personnalisés en mode développeur, sur les offres qui le proposent. La connexion est en cours d’essai avec ce serveur.',
+            body: 'ChatGPT accepte les connecteurs MCP personnalisés en mode développeur, sur les offres qui le proposent. Ajoutez un connecteur à l’adresse https://transformpipe.com/api/mcp et connectez-vous : les documents s’affichent en cartes dans la conversation.',
           },
           {
             name: 'Cursor',

@@ -1087,7 +1087,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Which assistants connect',
-        intro: 'One account and one list of documents, whichever of these wrote them. Claude connects today; the rest are being tested, and each gets its own page once connecting it has been seen to work from start to finish.',
+        intro: 'One account and one list of documents, whichever of these wrote them. Claude and ChatGPT connect today; the rest are being tested.',
         items: [
           {
             name: 'Claude',
@@ -1097,7 +1097,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Developer mode connector',
-            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. The sign-in is being tried against this server now.',
+            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. Add one at https://transformpipe.com/api/mcp and sign in; documents come back as cards in the chat.',
           },
           {
             name: 'Cursor',
@@ -1310,7 +1310,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Other assistants, same documents',
-        intro: 'What Claude saves, the others will be able to find — one account, whichever tool is asking. These are being tested next.',
+        intro: 'What Claude saves, ChatGPT finds too, and the rest will — one account, whichever tool is asking.',
         items: [
           {
             name: 'Claude',
@@ -1320,7 +1320,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Developer mode connector',
-            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. The sign-in is being tried against this server now.',
+            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. Add one at https://transformpipe.com/api/mcp and sign in; documents come back as cards in the chat.',
           },
           {
             name: 'Cursor',

@@ -1089,7 +1089,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Welche Assistenten sich verbinden lassen',
-        intro: 'Ein Konto und eine Liste von Dokumenten, gleich welcher dieser Assistenten sie geschrieben hat. Claude lässt sich heute verbinden; die übrigen werden getestet, und jeder bekommt eine eigene Seite, sobald das Verbinden nachweislich von Anfang bis Ende funktioniert.',
+        intro: 'Ein Konto und eine Liste von Dokumenten, gleich welcher dieser Assistenten sie geschrieben hat. Claude und ChatGPT lassen sich heute verbinden; die übrigen werden getestet.',
         items: [
           {
             name: 'Claude',
@@ -1099,7 +1099,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connector im Entwicklermodus',
-            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Die Anmeldung wird gerade gegen diesen Server erprobt.',
+            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Einen Connector mit https://transformpipe.com/api/mcp hinzufügen und anmelden — Dokumente erscheinen als Karten im Chat.',
           },
           {
             name: 'Cursor',
@@ -1312,7 +1312,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Andere Assistenten, dieselben Dokumente',
-        intro: 'Was Claude speichert, werden die anderen finden können — ein Konto, gleich welches Werkzeug fragt. Diese werden als Nächstes getestet.',
+        intro: 'Was Claude speichert, findet auch ChatGPT, und die übrigen werden es finden — ein Konto, gleich welches Werkzeug fragt.',
         items: [
           {
             name: 'Claude',
@@ -1322,7 +1322,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connector im Entwicklermodus',
-            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Die Anmeldung wird gerade gegen diesen Server erprobt.',
+            body: 'ChatGPT nimmt im Entwicklermodus eigene MCP-Connectors an, in den Tarifen, die ihn anbieten. Einen Connector mit https://transformpipe.com/api/mcp hinzufügen und anmelden — Dokumente erscheinen als Karten im Chat.',
           },
           {
             name: 'Cursor',

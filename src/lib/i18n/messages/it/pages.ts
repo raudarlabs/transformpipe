@@ -1080,7 +1080,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Quali assistenti si collegano',
-        intro: 'Un solo account e una sola lista di documenti, qualunque di questi li abbia scritti. Claude si collega già oggi; gli altri sono in fase di test, e ognuno avrà la sua pagina quando si sarà visto il collegamento funzionare dall’inizio alla fine.',
+        intro: 'Un solo account e una sola lista di documenti, qualunque di questi li abbia scritti. Claude e ChatGPT si collegano già oggi; gli altri sono in fase di test.',
         items: [
           {
             name: 'Claude',
@@ -1090,7 +1090,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connettore in modalità sviluppatore',
-            body: 'ChatGPT accetta connettori MCP personalizzati in modalità sviluppatore, nei piani che la offrono. L’accesso è in prova con questo server proprio ora.',
+            body: 'ChatGPT accetta connettori MCP personalizzati in modalità sviluppatore, nei piani che la offrono. Aggiungi un connettore con https://transformpipe.com/api/mcp e accedi: i documenti compaiono come schede nella chat.',
           },
           {
             name: 'Cursor',
@@ -1303,7 +1303,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Altri assistenti, stessi documenti',
-        intro: 'Quello che salva Claude, gli altri potranno ritrovarlo — un solo account, qualunque strumento lo chieda. Questi sono i prossimi da testare.',
+        intro: 'Quello che salva Claude, lo ritrova anche ChatGPT, e presto anche gli altri — un solo account, qualunque strumento lo chieda.',
         items: [
           {
             name: 'Claude',
@@ -1313,7 +1313,7 @@ export const pages: Content['pages'] = {
           {
             name: 'ChatGPT',
             how: 'Connettore in modalità sviluppatore',
-            body: 'ChatGPT accetta connettori MCP personalizzati in modalità sviluppatore, nei piani che la offrono. L’accesso è in prova con questo server proprio ora.',
+            body: 'ChatGPT accetta connettori MCP personalizzati in modalità sviluppatore, nei piani che la offrono. Aggiungi un connettore con https://transformpipe.com/api/mcp e accedi: i documenti compaiono come schede nella chat.',
           },
           {
             name: 'Cursor',

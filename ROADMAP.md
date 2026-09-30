@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 30 September 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 1 October 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -93,6 +93,13 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 1 October
+
+- [x] **ChatGPT connects** — a connector in developer mode, the same sign-in and the same cards as
+      Claude. ChatGPT's client document would rather sign its token requests and lists `none`
+      beside it, so it connects as a public client under PKCE; verifying `private_key_jwt` is the
+      follow-up. The directory submission is next, waiting on a demo recording and a test account
 
 ### 30 September
 

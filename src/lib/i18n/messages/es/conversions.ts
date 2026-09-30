@@ -19,7 +19,7 @@ export const conversions: Content['conversions'] = {
     short: 'MD → HTML',
     title: 'Markdown a HTML',
     blurb:
-      'Sube un archivo Markdown — mira el HTML renderizado al instante y descárgalo como un documento listo para usar. Todo se convierte en tu navegador y, con la sesión iniciada, tus documentos llegan a Claude a través del conector MCP; ChatGPT y otros asistentes están en pruebas.',
+      'Sube un archivo Markdown — mira el HTML renderizado al instante y descárgalo como un documento listo para usar. Todo se convierte en tu navegador y, con la sesión iniciada, tus documentos llegan a Claude y a ChatGPT a través del conector MCP.',
     hint: 'Sube un archivo .md y mira exactamente cómo va a quedar en HTML. Suelta varios y se enlazan en un solo documento, en el orden en que los elijas.',
     seo: {
       title: 'TransformPipe — convertir Markdown a HTML',
