@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { buildStandaloneHtml } from '../shared/markdown.js';
 import { markdownToHtml } from './render.js';
 
@@ -27,8 +28,21 @@ const withoutRemoteImages = (html: string) =>
     /\ssrc\s*=\s*["']data:image\//i.test(tag) ? tag : ''
   );
 
+/*
+ * Loaded with `require`, not `import()`. The package's `import` entry is `dist/html-to-docx.esm.js`
+ * in a package with no `"type": "module"`, which a Node that goes by the file's extension reads as
+ * CommonJS — and on Vercel every export failed with "Cannot use import statement outside a module"
+ * while the dev server, which transforms the file first, never did. The `require` entry is the UMD
+ * build, which loads as what it says it is on any Node.
+ */
+const requireFromHere = createRequire(import.meta.url);
+
 export async function markdownToDocx(markdown: string, title: string): Promise<Buffer> {
-  const HtmlToDocx = (await import('@turbodocx/html-to-docx')).default;
+  const HtmlToDocx = requireFromHere('@turbodocx/html-to-docx') as (
+    html: string,
+    header: string | null,
+    options: Record<string, unknown>
+  ) => Promise<ArrayBuffer | Buffer | Blob>;
 
   const html = buildStandaloneHtml({
     title,

@@ -1,4 +1,4 @@
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { markdownToHtml } from './render.js';
 
@@ -30,6 +30,9 @@ const FONTS = {
     bolditalics: join(FONT_DIR, 'Roboto-MediumItalic.ttf'),
   },
 };
+
+/** The only files on disk this renderer may open. */
+const FONT_FILES = new Set(Object.values(FONTS.Roboto).map((path) => resolve(path)));
 
 type Inline = string | { text: string; bold?: boolean; italics?: boolean; decoration?: string };
 type Content = Record<string, unknown>;
@@ -237,7 +240,12 @@ export async function markdownToPdf(markdown: string, title: string): Promise<Bu
    * the policy, and "read any local file this function can see" is not one to inherit by accident.
    */
   PdfPrinter.setUrlAccessPolicy(() => false);
-  PdfPrinter.setLocalAccessPolicy(() => false);
+  /*
+   * Except the four font files, which pdfmake reads from disk for every document. Refusing those
+   * too — as this did from 18 September — failed every export with "Access to local file denied"
+   * for Roboto-Medium.ttf, and nothing in the build noticed, because nothing built a PDF.
+   */
+  PdfPrinter.setLocalAccessPolicy((path: string) => FONT_FILES.has(resolve(path)));
 
   const root = parser.parse(markdownToHtml(markdown));
 

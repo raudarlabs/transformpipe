@@ -640,6 +640,32 @@ try {
       : false,
     `${created.status} ${JSON.stringify(createdBody).slice(0, 160)}`
   );
+
+  /*
+   * The two downloads that are built on the server, checked by their first bytes. Both answered
+   * 502 on production for a fortnight — the Word converter's `import` entry loaded as CommonJS
+   * there, and pdfmake was refused its own fonts — while the dev server built both, and nothing
+   * anywhere asked the deployed one for a file.
+   */
+  console.log('\n— Word and PDF');
+
+  const exported = await shared();
+
+  for (const [format, magic, type] of [
+    ['docx', 'PK', 'officedocument'],
+    ['pdf', '%PDF-', 'application/pdf'],
+  ]) {
+    const response = await v1(`/documents/${exported.id}.${format}`);
+    const bytes = Buffer.from(await response.arrayBuffer());
+
+    check(
+      `a .${format} is built`,
+      response.status === 200 &&
+        bytes.subarray(0, magic.length).toString() === magic &&
+        (response.headers.get('content-type') ?? '').includes(type),
+      `${response.status} ${response.headers.get('content-type')} ${bytes.subarray(0, 120).toString()}`
+    );
+  }
 } finally {
   /* Through the API where it can, so a source that went to blob storage goes with its row. */
   for (const id of made.documents) {

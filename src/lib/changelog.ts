@@ -114,6 +114,20 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Word and PDF downloads work again',
+    body:
+      'Downloading a saved document as Word or PDF answered with an error on transformpipe.com, '
+      + 'from the app, the API and the command line alike. Both files are built again.',
+  },
+  {
+    date: '2026-10-01',
+    title: 'The cards show in Claude',
+    body:
+      'The card beside a saved document, the list of your documents and the delete confirmation '
+      + 'were on the page in claude.ai but never shown. They are drawn now, in a new conversation.',
+  },
+  {
+    date: '2026-10-01',
     title: 'ChatGPT connects',
     body:
       'Add a connector at https://transformpipe.com/api/mcp in ChatGPT’s developer mode, sign in, and '
