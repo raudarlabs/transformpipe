@@ -1543,6 +1543,8 @@ mcp.post('/', async (c) => {
       return c.json(rpcError(id ?? null, -32602, `No resource at ${uri}`), 200);
     }
 
+    const origin = selfOrigin(c);
+
     return c.json(
       rpc(id ?? null, {
         contents: [
@@ -1550,8 +1552,27 @@ mcp.post('/', async (c) => {
             uri: view.uri,
             mimeType: 'text/html;profile=mcp-app',
             text: view.html,
-            /* No domains declared: these fetch nothing, so the host's strictest policy fits. */
-            _meta: { ui: { prefersBorder: false } },
+            /*
+             * The policy said out loud, and it is the strictest there is: these views fetch nothing
+             * and load nothing, so every list is empty. ChatGPT's review asks for it declared
+             * rather than left to the host's default, and warns in developer mode until it is.
+             *
+             * Two spellings again. `ui.csp` is the extension's, and it has no field for where a
+             * view may send the reader; `openai/widgetCSP` does, and the one address in it is this
+             * site's, because opening a document or its shared page is the only link any view
+             * follows. `openai/widgetDomain` is the origin ChatGPT sandboxes these views under.
+             * The standard `ui.domain` is left out on purpose: its format is the host's to define,
+             * and a value Claude read differently would be a card Claude stopped drawing.
+             */
+            _meta: {
+              ui: { prefersBorder: false, csp: { connectDomains: [], resourceDomains: [] } },
+              'openai/widgetCSP': {
+                connect_domains: [],
+                resource_domains: [],
+                redirect_domains: [origin],
+              },
+              'openai/widgetDomain': origin,
+            },
           },
         ],
       })

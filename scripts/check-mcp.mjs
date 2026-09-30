@@ -561,6 +561,33 @@ check(
 );
 
 /*
+ * And says so, in both spellings: an empty policy for the extension, and ChatGPT's own with the one
+ * place a view sends the reader. The domain is ChatGPT's key only — `ui.domain` is the host's to
+ * define, and a value Claude read differently would stop it drawing the card.
+ */
+const csp = contents?._meta?.ui?.csp;
+const openaiCsp = contents?._meta?.['openai/widgetCSP'];
+
+check(
+  'the card declares an empty content policy',
+  csp?.connectDomains?.length === 0 && csp?.resourceDomains?.length === 0,
+  JSON.stringify(contents?._meta)
+);
+check(
+  'and ChatGPT\'s, which lets it open this site and nothing else',
+  openaiCsp?.connect_domains?.length === 0 &&
+    openaiCsp?.resource_domains?.length === 0 &&
+    JSON.stringify(openaiCsp?.redirect_domains) === JSON.stringify([new URL(HOST).origin]),
+  JSON.stringify(openaiCsp)
+);
+check(
+  'and names the origin ChatGPT sandboxes it under, but not the standard domain',
+  contents?._meta?.['openai/widgetDomain'] === new URL(HOST).origin &&
+    contents?._meta?.ui?.domain === undefined,
+  JSON.stringify(contents?._meta)
+);
+
+/*
  * Every tool says what it is and carries all three review hints. The hints cover every mode of a
  * tool: saving can also publish a link or send a share notice, and sharing can revoke access.
  */
