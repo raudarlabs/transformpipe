@@ -884,8 +884,12 @@ const SHARED_CHROME_STYLE = `
   white-space: nowrap;
 }
 
-.md-bar .formats .menu a:hover { background: var(--md-card-2); color: var(--md-brand-3); }
+.md-bar .formats .menu a:hover,
+.md-bar .formats .menu a:focus-visible { background: var(--md-card-2); color: var(--md-brand-3); }
 .md-bar .formats .menu em { color: var(--md-secondary); font-style: normal; }
+/* The extension lights with its name: half an item in the accent read as half an item chosen. */
+.md-bar .formats .menu a:hover em,
+.md-bar .formats .menu a:focus-visible em { color: inherit; }
 
 /* The one thing this page wants a stranger to do, so it is the one thing that is painted. */
 .md-bar .save {

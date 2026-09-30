@@ -570,9 +570,11 @@ export const ui: Content['ui'] = {
   'dialog.share.private.note':
     'Solo tu puoi aprire questo documento. Scegli una modalità qui sopra per condividerlo.',
   'dialog.share.link.field': 'Link di condivisione',
-  'dialog.share.people.note':
-    'Solo le persone qui sotto possono aprirlo, dopo l’accesso con quell’indirizzo. A ciascuna viene inviato il link per e-mail quando la aggiungi.',
-  'dialog.share.people.empty': 'Ancora nessuno — il link si apre solo per te.',
+  'dialog.share.people.note': 'Solo le persone che aggiungi, dopo l’accesso. Ognuna riceve il link via email.',
+  'dialog.share.link.note': 'Chiunque abbia il link può aprirlo.',
+  'dialog.share.link.none': 'Nessun link finché è privato',
+  'dialog.share.views.private': 'Nessun link, quindi niente da contare',
+  'dialog.share.people.label': 'Persone',
   'dialog.share.expiry.label': 'Scade',
   'dialog.share.expiry.never': 'Mai',
   'dialog.share.expiry.hour': 'Tra 1 ora',

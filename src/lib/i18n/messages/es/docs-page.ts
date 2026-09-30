@@ -119,7 +119,7 @@ export const docsPage = {
   'docs.sharing.shot.dialog.caption':
     'Un enlace con fecha de fin y contraseña.',
   'docs.sharing.password':
-    'Un enlace también puede pedir una contraseña, de ocho caracteres o más. Quien lo lee ve primero un pequeño formulario; la respuesta correcta abre el documento y se recuerda en ese navegador durante un día, y tras diez errores en un minuto tendrá que esperar. Solo se guarda como hash, así que se puede cambiar o quitar pero nunca mostrar, y una contraseña nueva termina de golpe con todas las entradas anteriores. A ti, con la sesión iniciada, no te la pide. Un enlace para personas concretas no lleva contraseña: cada una inicia sesión con la dirección que diste, que es la más fuerte de las dos comprobaciones.',
+    'Un enlace también puede pedir una contraseña, de ocho caracteres o más. Quien lo lee ve primero un pequeño formulario; la respuesta correcta abre el documento y se recuerda en ese navegador durante un día, y tras diez errores en un minuto tendrá que esperar. Solo se guarda como hash, así que se puede cambiar o quitar pero nunca mostrar, y una contraseña nueva termina de golpe con todas las entradas anteriores. Se puede fijar mientras el documento aún es privado, para que su enlace esté protegido desde el momento en que existe. A ti, con la sesión iniciada, no te la pide. Un enlace para personas concretas no lleva contraseña: cada una inicia sesión con la dirección que diste, que es la más fuerte de las dos comprobaciones.',
   'docs.sharing.shot.password.alt':
     'El formulario que ve un lector antes de que se abra un enlace con contraseña',
   'docs.sharing.shot.password.caption':

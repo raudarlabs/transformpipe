@@ -1,4 +1,4 @@
-import { CalendarClock, Check, Copy, Eye, Link2, Lock, Mail, TimerOff, Users, X } from 'lucide-react';
+import { Check, Copy, Eye, Link2, Lock, type LucideIcon, Mail, TimerOff, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api, type ShareMode, type ShareState } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
@@ -39,8 +39,8 @@ export interface ShareClient {
   setMode: (id: string, mode: ShareMode) => Promise<ShareState>;
   /** When the link stops working; null for never. The mode goes along unchanged. */
   setExpiry: (id: string, mode: ShareMode, expiresAt: string | null) => Promise<ShareState>;
-  /** A password on the link, or null to remove it. */
-  setPassword: (id: string, password: string | null) => Promise<ShareState>;
+  /** A password for the link, or null to remove it; the mode goes along unchanged. */
+  setPassword: (id: string, mode: ShareMode, password: string | null) => Promise<ShareState>;
   add: (id: string, email: string) => Promise<ShareState>;
   remove: (id: string, email: string) => Promise<ShareState>;
   /** The page a share token opens. The app is on the site; the extension is not. */
@@ -65,7 +65,7 @@ export const appShareClient: ShareClient = {
     return state;
   },
   setExpiry: (id, mode, expiresAt) => api.setShareExpiry(id, mode, expiresAt),
-  setPassword: (id, password) => api.setSharePassword(id, password),
+  setPassword: (id, mode, password) => api.setSharePassword(id, mode, password),
   add: async (id, email) => {
     const state = await api.addShareRecipient(id, email);
 
@@ -107,10 +107,13 @@ const settingRow = 'flex min-h-11 flex-wrap items-center justify-between gap-x-3
 function ExpiryRow({
   state,
   isBusy,
+  disabled = false,
   onChange,
 }: {
   state: ShareState;
   isBusy: boolean;
+  /** Private: there is no link to end, so the row is there and cannot be used. */
+  disabled?: boolean;
   onChange: (expiresAt: string | null) => void;
 }) {
   const t = useT();
@@ -141,9 +144,9 @@ function ExpiryRow({
       <select
         id="share-expiry"
         value={isPicking ? 'pick' : ends !== null ? 'current' : 'never'}
-        disabled={isBusy}
+        disabled={isBusy || disabled}
         onChange={(event) => choose(event.target.value)}
-        className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs"
+        className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs disabled:opacity-50"
       >
         {ends !== null && (
           <option value="current">{t('dialog.share.expiry.until', { date: when })}</option>
@@ -210,10 +213,13 @@ const PASSWORD_MIN = 8;
 function PasswordRow({
   state,
   isBusy,
+  disabled = false,
   onChange,
 }: {
   state: ShareState;
   isBusy: boolean;
+  /** Private: there is no link to guard, so the row is there and cannot be used. */
+  disabled?: boolean;
   onChange: (password: string | null) => void;
 }) {
   const t = useT();
@@ -247,7 +253,12 @@ function PasswordRow({
             </Button>
           </span>
         ) : (
-          <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => setIsEditing(true)}>
+          <Button
+            variant="tertiary"
+            size="sm"
+            disabled={isBusy || disabled}
+            onClick={() => setIsEditing(true)}
+          >
             {t('dialog.share.password.add')}
           </Button>
         ))}
@@ -304,6 +315,208 @@ function PasswordRow({
   );
 }
 
+/**
+ * The addresses a share names, in the frame beside the end date — where a link has its password.
+ *
+ * Each one added is emailed the link, which is said once in the panel's line above rather than
+ * here. The list appears under the field once it has somebody on it, and scrolls past a few rows,
+ * so a long audience does not push the dialog off screen.
+ */
+function PeopleRow({
+  emails,
+  isBusy,
+  onAdd,
+  onRemove,
+}: {
+  emails: string[];
+  isBusy: boolean;
+  onAdd: (email: string) => Promise<boolean>;
+  onRemove: (email: string) => void;
+}) {
+  const t = useT();
+  const [email, setEmail] = useState('');
+
+  const add = () => {
+    const address = email.trim();
+
+    if (address) {
+      void onAdd(address).then((added) => added && setEmail(''));
+    }
+  };
+
+  return (
+    <div className={settingRow}>
+      <label htmlFor="share-people" className="text-ink-secondary text-xs">
+        {t('dialog.share.people.label')}
+      </label>
+
+      {/* One line, like the password it stands in for, so the three modes are one height. */}
+      <div className="flex min-w-0 flex-1 basis-56 items-center justify-end gap-2">
+        <InputGroup size="sm">
+          <InputGroupAddon>
+            <Mail className="size-4" />
+          </InputGroupAddon>
+          <InputGroupInput
+            id="share-people"
+            value={email}
+            type="email"
+            placeholder="name@company.com"
+            aria-label={t('dialog.share.email.label')}
+            onChange={(event) => setEmail(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                add();
+              }
+            }}
+          />
+        </InputGroup>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={isBusy || email.trim().length === 0}
+          onClick={add}
+        >
+          {t('dialog.share.add')}
+        </Button>
+      </div>
+
+      {/* Only once there is somebody on it; the line above the frame says who may open it. */}
+      {emails.length > 0 && (
+        <ul className="flex max-h-28 w-full flex-col divide-y divide-stroke overflow-y-auto rounded-md border border-stroke">
+          {emails.map((address) => (
+            <li key={address} className="flex items-center justify-between gap-2 px-3 py-1.5">
+              <Typography variant="span" textColor="body" className="truncate text-xs">
+                {address}
+              </Typography>
+
+              <IconButton
+                variant="destructiveTertiary"
+                size="xs"
+                aria-label={t('dialog.share.remove.label', { email: address })}
+                disabled={isBusy}
+                onClick={() => onRemove(address)}
+              >
+                <X />
+              </IconButton>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/*
+ * What differs between the three modes, and nothing else: the line that says who can open it and
+ * the icon beside it. Everything around that is the one panel below, the same in every mode.
+ */
+const MODES: Record<ShareMode, { icon: LucideIcon; note: string }> = {
+  private: { icon: Lock, note: 'dialog.share.private.note' },
+  link: { icon: Users, note: 'dialog.share.link.note' },
+  people: { icon: Mail, note: 'dialog.share.people.note' },
+};
+
+/**
+ * The whole of the dialog below the mode chips, and the same panel in all three modes.
+ *
+ * It was three layouts, one per chip, and the dialog changed height every time a chip was pressed —
+ * and every change to one layout had to be remembered in the other two. Now each part is always
+ * there and only its state changes: the address row is empty and disabled while the document is
+ * private, the frame always holds the end date and a second row (the password for a link, the
+ * addresses for named people), and the opens line is always at the foot. A change made here is
+ * made for every mode at once.
+ */
+function SharePanel({
+  state,
+  isBusy,
+  isCopied,
+  url,
+  onCopy,
+  onExpiry,
+  onPassword,
+  onAdd,
+  onRemove,
+}: {
+  state: ShareState;
+  isBusy: boolean;
+  isCopied: boolean;
+  /** The address the token opens, or null while there is none. */
+  url: string | null;
+  onCopy: () => void;
+  onExpiry: (expiresAt: string | null) => void;
+  onPassword: (password: string | null) => void;
+  onAdd: (email: string) => Promise<boolean>;
+  onRemove: (email: string) => void;
+}) {
+  const t = useT();
+  const { locale } = useI18n();
+  const isPrivate = state.mode === 'private' || !url;
+  const { icon: Icon, note } = MODES[state.mode];
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <InputGroup size="sm">
+          <InputGroupAddon>
+            <Link2 className="size-4" />
+          </InputGroupAddon>
+          <InputGroupInput
+            readOnly
+            value={url ?? ''}
+            placeholder={t('dialog.share.link.none')}
+            disabled={isPrivate}
+            aria-label={t('dialog.share.link.field')}
+            onFocus={(event) => event.currentTarget.select()}
+          />
+        </InputGroup>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          leftSlot={isCopied ? <Check /> : <Copy />}
+          disabled={isPrivate}
+          onClick={onCopy}
+        >
+          {isCopied ? t('common.copied') : t('common.copy')}
+        </Button>
+      </div>
+
+      {/* Two lines kept for it in every mode, so a line that wraps in one language or one mode
+       * does not make that mode taller than the others. */}
+      <Typography variant="p" textColor="secondary" className="flex min-h-8 items-start gap-2 text-xs">
+        <Icon className="mt-0.5 size-4 shrink-0" />
+        {t(note)}
+      </Typography>
+
+      <div className="flex flex-col divide-y divide-stroke rounded-lg border border-stroke">
+        <ExpiryRow state={state} isBusy={isBusy} disabled={isPrivate} onChange={onExpiry} />
+
+        {state.mode === 'people' ? (
+          <PeopleRow emails={state.emails} isBusy={isBusy} onAdd={onAdd} onRemove={onRemove} />
+        ) : (
+          /* Usable while private too: a password set ahead guards the link from its first second. */
+          <PasswordRow state={state} isBusy={isBusy} onChange={onPassword} />
+        )}
+      </div>
+
+      {/* Opens of this link, in a line; the Views tab has each of them. */}
+      <Typography variant="span" textColor="light" className="flex items-center gap-1.5 text-xs">
+        <Eye className="size-3.5 shrink-0" />
+        {isPrivate
+          ? t('dialog.share.views.private')
+          : state.views === 0 || !state.lastViewedAt
+            ? t('dialog.share.views.none')
+            : t(state.views === 1 ? 'dialog.share.views.one' : 'dialog.share.views.many', {
+                count: state.views,
+                date: formatDateTime(Date.parse(state.lastViewedAt), INTL_LOCALES[locale]),
+              })}
+      </Typography>
+    </div>
+  );
+}
+
 interface ShareDialogProps {
   /** The document's id in the account; sharing needs a server-side row. */
   documentId: string | null;
@@ -322,10 +535,8 @@ export function ShareDialog({
   client = appShareClient,
 }: ShareDialogProps) {
   const t = useT();
-  const { locale } = useI18n();
   const [state, setState] = useState<ShareState | null>(null);
   const [isBusy, setIsBusy] = useState(false);
-  const [email, setEmail] = useState('');
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
@@ -345,15 +556,20 @@ export function ShareDialog({
     return null;
   }
 
-  const run = async (action: Promise<ShareState>) => {
+  /** Whether it worked, so a field that was typed into is cleared only when it did. */
+  const run = async (action: Promise<ShareState>): Promise<boolean> => {
     setIsBusy(true);
 
     try {
       setState(await action);
+
+      return true;
     } catch (cause) {
       toast.error(
         cause instanceof Error ? cause.message : t('dialog.share.error')
       );
+
+      return false;
     } finally {
       setIsBusy(false);
     }
@@ -370,14 +586,6 @@ export function ShareDialog({
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
       toast.error(t('common.clipboard.error'));
-    }
-  };
-
-  const addRecipient = () => {
-    const address = email.trim();
-
-    if (address) {
-      void run(client.add(documentId, address)).then(() => setEmail(''));
     }
   };
 
@@ -404,179 +612,26 @@ export function ShareDialog({
             }
           />
 
-          {isBusy && !state && (
+          {isBusy && !state ? (
             <div className="flex items-center gap-2 py-2">
               <Spinner />
               <Typography variant="span" textColor="secondary">
                 {t('common.loading')}
               </Typography>
             </div>
-          )}
-
-          {state?.mode === 'private' && (
-            <Typography
-              variant="p"
-              textColor="secondary"
-              className="flex items-start gap-2 text-xs"
-            >
-              <Lock className="mt-0.5 size-4 shrink-0" />
-              {t('dialog.share.private.note')}
-            </Typography>
-          )}
-
-          {state && state.mode !== 'private' && state.token && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <InputGroup size="sm">
-                  <InputGroupAddon>
-                    <Link2 className="size-4" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    readOnly
-                    value={client.url(state.token)}
-                    aria-label={t('dialog.share.link.field')}
-                    onFocus={(event) => event.currentTarget.select()}
-                  />
-                </InputGroup>
-
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  leftSlot={isCopied ? <Check /> : <Copy />}
-                  onClick={() => void copyLink()}
-                >
-                  {isCopied ? t('common.copied') : t('common.copy')}
-                </Button>
-              </div>
-
-              {/*
-                * The mode chip already says who can open it; the one mode whose consequence is not
-                * obvious from its name is this one, which emails each address it is given.
-                */}
-              {state.mode === 'people' && (
-                <Typography
-                  variant="p"
-                  textColor="secondary"
-                  className="flex items-start gap-2 text-xs"
-                >
-                  <Mail className="mt-0.5 size-4 shrink-0" />
-                  {t('dialog.share.people.note')}
-                </Typography>
-              )}
-
-              {/* The link's settings, as a list: one line each, the control saying the state. */}
-              <div className="flex flex-col divide-y divide-stroke rounded-lg border border-stroke">
-                <ExpiryRow
-                  state={state}
-                  isBusy={isBusy}
-                  onChange={(expiresAt) =>
-                    void run(client.setExpiry(documentId, state.mode, expiresAt))
-                  }
-                />
-
-                {state.mode === 'link' && (
-                  <PasswordRow
-                    state={state}
-                    isBusy={isBusy}
-                    onChange={(password) => void run(client.setPassword(documentId, password))}
-                  />
-                )}
-              </div>
-
-            </div>
-          )}
-
-          {state?.mode === 'people' && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <InputGroup size="sm">
-                  <InputGroupAddon>
-                    <Mail className="size-4" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    value={email}
-                    type="email"
-                    placeholder="name@company.com"
-                    aria-label={t('dialog.share.email.label')}
-                    onChange={(event) => setEmail(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                        addRecipient();
-                      }
-                    }}
-                  />
-                </InputGroup>
-
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={isBusy || email.trim().length === 0}
-                  onClick={addRecipient}
-                >
-                  {t('dialog.share.add')}
-                </Button>
-              </div>
-
-              {state.emails.length > 0 ? (
-                <ul className="flex flex-col divide-y divide-stroke rounded-md border border-stroke">
-                  {state.emails.map((address) => (
-                    <li
-                      key={address}
-                      className="flex items-center justify-between gap-2 px-3 py-1.5"
-                    >
-                      <Typography
-                        variant="span"
-                        textColor="body"
-                        className="truncate text-xs"
-                      >
-                        {address}
-                      </Typography>
-
-                      <IconButton
-                        variant="destructiveTertiary"
-                        size="xs"
-                        aria-label={t('dialog.share.remove.label', {
-                          email: address,
-                        })}
-                        disabled={isBusy}
-                        onClick={() =>
-                          void run(client.remove(documentId, address))
-                        }
-                      >
-                        <X />
-                      </IconButton>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <Typography
-                  variant="span"
-                  textColor="light"
-                  className="text-xs"
-                >
-                  {t('dialog.share.people.empty')}
-                </Typography>
-              )}
-            </div>
-          )}
-
-          {/* Opens of this link, in a line, last: the Views tab has each of them. */}
-          {state && state.mode !== 'private' && state.token && (
-            <Typography
-              variant="span"
-              textColor="light"
-              className="flex items-center gap-1.5 text-xs"
-            >
-              <Eye className="size-3.5 shrink-0" />
-              {state.views === 0 || !state.lastViewedAt
-                ? t('dialog.share.views.none')
-                : t(state.views === 1 ? 'dialog.share.views.one' : 'dialog.share.views.many', {
-                    count: state.views,
-                    date: formatDateTime(Date.parse(state.lastViewedAt), INTL_LOCALES[locale]),
-                  })}
-            </Typography>
-          )}
+          ) : state ? (
+            <SharePanel
+              state={state}
+              isBusy={isBusy}
+              isCopied={isCopied}
+              url={state.mode !== 'private' && state.token ? client.url(state.token) : null}
+              onCopy={() => void copyLink()}
+              onExpiry={(expiresAt) => void run(client.setExpiry(documentId, state.mode, expiresAt))}
+              onPassword={(password) => void run(client.setPassword(documentId, state.mode, password))}
+              onAdd={(address) => run(client.add(documentId, address))}
+              onRemove={(address) => void run(client.remove(documentId, address))}
+            />
+          ) : null}
         </ModalBody>
       </ModalContent>
     </Modal>

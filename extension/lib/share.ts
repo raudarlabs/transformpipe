@@ -78,11 +78,11 @@ export const extensionShareClient: ShareClient = {
   get: read,
   setMode: (id, mode) => write(id, mode),
 
-  setPassword: (id, password) =>
+  setPassword: (id, mode, password) =>
     ask(`/documents/${id}/share`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ mode: 'link', password }),
+      body: JSON.stringify({ mode, password }),
     }),
 
   setExpiry: (id, mode, expiresAt) =>

@@ -121,6 +121,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'The Share dialog keeps its size',
+    body:
+      'The three modes were three layouts, and the dialog grew and shrank every time a chip was '
+      + 'pressed. Now each is the same panel at the same height \u2014 the address, a line on who '
+      + 'can open it, the end date with the password or the people, and the opens \u2014 and what '
+      + 'does not apply is shown disabled rather than taken away. A password can be set while the '
+      + 'document is still private, so its link is protected from the start. And on a shared page, '
+      + 'the .md in the download menu now lights up with the rest of its item.',
+  },
+  {
+    date: '2026-09-30',
     title: 'The Share dialog says less',
     body:
       'Each setting had grown a sentence explaining it, and the dialog read like a page. Now the '
@@ -133,7 +144,8 @@ const ENTRIES: ChangelogEntry[] = [
     title: 'A shared link can ask for a password',
     slug: 'password-protected-links',
     body:
-      'In the Share dialog a link can now be given a password. Whoever opens it is asked for it '
+      'In the Share dialog a link can now be given a password, even before it is shared. Whoever '
+      + 'opens it is asked for it '
       + 'first — before the page, both downloads and Save a copy, though you, signed in, are not — '
       + 'and entering it once keeps '
       + 'it open in that browser for a day. It is kept only as a hash, so it can be changed or taken '
@@ -149,7 +161,7 @@ const ENTRIES: ChangelogEntry[] = [
 
 ## Setting one
 
-Open the Share dialog, choose **Anyone with the link**, and press **Add a password**. It takes eight characters or more. From then on the dialog says the link has a password and offers to change it or take it off; it never shows it, because it is not kept. What is stored is a scrypt hash with a salt of its own, so nobody — the owner included — can read it back.
+Open the Share dialog and press **Add** in the Password row. It takes eight characters or more, and it can be set before the document is shared at all: while it is still private the password waits, and the link it gets when you choose **Anyone with the link** asks for it from the first second. From then on the dialog says the link has a password and offers to change it or take it off; it never shows it, because it is not kept. What is stored is a scrypt hash with a salt of its own, so nobody — the owner included — can read it back.
 
 A password protects a link only. A document shared with specific people already asks each of them to sign in as themselves, and a password on top of that would be a second key to the same door.
 

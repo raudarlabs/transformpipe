@@ -588,9 +588,11 @@ export const ui: Content['ui'] = {
   'dialog.share.private.note':
     'Only you can open this document. Pick a mode above to share it.',
   'dialog.share.link.field': 'Share link',
-  'dialog.share.people.note':
-    'Only the people below can open it, after signing in with that address. Each one is emailed the link when you add them.',
-  'dialog.share.people.empty': 'Nobody yet — the link opens for you only.',
+  'dialog.share.people.note': 'Only the people you add, once signed in. Each is emailed the link.',
+  'dialog.share.link.note': 'Anyone with the link can open it.',
+  'dialog.share.link.none': 'No link while it is private',
+  'dialog.share.views.private': 'No link, so nothing to count',
+  'dialog.share.people.label': 'People',
   'dialog.share.expiry.label': 'Expires',
   'dialog.share.expiry.never': 'Never',
   'dialog.share.expiry.hour': 'In 1 hour',

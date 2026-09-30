@@ -466,6 +466,34 @@ try {
 
   check('a share with specific people takes no password', onPeople.status === 400, `got ${onPeople.status}`);
 
+  /*
+   * Set ahead, while the document is still private: nothing opens, and the link it gets later is
+   * protected from its first second.
+   */
+  const ahead = await shared({ mode: 'private' });
+
+  await sql`update m2h_document set share_token = null where id = ${ahead.id}`;
+
+  const aheadSet = await (await setPassword(ahead.id, 'set before sharing', 'private')).json().catch(() => ({}));
+
+  check(
+    'a password can be set while the document is private, and opens nothing',
+    aheadSet.mode === 'private' && aheadSet.has_password === true && aheadSet.url === null,
+    JSON.stringify(aheadSet)
+  );
+
+  const aheadShared = await (
+    await v1(`/documents/${ahead.id}/share`, { method: 'PUT', body: JSON.stringify({ mode: 'link' }) })
+  ).json().catch(() => ({}));
+  const aheadToken = (aheadShared.url ?? '').split('/s/')[1] ?? '';
+  const aheadPage = await get(`/s/${aheadToken}`);
+
+  check(
+    'and the link it gets asks for it from the first open',
+    aheadShared.has_password === true && aheadPage.status === 401,
+    `${aheadShared.has_password} ${aheadPage.status}`
+  );
+
   for (const [what, path] of [
     ['the page', `/s/${locked.token}`],
     ['the HTML download', `/s/${locked.token}?download`],

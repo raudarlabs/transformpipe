@@ -977,7 +977,11 @@ api.put('/documents/:id/share', async (c) => {
     return c.json({ error: password.error }, 400);
   }
 
-  if (typeof password.value === 'string' && body.mode !== 'link') {
+  /*
+   * A link, or a document still private — set ahead, so the link it gets is protected from its first
+   * second. Not a share with specific people, whose readers sign in as themselves.
+   */
+  if (typeof password.value === 'string' && body.mode === 'people') {
     return c.json(
       { error: 'A password protects a link. A share with specific people asks each of them to sign in instead.' },
       400
@@ -1002,7 +1006,13 @@ api.put('/documents/:id/share', async (c) => {
     const revoked = (await sql()`
       update m2h_document
       set share_mode = 'private', share_token = null,
-          share_expires_at = null, share_views = 0, share_viewed_at = null
+          share_expires_at = null, share_views = 0, share_viewed_at = null,
+          share_password_hash = case
+            when ${password.value !== undefined} then ${
+              typeof password.value === 'string' ? await hashPassword(password.value) : null
+            }
+            else share_password_hash
+          end
       where user_id = ${userId} and id = ${id}
       returning id
     `) as Array<{ id: string }>;

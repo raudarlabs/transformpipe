@@ -112,7 +112,7 @@ export const docsPage = {
   'docs.sharing.shot.dialog.caption':
     'Un link con data di fine e password.',
   'docs.sharing.password':
-    'Un link può anche chiedere una password, di otto caratteri o più. Chi legge vede prima un piccolo modulo; la risposta giusta apre il documento e viene ricordata in quel browser per un giorno, e dopo dieci errori in un minuto deve aspettare. Viene conservata solo come hash, quindi si può cambiare o rimuovere ma mai mostrare, e una nuova password chiude di colpo ogni accesso precedente. A te, con l’accesso effettuato, non viene chiesta. Una condivisione con persone precise non prende password: ognuna accede con l’indirizzo che hai indicato, che è il più solido dei due controlli.',
+    'Un link può anche chiedere una password, di otto caratteri o più. Chi legge vede prima un piccolo modulo; la risposta giusta apre il documento e viene ricordata in quel browser per un giorno, e dopo dieci errori in un minuto deve aspettare. Viene conservata solo come hash, quindi si può cambiare o rimuovere ma mai mostrare, e una nuova password chiude di colpo ogni accesso precedente. Si può impostare mentre il documento è ancora privato, così il suo link è protetto dal momento in cui esiste. A te, con l’accesso effettuato, non viene chiesta. Una condivisione con persone precise non prende password: ognuna accede con l’indirizzo che hai indicato, che è il più solido dei due controlli.',
   'docs.sharing.shot.password.alt':
     'Il modulo che un lettore vede prima che si apra un link con password',
   'docs.sharing.shot.password.caption':

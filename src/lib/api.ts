@@ -370,11 +370,14 @@ export const api = {
       body: JSON.stringify({ mode }),
     }),
 
-  /** A password on a link, or null to take it off. Only a link has one. */
-  setSharePassword: (id: string, password: string | null) =>
+  /**
+   * A password for the link, or null to take it off — on a link, or ahead of one while the document
+   * is still private. The mode is sent as it stands, so setting a password never opens anything.
+   */
+  setSharePassword: (id: string, mode: ShareMode, password: string | null) =>
     request<ShareState>(`/api/documents/${id}/share`, {
       method: 'PUT',
-      body: JSON.stringify({ mode: 'link', password }),
+      body: JSON.stringify({ mode, password }),
     }),
 
   /** The same call with an end date: null clears it, and the mode is sent as it stands. */

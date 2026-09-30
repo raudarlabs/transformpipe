@@ -133,7 +133,7 @@ export const docsPage = {
   'docs.sharing.shot.dialog.caption':
     'Ein Link mit Enddatum und Passwort.',
   'docs.sharing.password':
-    'Ein Link kann auch nach einem Passwort fragen, mindestens acht Zeichen. Der Leser sieht zuerst ein kleines Formular; die richtige Antwort öffnet das Dokument und wird in diesem Browser einen Tag lang gemerkt, und nach zehn falschen in einer Minute heißt es warten. Es wird nur als Hash gespeichert, lässt sich also ändern oder entfernen, aber nie anzeigen, und ein neues Passwort beendet jede frühere Eingabe sofort. Sie selbst werden, angemeldet, nicht gefragt. Eine Freigabe für bestimmte Personen nimmt kein Passwort: Jede von ihnen meldet sich mit der Adresse an, die Sie angegeben haben, und das ist die stärkere der beiden Prüfungen.',
+    'Ein Link kann auch nach einem Passwort fragen, mindestens acht Zeichen. Der Leser sieht zuerst ein kleines Formular; die richtige Antwort öffnet das Dokument und wird in diesem Browser einen Tag lang gemerkt, und nach zehn falschen in einer Minute heißt es warten. Es wird nur als Hash gespeichert, lässt sich also ändern oder entfernen, aber nie anzeigen, und ein neues Passwort beendet jede frühere Eingabe sofort. Es lässt sich schon festlegen, solange das Dokument noch privat ist, damit sein Link vom ersten Augenblick an geschützt ist. Sie selbst werden, angemeldet, nicht gefragt. Eine Freigabe für bestimmte Personen nimmt kein Passwort: Jede von ihnen meldet sich mit der Adresse an, die Sie angegeben haben, und das ist die stärkere der beiden Prüfungen.',
   'docs.sharing.shot.password.alt':
     'Das Formular, das ein Leser vor einem Link mit Passwort sieht',
   'docs.sharing.shot.password.caption':

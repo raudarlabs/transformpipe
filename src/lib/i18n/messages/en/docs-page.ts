@@ -130,7 +130,7 @@ export const docsPage = {
   'docs.sharing.shot.dialog.caption':
     'A link with an end date and a password.',
   'docs.sharing.password':
-    'A link can also ask for a password, eight characters or more. The reader meets a small form first; the right answer opens the document and is remembered in that browser for a day, and ten wrong ones in a minute are asked to wait. It is kept only as a hash, so it can be changed or removed but never shown, and a new password ends every earlier entry at once. You, signed in, are not asked. A share with specific people takes no password: each of them signs in as the address you gave, which is the stronger check of the two.',
+    'A link can also ask for a password, eight characters or more. The reader meets a small form first; the right answer opens the document and is remembered in that browser for a day, and ten wrong ones in a minute are asked to wait. It is kept only as a hash, so it can be changed or removed but never shown, and a new password ends every earlier entry at once. It can be set while the document is still private, so its link is protected from the moment it exists. You, signed in, are not asked. A share with specific people takes no password: each of them signs in as the address you gave, which is the stronger check of the two.',
   'docs.sharing.shot.password.alt':
     'The form a reader sees before a link with a password opens',
   'docs.sharing.shot.password.caption':

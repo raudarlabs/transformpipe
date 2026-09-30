@@ -580,10 +580,11 @@ export const ui: Content['ui'] = {
   'dialog.share.private.note':
     'Vous seul pouvez ouvrir ce document. Choisissez un mode ci-dessus pour le partager.',
   'dialog.share.link.field': 'Lien de partage',
-  'dialog.share.people.note':
-    'Seules les personnes ci-dessous peuvent l’ouvrir, après connexion avec cette adresse. Chacune reçoit le lien par e-mail dès que vous l’ajoutez.',
-  'dialog.share.people.empty':
-    'Personne pour l’instant — le lien ne s’ouvre que pour vous.',
+  'dialog.share.people.note': 'Seules les personnes ajoutées, une fois connectées. Chacune reçoit le lien par e-mail.',
+  'dialog.share.link.note': 'Toute personne ayant le lien peut l’ouvrir.',
+  'dialog.share.link.none': 'Pas de lien tant qu’il est privé',
+  'dialog.share.views.private': 'Pas de lien, donc rien à compter',
+  'dialog.share.people.label': 'Personnes',
   'dialog.share.expiry.label': 'Expire',
   'dialog.share.expiry.never': 'Jamais',
   'dialog.share.expiry.hour': 'Dans 1 heure',

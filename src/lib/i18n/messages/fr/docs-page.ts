@@ -119,7 +119,7 @@ export const docsPage = {
   'docs.sharing.shot.dialog.caption':
     'Un lien avec une date de fin et un mot de passe.',
   'docs.sharing.password':
-    'Un lien peut aussi demander un mot de passe, de huit caractères ou plus. Le lecteur voit d’abord un petit formulaire ; la bonne réponse ouvre le document et reste mémorisée dans ce navigateur pendant une journée, et après dix erreurs en une minute il doit patienter. Il n’est gardé que sous forme d’empreinte : on peut le changer ou le retirer, jamais l’afficher, et un nouveau mot de passe met fin d’un coup à toutes les saisies précédentes. Vous, connecté, n’êtes pas sollicité. Un partage avec des personnes précises ne prend pas de mot de passe : chacune se connecte avec l’adresse que vous avez donnée, ce qui est la plus solide des deux vérifications.',
+    'Un lien peut aussi demander un mot de passe, de huit caractères ou plus. Le lecteur voit d’abord un petit formulaire ; la bonne réponse ouvre le document et reste mémorisée dans ce navigateur pendant une journée, et après dix erreurs en une minute il doit patienter. Il n’est gardé que sous forme d’empreinte : on peut le changer ou le retirer, jamais l’afficher, et un nouveau mot de passe met fin d’un coup à toutes les saisies précédentes. On peut le définir alors que le document est encore privé, pour que son lien soit protégé dès l’instant où il existe. Vous, connecté, n’êtes pas sollicité. Un partage avec des personnes précises ne prend pas de mot de passe : chacune se connecte avec l’adresse que vous avez donnée, ce qui est la plus solide des deux vérifications.',
   'docs.sharing.shot.password.alt':
     'Le formulaire qu’un lecteur voit avant l’ouverture d’un lien protégé par un mot de passe',
   'docs.sharing.shot.password.caption':
