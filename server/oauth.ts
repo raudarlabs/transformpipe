@@ -106,13 +106,36 @@ export interface OAuthClient {
 export const resourceUri = (c: Context) => `${selfOrigin(c)}/api/mcp`;
 
 /**
+ * The private-use scheme addresses this server will send a code to, each one exactly.
+ *
+ * A native app that is not a browser comes back to itself through its own scheme (RFC 8252 §7.1):
+ * Obsidian through `obsidian://`, Cursor through `cursor://`. Refusing every such address is why
+ * Cursor never connected — it registered, lost the one redirect_uri it would use, and failed at
+ * the authorize step. Accepting any scheme would let a registration name `javascript:` or an app
+ * nobody vetted, so it is a list, and a whole address rather than a scheme: the Cursor entry is
+ * the one path Cursor publishes, and Obsidian's is the one our own plugin listens on.
+ *
+ * What a scheme cannot prove is which app answers it — any app on the device may claim it, the
+ * same weakness a loopback port has — so PKCE is what stops an eavesdropper using the code, and
+ * the consent page says where the code is going.
+ */
+export const APP_REDIRECTS: ReadonlySet<string> = new Set([
+  'obsidian://transformpipe-auth',
+  'cursor://anysphere.cursor-mcp/oauth/callback',
+]);
+
+/**
  * Whether a redirect_uri may be used at all.
  *
- * https, or loopback for a client that runs on the person's own machine. Claude Code declares
- * `http://localhost/callback`, listens on whatever port it was given, and expects the port to be
- * ignored (RFC 8252) — so loopback is compared without it.
+ * https, loopback for a client that runs on the person's own machine, or one of the app addresses
+ * above. Claude Code declares `http://localhost/callback`, listens on whatever port it was given,
+ * and expects the port to be ignored (RFC 8252) — so loopback is compared without it.
  */
 function usableRedirect(uri: string): boolean {
+  if (APP_REDIRECTS.has(uri)) {
+    return true;
+  }
+
   try {
     const parsed = new URL(uri);
 
@@ -213,9 +236,34 @@ async function documentClient(id: string): Promise<OAuthClient | null> {
   return { id, name, redirect_uris: uris, from: new URL(id).host };
 }
 
+/**
+ * Clients this project ships the other half of, known by id rather than registered.
+ *
+ * The Obsidian plugin is ours: its redirect_uri is fixed and its name is not a claim to check, so
+ * there is nothing a registration or a metadata document would add except a network round trip
+ * and a row per install. It still signs in the ordinary way — consent, PKCE, a code — and is
+ * mirrored into the client table so the connections list can name it.
+ */
+const BUILT_IN_CLIENTS: Record<string, { name: string; redirect_uris: string[] }> = {
+  'transformpipe-obsidian': { name: 'Obsidian', redirect_uris: ['obsidian://transformpipe-auth'] },
+};
+
 async function findClient(id: string): Promise<OAuthClient | null> {
   if (!id) {
     return null;
+  }
+
+  const builtIn = BUILT_IN_CLIENTS[id];
+
+  if (builtIn) {
+    await sql()`
+      insert into m2h_oauth_client (id, name, redirect_uris)
+      values (${id}, ${builtIn.name}, ${JSON.stringify(builtIn.redirect_uris)}::jsonb)
+      on conflict (id) do update
+        set name = excluded.name, redirect_uris = excluded.redirect_uris
+    `.catch(() => undefined);
+
+    return { id, name: builtIn.name, redirect_uris: builtIn.redirect_uris };
   }
 
   if (isDocumentId(id)) {
@@ -388,7 +436,12 @@ ${
     ? `  <p class="warn">It will be sent back to a program running on this computer. Any program on
        your machine can ask to be sent there, and this page cannot tell them apart — approve it
        only if you just started this yourself.</p>`
-    : ''
+    : APP_REDIRECTS.has(params.redirect_uri)
+      ? `  <p class="warn">It will be sent back to an app on this device, through a
+       <code>${escapeHtml(new URL(params.redirect_uri).protocol)}</code> link. Any app can say it
+       opens those links, and this page cannot tell them apart — approve it only if you just
+       started this yourself.</p>`
+      : ''
 }
   <p class="foot">It will send you back to <code>${escapeHtml(params.redirect_uri)}</code></p>
 
@@ -495,7 +548,14 @@ export function consentHeaders(redirectUri: string): Record<string, string> {
   let target = '';
 
   try {
-    target = ` ${new URL(redirectUri).origin}`;
+    /*
+     * An app address has no origin — `new URL('obsidian://…').origin` is the string "null" — so
+     * it is named by its scheme instead, and only for the addresses on the list: `form-action
+     * obsidian:` lets the page send you to Obsidian and nowhere new on the web.
+     */
+    const { origin, protocol } = new URL(redirectUri);
+
+    target = APP_REDIRECTS.has(redirectUri) ? ` ${protocol}` : origin === 'null' ? '' : ` ${origin}`;
   } catch {
     target = '';
   }
@@ -665,7 +725,7 @@ oauth.post('/register', async (c) => {
       {
         error: 'invalid_redirect_uri',
         error_description:
-          'Give at least one https redirect_uri, or an http one on loopback.',
+          'Give at least one https redirect_uri, an http one on loopback, or an app address this server knows.',
       },
       400
     );

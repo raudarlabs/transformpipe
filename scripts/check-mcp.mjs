@@ -151,12 +151,102 @@ const rejected = await post('/api/oauth/register', {
 });
 check('a non-loopback http redirect_uri is refused', rejected.status === 400, `got ${rejected.status}`);
 
-console.log('\n— authorize, before anybody is signed in');
+console.log('\n— apps that come back through their own scheme');
 
 const authorize = (params) =>
   fetch(`${HOST}/api/oauth/authorize?${new URLSearchParams(params)}`, {
     redirect: 'manual',
   });
+
+/*
+ * Cursor registers with `cursor://anysphere.cursor-mcp/oauth/callback` and uses it at authorize;
+ * refusing it at registration is why Cursor never connected. Only that address, exactly — the
+ * list is whole addresses, not schemes.
+ */
+const CURSOR_BACK = 'cursor://anysphere.cursor-mcp/oauth/callback';
+const cursorRegistered = await post('/api/oauth/register', {
+  client_name: 'Cursor (check-mcp)',
+  redirect_uris: [CURSOR_BACK],
+});
+const cursorClient = await cursorRegistered.json().catch(() => ({}));
+
+check(
+  "Cursor's own callback is kept at registration",
+  cursorRegistered.status === 201 && cursorClient.redirect_uris?.includes(CURSOR_BACK),
+  `${cursorRegistered.status} ${JSON.stringify(cursorClient).slice(0, 160)}`
+);
+
+const cursorAsked = await authorize({
+  client_id: cursorClient.client_id ?? 'none',
+  redirect_uri: CURSOR_BACK,
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+  state: 'st',
+});
+check(
+  'and is accepted at authorize',
+  cursorAsked.status === 302 && (cursorAsked.headers.get('location') ?? '').includes('/?connect='),
+  `${cursorAsked.status} ${cursorAsked.headers.get('location') ?? ''}`
+);
+
+for (const [label, uri] of [
+  ['another path under the same scheme', 'cursor://anysphere.cursor-mcp/oauth/evil'],
+  ['a scheme nobody listed', 'slack://oauth/callback'],
+  ['Obsidian\'s address with something after it', 'obsidian://transformpipe-auth.evil'],
+  ['javascript:', 'javascript:alert(1)'],
+]) {
+  const refused = await post('/api/oauth/register', { redirect_uris: [uri] });
+  check(`${label} is refused at registration`, refused.status === 400, `got ${refused.status}`);
+}
+
+/*
+ * The Obsidian plugin is a client this project ships, known by id: no registration, a fixed
+ * address, the same consent and PKCE as anybody.
+ */
+const obsidianAsked = await authorize({
+  client_id: 'transformpipe-obsidian',
+  redirect_uri: 'obsidian://transformpipe-auth',
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+  state: 'st',
+});
+check(
+  'the Obsidian plugin is known without registering',
+  obsidianAsked.status === 302 && (obsidianAsked.headers.get('location') ?? '').includes('/?connect='),
+  `${obsidianAsked.status} ${obsidianAsked.headers.get('location') ?? ''}`
+);
+
+const obsidianElsewhere = await authorize({
+  client_id: 'transformpipe-obsidian',
+  redirect_uri: 'https://evil.example/cb',
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+});
+check(
+  'and cannot be sent anywhere but its own address',
+  obsidianElsewhere.status === 400,
+  `got ${obsidianElsewhere.status}`
+);
+
+const obsidianNoPkce = await authorize({
+  client_id: 'transformpipe-obsidian',
+  redirect_uri: 'obsidian://transformpipe-auth',
+  response_type: 'code',
+  state: 'st',
+});
+const noPkceBack = obsidianNoPkce.headers.get('location') ?? '';
+check(
+  'and still needs PKCE, refused back to Obsidian itself',
+  obsidianNoPkce.status === 302 &&
+    noPkceBack.startsWith('obsidian://transformpipe-auth?') &&
+    noPkceBack.includes('error=invalid_request'),
+  noPkceBack
+);
+
+console.log('\n— authorize, before anybody is signed in');
 
 const unknownClient = await authorize({
   client_id: 'm2hc_nope',
