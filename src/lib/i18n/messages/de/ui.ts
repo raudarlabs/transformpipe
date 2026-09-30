@@ -542,6 +542,8 @@ export const ui: Content['ui'] = {
   'agents.claude.add': 'Zu Claude hinzufügen',
   'agents.listed': 'Im Connector-Verzeichnis von Claude gelistet',
   'agents.guide': 'Vollständige Einrichtungsanleitung',
+  'agents.chatgpt.open': 'ChatGPT-Plugins öffnen',
+  'agents.chatgpt.works': 'Funktioniert heute in ChatGPT',
 
   /*
    * Ein Dokument, das jemand Ihnen geschickt hat, unter /open/<token>.

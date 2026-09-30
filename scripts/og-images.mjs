@@ -634,6 +634,7 @@ const PAGES = [
   ['markdown-live-preview', 'Markdown live preview', 'Tool', ACCENTS.Converting],
   ['agents', 'Everything your assistant writes, in one place', 'AI assistants', ACCENTS.Automation],
   ['agents/claude', 'TransformPipe for Claude', 'AI assistants', ACCENTS.Publishing],
+  ['agents/chatgpt', 'TransformPipe for ChatGPT', 'AI assistants', ACCENTS.Automation],
   ['privacy', 'Privacy', 'Legal', ACCENTS.Safety],
   ['terms', 'Terms of use', 'Legal', ACCENTS.Safety],
   ['cookies', 'Cookies', 'Legal', ACCENTS.Safety],

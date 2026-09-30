@@ -36,7 +36,8 @@ export type StaticPageId =
   | 'how-to-zip'
   | 'how-to-assistant'
   | 'agents'
-  | 'agents-claude';
+  | 'agents-claude'
+  | 'agents-chatgpt';
 
 /**
  * Which part of the footer a page belongs under.
@@ -251,6 +252,7 @@ export const STATIC_PAGES: StaticPage[] = [
    */
   { id: 'agents', path: '/agents', group: 'agents' },
   { id: 'agents-claude', path: '/agents/claude', group: 'agents', parent: 'agents' },
+  { id: 'agents-chatgpt', path: '/agents/chatgpt', group: 'agents', parent: 'agents' },
 ];
 
 /** The pages of one group, in the order declared — what the footer builds a column from. */

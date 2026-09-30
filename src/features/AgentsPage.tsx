@@ -18,7 +18,7 @@ import { crumbsForStaticPage } from '@/lib/breadcrumbs';
 import type { LandingWords } from '@/lib/i18n/content';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { localePath } from '@/lib/i18n/locales';
-import { CLAUDE_DIRECTORY, MCP_PATH } from '@/lib/mcp-facts';
+import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY, MCP_PATH } from '@/lib/mcp-facts';
 import { staticPage, type StaticPage as Page } from '@/lib/pages';
 import {
   Accordion,
@@ -66,7 +66,21 @@ const CLIENT_ART = [
 ];
 
 /** Which row of the assistants' table has a page, and so works today. */
-const CLIENT_PAGES: Record<number, 'agents-claude'> = { 0: 'agents-claude' };
+const CLIENT_PAGES: Record<number, 'agents-claude' | 'agents-chatgpt'> = {
+  0: 'agents-claude',
+  1: 'agents-chatgpt',
+};
+
+/**
+ * Which assistant's way in a page offers beside the address.
+ *
+ * Claude has a listing, so its button opens the listing and one click connects. ChatGPT has none
+ * yet: its button opens the Plugins screen where the address is pasted. Every other page — the
+ * overview included — leads with Claude, the one that connects in a click.
+ */
+type Way = 'claude' | 'chatgpt';
+
+const wayFor = (id: Page['id']): Way => (id === 'agents-chatgpt' ? 'chatgpt' : 'claude');
 
 /** `like this` in the catalogue, as a code span — the one markup the static pages allow. */
 function inlineCode(text: string): ReactNode[] {
@@ -165,6 +179,23 @@ function AddToClaude() {
   );
 }
 
+/** ChatGPT's way in: the Plugins screen, where Add, then Create MCP App, takes the address. */
+function OpenChatGpt() {
+  const t = useT();
+
+  return (
+    <a
+      href={CHATGPT_PLUGINS}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-5 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary"
+    >
+      {t('agents.chatgpt.open')}
+      <ExternalLink className="size-4" />
+    </a>
+  );
+}
+
 /*
  * The two ways in, on one line: the address for every MCP client, and the directory for Claude.
  *
@@ -179,14 +210,22 @@ function AddToClaude() {
  * wraps onto on top. The grow factors do the widths: 1000 to 1 means that in a row the field takes
  * the spare space and the button keeps its size, and alone on a line the button fills it.
  */
-function WaysIn({ action, centred = false }: { action: string; centred?: boolean }) {
+function WaysIn({
+  action,
+  way,
+  centred = false,
+}: {
+  action: string;
+  way: Way;
+  centred?: boolean;
+}) {
   return (
     <div className={cn('flex w-full flex-wrap-reverse items-start gap-3', centred && 'justify-center')}>
       <div className="flex min-w-0 flex-[1000_1_26rem]">
         <AddressField copyLabel={action} />
       </div>
       <div className="flex flex-[1_0_auto]">
-        <AddToClaude />
+        {way === 'chatgpt' ? <OpenChatGpt /> : <AddToClaude />}
       </div>
     </div>
   );
@@ -336,11 +375,13 @@ function AddressBlock({
   title,
   text,
   action,
+  way,
   centred = false,
 }: {
   title: string;
   text: string;
   action: string;
+  way: Way;
   centred?: boolean;
 }) {
   return (
@@ -359,7 +400,7 @@ function AddressBlock({
           beside it (26rem + the button). Any narrower and `WaysIn` stacks them, which is right on
           a phone and wrong on a desktop, where the button belongs where the copy button was. */}
       <div className={centred ? 'w-full max-w-2xl' : 'w-full lg:w-[38rem] lg:shrink-0'}>
-        <WaysIn action={action} centred={centred} />
+        <WaysIn action={action} way={way} centred={centred} />
       </div>
     </section>
   );
@@ -370,9 +411,38 @@ function AddressBlock({
  * asks for, and what comes back. The labels inside are Claude's own interface and addresses, which
  * stay as they are in every language.
  */
-function StepPicture({ step, ask }: { step: number; ask: string }) {
+function StepPicture({ step, ask, way }: { step: number; ask: string; way: Way }) {
   const frame =
     'flex h-28 w-full flex-col justify-center gap-2 rounded-2xl border border-stroke bg-surface-page p-4';
+
+  /* ChatGPT's own screens, in its own words: the Add menu, then the form the address goes into. */
+  if (way === 'chatgpt' && step === 0) {
+    return (
+      <div className={frame}>
+        <span className="font-mono text-[11px] text-ink-inactive">chatgpt.com/plugins</span>
+        <div className="flex flex-col gap-1 self-end rounded-lg border border-stroke bg-surface-card px-3 py-2 text-[11px]">
+          <span className="text-ink-inactive">Create plugin</span>
+          <span className="font-semibold text-ink-primary">Create MCP App</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (way === 'chatgpt' && step === 1) {
+    return (
+      <div className={frame}>
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-stroke bg-surface-card px-3 py-2">
+          <span className="truncate font-mono text-ink-primary text-[11px]">
+            transformpipe.com/api/mcp
+          </span>
+          <span className="shrink-0 text-[10px] text-ink-inactive">OAuth</span>
+        </div>
+        <span className="self-end rounded-md bg-brand-primary px-2 py-0.5 font-semibold text-[11px] text-white">
+          Create
+        </span>
+      </div>
+    );
+  }
 
   if (step === 0) {
     return (
@@ -572,7 +642,7 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
                   <div className="flex max-w-2xl flex-col gap-3">
                     <span className="text-ink-secondary text-sm md:hidden">{item.how}</span>
                     <p className="text-ink-body text-sm leading-relaxed">{item.body}</p>
-                    {works && (
+                    {works && index === 0 && (
                       <a
                         href={CLAUDE_DIRECTORY}
                         target="_blank"
@@ -694,6 +764,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
   const landing = words.landing;
   const guide = localePath(locale, staticPage('how-to-assistant').path);
   const action = words.action ?? '';
+  const way = wayFor(page.id);
 
   if (!landing) {
     return null;
@@ -711,21 +782,29 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
         <div className="flex flex-col gap-6">
           <div className="flex flex-wrap items-center gap-3">
             <Label>{landing.eyebrow}</Label>
-            <a
-              href={CLAUDE_DIRECTORY}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/40 bg-surface-accent px-2.5 py-0.5 font-semibold text-[11px] text-brand-tertiary no-underline hover:border-brand-primary"
-            >
-              <Check className="size-3" />
-              {t('agents.listed')}
-            </a>
+            {/* A listing to point at is Claude's alone for now; ChatGPT's page says it works. */}
+            {way === 'claude' ? (
+              <a
+                href={CLAUDE_DIRECTORY}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/40 bg-surface-accent px-2.5 py-0.5 font-semibold text-[11px] text-brand-tertiary no-underline hover:border-brand-primary"
+              >
+                <Check className="size-3" />
+                {t('agents.listed')}
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-primary/40 bg-surface-accent px-2.5 py-0.5 font-semibold text-[11px] text-brand-tertiary">
+                <Check className="size-3" />
+                {t('agents.chatgpt.works')}
+              </span>
+            )}
           </div>
           <h1 className="font-semibold text-4xl text-ink-primary leading-[1.1] tracking-tight md:text-5xl">
             {words.title}
           </h1>
           <p className="text-ink-secondary text-lg leading-relaxed">{words.lede}</p>
-          <WaysIn action={action} />
+          <WaysIn action={action} way={way} />
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <a
               href={guide}
@@ -765,7 +844,12 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
 
       <Compare words={landing.compare} />
 
-      <AddressBlock title={landing.middle.title} text={landing.middle.text} action={action} />
+      <AddressBlock
+        title={landing.middle.title}
+        text={landing.middle.text}
+        action={action}
+        way={way}
+      />
 
       {/* ------------------------------------------------------------------ connecting */}
       <section className="flex flex-col gap-10">
@@ -787,7 +871,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
                 {index + 1}
               </span>
               <div className="flex w-full flex-1 flex-col gap-4 rounded-3xl border border-stroke bg-surface-card p-5">
-                <StepPicture step={index} ask={landing.useCases.items[1]?.ask ?? ''} />
+                <StepPicture step={index} ask={landing.useCases.items[1]?.ask ?? ''} way={way} />
                 <div className="flex flex-col gap-1.5">
                   <h3 className="font-semibold text-ink-primary text-lg">{step.title}</h3>
                   <p className="text-ink-secondary text-sm leading-relaxed">
@@ -812,6 +896,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
         title={landing.bottom.title}
         text={landing.bottom.text}
         action={action}
+        way={way}
         centred
       />
 

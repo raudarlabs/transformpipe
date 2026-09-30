@@ -45,7 +45,7 @@ import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
 import type { LandingWords } from '../src/lib/i18n/content.js';
-import { CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
+import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
 import { hasTranslation } from '../src/lib/route.js';
 import {
@@ -304,12 +304,20 @@ function landingHtml(landing: LandingWords, locale: Locale, here: string): strin
   const titled = (items: { title: string; body: string }[]) =>
     items.map((item) => `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p>`).join('');
   const claude = STATIC_PAGES.find((one) => one.id === 'agents-claude')!;
+  const chatgpt = STATIC_PAGES.find((one) => one.id === 'agents-chatgpt')!;
   const guide = STATIC_PAGES.find((one) => one.id === 'how-to-assistant')!;
+  /* The assistants with a page of their own, by their row in the table. */
+  const clientPages: Record<number, typeof claude> = { 0: claude, 1: chatgpt };
 
   return [
-    `<p><a href="${CLAUDE_DIRECTORY}">${escapeHtml(catalogue.ui['agents.claude.add'])}</a> · ${escapeHtml(
-      catalogue.ui['agents.listed']
-    )}</p>`,
+    // ChatGPT's page leads with ChatGPT's way in; every other page with Claude's listing.
+    here === chatgpt.id
+      ? `<p><a href="${CHATGPT_PLUGINS}">${escapeHtml(catalogue.ui['agents.chatgpt.open'])}</a> · ${escapeHtml(
+          catalogue.ui['agents.chatgpt.works']
+        )}</p>`
+      : `<p><a href="${CLAUDE_DIRECTORY}">${escapeHtml(catalogue.ui['agents.claude.add'])}</a> · ${escapeHtml(
+          catalogue.ui['agents.listed']
+        )}</p>`,
     `<p><code>https://transformpipe.com/api/mcp</code> · ${anchor(
       localePath(locale, guide.path),
       catalogue.ui['agents.guide']
@@ -353,8 +361,8 @@ function landingHtml(landing: LandingWords, locale: Locale, here: string): strin
       .map(
         (item, index) =>
           `<h3>${
-            index === 0 && here !== claude.id
-              ? anchor(localePath(locale, claude.path), item.name)
+            clientPages[index] && here !== clientPages[index].id
+              ? anchor(localePath(locale, clientPages[index].path), item.name)
               : escapeHtml(item.name)
           }</h3><p>${escapeHtml(item.how)}. ${escapeHtml(item.body)}</p>`
       )

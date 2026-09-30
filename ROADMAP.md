@@ -100,6 +100,9 @@ says otherwise.
       Claude. ChatGPT's client document would rather sign its token requests and lists `none`
       beside it, so it connects as a public client under PKCE; verifying `private_key_jwt` is the
       follow-up. The directory submission is next, waiting on a demo recording and a test account
+- [x] **A page for ChatGPT** — `/agents/chatgpt`, on the Claude page's pattern: the steps as ChatGPT
+      names them today (Plugins → Add → Create MCP App), its own pictures of them, and a button to
+      its Plugins screen where Claude's page has the directory
 
 ### 30 September
 

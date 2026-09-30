@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'A page for ChatGPT',
+    body:
+      '/agents/chatgpt has the three steps for adding TransformPipe in ChatGPT — Plugins, Add, '
+      + 'Create MCP App, the address — what ChatGPT can reach and what it cannot, and the questions '
+      + 'people ask, in five languages. The assistants’ table marks ChatGPT as working today.',
+  },
+  {
+    date: '2026-10-01',
     title: 'Making a shared document private asks first',
     body:
       'Switching a shared document to Private ends its link for good, and sharing again makes a '

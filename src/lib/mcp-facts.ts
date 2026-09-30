@@ -18,6 +18,13 @@ export const MCP_PATH = '/api/mcp';
  */
 export const CLAUDE_DIRECTORY = 'https://claude.ai/directory/tp';
 
+/**
+ * Where ChatGPT adds a connector of your own: Plugins, then Add, then Create MCP App. Not a
+ * listing — TransformPipe is not in ChatGPT's directory yet — so the page that sends people here
+ * also gives them the address to paste. Checked in ChatGPT on 1 October 2026.
+ */
+export const CHATGPT_PLUGINS = 'https://chatgpt.com/plugins';
+
 export const MCP_TOOL_NAMES = [
   'tp_help',
   'tp_convert_markdown',

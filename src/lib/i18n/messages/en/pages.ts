@@ -1096,8 +1096,8 @@ export const pages: Content['pages'] = {
           },
           {
             name: 'ChatGPT',
-            how: 'Developer mode connector',
-            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. Add one at https://transformpipe.com/api/mcp and sign in; documents come back as cards in the chat.',
+            how: 'MCP app · added by address',
+            body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
           },
           {
             name: 'Cursor',
@@ -1319,8 +1319,8 @@ export const pages: Content['pages'] = {
           },
           {
             name: 'ChatGPT',
-            how: 'Developer mode connector',
-            body: 'ChatGPT takes custom MCP connectors in developer mode, on the plans that offer it. Add one at https://transformpipe.com/api/mcp and sign in; documents come back as cards in the chat.',
+            how: 'MCP app · added by address',
+            body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
           },
           {
             name: 'Cursor',
@@ -1419,6 +1419,223 @@ export const pages: Content['pages'] = {
       title: 'Save and share what Claude writes, as a link — TransformPipe',
       description:
         'Add TransformPipe to Claude as a connector: it saves what Claude writes to your account, keeps versions, and shares each document as a page anyone can open.',
+    },
+  },
+  'agents-chatgpt': {
+    label: 'ChatGPT',
+    title: 'Save and share what ChatGPT writes',
+    lede: 'ChatGPT drafts the report, the plan, the email to the team — and it stays in that chat. Add TransformPipe as an MCP app and ChatGPT saves each one to your account, keeps its versions, and hands you a link that opens as a finished page.',
+    sections: [],
+    landing: {
+      eyebrow: 'For ChatGPT',
+      demo: {
+        from: 'In the chat',
+        to: 'In your account',
+        title: 'Launch plan',
+        lines: [
+          'Freeze the branch on Friday.',
+          'Run the release checks',
+          'Ship on Monday',
+        ],
+        shared: 'Shared by link',
+        meta: 'v1 · saved from ChatGPT',
+      },
+      useCases: {
+        heading: 'What to ask ChatGPT for',
+        intro: 'Four sentences that do something once the app is added. Pick TransformPipe from the + menu in a chat, or just name it.',
+        items: [
+          {
+            title: 'Keep what ChatGPT writes',
+            body: 'The document goes into your account under a title ChatGPT picks, and you can rename it later. It is there tomorrow, on another device, long after the chat has scrolled away — and it shows up as a card in the chat the moment it is saved.',
+            ask: '“Save this as the launch plan.”',
+            result: 'Saved · Launch plan',
+          },
+          {
+            title: 'Send a page, not a paste',
+            body: 'ChatGPT asks before it publishes, then answers with the address. Whoever opens it sees a finished page and needs no ChatGPT account. Share it by link or only with the addresses you name; revoke it, and the link stops working at once.',
+            ask: '“Share it by link so my team can read it.”',
+            result: 'Link created · transformpipe.com/s/…',
+          },
+          {
+            title: 'Find it again, in any chat',
+            body: 'ChatGPT lists your documents as a card you can click and opens the one you meant — including one written in another chat, saved from Claude or converted on the website. Ask for it by its name, or by something it says inside.',
+            ask: '“What documents do I have?”',
+            result: 'Found · 3 documents',
+          },
+          {
+            title: 'Rewrite without losing the first draft',
+            body: 'An update is kept as a new version beside the old one, so the first draft is never lost. ChatGPT can read both and tell you what moved before you share the new one — and the link you sent earlier still opens the old one.',
+            ask: '“Update the plan and keep the old version.”',
+            result: 'v1 → v2 · both kept',
+          },
+        ],
+      },
+      compare: {
+        heading: 'Why not just copy it out of the chat',
+        intro: 'Copying works once. A document here is for everything after that.',
+        left: 'Copied from the chat',
+        right: 'TransformPipe',
+        rows: [
+          { label: 'Where it lives', left: 'Wherever it was pasted', right: 'In your account, outside any chat' },
+          { label: 'Finding it later', left: 'Scrolling back through chats', right: 'Search, or ask ChatGPT in any chat' },
+          { label: 'Documents from other tools', left: 'Pasted again into each', right: 'One list, whichever assistant wrote it' },
+          { label: 'Sharing', left: 'Pasted into an email or a doc', right: 'A link, or only named addresses; revoke any time' },
+          { label: 'Versions', left: 'Copies kept by hand', right: 'Kept for you, and compared on request' },
+          { label: 'Formatting', left: 'Whatever survives the paste', right: 'Headings, tables and code as a finished page' },
+        ],
+      },
+      steps: {
+        heading: 'Connected in three steps',
+        items: [
+          {
+            title: 'Open Plugins in ChatGPT',
+            body: 'In the sidebar, open Plugins, press Add and choose Create MCP App. The button on this page opens the screen.',
+          },
+          {
+            title: 'Give it the address',
+            body: 'Name it TransformPipe, paste `https://transformpipe.com/api/mcp` as the Server URL and keep OAuth as the authentication. Tick that you understand, and press Create.',
+          },
+          {
+            title: 'Sign in and ask',
+            body: 'Sign in to TransformPipe and allow the connection. In a chat, pick TransformPipe from the + menu, and “save this” does what it says.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'What ChatGPT can reach, and what it cannot',
+        can: [
+          'Save a document to your account',
+          'List, open and summarise your documents',
+          'Share one by link or with named addresses',
+          'Keep a new version beside the old one',
+        ],
+        cannot: [
+          'Change your account or its settings',
+          'See your password or create API keys',
+          'Reach anybody else’s documents',
+          'Delete anything without your explicit confirmation',
+        ],
+        notes: [
+          {
+            title: 'It asks before it acts',
+            body: 'Publishing, emailing a share and deleting are marked as changes outside the chat, so ChatGPT asks you before each one; a delete also needs your confirmation in TransformPipe itself.',
+          },
+          {
+            title: 'Disconnect in one click',
+            body: 'Disconnect ChatGPT under MCP connector in your TransformPipe account menu and it stops acting as you at once. Your documents stay until you delete them.',
+          },
+          {
+            title: 'Free, with the limits in writing',
+            body: '500 documents and 100 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
+          },
+        ],
+      },
+      clients: {
+        heading: 'Other assistants, same documents',
+        intro: 'What ChatGPT saves, Claude finds too, and the rest will — one account, whichever tool is asking.',
+        items: [
+          {
+            name: 'Claude',
+            how: 'Connector directory · one click',
+            body: 'claude.ai, Claude Desktop and Claude Code. TransformPipe is listed in Claude’s connector directory: open it, press Connect, sign in, and ask Claude to save, publish or find a document.',
+          },
+          {
+            name: 'ChatGPT',
+            how: 'MCP app · added by address',
+            body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
+          },
+          {
+            name: 'Cursor',
+            how: 'Remote MCP server',
+            body: 'Cursor adds remote MCP servers with a sign-in, but returns from it to the editor through its own link scheme, which this server does not accept yet. That is the part being worked on.',
+          },
+          {
+            name: 'Gemini',
+            how: 'Gemini CLI, remote MCP',
+            body: 'Gemini CLI adds remote MCP servers with a sign-in through the browser, the same way Claude Code does, and is next to be tried.',
+          },
+          {
+            name: 'VS Code',
+            how: 'Copilot agent mode, remote MCP',
+            body: 'GitHub Copilot’s agent mode in VS Code connects to remote MCP servers and signs in through the browser. Being tested.',
+          },
+          {
+            name: 'Windsurf',
+            how: 'Remote MCP server',
+            body: 'Windsurf’s assistant takes remote MCP servers too. Whether its sign-in completes against this server is still to be checked.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Questions about ChatGPT and TransformPipe',
+        intro: 'The short answers. The full setup guide has the rest.',
+        items: [
+          {
+            question: 'Is TransformPipe in ChatGPT’s plugin directory?',
+            answer:
+              'Not yet. Until it is listed, you add it yourself as an MCP app: open Plugins, press Add, choose Create MCP App and paste `https://transformpipe.com/api/mcp`. It takes a minute, and the documents, the cards and the sign-in are the same as they will be from the directory.',
+          },
+          {
+            question: 'Which ChatGPT plans can add it?',
+            answer:
+              'Adding your own MCP app depends on your ChatGPT plan and, in a workspace, on what its admin allows. If the Add menu under Plugins has no Create MCP App, your plan or workspace does not offer it yet; TransformPipe itself costs nothing either way.',
+          },
+          {
+            question: 'Is it free?',
+            answer:
+              'Yes, with no plan to pick and no card to enter. An account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
+          },
+          {
+            question: 'Do I need to sign up first?',
+            answer:
+              'No. Creating the app in ChatGPT sends you through a normal sign-in, and that sign-in is the account — no separate registration, no API key and nothing to paste but the address. The same account works on the website and in Claude.',
+          },
+          {
+            question: 'Why does ChatGPT ask before publishing or deleting?',
+            answer:
+              'Because TransformPipe says those tools change something outside the chat: publishing puts a page on the web, sharing with people sends an email, and deleting cannot be undone. ChatGPT asks you before each such call. Saving a private document, listing and reading publish nothing.',
+          },
+          {
+            question: 'How do I share ChatGPT’s output as a link?',
+            answer:
+              'Ask ChatGPT to share it. It asks you first, then saves the document, shares it and answers with the address: a finished page with headings, tables and code rendered, not raw Markdown. Share it with anyone who has the link, or only with the email addresses you name, and revoke it at any time.',
+          },
+          {
+            question: 'Are my documents used to train AI?',
+            answer:
+              'Not by TransformPipe. Documents you save are not read by us and are not used to train any model; they stay in your account, reachable by you and the assistants you connected, until you delete them. What ChatGPT does with the chat itself follows your ChatGPT data controls.',
+          },
+          {
+            question: 'What happens if I disconnect?',
+            answer:
+              'ChatGPT loses access at once when you disconnect it under MCP connector in your TransformPipe account menu. Your documents stay, and the links you already shared keep working until you revoke them. Adding the app again later picks up the same account.',
+          },
+          {
+            question: 'Does it work with Claude too?',
+            answer:
+              'Yes, with the same account. TransformPipe is listed in Claude’s connector directory, and a document saved from ChatGPT is there when Claude lists your documents, and the other way round.',
+          },
+          {
+            question: 'Is this made by OpenAI?',
+            answer:
+              'No. TransformPipe is an independent MCP server made by Raudar Labs, not an OpenAI product. ChatGPT connects to it the way it connects to any MCP app, using the standard sign-in the Model Context Protocol defines.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Try it on the next thing ChatGPT writes',
+        text: 'Add it under Plugins with the address below and ask ChatGPT to save its answer. It takes a minute.',
+      },
+      bottom: {
+        title: 'Your next document is being written in a chat right now',
+        text: 'Put it somewhere it will still be next week.',
+      },
+    },
+    action: 'Copy the address',
+    seo: {
+      title: 'Save and share what ChatGPT writes, as a link — TransformPipe',
+      description:
+        'Add TransformPipe to ChatGPT as an MCP app: it saves what ChatGPT writes to your account, keeps versions, and shares each document as a page.',
     },
   },
 };
