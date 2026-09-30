@@ -11,9 +11,14 @@
  * uploads the fixtures in scripts/fixtures, opens the tabs, and ticks the boxes. Nothing here is a
  * mock-up — if a screenshot looks wrong, the app looks wrong.
  */
+import { randomBytes, scryptSync } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { neon } from '@neondatabase/serverless';
+import { config } from 'dotenv';
 import puppeteer from 'puppeteer-core';
+
+config({ path: ['.env.local', '.env'], quiet: true });
 
 const args = process.argv.slice(2);
 const flag = (name, fallback) => {
@@ -240,6 +245,198 @@ async function capture(browser, theme) {
   await page.close();
 }
 
+/** One element, with room around it — a dialog or a tab, not the whole screen it sits on. */
+async function shootElement(page, name, theme, selector, pad = 24) {
+  const file = join(OUT, `${name}-${theme}.png`);
+
+  await hushToasts(page);
+
+  const box = await page.$eval(selector, (node) => {
+    const rect = node.getBoundingClientRect();
+
+    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+  });
+
+  await page.screenshot({
+    path: file,
+    clip: {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      width: box.width + pad * 2,
+      height: box.height + pad * 2,
+    },
+  });
+
+  console.log(`  ${name}-${theme}.png`);
+}
+
+/*
+ * The sharing shots: the Share dialog, the Views tab, and the page a link with a password opens on.
+ *
+ * The first two need somebody signed in, and a script cannot sign in — the account lives at the
+ * authentication provider. So for these two the app's own API answers are fixtures: every /api
+ * request is intercepted and answered with one document, its share and its opens, in the shapes
+ * the server sends. Everything on the screen is still the app drawing them; only the account is a
+ * stand-in. The password page needs nobody, and is the real route on a row made for the purpose.
+ */
+const SAMPLE_ID = '00000000-0000-4000-8000-000000000001';
+const SAMPLE_MARKDOWN = `# Q3 launch plan
+
+We are moving billing from Stripe to Paddle before the pricing change on 14 October.
+
+## Owners
+
+- Anna leads the migration and signs off each phase.
+- Marco writes the customer email, which goes out on 3 October.
+`;
+
+function sampleAnswer(url) {
+  const now = Date.now();
+  const at = (minutesAgo) => new Date(now - minutesAgo * 60_000).toISOString();
+  const document = {
+    id: SAMPLE_ID,
+    name: 'q3-launch-plan.md',
+    kind: 'markdown-to-html',
+    size: SAMPLE_MARKDOWN.length,
+    stats: { words: 36, headings: 2, tables: 0 },
+    created_at: at(60 * 26),
+  };
+
+  switch (url.pathname) {
+    case '/api/auth/get-session':
+      return {
+        user: { id: 'sample', name: 'Alex', email: 'alex@example.com', image: null, emailVerified: true },
+      };
+    case '/api/documents':
+      return { documents: [document] };
+    case `/api/documents/${SAMPLE_ID}`:
+      return { document: { ...document, markdown: SAMPLE_MARKDOWN } };
+    case `/api/documents/${SAMPLE_ID}/share`:
+      return {
+        mode: 'link',
+        token: 'q7XkP2vNcR9wLmT4hB8sJd',
+        emails: [],
+        expiresAt: new Date(now + 7 * 24 * 3_600_000).toISOString(),
+        views: 12,
+        lastViewedAt: at(38),
+        hasPassword: true,
+      };
+    case `/api/documents/${SAMPLE_ID}/views`:
+      return {
+        mode: 'people',
+        views: 5,
+        lastViewedAt: at(12),
+        limit: 200,
+        you: 'alex@example.com',
+        people: [
+          { email: 'anna@example.com', opens: 3, lastAt: at(12) },
+          { email: 'marco@example.com', opens: 0, lastAt: null },
+        ],
+        events: [
+          { at: at(12), via: 'page', who: 'anna@example.com' },
+          { at: at(95), via: 'app', who: 'anna@example.com' },
+          { at: at(180), via: 'page', who: 'alex@example.com' },
+          { at: at(60 * 24 + 20), via: 'page', who: 'anna@example.com' },
+          { at: at(60 * 24 + 65), via: 'page', who: 'alex@example.com' },
+        ],
+      };
+    case '/api/usage':
+      return {
+        bytes: SAMPLE_MARKDOWN.length,
+        documents: 1,
+        limits: { bytes: 100 * 1024 * 1024, documents: 500, documentBytes: 4 * 1024 * 1024 },
+      };
+    case '/api/shared-with-me':
+      return { documents: [] };
+    default:
+      // Everything else a signed-in app asks for — keys, grants, the usage counter — is empty.
+      return {};
+  }
+}
+
+async function sharingShots(browser, theme) {
+  console.log(`sharing, ${theme}:`);
+
+  const page = await browser.newPage();
+
+  await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 2 });
+  await page.setRequestInterception(true);
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+
+    if (!url.pathname.startsWith('/api/')) {
+      request.continue();
+
+      return;
+    }
+
+    request.respond({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(sampleAnswer(url)),
+    });
+  });
+
+  await page.goto(HOST, { waitUntil: 'networkidle2' });
+  await page.evaluate((value) => {
+    localStorage.setItem('m2h.theme', value);
+    localStorage.removeItem('md2html.history.v1');
+    localStorage.setItem(
+      'm2h.consent',
+      JSON.stringify({ version: 1, analytics: false, at: Date.now() })
+    );
+  }, theme);
+  await page.goto(`${HOST}/?doc=${SAMPLE_ID}`, { waitUntil: 'networkidle2' });
+  await settle(page, 900);
+
+  await clickText(page, 'button', 'Share');
+  await page.waitForSelector('[role="dialog"]');
+  await settle(page, 700);
+  await shootElement(page, 'share-dialog', theme, '[role="dialog"]');
+
+  await page.keyboard.press('Escape');
+  await settle(page, 500);
+  await clickText(page, 'button[role="tab"]', 'Views');
+  await settle(page, 900);
+  await shootElement(page, 'views-tab', theme, '[role="tabpanel"][data-state="active"]');
+
+  await page.close();
+}
+
+/** The form a reader meets, from the real route, on a row that exists for the length of one shot. */
+async function passwordShot(browser, theme) {
+  if (!process.env.DATABASE_URL) {
+    console.log('  share-password: skipped, no DATABASE_URL to make a protected link in');
+
+    return;
+  }
+
+  const sql = neon(process.env.DATABASE_URL);
+  const token = randomBytes(16).toString('base64url');
+  const salt = randomBytes(16);
+  const key = scryptSync('a sample password', salt, 32, { N: 16_384, r: 8, p: 1 });
+  const hash = `scrypt$16384$8$1$${salt.toString('base64url')}$${key.toString('base64url')}`;
+  const [row] = await sql`
+    insert into m2h_document (user_id, name, size, markdown, stats, share_mode, share_token, share_password_hash)
+    values (${randomBytes(16).toString('hex').replace(/^(.{8})(.{4})(.{4})(.{4})(.{12}).*$/, '$1-$2-$3-$4-$5')},
+            'q3-launch-plan.md', ${SAMPLE_MARKDOWN.length}, ${SAMPLE_MARKDOWN}, '{}'::jsonb, 'link', ${token}, ${hash})
+    returning id
+  `;
+
+  try {
+    const page = await browser.newPage();
+
+    await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 2 });
+    await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: theme }]);
+    await page.goto(`${HOST}/s/${token}`, { waitUntil: 'networkidle2' });
+    await settle(page, 400);
+    await shootElement(page, 'share-password', theme, 'form', 48);
+    await page.close();
+  } finally {
+    await sql`delete from m2h_document where id = ${row.id}`;
+  }
+}
+
 const browser = await puppeteer.launch({
   executablePath: chrome,
   headless: 'new',
@@ -251,13 +448,22 @@ const browser = await puppeteer.launch({
 const only = flag('only', '');
 
 try {
-  if (only !== 'pwa') {
+  if (only === 'sharing') {
     for (const theme of ['dark', 'light']) {
-      await capture(browser, theme);
+      await sharingShots(browser, theme);
+      await passwordShot(browser, theme);
     }
-  }
+  } else {
+    if (only !== 'pwa') {
+      for (const theme of ['dark', 'light']) {
+        await capture(browser, theme);
+        await sharingShots(browser, theme);
+        await passwordShot(browser, theme);
+      }
+    }
 
-  await pwaShot(browser);
+    await pwaShot(browser);
+  }
 } finally {
   await browser.close();
 }

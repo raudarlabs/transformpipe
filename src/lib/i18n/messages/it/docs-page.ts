@@ -60,6 +60,8 @@ export const docsPage = {
     'La scheda del sorgente HTML: quello che si ottiene, prima di ottenerlo.',
   'docs.converting.reading':
     'Per leggere, e non per controllare, l’anteprima va a schermo intero e mantiene una larghezza leggibile; Esc torna indietro. Un documento lungo fa comparire un pulsante per tornare in cima, in entrambe le viste.',
+  'docs.converting.summary':
+    'Un documento salvato ha anche una scheda {summary}: un paragrafo su che cos’è il documento e dove arriva, poi i suoi dettagli in un elenco, nella lingua del documento. Viene fatto una volta e conservato; Rigenera lo chiede di nuovo, entro un limite giornaliero per account.',
 
   /* The browser extension: the page you are on, converted where it already is. */
   /** `{html}` is the file extension the page can be saved as. */
@@ -102,7 +104,25 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Chiunque abbia il link',
   'docs.sharing.mode.people': 'Solo questi indirizzi',
   'docs.sharing.revoking':
-    'La revoca elimina il token, così un link già inviato smette di funzionare; condividendo di nuovo se ne genera uno diverso. Un link può anche avere una data di fine — dopo, la pagina dice che è scaduto, e una nuova data lo riapre. Un indirizzo aggiunto a una condivisione nominativa riceve un’email con il link. La finestra dice anche quante volte il link è stato aperto — aperture, non persone, comprese le tue. Un link può anche chiedere una password, impostata nella stessa finestra; viene conservata solo come hash, quindi si può cambiare ma mai più mostrare.',
+    'La revoca elimina il token, così un link già inviato smette di funzionare; condividendo di nuovo se ne genera uno diverso. Un indirizzo aggiunto a una condivisione nominativa riceve un’email con il link.',
+  'docs.sharing.expiry':
+    'Un link può avere una fine — tra un’ora, un giorno, una settimana o un mese, oppure in un giorno a scelta. Dopo, la pagina, entrambi i download e «Salva una copia» dicono che il link è scaduto; una nuova fine, o nessuna, riapre lo stesso link.',
+  'docs.sharing.shot.dialog.alt':
+    'La finestra Condividi con data di fine, password e numero di aperture',
+  'docs.sharing.shot.dialog.caption':
+    'Un link con data di fine e password.',
+  'docs.sharing.password':
+    'Un link può anche chiedere una password, di otto caratteri o più. Chi legge vede prima un piccolo modulo; la risposta giusta apre il documento e viene ricordata in quel browser per un giorno, e dopo dieci errori in un minuto deve aspettare. Viene conservata solo come hash, quindi si può cambiare o rimuovere ma mai mostrare, e una nuova password chiude di colpo ogni accesso precedente. A te, con l’accesso effettuato, non viene chiesta. Una condivisione con persone precise non prende password: ognuna accede con l’indirizzo che hai indicato, che è il più solido dei due controlli.',
+  'docs.sharing.shot.password.alt':
+    'Il modulo che un lettore vede prima che si apra un link con password',
+  'docs.sharing.shot.password.caption':
+    'Quello che il lettore vede per primo.',
+  'docs.sharing.views':
+    'La finestra dice quante volte il link è stato aperto, e la scheda {views} accanto a Controllo elenca ogni apertura, la più recente per prima, indicando se era la pagina condivisa o l’app. Conta le aperture, non le persone, comprese le tue, e un link che chiunque può aprire non registra nulla su chi l’ha aperto. Per una condivisione con persone precise dice anche chi era — ogni indirizzo con le sue aperture, o che non l’ha ancora aperto — e la pagina che leggono dice loro che il proprietario lo vede.',
+  'docs.sharing.shot.views.alt':
+    'La scheda Visualizzazioni che mostra quale di due persone indicate ha aperto un documento, e quando',
+  'docs.sharing.shot.views.caption':
+    'Chi l’ha aperto, e quando.',
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     'I documenti che altre persone hanno indirizzato a te compaiono sotto il filtro {shared}, con il nome di chi li ha condivisi. Sono in sola lettura: si aprono e si scaricano, non si eliminano e non si ricondividono. Una condivisione per link appartiene a chi ha il link, quindi non compare nell’elenco di nessuno.',
@@ -128,7 +148,10 @@ export const docsPage = {
   'docs.api.one': 'I metadati e il sorgente Markdown.',
   'docs.api.html': 'Il documento autosufficiente. {theme} è opzionale.',
   'docs.api.delete': 'Elimina la riga e il sorgente conservato.',
-  'docs.api.share': '{modes}. {private} elimina il token. {expiry} è una data e ora ISO 8601, oppure null per nessuna fine.',
+  'docs.api.share':
+    '{modes}. {private} elimina il token. {expiry} è una data e ora ISO 8601, oppure null per nessuna fine. {password} ne imposta una su un link, solo nel corpo, e null la rimuove.',
+  'docs.api.views':
+    'Le aperture recenti del link, la più recente per prima, ognuna con {who} quando il documento è condiviso con persone precise.',
   'docs.api.usage': 'Quanto sta usando l’account, rispetto ai limiti.',
   /** `{shape}` is the error body itself. */
   'docs.api.errors':

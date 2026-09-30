@@ -66,6 +66,8 @@ export const docsPage = {
     'L’onglet source HTML : ce que vous obtenez, avant de l’obtenir.',
   'docs.converting.reading':
     'Pour lire plutôt que pour vérifier, l’aperçu passe en plein écran et garde une largeur lisible ; Échap revient en arrière. Un long document se dote d’un bouton de retour en haut, dans les deux vues.',
+  'docs.converting.summary':
+    'Un document enregistré a aussi un onglet {summary} : un paragraphe sur ce qu’est le document et où il aboutit, puis ses points précis sous forme de liste, dans la langue du document. Il est fait une fois et conservé ; Régénérer redemande, dans une limite quotidienne par compte.',
 
   /* The browser extension: the page you are on, converted where it already is. */
   /** `{html}` is the file extension the page can be saved as. */
@@ -109,7 +111,25 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Toute personne ayant le lien',
   'docs.sharing.mode.people': 'Seulement ces adresses',
   'docs.sharing.revoking':
-    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Un lien peut aussi recevoir une date de fin — ensuite, la page indique qu’il a expiré, et une nouvelle date le rouvre. Une adresse ajoutée à un partage nominatif reçoit un e-mail avec le lien. La fenêtre indique aussi combien de fois le lien a été ouvert — des ouvertures, pas des personnes, les vôtres comprises. Un lien peut aussi demander un mot de passe, défini dans la même fenêtre ; il n’est gardé que sous forme d’empreinte, donc on peut le changer mais jamais le réafficher.',
+    'La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner ; partager à nouveau en frappe un autre. Une adresse ajoutée à un partage nominatif reçoit un e-mail avec le lien.',
+  'docs.sharing.expiry':
+    'Un lien peut recevoir une fin — dans une heure, un jour, une semaine ou un mois, ou à une date choisie. Ensuite, la page, les deux téléchargements et « Enregistrer une copie » indiquent que le lien a expiré ; une nouvelle fin, ou aucune, rouvre le même lien.',
+  'docs.sharing.shot.dialog.alt':
+    'La fenêtre Partager avec une date de fin, un mot de passe et le nombre d’ouvertures',
+  'docs.sharing.shot.dialog.caption':
+    'Un lien avec une date de fin et un mot de passe.',
+  'docs.sharing.password':
+    'Un lien peut aussi demander un mot de passe, de huit caractères ou plus. Le lecteur voit d’abord un petit formulaire ; la bonne réponse ouvre le document et reste mémorisée dans ce navigateur pendant une journée, et après dix erreurs en une minute il doit patienter. Il n’est gardé que sous forme d’empreinte : on peut le changer ou le retirer, jamais l’afficher, et un nouveau mot de passe met fin d’un coup à toutes les saisies précédentes. Vous, connecté, n’êtes pas sollicité. Un partage avec des personnes précises ne prend pas de mot de passe : chacune se connecte avec l’adresse que vous avez donnée, ce qui est la plus solide des deux vérifications.',
+  'docs.sharing.shot.password.alt':
+    'Le formulaire qu’un lecteur voit avant l’ouverture d’un lien protégé par un mot de passe',
+  'docs.sharing.shot.password.caption':
+    'Ce que le lecteur voit en premier.',
+  'docs.sharing.views':
+    'La fenêtre indique combien de fois le lien a été ouvert, et l’onglet {views} à côté de Vérifier liste chaque ouverture, la plus récente d’abord, en précisant s’il s’agissait de la page partagée ou de l’application. On compte des ouvertures, pas des personnes, les vôtres comprises, et un lien que tout le monde peut ouvrir n’enregistre rien sur qui l’a ouvert. Pour un partage avec des personnes précises, il dit aussi laquelle c’était — chaque adresse avec ses ouvertures, ou le fait qu’elle ne l’a pas encore ouvert — et la page qu’elles lisent leur dit que le propriétaire le voit.',
+  'docs.sharing.shot.views.alt':
+    'L’onglet Vues indiquant laquelle de deux personnes nommées a ouvert un document, et quand',
+  'docs.sharing.shot.views.caption':
+    'Qui l’a ouvert, et quand.',
   /** `{shared}` est le filtre nommé dans `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Les documents que d’autres vous ont adressés apparaissent sous le filtre {shared}, avec le nom de qui a partagé chacun. Ils sont en lecture seule : ouvrir et télécharger, pas de suppression, pas de repartage. Un partage par lien appartient à qui détient le lien, il n’apparaît donc sur la liste de personne.',
@@ -136,7 +156,10 @@ export const docsPage = {
   'docs.api.one': 'Les métadonnées et la source Markdown.',
   'docs.api.html': 'Le document autonome. {theme} en option.',
   'docs.api.delete': 'Retire la ligne et sa source conservée.',
-  'docs.api.share': '{modes}. {private} abandonne le jeton. {expiry} est une date-heure ISO 8601, ou null pour aucune fin.',
+  'docs.api.share':
+    '{modes}. {private} abandonne le jeton. {expiry} est une date-heure ISO 8601, ou null pour aucune fin. {password} en pose un sur un lien, dans le corps uniquement, et null le retire.',
+  'docs.api.views':
+    'Les ouvertures récentes du lien, la plus récente d’abord, chacune avec {who} quand le document est partagé avec des personnes précises.',
   'docs.api.usage': 'Ce que le compte utilise, face aux limites.',
   /** `{shape}` est le corps d’erreur lui-même. */
   'docs.api.errors':

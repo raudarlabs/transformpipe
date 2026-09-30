@@ -35,7 +35,7 @@ export const docs: Content['docs'] = {
   sharing: {
     title: 'Sharing',
     summary:
-      'A link anyone can open, or named addresses that ask the reader to sign in. Revoking drops the token, so a link already sent stops working. A link can be set to stop working on a date.',
+      'A link anyone can open, or named addresses that ask the reader to sign in. Revoking drops the token, so a link already sent stops working. A link can end on a date or ask for a password, and the Views tab lists every open — and, for named people, which of them it was.',
   },
   account: {
     title: 'Account',

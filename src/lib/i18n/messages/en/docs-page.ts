@@ -78,6 +78,8 @@ export const docsPage = {
     'The HTML source tab: what you get, before you get it.',
   'docs.converting.reading':
     'For reading rather than checking, the preview goes fullscreen and keeps a readable measure; Escape comes back. A long document grows a back-to-top button, in both views.',
+  'docs.converting.summary':
+    'A saved document also has an {summary} tab: a paragraph on what the document is and where it lands, then its specifics as a list, in the document\'s own language. It is made once and kept; Regenerate asks again, within a daily limit per account.',
 
   /* The browser extension: the page you are on, converted where it already is. */
   /** `{html}` is the file extension the page can be saved as. */
@@ -120,7 +122,25 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Anyone with the link',
   'docs.sharing.mode.people': 'Only these addresses',
   'docs.sharing.revoking':
-    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. A link can also be given an end date — after it, the page says the link has expired, and a new date opens it again. Adding an address to a named share emails that person a notice with the link. The dialog also says how many times the link has been opened — opens rather than people, yours among them. A link can also ask for a password, set in the same dialog; it is kept only as a hash, so it can be changed but never shown again.',
+    'Revoking drops the token, so a link you already sent stops working; sharing again mints a different one. Adding an address to a named share emails that person a notice with the link.',
+  'docs.sharing.expiry':
+    'A link can be given an end — in an hour, a day, a week or a month, or on a day you pick. After it, the page, both downloads and Save a copy say the link has expired; a new end, or none, opens the same link again.',
+  'docs.sharing.shot.dialog.alt':
+    'The Share dialog with an end date, a password and the number of opens',
+  'docs.sharing.shot.dialog.caption':
+    'A link with an end date and a password.',
+  'docs.sharing.password':
+    'A link can also ask for a password, eight characters or more. The reader meets a small form first; the right answer opens the document and is remembered in that browser for a day, and ten wrong ones in a minute are asked to wait. It is kept only as a hash, so it can be changed or removed but never shown, and a new password ends every earlier entry at once. You, signed in, are not asked. A share with specific people takes no password: each of them signs in as the address you gave, which is the stronger check of the two.',
+  'docs.sharing.shot.password.alt':
+    'The form a reader sees before a link with a password opens',
+  'docs.sharing.shot.password.caption':
+    'What the reader sees first.',
+  'docs.sharing.views':
+    'The dialog says how many times the link has been opened, and the {views} tab beside Check lists every open, newest first, with whether it was the shared page or the app. It counts opens, not people, yours among them, and a link anyone can open records nothing about who opened it. For a share with specific people it also says which of them it was — each address with its opens, or that it has not opened it yet — and the page they read tells them the owner can see this.',
+  'docs.sharing.shot.views.alt':
+    'The Views tab listing which of two named people opened a document, and when',
+  'docs.sharing.shot.views.caption':
+    'Who opened it, and when.',
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     "Documents other people addressed to you appear under the {shared} chip, with who shared each one. They are read-only: open and download, no delete, no re-share. A link share belongs to whoever holds the link, so it appears on no one's list.",
@@ -146,7 +166,10 @@ export const docsPage = {
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
   'docs.api.delete': 'Removes the row and its stored source.',
-  'docs.api.share': '{modes}. {private} drops the token. {expiry} is an ISO 8601 date-time, or null for no end.',
+  'docs.api.share':
+    '{modes}. {private} drops the token. {expiry} is an ISO 8601 date-time, or null for no end. {password} sets one on a link, in the body only, and null removes it.',
+  'docs.api.views':
+    'The link\'s recent opens, newest first, each with {who} when the document is shared with specific people.',
   'docs.api.usage': 'What the account is using, against the limits.',
   /** `{shape}` is the error body itself. */
   'docs.api.errors':

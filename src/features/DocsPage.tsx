@@ -293,6 +293,12 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             caption={t('docs.converting.shot.source.caption')}
           />
           <p>{t('docs.converting.reading')}</p>
+          <p>
+            <Rich
+              text={t('docs.converting.summary')}
+              parts={{ summary: <strong>{t('converter.tab.summary')}</strong> }}
+            />
+          </p>
         </Section>
 
         {/*
@@ -366,6 +372,29 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             />
           </p>
           <p>{t('docs.sharing.revoking')}</p>
+          <p>{t('docs.sharing.expiry')}</p>
+          <Shot
+            name="share-dialog"
+            alt={t('docs.sharing.shot.dialog.alt')}
+            caption={t('docs.sharing.shot.dialog.caption')}
+          />
+          <p>{t('docs.sharing.password')}</p>
+          <Shot
+            name="share-password"
+            alt={t('docs.sharing.shot.password.alt')}
+            caption={t('docs.sharing.shot.password.caption')}
+          />
+          <p>
+            <Rich
+              text={t('docs.sharing.views')}
+              parts={{ views: <strong>{t('converter.tab.views')}</strong> }}
+            />
+          </p>
+          <Shot
+            name="views-tab"
+            alt={t('docs.sharing.shot.views.alt')}
+            caption={t('docs.sharing.shot.views.caption')}
+          />
           <p>
             <Rich
               text={t('docs.sharing.incoming')}
@@ -461,10 +490,21 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
                   <Rich
                     text={t('docs.api.share')}
                     parts={{
-                      modes: <InlineCode>{'{mode, emails[], expires_at}'}</InlineCode>,
+                      modes: <InlineCode>{'{mode, emails[], expires_at, password}'}</InlineCode>,
                       private: <InlineCode>private</InlineCode>,
                       expiry: <InlineCode>expires_at</InlineCode>,
+                      password: <InlineCode>password</InlineCode>,
                     }}
+                  />
+                ),
+              },
+              {
+                key: 'views',
+                term: <InlineCode>GET /api/v1/documents/:id/views</InlineCode>,
+                text: (
+                  <Rich
+                    text={t('docs.api.views')}
+                    parts={{ who: <InlineCode>who</InlineCode> }}
                   />
                 ),
               },

@@ -80,6 +80,8 @@ export const docsPage = {
     'Der Reiter HTML-Quelltext: was man bekommt, bevor man es bekommt.',
   'docs.converting.reading':
     'Zum Lesen statt zum Prüfen geht die Vorschau ins Vollbild und behält eine lesbare Zeilenbreite; Escape kommt zurück. Ein langes Dokument bekommt in beiden Ansichten eine Schaltfläche nach oben.',
+  'docs.converting.summary':
+    'Ein gespeichertes Dokument hat außerdem einen Tab {summary}: ein Absatz dazu, was das Dokument ist und worauf es hinausläuft, dann seine Einzelheiten als Liste, in der Sprache des Dokuments. Sie wird einmal erstellt und aufbewahrt; „Neu erstellen“ fragt erneut, innerhalb eines Tageslimits pro Konto.',
 
   /* The browser extension: the page you are on, converted where it already is. */
   /** `{html}` is the file extension the page can be saved as. */
@@ -123,7 +125,25 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Alle mit dem Link',
   'docs.sharing.mode.people': 'Nur diese Adressen',
   'docs.sharing.revoking':
-    'Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren; erneutes Teilen prägt ein anderes. Ein Link kann auch ein Enddatum bekommen — danach meldet die Seite, dass er abgelaufen ist, und ein neues Datum öffnet ihn wieder. Wer einer Freigabe für benannte Adressen hinzugefügt wird, erhält eine E-Mail mit dem Link. Der Dialog zeigt außerdem, wie oft der Link geöffnet wurde — Aufrufe, nicht Personen, Ihre eigenen eingeschlossen. Ein Link kann auch nach einem Passwort fragen, das im selben Dialog festgelegt wird; es wird nur als Hash gespeichert, lässt sich also ändern, aber nie wieder anzeigen.',
+    'Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren; erneutes Teilen prägt ein anderes. Wer einer Freigabe für benannte Adressen hinzugefügt wird, erhält eine E-Mail mit dem Link.',
+  'docs.sharing.expiry':
+    'Ein Link kann ein Ende bekommen — in einer Stunde, einem Tag, einer Woche oder einem Monat, oder an einem Tag Ihrer Wahl. Danach melden die Seite, beide Downloads und „Kopie speichern“, dass der Link abgelaufen ist; ein neues Ende oder keines öffnet denselben Link wieder.',
+  'docs.sharing.shot.dialog.alt':
+    'Der Teilen-Dialog mit Enddatum, Passwort und der Zahl der Aufrufe',
+  'docs.sharing.shot.dialog.caption':
+    'Ein Link mit Enddatum und Passwort.',
+  'docs.sharing.password':
+    'Ein Link kann auch nach einem Passwort fragen, mindestens acht Zeichen. Der Leser sieht zuerst ein kleines Formular; die richtige Antwort öffnet das Dokument und wird in diesem Browser einen Tag lang gemerkt, und nach zehn falschen in einer Minute heißt es warten. Es wird nur als Hash gespeichert, lässt sich also ändern oder entfernen, aber nie anzeigen, und ein neues Passwort beendet jede frühere Eingabe sofort. Sie selbst werden, angemeldet, nicht gefragt. Eine Freigabe für bestimmte Personen nimmt kein Passwort: Jede von ihnen meldet sich mit der Adresse an, die Sie angegeben haben, und das ist die stärkere der beiden Prüfungen.',
+  'docs.sharing.shot.password.alt':
+    'Das Formular, das ein Leser vor einem Link mit Passwort sieht',
+  'docs.sharing.shot.password.caption':
+    'Was der Leser zuerst sieht.',
+  'docs.sharing.views':
+    'Der Dialog zeigt, wie oft der Link geöffnet wurde, und der Tab {views} neben „Prüfen“ listet jeden Aufruf, der neueste zuerst, mit der Angabe, ob es die geteilte Seite oder die App war. Gezählt werden Aufrufe, nicht Personen, Ihre eigenen eingeschlossen, und ein Link, den jeder öffnen kann, hält nichts darüber fest, wer ihn geöffnet hat. Bei einer Freigabe für bestimmte Personen steht außerdem, wer es war — jede Adresse mit ihren Aufrufen oder dem Hinweis, dass sie ihn noch nicht geöffnet hat —, und die Seite, die sie lesen, sagt ihnen, dass der Besitzer das sieht.',
+  'docs.sharing.shot.views.alt':
+    'Der Tab Aufrufe zeigt, welche von zwei benannten Personen ein Dokument geöffnet hat und wann',
+  'docs.sharing.shot.views.caption':
+    'Wer es geöffnet hat, und wann.',
   /** `{shared}` ist der Chip, den `docs.chip.shared` benennt. */
   'docs.sharing.incoming':
     'Dokumente, die andere an eine Adresse gerichtet haben, erscheinen unter dem Chip {shared}, samt der Angabe, wer sie geteilt hat. Sie sind nur zum Lesen: öffnen und herunterladen, kein Löschen, kein Weiterteilen. Eine Link-Freigabe gehört dem, der den Link hat, und erscheint darum auf niemandes Liste.',
@@ -150,7 +170,10 @@ export const docsPage = {
   'docs.api.one': 'Metadaten und der Markdown-Quelltext.',
   'docs.api.html': 'Das eigenständige Dokument. {theme} optional.',
   'docs.api.delete': 'Entfernt die Zeile und die gespeicherte Quelle.',
-  'docs.api.share': '{modes}. {private} verwirft das Token. {expiry} ist ein Zeitpunkt nach ISO 8601 oder null für kein Ende.',
+  'docs.api.share':
+    '{modes}. {private} verwirft das Token. {expiry} ist ein Zeitpunkt nach ISO 8601 oder null für kein Ende. {password} setzt eines auf einen Link, nur im Body, und null entfernt es.',
+  'docs.api.views':
+    'Die letzten Aufrufe des Links, der neueste zuerst, jeder mit {who}, wenn das Dokument mit bestimmten Personen geteilt ist.',
   'docs.api.usage': 'Was das Konto belegt, gemessen an den Grenzen.',
   /** `{shape}` ist der Fehler-Body selbst. */
   'docs.api.errors':

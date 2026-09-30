@@ -67,6 +67,8 @@ export const docsPage = {
     'La pestaña de código HTML: lo que vas a obtener, antes de obtenerlo.',
   'docs.converting.reading':
     'Para leer, más que para revisar, la vista previa pasa a pantalla completa y mantiene un ancho de lectura cómodo; Escape vuelve atrás. Un documento largo gana un botón para volver arriba, en las dos vistas.',
+  'docs.converting.summary':
+    'Un documento guardado tiene además una pestaña {summary}: un párrafo sobre qué es el documento y a dónde llega, y luego sus detalles en una lista, en el idioma del documento. Se hace una vez y se guarda; Regenerar vuelve a pedirlo, dentro de un límite diario por cuenta.',
 
   /* The browser extension: the page you are on, converted where it already is. */
   /** `{html}` is the file extension the page can be saved as. */
@@ -109,7 +111,25 @@ export const docsPage = {
   'docs.sharing.mode.link': 'Cualquiera con el enlace',
   'docs.sharing.mode.people': 'Solo estas direcciones',
   'docs.sharing.revoking':
-    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. Un enlace también puede tener fecha de fin — después, la página dice que ha caducado, y una nueva fecha lo reabre. Una dirección añadida a un enlace para personas concretas recibe un correo con el enlace. El diálogo también dice cuántas veces se ha abierto el enlace — aperturas, no personas, las tuyas incluidas. Un enlace también puede pedir una contraseña, que se fija en el mismo diálogo; solo se guarda como hash, así que se puede cambiar pero nunca volver a mostrar.',
+    'Revocar descarta el token, así que un enlace ya enviado deja de funcionar; volver a compartir acuña otro distinto. Una dirección añadida a un enlace para personas concretas recibe un correo con el enlace.',
+  'docs.sharing.expiry':
+    'Un enlace puede tener un final — en una hora, un día, una semana o un mes, o en un día que elijas. Después, la página, las dos descargas y «Guardar una copia» dicen que el enlace ha caducado; un final nuevo, o ninguno, vuelve a abrir el mismo enlace.',
+  'docs.sharing.shot.dialog.alt':
+    'El diálogo Compartir con fecha de fin, contraseña y número de aperturas',
+  'docs.sharing.shot.dialog.caption':
+    'Un enlace con fecha de fin y contraseña.',
+  'docs.sharing.password':
+    'Un enlace también puede pedir una contraseña, de ocho caracteres o más. Quien lo lee ve primero un pequeño formulario; la respuesta correcta abre el documento y se recuerda en ese navegador durante un día, y tras diez errores en un minuto tendrá que esperar. Solo se guarda como hash, así que se puede cambiar o quitar pero nunca mostrar, y una contraseña nueva termina de golpe con todas las entradas anteriores. A ti, con la sesión iniciada, no te la pide. Un enlace para personas concretas no lleva contraseña: cada una inicia sesión con la dirección que diste, que es la más fuerte de las dos comprobaciones.',
+  'docs.sharing.shot.password.alt':
+    'El formulario que ve un lector antes de que se abra un enlace con contraseña',
+  'docs.sharing.shot.password.caption':
+    'Lo primero que ve el lector.',
+  'docs.sharing.views':
+    'El diálogo dice cuántas veces se ha abierto el enlace, y la pestaña {views} junto a Comprobar lista cada apertura, la más reciente primero, indicando si fue la página compartida o la app. Cuenta aperturas, no personas, las tuyas incluidas, y un enlace que cualquiera puede abrir no registra nada sobre quién lo abrió. Para un enlace con personas concretas dice además cuál fue — cada dirección con sus aperturas, o que aún no lo ha abierto — y la página que leen les dice que el propietario puede verlo.',
+  'docs.sharing.shot.views.alt':
+    'La pestaña Vistas mostrando cuál de dos personas nombradas abrió un documento, y cuándo',
+  'docs.sharing.shot.views.caption':
+    'Quién lo abrió, y cuándo.',
   /** `{shared}` es el filtro que nombra `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Los documentos que otras personas te han dirigido aparecen bajo el filtro {shared}, con quién ha compartido cada uno. Son de solo lectura: abrir y descargar, sin eliminar y sin volver a compartir. Un enlace compartido pertenece a quien lo tenga, así que no aparece en la lista de nadie.',
@@ -135,7 +155,10 @@ export const docsPage = {
   'docs.api.one': 'Los metadatos y el Markdown de origen.',
   'docs.api.html': 'El documento autónomo. {theme} es opcional.',
   'docs.api.delete': 'Elimina la fila y el original guardado.',
-  'docs.api.share': '{modes}. {private} descarta el token. {expiry} es una fecha y hora ISO 8601, o null para ninguna fecha de fin.',
+  'docs.api.share':
+    '{modes}. {private} descarta el token. {expiry} es una fecha y hora ISO 8601, o null para ninguna fecha de fin. {password} pone una en un enlace, solo en el cuerpo, y null la quita.',
+  'docs.api.views':
+    'Las aperturas recientes del enlace, la más reciente primero, cada una con {who} cuando el documento se comparte con personas concretas.',
   'docs.api.usage': 'Lo que está usando la cuenta, frente a los límites.',
   /** `{shape}` es el cuerpo del error mismo. */
   'docs.api.errors':

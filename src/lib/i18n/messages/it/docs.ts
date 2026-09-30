@@ -32,7 +32,7 @@ export const docs: Content['docs'] = {
   sharing: {
     title: 'Condivisione',
     summary:
-      'Un link che chiunque può aprire, oppure indirizzi indicati per nome che chiedono al lettore di accedere. La revoca elimina il token, così un link già inviato smette di funzionare. Un link può smettere di funzionare a una data scelta.',
+      'Un link che chiunque può aprire, oppure indirizzi indicati per nome che chiedono al lettore di accedere. La revoca elimina il token, così un link già inviato smette di funzionare. Un link può finire a una data o chiedere una password, e la scheda Visualizzazioni elenca ogni apertura — e, per persone indicate, chi era.',
   },
   account: {
     title: 'Account',
