@@ -30,7 +30,9 @@ import { createHash } from 'node:crypto';
  * button use ChatGPT's own calls when it offers them.
  *
  * Spliced into all three pages, so they cannot drift apart; a host without `window.openai`
- * skips every line of it.
+ * skips every line of it. `reportSize` rides along for the same reason: the extension's hosts
+ * size the frame from `ui/notifications/size-changed`, which the SDK sends by default and these
+ * pages, written without it, never did.
  */
 const OPENAI_BRIDGE = `
   const openai = () => window.openai || null;
@@ -53,6 +55,35 @@ const OPENAI_BRIDGE = `
 
   window.addEventListener('openai:set_globals', fromOpenAI);
   fromOpenAI();
+
+  /*
+   * The page's height, to a host that sizes the frame from it — once, and on every change.
+   * Measured the way the SDK measures it: the frame's own height would come back otherwise, and a
+   * frame told it is exactly as tall as it already is never grows.
+   */
+  const reportSize = () => {
+    let queued = false;
+    let last = '';
+    const send = () => {
+      queued = false;
+      const root = document.documentElement;
+      const was = root.style.height;
+      root.style.height = 'max-content';
+      const height = Math.ceil(root.getBoundingClientRect().height);
+      root.style.height = was;
+      const width = Math.ceil(window.innerWidth);
+      if (last === width + 'x' + height) return;
+      last = width + 'x' + height;
+      notify('ui/notifications/size-changed', { width, height });
+    };
+    const soon = () => { if (!queued) { queued = true; requestAnimationFrame(send); } };
+    if (typeof ResizeObserver === 'function') {
+      const watch = new ResizeObserver(soon);
+      watch.observe(document.documentElement);
+      watch.observe(document.body);
+    }
+    soon();
+  };
 `;
 
 export const DOCUMENT_CARD_HTML = `<!doctype html>
@@ -247,14 +278,18 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
 ${OPENAI_BRIDGE}
   request('ui/initialize', {
-    capabilities: {},
-    clientInfo: { name: 'TransformPipe document card', version: '1.0.0' },
+    appInfo: { name: 'TransformPipe document card', version: '1.1.0' },
+    appCapabilities: {},
     protocolVersion: '2026-01-26',
+    /* The draft's names, for a host that predates appInfo. */
+    clientInfo: { name: 'TransformPipe document card', version: '1.1.0' },
+    capabilities: {},
   })
     .then((result) => {
       const theme = result && result.hostContext && result.hostContext.theme;
       if (theme) document.documentElement.dataset.theme = theme;
       notify('ui/notifications/initialized');
+      reportSize();
     })
     .catch(() => {
       /* A host that does not speak this leaves the sentence the model was given, which says it all
@@ -450,14 +485,18 @@ button.row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px
 
 ${OPENAI_BRIDGE}
   request('ui/initialize', {
-    capabilities: {},
-    clientInfo: { name: 'TransformPipe document list', version: '1.0.0' },
+    appInfo: { name: 'TransformPipe document list', version: '1.1.0' },
+    appCapabilities: {},
     protocolVersion: '2026-01-26',
+    /* The draft's names, for a host that predates appInfo. */
+    clientInfo: { name: 'TransformPipe document list', version: '1.1.0' },
+    capabilities: {},
   })
     .then((result) => {
       const theme = result && result.hostContext && result.hostContext.theme;
       if (theme) document.documentElement.dataset.theme = theme;
       notify('ui/notifications/initialized');
+      reportSize();
     })
     .catch(() => {
       /* The text answer stands on its own; a host that cannot draw this loses nothing. */
@@ -657,15 +696,19 @@ button[disabled] { opacity: 0.6; cursor: default; }
 
 ${OPENAI_BRIDGE}
   request('ui/initialize', {
-    capabilities: {},
-    clientInfo: { name: 'TransformPipe delete confirmation', version: '1.0.0' },
+    appInfo: { name: 'TransformPipe delete confirmation', version: '1.1.0' },
+    appCapabilities: {},
     protocolVersion: '2026-01-26',
+    /* The draft's names, for a host that predates appInfo. */
+    clientInfo: { name: 'TransformPipe delete confirmation', version: '1.1.0' },
+    capabilities: {},
   })
     .then((result) => {
       const theme = result && result.hostContext && result.hostContext.theme;
       if (theme) document.documentElement.dataset.theme = theme;
       canCallTools = canCallTools || Boolean(result && result.hostCapabilities && result.hostCapabilities.serverTools);
       notify('ui/notifications/initialized');
+      reportSize();
     })
     .catch(() => {
       /* The refusal the model was given says the same thing in words. */
