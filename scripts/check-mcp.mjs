@@ -225,6 +225,57 @@ check(
   pendingRow.length === 1 && pendingRow[0].params.client_id === client.client_id
 );
 
+/*
+ * A state is the client's and comes back exactly as it went. OpenAI's is base64 of a JSON object,
+ * several hundred characters long; it was cut to 500 once, and ChatGPT read back JSON ending
+ * mid-string after the person had already approved. The parked row is what the approval sends back.
+ */
+const longState = `openai_platform_oauth_relay__${Buffer.from(
+  JSON.stringify({ oauth_id: 'oauth_s_x', back: `https://platform.openai.com/${'a'.repeat(900)}` })
+).toString('base64url')}`;
+
+const parkedLong = await authorize({
+  client_id: client.client_id,
+  redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+  state: longState,
+});
+const parkedLongId = new URL(parkedLong.headers.get('location') ?? '/', HOST).searchParams.get('connect');
+const parkedLongRow = await sql`select params from m2h_oauth_pending where id = ${parkedLongId}`;
+check(
+  `a ${longState.length}-character state is kept whole for the way back`,
+  parkedLongRow[0]?.params?.state === longState,
+  `kept ${parkedLongRow[0]?.params?.state?.length ?? 0} characters`
+);
+
+const bouncedLong = await authorize({
+  client_id: client.client_id,
+  redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
+  response_type: 'code',
+  state: longState,
+});
+check(
+  'and a refusal hands it back whole too',
+  new URL(bouncedLong.headers.get('location') ?? 'x:/').searchParams.get('state') === longState
+);
+
+const overlong = await authorize({
+  client_id: client.client_id,
+  redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
+  response_type: 'code',
+  code_challenge: 'x'.repeat(43),
+  code_challenge_method: 'S256',
+  state: 's'.repeat(4097),
+});
+const overlongTo = new URL(overlong.headers.get('location') ?? 'x:/');
+check(
+  'a state past the limit is refused rather than cut, and not echoed',
+  overlongTo.searchParams.get('error') === 'invalid_request' && !overlongTo.searchParams.has('state'),
+  overlongTo.toString().slice(0, 160)
+);
+
 console.log('\n— the Connect button');
 
 /*

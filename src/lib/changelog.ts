@@ -114,10 +114,11 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
-    title: 'Connecting from ChatGPT gets past “Unknown client”',
+    title: 'Connecting from ChatGPT no longer fails',
     body:
-      'Adding TransformPipe as a connector in ChatGPT stopped at “Unknown client” before sign-in. '
-      + 'It now goes on to sign-in and the screen where you approve the connection.',
+      'Adding TransformPipe as a connector in ChatGPT stopped at “Unknown client” before sign-in, '
+      + 'and once that was fixed, failed after you approved it with an error about JSON — '
+      + 'TransformPipe was handing back a shortened copy of what ChatGPT had sent. Both are fixed.',
   },
   {
     date: '2026-09-30',

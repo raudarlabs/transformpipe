@@ -48,6 +48,13 @@ const PENDING_TTL = 30 * 60;
 /** Ten is generous for a real client and stops one registration carrying a list of a thousand. */
 const MAX_REDIRECT_URIS = 10;
 
+/**
+ * The longest `state` taken, and it is refused past this rather than cut: a shortened state is a
+ * different state, and the client finds out only once it cannot read its own. OpenAI's is several
+ * hundred characters; this leaves room and still fits a redirect in any header limit.
+ */
+const MAX_STATE = 4096;
+
 export const SCOPES = ['documents:read', 'documents:write'] as const;
 export const SCOPE = SCOPES.join(' ');
 
@@ -249,7 +256,13 @@ function readAuthorizeParams(query: URLSearchParams): AuthorizeParams {
     // refuses anything longer than this before it fetches.
     client_id: clean(query.get('client_id'), 512),
     redirect_uri: clean(query.get('redirect_uri'), 500),
-    state: clean(query.get('state'), 500),
+    /*
+     * Not cleaned, and above all not shortened: `state` is the client's, and RFC 6749 has it come
+     * back exactly as it went out. It was cut to 500 characters once, and OpenAI's is longer —
+     * base64 of a JSON object, which arrived back as JSON ending mid-string, and connecting failed
+     * after the person had already approved it. Too long or unprintable is refused below instead.
+     */
+    state: query.get('state') ?? '',
     code_challenge: clean(query.get('code_challenge'), 200),
     code_challenge_method: clean(query.get('code_challenge_method'), 20),
     response_type: clean(query.get('response_type') ?? 'code', 20),
@@ -757,6 +770,19 @@ oauth.get('/authorize', async (c) => {
       params,
       'unsupported_response_type',
       'Only the authorization code flow is supported.'
+    );
+  }
+
+  /*
+   * Refused, and sent back without it: echoing a state we will not keep would be keeping it. The
+   * control characters would not survive the table either — Postgres keeps no NUL in `jsonb`.
+   */
+  if (params.state.length > MAX_STATE || /[\u0000-\u001f\u007f]/.test(params.state)) {
+    return bounce(
+      c,
+      { ...params, state: '' },
+      'invalid_request',
+      `state must be printable and at most ${MAX_STATE} characters.`
     );
   }
 
