@@ -115,7 +115,16 @@ export async function shareGate(c: Context, token: string): Promise<ShareVerdict
 
   const locked = row.share_mode === 'link' && Boolean(row.share_password_hash);
 
-  if (locked && !unlocked(token, row.share_password_hash!, getCookie(c, unlockCookie(token)))) {
+  /*
+   * The owner is never asked for their own password. Checked only when the cookie has not already
+   * answered, and `currentUser` returns at once when there is no session cookie at all, so a
+   * stranger at the form costs no call to the auth service.
+   */
+  if (
+    locked &&
+    !unlocked(token, row.share_password_hash!, getCookie(c, unlockCookie(token))) &&
+    (await currentUser(c))?.id !== row.user_id
+  ) {
     return { ok: false, why: 'password', hash: row.share_password_hash! };
   }
 

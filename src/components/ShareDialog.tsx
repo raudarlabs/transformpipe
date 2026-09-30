@@ -90,12 +90,16 @@ const endOfDay = (day: string) => {
   return new Date(year, month - 1, date, 23, 59, 59).toISOString();
 };
 
+/** One line of the link's settings: its name on the left, its control on the right. */
+const settingRow = 'flex min-h-11 flex-wrap items-center justify-between gap-x-3 gap-y-2 px-3 py-2';
+
 /**
- * How long the link works, beside the link itself.
+ * How long the link works.
  *
- * A native select rather than chips: the choices are relative ("for 7 days") but what is stored is
+ * A native select rather than chips: the choices are relative ("in 7 days") but what is stored is
  * a date, so once one is chosen the honest thing to show is that date — which a chip reading
- * "7 days" a week later would not be. The select shows it as its own first option instead.
+ * "7 days" a week later would not be. The select shows it as its own first option instead, and
+ * that is the whole of what it says: the date in the control is the explanation.
  *
  * A picked day goes through a button, not on change: a date field reports a value while the year is
  * still being typed, and year 0002 is a date in the past the server would refuse.
@@ -129,33 +133,32 @@ function ExpiryRow({
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="flex items-center justify-between gap-3">
-        <Typography variant="span" textColor="secondary" className="text-xs">
-          {t('dialog.share.expiry.label')}
-        </Typography>
-
-        <select
-          value={isPicking ? 'pick' : ends !== null ? 'current' : 'never'}
-          disabled={isBusy}
-          onChange={(event) => choose(event.target.value)}
-          className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs"
-        >
-          {ends !== null && (
-            <option value="current">{t('dialog.share.expiry.until', { date: when })}</option>
-          )}
-          <option value="never">{t('dialog.share.expiry.never')}</option>
-          {/* In hours, so the shortest and the longest are the same arithmetic. */}
-          <option value="1">{t('dialog.share.expiry.hour')}</option>
-          <option value="24">{t('dialog.share.expiry.day')}</option>
-          <option value="168">{t('dialog.share.expiry.week')}</option>
-          <option value="720">{t('dialog.share.expiry.month')}</option>
-          <option value="pick">{t('dialog.share.expiry.pick')}</option>
-        </select>
+    <div className={settingRow}>
+      <label htmlFor="share-expiry" className="text-ink-secondary text-xs">
+        {t('dialog.share.expiry.label')}
       </label>
 
+      <select
+        id="share-expiry"
+        value={isPicking ? 'pick' : ends !== null ? 'current' : 'never'}
+        disabled={isBusy}
+        onChange={(event) => choose(event.target.value)}
+        className="h-8 rounded-md border border-stroke bg-surface-card px-2 text-ink-body text-xs"
+      >
+        {ends !== null && (
+          <option value="current">{t('dialog.share.expiry.until', { date: when })}</option>
+        )}
+        <option value="never">{t('dialog.share.expiry.never')}</option>
+        {/* In hours, so the shortest and the longest are the same arithmetic. */}
+        <option value="1">{t('dialog.share.expiry.hour')}</option>
+        <option value="24">{t('dialog.share.expiry.day')}</option>
+        <option value="168">{t('dialog.share.expiry.week')}</option>
+        <option value="720">{t('dialog.share.expiry.month')}</option>
+        <option value="pick">{t('dialog.share.expiry.pick')}</option>
+      </select>
+
       {isPicking && (
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex w-full items-center justify-end gap-2">
           <input
             type="date"
             min={localDay(new Date())}
@@ -179,18 +182,15 @@ function ExpiryRow({
         </div>
       )}
 
-      {ends !== null && (
+      {/* The one state that needs words: the link is dead, and the fix is in the control above. */}
+      {hasEnded && (
         <Typography
           variant="p"
-          textColor={hasEnded ? 'warning' : 'secondary'}
-          className="flex items-start gap-2 text-xs"
+          textColor="warning"
+          className="flex w-full items-start gap-2 text-xs"
         >
-          {hasEnded ? (
-            <TimerOff className="mt-0.5 size-4 shrink-0" />
-          ) : (
-            <CalendarClock className="mt-0.5 size-4 shrink-0" />
-          )}
-          {t(hasEnded ? 'dialog.share.expiry.ended' : 'dialog.share.expiry.ends', { date: when })}
+          <TimerOff className="mt-0.5 size-4 shrink-0" />
+          {t('dialog.share.expiry.ended', { date: when })}
         </Typography>
       )}
     </div>
@@ -230,41 +230,34 @@ function PasswordRow({
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-3">
-        <Typography variant="span" textColor="secondary" className="text-xs">
-          {t('dialog.share.password.label')}
-        </Typography>
+    <div className={settingRow}>
+      <span className="flex items-center gap-1.5 text-ink-secondary text-xs">
+        {state.hasPassword && <Lock className="size-3.5 text-brand-tertiary" />}
+        {t('dialog.share.password.label')}
+      </span>
 
-        {!isEditing &&
-          (state.hasPassword ? (
-            <span className="flex items-center gap-1">
-              <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => setIsEditing(true)}>
-                {t('dialog.share.password.change')}
-              </Button>
-              <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => onChange(null)}>
-                {t('dialog.share.password.remove')}
-              </Button>
-            </span>
-          ) : (
-            <Button
-              variant="tertiary"
-              size="sm"
-              leftSlot={<Lock />}
-              disabled={isBusy}
-              onClick={() => setIsEditing(true)}
-            >
-              {t('dialog.share.password.add')}
+      {!isEditing &&
+        (state.hasPassword ? (
+          <span className="flex items-center gap-1">
+            <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => setIsEditing(true)}>
+              {t('dialog.share.password.change')}
             </Button>
-          ))}
-      </div>
+            <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => onChange(null)}>
+              {t('dialog.share.password.remove')}
+            </Button>
+          </span>
+        ) : (
+          <Button variant="tertiary" size="sm" disabled={isBusy} onClick={() => setIsEditing(true)}>
+            {t('dialog.share.password.add')}
+          </Button>
+        ))}
 
       {isEditing && (
         /*
           * Not a <form>: the field's own show/hide button has no type, so inside a form Enter
           * pressed it — the password turned visible instead of being saved. Enter is handled here.
           */
-        <div className="flex items-start gap-2">
+        <div className="flex w-full items-start gap-2">
           <PasswordInput
             autoFocus
             autoComplete="new-password"
@@ -296,7 +289,6 @@ function PasswordRow({
             {t('dialog.share.expiry.set')}
           </Button>
           <Button
-            type="button"
             variant="tertiary"
             size="sm"
             onClick={() => {
@@ -308,11 +300,6 @@ function PasswordRow({
           </Button>
         </div>
       )}
-
-      <Typography variant="p" textColor="secondary" className="flex items-start gap-2 text-xs">
-        <Lock className="mt-0.5 size-4 shrink-0" />
-        {t(state.hasPassword ? 'dialog.share.password.on' : 'dialog.share.password.off')}
-      </Typography>
     </div>
   );
 }
@@ -438,15 +425,7 @@ export function ShareDialog({
           )}
 
           {state && state.mode !== 'private' && state.token && (
-            <div className="flex flex-col gap-2">
-              <Typography
-                variant="span"
-                textColor="secondary"
-                className="text-xs"
-              >
-                {t('dialog.share.link')}
-              </Typography>
-
+            <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
                 <InputGroup size="sm">
                   <InputGroupAddon>
@@ -470,54 +449,40 @@ export function ShareDialog({
                 </Button>
               </div>
 
-              <Typography
-                variant="p"
-                textColor="secondary"
-                className="flex items-start gap-2 text-xs"
-              >
-                {state.mode === 'link' ? (
-                  <>
-                    <Users className="mt-0.5 size-4 shrink-0" />
-                    {t('dialog.share.link.note')}
-                  </>
-                ) : (
-                  <>
-                    <Mail className="mt-0.5 size-4 shrink-0" />
-                    {t('dialog.share.people.note')}
-                  </>
-                )}
-              </Typography>
-
-              <ExpiryRow
-                state={state}
-                isBusy={isBusy}
-                onChange={(expiresAt) =>
-                  void run(client.setExpiry(documentId, state.mode, expiresAt))
-                }
-              />
-
-              {state.mode === 'link' && (
-                <PasswordRow
-                  state={state}
-                  isBusy={isBusy}
-                  onChange={(password) => void run(client.setPassword(documentId, password))}
-                />
+              {/*
+                * The mode chip already says who can open it; the one mode whose consequence is not
+                * obvious from its name is this one, which emails each address it is given.
+                */}
+              {state.mode === 'people' && (
+                <Typography
+                  variant="p"
+                  textColor="secondary"
+                  className="flex items-start gap-2 text-xs"
+                >
+                  <Mail className="mt-0.5 size-4 shrink-0" />
+                  {t('dialog.share.people.note')}
+                </Typography>
               )}
 
-              {/* Opens of this link, counted by the page's own picture — not people, and yours too. */}
-              <Typography
-                variant="p"
-                textColor="secondary"
-                className="flex items-start gap-2 text-xs"
-              >
-                <Eye className="mt-0.5 size-4 shrink-0" />
-                {state.views === 0 || !state.lastViewedAt
-                  ? t('dialog.share.views.none')
-                  : t(state.views === 1 ? 'dialog.share.views.one' : 'dialog.share.views.many', {
-                      count: state.views,
-                      date: formatDateTime(Date.parse(state.lastViewedAt), INTL_LOCALES[locale]),
-                    })}
-              </Typography>
+              {/* The link's settings, as a list: one line each, the control saying the state. */}
+              <div className="flex flex-col divide-y divide-stroke rounded-lg border border-stroke">
+                <ExpiryRow
+                  state={state}
+                  isBusy={isBusy}
+                  onChange={(expiresAt) =>
+                    void run(client.setExpiry(documentId, state.mode, expiresAt))
+                  }
+                />
+
+                {state.mode === 'link' && (
+                  <PasswordRow
+                    state={state}
+                    isBusy={isBusy}
+                    onChange={(password) => void run(client.setPassword(documentId, password))}
+                  />
+                )}
+              </div>
+
             </div>
           )}
 
@@ -594,6 +559,23 @@ export function ShareDialog({
                 </Typography>
               )}
             </div>
+          )}
+
+          {/* Opens of this link, in a line, last: the Views tab has each of them. */}
+          {state && state.mode !== 'private' && state.token && (
+            <Typography
+              variant="span"
+              textColor="light"
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <Eye className="size-3.5 shrink-0" />
+              {state.views === 0 || !state.lastViewedAt
+                ? t('dialog.share.views.none')
+                : t(state.views === 1 ? 'dialog.share.views.one' : 'dialog.share.views.many', {
+                    count: state.views,
+                    date: formatDateTime(Date.parse(state.lastViewedAt), INTL_LOCALES[locale]),
+                  })}
+            </Typography>
           )}
         </ModalBody>
       </ModalContent>

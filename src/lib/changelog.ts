@@ -73,6 +73,10 @@ export const INDEXED_ENTRIES = new Set([
   'webhooks',
   'embed-the-converter',
   'document-versions',
+  // Added 30 September 2026 at the owner's call: both are searched for, and no other page here
+  // says either — how to put a password on a shared link, and how to see who opened one.
+  'password-protected-links',
+  'shared-link-views',
 ]);
 
 /** One entry's page, in English and in whatever else somebody has written. */
@@ -117,11 +121,21 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-09-30',
+    title: 'The Share dialog says less',
+    body:
+      'Each setting had grown a sentence explaining it, and the dialog read like a page. Now the '
+      + 'end date and the password sit together as two lines of settings, each control showing its '
+      + 'own state, and the opens are one grey line at the foot. The words that stay are the ones '
+      + 'that matter: that a link has expired, and that naming somebody emails them.',
+  },
+  {
+    date: '2026-09-30',
     title: 'A shared link can ask for a password',
     slug: 'password-protected-links',
     body:
       'In the Share dialog a link can now be given a password. Whoever opens it is asked for it '
-      + 'first — before the page, both downloads and Save a copy — and entering it once keeps '
+      + 'first — before the page, both downloads and Save a copy, though you, signed in, are not — '
+      + 'and entering it once keeps '
       + 'it open in that browser for a day. It is kept only as a hash, so it can be changed or taken '
       + 'off but never shown, and a new one ends every earlier entry at once. It is set in the dialog '
       + 'or the API; no assistant can set or remove it.',
@@ -141,7 +155,7 @@ A password protects a link only. A document shared with specific people already 
 
 ## What the reader sees
 
-The link opens on a small form instead of the document. The right password sends them on to it, and a cookie remembers for a day that they gave it, so a reload does not ask again. The wrong one comes back with one sentence, the same for every wrong answer. Ten tries a minute from one machine, and thirty for the link from everywhere at once, and then the form asks them to wait.
+The link opens on a small form instead of the document — for everybody but you: signed in as its owner, you go straight through. The right password sends them on to it, and a cookie remembers for a day that they gave it, so a reload does not ask again. The wrong one comes back with one sentence, the same for every wrong answer. Ten tries a minute from one machine, and thirty for the link from everywhere at once, and then the form asks them to wait.
 
 Everything behind the link asks the same question: the page, its HTML and Markdown downloads, and the app's own reader, which is what **Save to your account** goes through. None of it is kept by the CDN once there is a password, because a cached copy of the unlocked page would be the document handed to anybody.
 
