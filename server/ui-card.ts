@@ -54,6 +54,31 @@ const OPENAI_BRIDGE = `
 
   window.addEventListener('openai:set_globals', fromOpenAI);
   fromOpenAI();
+
+  /* TEMPORARY diagnostics for ChatGPT: what a card that is still waiting has actually seen. */
+  const seen = [];
+  window.addEventListener('message', (event) => {
+    const m = event.data;
+    seen.push(!m || typeof m !== 'object' ? typeof m
+      : m.method ? m.method + (m.params ? ' {' + Object.keys(m.params).join(',') + '}' : '')
+      : m.id !== undefined ? 'reply#' + m.id + (m.error ? ' error ' + JSON.stringify(m.error).slice(0, 120) : ' ok {' + Object.keys(m.result || {}).join(',') + '}')
+      : 'other {' + Object.keys(m).slice(0, 8).join(',') + '}');
+  });
+  setTimeout(() => {
+    const card = document.getElementById('card');
+    if (!card || !/^Waiting/.test(card.textContent.trim())) return;
+    const o = window.openai;
+    const lines = [
+      'origin ' + location.origin + ' · framed ' + (window.parent !== window),
+      'window.openai ' + (o ? '{' + Object.keys(o).slice(0, 30).join(',') + '}' : 'absent'),
+      'toolOutput ' + (o ? (o.toolOutput === null ? 'null' : typeof o.toolOutput) + ' ' + JSON.stringify(o.toolOutput || null).slice(0, 160) : '-'),
+      'messages ' + (seen.length ? seen.join(' | ').slice(0, 600) : 'none'),
+    ];
+    const pre = document.createElement('pre');
+    pre.style.cssText = 'white-space:pre-wrap;font-size:11px;opacity:.8;margin-top:8px';
+    pre.textContent = lines.join('\\n');
+    card.append(pre);
+  }, 3000);
 `;
 
 export const DOCUMENT_CARD_HTML = `<!doctype html>
