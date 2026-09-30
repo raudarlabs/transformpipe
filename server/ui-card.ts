@@ -20,6 +20,42 @@ export const DOCUMENT_CARD_URI = 'ui://transformpipe/document-card';
 export const DOCUMENT_LIST_URI = 'ui://transformpipe/document-list';
 export const DELETE_CONFIRM_URI = 'ui://transformpipe/delete-confirm';
 
+/*
+ * ChatGPT's own spelling of the hand-over, beside the extension's.
+ *
+ * ChatGPT draws these views, and in ChatGPT not one of them drew: each stayed on "Waiting for
+ * the document…" while the answer beside it said the document was saved, so the result the
+ * bridge promises never reached the page. ChatGPT also puts a tool's structured result on
+ * `window.openai.toolOutput` and announces changes with an `openai:set_globals` event, which
+ * is where its own documentation keeps the compatibility alias. Each view reads both, whichever
+ * comes first draws, and a second arrival draws the same thing again. Links and the delete
+ * button use ChatGPT's own calls when it offers them.
+ *
+ * Spliced into all three pages, so they cannot drift apart; a host without `window.openai`
+ * skips every line of it.
+ */
+const OPENAI_BRIDGE = `
+  const openai = () => window.openai || null;
+
+  const openLink = (url) =>
+    openai() && typeof openai().openExternal === 'function'
+      ? Promise.resolve(openai().openExternal({ href: url }))
+      : request('ui/open-link', { url });
+
+  const callTool = (name, args) =>
+    openai() && typeof openai().callTool === 'function'
+      ? Promise.resolve(openai().callTool(name, args))
+      : request('tools/call', { name, arguments: args });
+
+  const fromOpenAI = () => {
+    const data = openai() && openai().toolOutput;
+    if (data && typeof data === 'object') draw(data);
+  };
+
+  window.addEventListener('openai:set_globals', fromOpenAI);
+  fromOpenAI();
+`;
+
 export const DOCUMENT_CARD_HTML = `<!doctype html>
 <html lang="en">
 <head>
@@ -180,13 +216,13 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     if (document_.url) {
       const open = el('button', null, 'Open in TransformPipe');
-      open.addEventListener('click', () => request('ui/open-link', { url: document_.url }));
+      open.addEventListener('click', () => openLink(document_.url));
       actions.append(open);
     }
 
     if (document_.shareUrl) {
       const shared = el('button', 'quiet', 'Open the shared page');
-      shared.addEventListener('click', () => request('ui/open-link', { url: document_.shareUrl }));
+      shared.addEventListener('click', () => openLink(document_.shareUrl));
       actions.append(shared);
     }
 
@@ -210,6 +246,7 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     }
   });
 
+${OPENAI_BRIDGE}
   request('ui/initialize', {
     capabilities: {},
     clientInfo: { name: 'TransformPipe document card', version: '1.0.0' },
@@ -381,7 +418,7 @@ button.row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px
         row.append(el('span', 'pill', one.share === 'people' ? 'shared' : 'link'));
       }
 
-      row.addEventListener('click', () => request('ui/open-link', { url: one.url }));
+      row.addEventListener('click', () => openLink(one.url));
 
       /* append() answers with nothing — no backticks in here, the whole page is a template
        * literal — so the row goes in the item and the item in the list. Chaining the two was a
@@ -412,6 +449,7 @@ button.row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px
     }
   });
 
+${OPENAI_BRIDGE}
   request('ui/initialize', {
     capabilities: {},
     clientInfo: { name: 'TransformPipe document list', version: '1.0.0' },
@@ -511,7 +549,8 @@ button[disabled] { opacity: 0.6; cursor: default; }
 (() => {
   const pending = new Map();
   let next = 1;
-  let canCallTools = false;
+  /* ChatGPT says so by having the call; the extension says so in its answer to ui/initialize. */
+  let canCallTools = Boolean(window.openai && typeof window.openai.callTool === 'function');
 
   const send = (message) => window.parent.postMessage(message, '*');
   const request = (method, params) =>
@@ -566,10 +605,7 @@ button[disabled] { opacity: 0.6; cursor: default; }
       remove.textContent = 'Deleting…';
 
       try {
-        await request('tools/call', {
-          name: 'tp_delete_document',
-          arguments: { id: document_.id, confirm: true },
-        });
+        await callTool('tp_delete_document', { id: document_.id, confirm: true });
 
         card.textContent = '';
         card.append(el('h1', null, document_.name || 'Document'));
@@ -612,6 +648,7 @@ button[disabled] { opacity: 0.6; cursor: default; }
     }
   });
 
+${OPENAI_BRIDGE}
   request('ui/initialize', {
     capabilities: {},
     clientInfo: { name: 'TransformPipe delete confirmation', version: '1.0.0' },
@@ -620,7 +657,7 @@ button[disabled] { opacity: 0.6; cursor: default; }
     .then((result) => {
       const theme = result && result.hostContext && result.hostContext.theme;
       if (theme) document.documentElement.dataset.theme = theme;
-      canCallTools = Boolean(result && result.hostCapabilities && result.hostCapabilities.serverTools);
+      canCallTools = canCallTools || Boolean(result && result.hostCapabilities && result.hostCapabilities.serverTools);
       notify('ui/notifications/initialized');
     })
     .catch(() => {
