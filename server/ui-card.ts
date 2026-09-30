@@ -16,9 +16,7 @@
  * `ui/notifications/tool-result`. Opening a link goes back the same way — an iframe this sandboxed
  * cannot navigate the tab itself, and should not be able to.
  */
-export const DOCUMENT_CARD_URI = 'ui://transformpipe/document-card';
-export const DOCUMENT_LIST_URI = 'ui://transformpipe/document-list';
-export const DELETE_CONFIRM_URI = 'ui://transformpipe/delete-confirm';
+import { createHash } from 'node:crypto';
 
 /*
  * ChatGPT's own spelling of the hand-over, beside the extension's.
@@ -693,3 +691,22 @@ ${OPENAI_BRIDGE}
 </body>
 </html>
 `;
+
+/*
+ * Each view's address carries a hash of its page, so a page that changes is a new address.
+ *
+ * A host keeps a view by its URI, and ChatGPT keeps it hard: after the cards learned to read
+ * ChatGPT's result, it went on drawing the page it had fetched when the connector was added, and
+ * "Refresh tools" brought the list back and not the card. An address that moves with the content
+ * is the one cache-buster every host has to honour. The unversioned form is still answered with
+ * the current page, so a conversation from before keeps its card.
+ */
+const versioned = (name: string, html: string) =>
+  `ui://transformpipe/${createHash('sha256').update(html).digest('hex').slice(0, 10)}/${name}`;
+
+export const DOCUMENT_CARD_URI = versioned('document-card', DOCUMENT_CARD_HTML);
+export const DOCUMENT_LIST_URI = versioned('document-list', DOCUMENT_LIST_HTML);
+export const DELETE_CONFIRM_URI = versioned('delete-confirm', DELETE_CONFIRM_HTML);
+
+/** The address each view had before it was versioned, which old conversations still ask for. */
+export const unversioned = (uri: string) => uri.replace(/^ui:\/\/transformpipe\/[0-9a-f]{10}\//, 'ui://transformpipe/');

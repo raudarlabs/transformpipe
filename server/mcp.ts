@@ -19,6 +19,7 @@ import {
   DOCUMENT_CARD_URI,
   DOCUMENT_LIST_HTML,
   DOCUMENT_LIST_URI,
+  unversioned,
 } from './ui-card.js';
 import { countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
 import v1 from './v1.js';
@@ -1537,7 +1538,8 @@ mcp.post('/', async (c) => {
 
   if (method === 'resources/read') {
     const uri = String((params as { uri?: unknown }).uri ?? '');
-    const view = VIEWS.find((one) => one.uri === uri);
+    // By its current address, or by the one it had before addresses carried a version.
+    const view = VIEWS.find((one) => one.uri === uri || unversioned(one.uri) === uri);
 
     if (!view) {
       return c.json(rpcError(id ?? null, -32602, `No resource at ${uri}`), 200);

@@ -626,6 +626,23 @@ const read = await call(tokens.access_token, 'resources/read', { uri: cardResour
 const contents = read.body?.result?.contents?.[0];
 
 check('resources/read returns the page itself', typeof contents?.text === 'string' && contents.text.startsWith('<!doctype html>'));
+
+/*
+ * A view's address carries a hash of its page, because ChatGPT went on drawing the card it had
+ * fetched at connection time after the card had changed. The address from before still answers,
+ * so an old conversation keeps its card.
+ */
+check(
+  'the card\'s address moves with its content',
+  /^ui:\/\/transformpipe\/[0-9a-f]{10}\/document-card$/.test(cardResource?.uri ?? ''),
+  cardResource?.uri
+);
+
+const legacyRead = await call(tokens.access_token, 'resources/read', { uri: 'ui://transformpipe/document-card' });
+check(
+  'and the address it had before versions still answers, with the current page',
+  legacyRead.body?.result?.contents?.[0]?.text === contents?.text
+);
 check(
   'and it fetches nothing',
   !/\b(src|href)=["']https?:/.test(contents?.text ?? 'src="https://'),
