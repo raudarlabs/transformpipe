@@ -799,6 +799,12 @@ check(
   tools.find((one) => one.name === 'tp_share_document')?.annotations?.destructiveHint === true &&
     tools.find((one) => one.name === 'tp_share_document')?.annotations?.openWorldHint === true
 );
+check(
+  'updating changes what people holding the link read, and is marked so',
+  tools.find((one) => one.name === 'tp_update_document')?.annotations?.destructiveHint === true &&
+    tools.find((one) => one.name === 'tp_update_document')?.annotations?.openWorldHint === true &&
+    tools.find((one) => one.name === 'tp_update_document')?._meta?.ui?.resourceUri?.endsWith('/document-card') === true
+);
 
 check(
   'the two document tools point at the card',
@@ -967,6 +973,52 @@ if (blobless) {
     /private/.test(shared.text) && /no longer opens/.test(shared.text),
     shared.text
   );
+
+  /*
+   * Updating in place: a private document changes when asked; a shared one is a page other people
+   * read, so it asks first — and once confirmed, the link already sent shows the new text.
+   */
+  const privateText = '# e2e probe\n\nUpdated by scripts/check-mcp.mjs.';
+  const updatedPrivate = await tool(tokens.access_token, 'tp_update_document', {
+    id: savedId,
+    markdown: privateText,
+  });
+  check(
+    'a private document is updated without a confirmation',
+    !updatedPrivate.isError && /^Updated /.test(updatedPrivate.text) && /revision/.test(updatedPrivate.text),
+    updatedPrivate.text.slice(0, 160)
+  );
+
+  const sameAgain = await tool(tokens.access_token, 'tp_update_document', { id: savedId, markdown: privateText });
+  check('the same text again changes nothing', /Nothing to update/.test(sameAgain.text), sameAgain.text.slice(0, 120));
+
+  const published = await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'link', confirm: true });
+  const link = (published.text.match(/https?:\/\/\S+\/s\/[\w-]+/) ?? [])[0];
+
+  const ungatedUpdate = await tool(tokens.access_token, 'tp_update_document', {
+    id: savedId,
+    markdown: '# e2e probe\n\nA change the link would show.',
+  });
+  check(
+    'a shared document is not changed without a confirmation',
+    ungatedUpdate.isError && /confirm: true/.test(ungatedUpdate.text) && /anyone holding the link/.test(ungatedUpdate.text),
+    ungatedUpdate.text.slice(0, 160)
+  );
+
+  const gatedUpdate = await tool(tokens.access_token, 'tp_update_document', {
+    id: savedId,
+    markdown: '# e2e probe\n\nA change the link shows.',
+    confirm: true,
+  });
+  const pageResponse = link ? await fetch(link.replace(/^https?:\/\/[^/]+/, HOST)) : null;
+  const page = pageResponse ? await pageResponse.text() : '';
+  check(
+    'and with one, the same link shows the new text',
+    !gatedUpdate.isError && Boolean(link) && gatedUpdate.text.includes(link) && page.includes('A change the link shows'),
+    JSON.stringify({ link, published: published.text.slice(0, 160), status: pageResponse?.status, title: (page.match(/<title>[^<]*<\/title>/) ?? [''])[0], url: pageResponse?.url, redirected: pageResponse?.redirected, has: page.includes('change the link') })
+  );
+
+  await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'private' });
 }
 
 const usage = await tool(tokens.access_token, 'tp_usage', {});
@@ -1352,6 +1404,15 @@ const roPost = await asApi('/api/v1/documents?name=no.md', {
   body: '# no',
 });
 check('nor save', roPost.status === 403, `got ${roPost.status}`);
+
+if (mine) {
+  const roUpdate = await asApi(`/api/v1/documents/${mine.id}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'text/markdown' },
+    body: '# no',
+  });
+  check('nor update one in place', roUpdate.status === 403, `got ${roUpdate.status}`);
+}
 
 /* Invariant 9: the account and its credentials are not reachable with a token of any kind. */
 const keysWithToken = await asApi('/api/keys', {}, stillGood);

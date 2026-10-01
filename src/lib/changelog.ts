@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Assistants can update a document and keep its link',
+    body:
+      'Ask Claude or ChatGPT to fix or rewrite a document you already have, and the new connector tool '
+      + 'tp_update_document changes it in place: the same link shows the new text and the old text is '
+      + 'kept as a revision. A document that is already shared is changed only after you say yes.',
+  },
+  {
+    date: '2026-10-01',
     title: 'Update a document and keep its link',
     body:
       'PUT /api/v1/documents/:id, and tp push --update in the command line, give a document new '

@@ -947,7 +947,7 @@ export const pages: Content['pages'] = {
         heading: 'Qué puede hacer entonces',
         body: [
           'Once herramientas, todas con nombre `tp_`. Las que importan en una conversación son `tp_convert_markdown`, que vuelve documento HTML terminado un texto en Markdown, `tp_convert_to_markdown` para un archivo que va en sentido contrario, `tp_save_document`, que guarda el resultado en tu cuenta, y `tp_share_document`, que lo publica y devuelve un enlace que puedes enviar.',
-          'Las demás son a las que un asistente recurre por su cuenta: `tp_list_documents` y `tp_get_document` para encontrar algo que hiciste antes, `tp_summarize_document` para decir qué contiene uno largo, `tp_document_versions` para enseñar qué sustituyó a qué, `tp_usage` para comprobar cuánto sitio queda, y `tp_delete_document`.',
+          'Las demás son a las que un asistente recurre por su cuenta: `tp_list_documents` y `tp_get_document` para encontrar algo que hiciste antes, `tp_summarize_document` para decir qué contiene uno largo, `tp_update_document` para cambiar uno y conservar su enlace, `tp_document_versions` para enseñar qué sustituyó a qué, `tp_usage` para comprobar cuánto sitio queda, y `tp_delete_document`.',
           'En la práctica la frase útil es corta. Pídele que escriba las notas de la versión y luego pídele que las publique — el asistente convierte, guarda y comparte, y responde con la dirección.',
         ],
       },

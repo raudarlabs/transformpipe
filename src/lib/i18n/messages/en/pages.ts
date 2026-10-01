@@ -949,7 +949,7 @@ export const pages: Content['pages'] = {
         heading: 'What it can then do',
         body: [
           'Eleven tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send.',
-          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_document_versions` to show what replaced what, `tp_usage` to check how much room is left, and `tp_delete_document`.',
+          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_usage` to check how much room is left, and `tp_delete_document`.',
           'In practice the useful sentence is short. Ask it to write the release notes, then ask it to publish them — the assistant converts, saves and shares, and answers with the address.',
         ],
       },

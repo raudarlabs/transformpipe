@@ -139,7 +139,9 @@ const MAX_TEXT = 40_000;
 
 const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
 
-Three of them disclose or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to the addresses given; called without it, they return what would be disclosed and to whom, and change nothing. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+Four of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to the addresses given; called without it, they return what would be disclosed and to whom, and change nothing. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+
+To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
 
 tp_convert_markdown and tp_convert_to_markdown return the converted document through the conversation and are bounded at 40,000 characters; tp_save_document returns an id, a size and — when shared — a URL instead.
 
@@ -895,6 +897,103 @@ const TOOLS: Record<McpToolName, Tool> = {
               ? `Only the addresses on it can read it: ${document.share.url}`
               : 'It is private. Share it with tp_share_document when asked.',
         ].join('\n'),
+        forCard(c, document, markdown)
+      );
+    },
+  },
+
+  tp_update_document: {
+    description:
+      'Replaces the text of a document already on the account and keeps everything else: its id, its link, its password and end, and who may open it. Use it when the person asks to change, fix, extend or rewrite a document they have — above all one already shared, so the link they sent shows the change; use tp_save_document for something new. The text it replaces is kept as a revision on the account (the newest ten), so nothing is lost. A document shared by link or with people is a page others read, so updating one requires `confirm: true`; without it nothing changes and the call says who would see the new text. A private document updates without it. `markdown` is the whole new text, not a diff. The same text again changes nothing.',
+    ui: DOCUMENT_CARD_URI,
+    annotations: {
+      title: 'Update a document',
+      readOnlyHint: false,
+      /* It changes what people holding the link read, and the old text leaves the page. */
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'markdown'],
+      properties: {
+        id: { type: 'string', description: 'The document id, from tp_list_documents.' },
+        markdown: {
+          type: 'string',
+          description: 'The whole new text, as Markdown.',
+        },
+        name: { type: 'string', description: 'A new name for it. Leave out to keep the one it has.' },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when the document is shared by link or with people. True when the person asked for this shared document to be changed.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const id = String(args.id ?? '');
+      const markdown = typeof args.markdown === 'string' ? args.markdown : '';
+      const name = typeof args.name === 'string' && args.name.trim() ? args.name.trim() : undefined;
+
+      if (!id || !markdown.trim()) {
+        return say('Give the document id and the whole new Markdown.', true);
+      }
+
+      const found = await callApi(c, `/api/v1/documents/${segment(id)}`);
+
+      if (found.status !== 200) {
+        return say(
+          found.body?.error ?? `That document is not on this account (${found.status}).`,
+          true
+        );
+      }
+
+      const current = found.body.document;
+
+      /*
+       * The same gate as sharing, for the same reason: a page other people read is about to say
+       * something else. The refusal names the document and who reads it, so the person agrees to
+       * "the Q3 plan, shared by link" rather than to an id.
+       */
+      if (current.share?.mode !== 'private' && args.confirm !== true) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `Nothing changed. ${current.name} is ${
+                current.share?.mode === 'people'
+                  ? 'shared with named people, so the new text is what they will read'
+                  : 'shared by link, so the new text is what anyone holding the link will read'
+              } — ask the person, then call this again with confirm: true.`,
+            },
+          ],
+          structuredContent: forCard(c, current),
+          isError: true,
+        };
+      }
+
+      const updated = await callApi(c, `/api/v1/documents/${segment(id)}`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ markdown, ...(name ? { name } : {}) }),
+      });
+
+      if (updated.status !== 200) {
+        return say(updated.body?.error ?? `It was not updated (${updated.status}).`, true);
+      }
+
+      const document = updated.body.document;
+
+      return card(
+        updated.body.changed
+          ? [
+              `Updated ${document.name} — the same id${document.share?.url ? ` and the same link: ${document.share.url}` : ''}.`,
+              `The text it replaced is kept as a revision (${updated.body.revisions} kept).`,
+            ].join('\n')
+          : `Nothing to update: ${document.name} already says exactly that.`,
         forCard(c, document, markdown)
       );
     },

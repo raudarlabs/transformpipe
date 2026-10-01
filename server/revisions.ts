@@ -1,5 +1,5 @@
 import { sql } from './db.js';
-import { deleteSources, putRevisionSource, readSource } from './source.js';
+import { deleteSources, readSource } from './source.js';
 
 /*
  * The text a document had before an in-place update.
@@ -29,45 +29,34 @@ export interface RevisionRow {
 }
 
 /**
- * Keeps `markdown` as the newest revision of a document and returns its id.
+ * Keeps what a document has now as its newest revision, and returns the revision's id.
  *
- * The row first and the text second, so the text's path can carry the row's id; a failure while
- * storing the text takes the row back out, and the update that asked for it is refused.
+ * Nothing is uploaded: the revision takes over the file the document's text is in — or the text
+ * itself, for a document kept in its row — and the update writes the new text to a new file. So
+ * no file is ever written twice, which is what the store cannot be trusted to read back at once.
  */
-export async function keepRevision(
-  userId: string,
-  document: { id: string; name: string; size: number; created_at: string; updated_at?: string | null },
-  markdown: string
-): Promise<string> {
+export async function keepRevision(document: {
+  id: string;
+  name: string;
+  size: number;
+  created_at: string;
+  updated_at?: string | null;
+  blob_path: string | null;
+  markdown: string | null;
+}): Promise<string> {
   const [row] = (await sql()`
-    insert into m2h_document_revision (document_id, written_at, name, size)
-    values (${document.id}, ${document.updated_at ?? document.created_at}, ${document.name}, ${document.size})
+    insert into m2h_document_revision (document_id, written_at, name, size, blob_path, markdown)
+    values (${document.id}, ${document.updated_at ?? document.created_at}, ${document.name},
+            ${document.size}, ${document.blob_path}, ${document.markdown})
     returning id
   `) as Array<{ id: string }>;
-
-  try {
-    const stored = await putRevisionSource(userId, document.id, row.id, markdown);
-
-    await sql()`
-      update m2h_document_revision
-      set blob_path = ${stored.blobPath}, markdown = ${stored.markdown}
-      where id = ${row.id}
-    `;
-  } catch (cause) {
-    await sql()`delete from m2h_document_revision where id = ${row.id}`;
-    throw cause;
-  }
 
   return row.id;
 }
 
-/** Takes a revision back out, text and all — for an update that failed after keeping one. */
-export async function dropRevision(revisionId: string): Promise<void> {
-  const gone = (await sql()`
-    delete from m2h_document_revision where id = ${revisionId} returning blob_path
-  `) as Array<{ blob_path: string | null }>;
-
-  await deleteSources(gone.map((row) => row.blob_path));
+/** Takes a revision back out without its file, for an update that failed after keeping one. */
+export async function forgetRevision(revisionId: string): Promise<void> {
+  await sql()`delete from m2h_document_revision where id = ${revisionId}`;
 }
 
 /** Everything past the newest `REVISIONS_KEPT`, deleted with its text. Returns how many remain. */

@@ -47,42 +47,21 @@ export interface StoredSource {
 export async function putSource(
   userId: string,
   documentId: string,
-  markdown: string
+  markdown: string,
+  /**
+   * A new file for an update, never the old one written over. The store caches a file by its
+   * path, and overwriting one was read back stale — the shared page showed the text it had just
+   * replaced, and an update compared against the wrong text. A new path cannot be cached yet.
+   */
+  version?: string
 ): Promise<StoredSource> {
   if (!blobEnabled()) {
     return { blobPath: null, markdown };
   }
 
-  const path = pathFor(userId, documentId);
-
-  await put(path, markdown, {
-    access: 'private',
-    contentType: 'text/markdown; charset=utf-8',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    ...auth(),
-  });
-
-  return { blobPath: path, markdown: null };
-}
-
-/**
- * Writes the text a document is about to lose, beside the document's own file.
- *
- * Its own path per revision, so replacing the document's file cannot touch it, and the prefix is
- * the document's, so the reconcile script can tell a revision from an orphan.
- */
-export async function putRevisionSource(
-  userId: string,
-  documentId: string,
-  revisionId: string,
-  markdown: string
-): Promise<StoredSource> {
-  if (!blobEnabled()) {
-    return { blobPath: null, markdown };
-  }
-
-  const path = `sources/${userId}/${documentId}.rev-${revisionId}.md`;
+  const path = version
+    ? `sources/${userId}/${documentId}.v-${version}.md`
+    : pathFor(userId, documentId);
 
   await put(path, markdown, {
     access: 'private',

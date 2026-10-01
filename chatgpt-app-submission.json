@@ -40,6 +40,14 @@
         "destructive_justification": "This hint covers every mode of the tool: share=link can publish the document and share=people can send email notices that cannot be recalled. Both modes require confirm=true. The default private save does not disclose content."
       }
     },
+    "tp_update_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Replaces the text of a document in the connected account; the previous text is kept as a revision.",
+        "open_world_justification": "When the document is shared by link or with named people, the new text is what everyone holding the link then reads.",
+        "destructive_justification": "The text it replaces leaves the shared page, so updating a shared document requires confirm=true; a private document is updated without it. The previous text is kept as a revision on the account, so it can be recovered."
+      }
+    },
     "tp_list_documents": {
       "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
       "justifications": {

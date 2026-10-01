@@ -33,7 +33,7 @@ import { jsonToMarkdown } from '../shared/from-json.js';
 import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
-import { dropRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
+import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { hashPassword, readPassword } from './share-password.js';
@@ -819,14 +819,29 @@ v1.put('/documents/:id', async (c) => {
     );
   }
 
-  const revision = await keepRevision(userId, row, previous).catch(() => null);
+  /*
+   * The new text goes to a new file first; only then does the old file become a revision and the
+   * row point at the new one. A failure before the row changes leaves the document as it was.
+   */
+  let stored: Awaited<ReturnType<typeof putSource>>;
+
+  try {
+    stored = await putSource(userId, row.id, markdown, randomBytes(8).toString('hex'));
+  } catch (cause) {
+    const why = cause instanceof Error ? cause.message : 'upload failed';
+
+    return c.json({ error: `Could not store the new text, so nothing was changed: ${why}` }, 502);
+  }
+
+  const revision = await keepRevision(row).catch(() => null);
 
   if (!revision) {
+    await deleteSources([stored.blobPath]);
+
     return c.json({ error: 'Could not keep the previous version, so nothing was changed' }, 502);
   }
 
   try {
-    const stored = await putSource(userId, row.id, markdown);
     const html = markdownToHtml(markdown);
     const stats = getDocStats(markdown, html);
 
@@ -849,11 +864,12 @@ v1.put('/documents/:id', async (c) => {
 
     return c.json({ document: asDocument(c, updated, { words: stats.words }), changed: true, revisions: kept });
   } catch (cause) {
-    await dropRevision(revision).catch(() => undefined);
+    await forgetRevision(revision).catch(() => undefined);
+    await deleteSources([stored.blobPath]);
 
-    const why = cause instanceof Error ? cause.message : 'upload failed';
+    const why = cause instanceof Error ? cause.message : 'update failed';
 
-    return c.json({ error: `Could not store the new text, so nothing was changed: ${why}` }, 502);
+    return c.json({ error: `Could not update the document, so nothing was changed: ${why}` }, 502);
   }
 });
 

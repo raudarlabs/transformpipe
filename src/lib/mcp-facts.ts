@@ -30,6 +30,7 @@ export const MCP_TOOL_NAMES = [
   'tp_convert_markdown',
   'tp_convert_to_markdown',
   'tp_save_document',
+  'tp_update_document',
   'tp_list_documents',
   'tp_get_document',
   'tp_summarize_document',
@@ -50,6 +51,8 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
     'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
   tp_save_document:
     'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in. Publishing it in the same call takes an explicit confirmation.',
+  tp_update_document:
+    'New text for a document already on the account — the same id and the same link, the old text kept as a revision. Changing one that is shared takes an explicit confirmation.',
   tp_list_documents: 'What is on the account, with the id each other tool takes.',
   tp_get_document: 'One document, as its Markdown source or as rendered HTML.',
   tp_summarize_document:

@@ -942,7 +942,7 @@ export const pages: Content['pages'] = {
         heading: 'Cosa può fare a quel punto',
         body: [
           'Undici strumenti, tutti con il prefisso `tp_`. Quelli che contano in una conversazione sono `tp_convert_markdown`, che trasforma il Markdown in un documento HTML finito, `tp_convert_to_markdown` per un file che fa il percorso inverso, `tp_save_document`, che conserva il risultato nel tuo account, e `tp_share_document`, che lo pubblica e restituisce un link da mandare.',
-          'Gli altri sono quelli a cui un assistente ricorre da sé: `tp_list_documents` e `tp_get_document` per ritrovare qualcosa fatto prima, `tp_summarize_document` per dire cosa contiene un documento lungo, `tp_document_versions` per mostrare cosa ha sostituito cosa, `tp_usage` per controllare quanto spazio resta, e `tp_delete_document`.',
+          'Gli altri sono quelli a cui un assistente ricorre da sé: `tp_list_documents` e `tp_get_document` per ritrovare qualcosa fatto prima, `tp_summarize_document` per dire cosa contiene un documento lungo, `tp_update_document` per modificarne uno e tenere il suo link, `tp_document_versions` per mostrare cosa ha sostituito cosa, `tp_usage` per controllare quanto spazio resta, e `tp_delete_document`.',
           'In pratica la frase utile è breve. Chiedigli di scrivere le note di rilascio, poi chiedigli di pubblicarle — l’assistente converte, salva e condivide, e risponde con l’indirizzo.',
         ],
       },

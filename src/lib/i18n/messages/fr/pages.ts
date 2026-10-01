@@ -943,7 +943,7 @@ export const pages: Content['pages'] = {
         heading: 'Ce qu’il peut alors faire',
         body: [
           'Onze outils, tous nommés `tp_`. Ceux qui comptent dans une conversation sont `tp_convert_markdown`, qui transforme du Markdown en document HTML fini, `tp_convert_to_markdown` pour un fichier qui fait le chemin inverse, `tp_save_document`, qui garde le résultat dans votre compte, et `tp_share_document`, qui le publie et renvoie un lien que vous pouvez envoyer.',
-          'Les autres sont ceux qu’un assistant emploie de lui-même : `tp_list_documents` et `tp_get_document` pour retrouver quelque chose que vous avez fait plus tôt, `tp_summarize_document` pour dire ce que contient un document long, `tp_document_versions` pour montrer ce qui a remplacé quoi, `tp_usage` pour vérifier la place qu’il reste, et `tp_delete_document`.',
+          'Les autres sont ceux qu’un assistant emploie de lui-même : `tp_list_documents` et `tp_get_document` pour retrouver quelque chose que vous avez fait plus tôt, `tp_summarize_document` pour dire ce que contient un document long, `tp_update_document` pour en modifier un en gardant son lien, `tp_document_versions` pour montrer ce qui a remplacé quoi, `tp_usage` pour vérifier la place qu’il reste, et `tp_delete_document`.',
           'En pratique, la phrase utile est courte. Demandez-lui d’écrire les notes de version, puis demandez-lui de les publier — l’assistant convertit, enregistre et partage, et répond avec l’adresse.',
         ],
       },
