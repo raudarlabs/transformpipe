@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Update a document and keep its link',
+    body:
+      'PUT /api/v1/documents/:id, and tp push --update in the command line, give a document new '
+      + 'text without a new address: the link, its password, its end and its opens stay. The text it '
+      + 'replaces is kept as a revision, the newest ten, and the shared page says when it was updated.',
+  },
+  {
+    date: '2026-10-01',
     title: 'A page for ChatGPT',
     body:
       '/agents/chatgpt has the three steps for adding TransformPipe in ChatGPT — Plugins, Add, '

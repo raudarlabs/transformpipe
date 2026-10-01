@@ -31,6 +31,8 @@ export interface SharedDocument {
   markdown: string | null;
   blob_path: string | null;
   created_at: string;
+  /** When the text was last replaced in place; null if it never was. */
+  updated_at: string | null;
   share_mode: Exclude<ShareMode, 'private'>;
   size: number;
   stats: Record<string, number> | null;
@@ -71,7 +73,7 @@ export type ShareVerdict =
  */
 export async function shareGate(c: Context, token: string): Promise<ShareVerdict> {
   const rows = (await sql()`
-    select id, user_id, name, markdown, blob_path, created_at, share_mode, size, stats,
+    select id, user_id, name, markdown, blob_path, created_at, updated_at, share_mode, size, stats,
            share_expires_at, share_password_hash,
            coalesce(share_expires_at <= now(), false) as expired
     from m2h_document

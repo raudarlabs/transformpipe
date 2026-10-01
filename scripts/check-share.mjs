@@ -647,6 +647,124 @@ try {
    * there, and pdfmake was refused its own fonts — while the dev server built both, and nothing
    * anywhere asked the deployed one for a file.
    */
+  /*
+   * Updating in place: the same link with new text, and the old text kept as a revision. What the
+   * Obsidian plugin's Publish and `tp push --update` stand on.
+   */
+  console.log('\n— updating in place');
+
+  const firstText = `# Update check\n\nThe first text, written ${new Date().toISOString()}.`;
+  const posted = await fetch(`${HOST}/api/v1/documents?share=link&name=check-update.md`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${access}`, 'content-type': 'text/markdown' },
+    body: firstText,
+  });
+  const postedBody = await posted.json().catch(() => ({}));
+  const updateId = postedBody.document?.id;
+
+  if (updateId) {
+    made.documents.push(updateId);
+  }
+
+  const usageBefore = await (await v1('/usage')).json().catch(() => ({}));
+  const replace = (body, type = 'text/markdown') =>
+    v1(`/documents/${updateId}`, {
+      method: 'PUT',
+      headers: { 'content-type': type },
+      body,
+    });
+
+  const secondText = firstText.replace('The first text', 'The second text');
+  const updated = await replace(secondText);
+  const updatedBody = await updated.json().catch(() => ({}));
+
+  check(
+    'an update keeps the id and the link',
+    updated.status === 200 &&
+      updatedBody.changed === true &&
+      updatedBody.document?.id === updateId &&
+      updatedBody.document?.share?.url === postedBody.document?.share?.url &&
+      Boolean(updatedBody.document?.updated_at),
+    `${updated.status} ${JSON.stringify(updatedBody).slice(0, 200)}`
+  );
+
+  const updateToken = String(postedBody.document?.share?.url ?? '').split('/s/')[1] ?? '';
+  const updatedPage = await (await get(`/s/${updateToken}`)).text();
+
+  check(
+    'and the shared page shows the new text, saying it was updated',
+    updatedPage.includes('The second text') && !updatedPage.includes('The first text') && updatedPage.includes(' · updated '),
+    updatedPage.slice(0, 120)
+  );
+
+  const revisionsList = await (await v1(`/documents/${updateId}/revisions`)).json().catch(() => ({}));
+  const firstRevision = revisionsList.revisions?.[0];
+  const revisionRead = firstRevision
+    ? await (await v1(`/documents/${updateId}/revisions/${firstRevision.id}`)).json().catch(() => ({}))
+    : {};
+
+  check(
+    'the text it replaced is kept, and reads back whole',
+    revisionsList.revisions?.length === 1 && revisionRead.revision?.markdown === firstText,
+    JSON.stringify(revisionsList).slice(0, 160)
+  );
+
+  const same = await replace(secondText);
+  const sameBody = await same.json().catch(() => ({}));
+  const afterSame = await (await v1(`/documents/${updateId}/revisions`)).json().catch(() => ({}));
+
+  check(
+    'the same text again is not an update',
+    same.status === 200 && sameBody.changed === false && afterSame.revisions?.length === 1,
+    `${same.status} ${JSON.stringify(sameBody).slice(0, 120)}`
+  );
+
+  const usageAfter = await (await v1('/usage')).json().catch(() => ({}));
+  check(
+    'a kept revision counts as bytes, not as a document',
+    usageAfter.documents === usageBefore.documents &&
+      usageAfter.bytes === usageBefore.bytes + secondText.length,
+    `${usageBefore.bytes}/${usageBefore.documents} → ${usageAfter.bytes}/${usageAfter.documents}`
+  );
+
+  for (let round = 3; round <= 13; round += 1) {
+    await replace(`${secondText}\n\nRound ${round}.`);
+  }
+
+  const capped = await (await v1(`/documents/${updateId}/revisions`)).json().catch(() => ({}));
+  check('no more than ten are kept', capped.revisions?.length === 10, `kept ${capped.revisions?.length}`);
+
+  const renamed = await replace(JSON.stringify({ markdown: `${secondText}\n\nRound 13.`, name: 'check-update-renamed.md' }), 'application/json');
+  const renamedBody = await renamed.json().catch(() => ({}));
+  check(
+    'a JSON body can rename it too',
+    renamed.status === 200 && renamedBody.document?.name === 'check-update-renamed.md',
+    `${renamed.status} ${JSON.stringify(renamedBody).slice(0, 120)}`
+  );
+
+  const empty = await replace('   ');
+  check('an empty text is refused', empty.status === 400, `got ${empty.status}`);
+
+  const nobody = await v1(`/documents/${randomUUID()}`, {
+    method: 'PUT',
+    headers: { 'content-type': 'text/markdown' },
+    body: '# Nobody',
+  });
+  check('a document that is not on the account is not found', nobody.status === 404, `got ${nobody.status}`);
+
+  const tooBig = await replace(`# Big\n\n${'x'.repeat(4 * 1024 * 1024 + 10)}`);
+  check('one past the limit for a document is refused', tooBig.status === 413, `got ${tooBig.status}`);
+
+  const removedUpdate = await v1(`/documents/${updateId}`, { method: 'DELETE' });
+  const [leftRevisions] = await sql`
+    select count(*)::int as n from m2h_document_revision where document_id = ${updateId}
+  `;
+  check(
+    'deleting the document takes its revisions with it',
+    removedUpdate.status === 200 && leftRevisions.n === 0,
+    `${removedUpdate.status}, ${leftRevisions.n} left`
+  );
+
   console.log('\n— Word and PDF');
 
   const exported = await shared();

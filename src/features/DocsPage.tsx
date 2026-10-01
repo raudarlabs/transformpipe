@@ -479,6 +479,16 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
                 ),
               },
               {
+                key: 'update',
+                term: <InlineCode>PUT /api/v1/documents/:id</InlineCode>,
+                text: t('docs.api.update'),
+              },
+              {
+                key: 'revisions',
+                term: <InlineCode>GET /api/v1/documents/:id/revisions[/:revision]</InlineCode>,
+                text: t('docs.api.revisions'),
+              },
+              {
                 key: 'delete',
                 term: <InlineCode>DELETE /api/v1/documents/:id</InlineCode>,
                 text: t('docs.api.delete'),

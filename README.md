@@ -224,7 +224,9 @@ curl -H "Authorization: Bearer tp_live_…"      --data-binary @README.md      "
 | `GET /api/v1/documents/:id.docx` | a Word document, built from the same HTML on the way out |
 | `GET /api/v1/documents/:id.pdf` | a PDF, laid out from the same HTML by `pdfmake` — no headless browser |
 | `GET /api/v1/documents/:id/versions` | every document in the same version chain, oldest first |
-| `DELETE /api/v1/documents/:id` | removes the row and its source |
+| `PUT /api/v1/documents/:id` | new text for the same document — Markdown as the body, or JSON `{markdown, name}`. The id, the link and everything set on it stay; the text it replaces is kept as a revision (the newest ten, counted as bytes, not as documents). The same text again answers `changed: false` |
+| `GET /api/v1/documents/:id/revisions` | those revisions, newest first; `/revisions/:revision` reads one with its Markdown |
+| `DELETE /api/v1/documents/:id` | removes the row, its source and its revisions |
 | `GET \| PUT /api/v1/documents/:id/share` | `{mode, emails[], expires_at}`; `private` drops the token, so a link already sent stops working. `expires_at` is an ISO 8601 date-time the link stops working at (410 after it), `null` for no end, and left out to keep the one it has. The answer also carries `views` and `last_viewed_at`: opens of the link, counted by the shared page's own one-pixel picture. `password` sets one on a link, or ahead of one while the document is private (8 to 200 characters, in the body only), and `null` removes it; a share with specific people takes none; the answer says `has_password`, never the hash |
 | `GET /api/v1/documents/:id/views` | The link's recent opens, newest first: `{views, last_viewed_at, events: [{at, via}]}` — `via` is `page` or `app`. A link keeps nothing about who opened it; a share addressed to people adds `who` to each open and a `people` list — each named address, its opens and its last one |
 | `POST /api/v1/documents/:id/summary` | a cached summary, generating it first if there is none; `?force=1` regenerates. Limited to 20 a day per account |
@@ -281,6 +283,7 @@ node cli/tp.mjs list
 node cli/tp.mjs rm <id>
 node cli/tp.mjs summary <id>                  # generated once, cached; --force to regenerate
 node cli/tp.mjs push v2.md --replaces <id>    # links it to an earlier document as a new version
+node cli/tp.mjs push notes.md --update <id>   # new text, same link; the old text is kept as a revision
 node cli/tp.mjs versions <id>                 # every document in the chain, oldest first
 node cli/tp.mjs usage                         # 65.8 kB of 100.0 MB · 3 of 500 documents
 ```

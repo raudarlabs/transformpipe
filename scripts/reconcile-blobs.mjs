@@ -41,7 +41,11 @@ const sql = neon(process.env.DATABASE_URL);
 const rows = await sql`
   select id, name, blob_path from m2h_document where blob_path is not null
 `;
-const known = new Set(rows.map((row) => row.blob_path));
+/* A revision's file is beside its document's and is no orphan: see server/revisions.ts. */
+const revisionRows = await sql`
+  select blob_path from m2h_document_revision where blob_path is not null
+`.catch(() => []);
+const known = new Set([...rows.map((row) => row.blob_path), ...revisionRows.map((row) => row.blob_path)]);
 
 const stored = new Set();
 let cursor;

@@ -53,6 +53,7 @@ import {
 import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
+import { revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
   edgeSeconds,
@@ -1174,25 +1175,27 @@ api.delete('/documents/:id/share/people', async (c) => {
 });
 
 api.delete('/documents/:id', async (c) => {
+  const revisions = await revisionFiles(c.get('user').id, c.req.param('id'));
   const removed = (await sql()`
     delete from m2h_document
     where user_id = ${c.get('user').id} and id = ${c.req.param('id')}
     returning blob_path
   `) as Array<{ blob_path: string | null }>;
 
-  await deleteSources(removed.map((row) => row.blob_path));
+  await deleteSources([...removed.map((row) => row.blob_path), ...(removed.length ? revisions : [])]);
 
   return c.json({ ok: true });
 });
 
 api.delete('/documents', async (c) => {
+  const revisions = await revisionFiles(c.get('user').id);
   const removed = (await sql()`
     delete from m2h_document
     where user_id = ${c.get('user').id}
     returning blob_path
   `) as Array<{ blob_path: string | null }>;
 
-  await deleteSources(removed.map((row) => row.blob_path));
+  await deleteSources([...removed.map((row) => row.blob_path), ...revisions]);
 
   return c.json({ ok: true });
 });
@@ -1376,6 +1379,7 @@ app.get('/s/:token', async (c) => {
       title: document.name,
       body,
       createdAt,
+      updatedAt: document.updated_at ? new Date(document.updated_at).getTime() : undefined,
       downloadHref: `/s/${encodeURIComponent(token)}?download`,
       markdownHref: `/s/${encodeURIComponent(token)}?download=md`,
       reportHref: `/report/${encodeURIComponent(token)}`,

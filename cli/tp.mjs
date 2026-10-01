@@ -259,6 +259,55 @@ async function push() {
       ]
     : sources.map((s) => ({ name: flags.name ?? s.name, kind: s.kind, markdown: s.markdown }));
 
+  /*
+   * The same document with new text: same id, same link, same password and end, and the text it
+   * replaces kept as a revision on the server. Markdown only, one document, and nothing about the
+   * link — what the link is stays what it was.
+   */
+  if (flags.update) {
+    if (flags.update === true) {
+      fail('--update takes the id of the document to update: `tp push notes.md --update <id>`');
+    }
+
+    if (flags.replaces) {
+      fail('--update changes the text of one document; --replaces makes a new one beside it. Pick one.');
+    }
+
+    if (share || flags.expires || flags.password) {
+      fail('--update keeps the link as it is. Drop --share, --expires and --password, or change them on the site.');
+    }
+
+    if (documents.length !== 1) {
+      fail('--update takes one document. Push one file, or --merge several into one.');
+    }
+
+    if (documents[0].kind) {
+      fail(`${documents[0].name}: --update takes Markdown. Push a new document instead.`);
+    }
+
+    const answer = await call(`/documents/${encodeURIComponent(String(flags.update))}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        markdown: documents[0].markdown,
+        ...(typeof flags.name === 'string' ? { name: flags.name } : {}),
+      }),
+    });
+
+    if (flags.json) {
+      console.log(JSON.stringify(answer, null, 2));
+      return;
+    }
+
+    const updated = answer.document;
+
+    console.log(`${updated.name}  ${bytes(updated.size)}  ${updated.words} words`);
+    console.log(`  ${answer.changed ? 'updated' : 'unchanged — the text is the same'}`);
+    console.log(`  ${updated.share.url ?? `${HOST}/history (not shared)`}`);
+
+    return;
+  }
+
   const results = [];
 
   for (const document of documents) {
@@ -441,13 +490,14 @@ if (!command || command === '--help' || command === '-h') {
       '  tp push notes.md --share --expires 7d  a link that stops working in a week',
       '  TP_SHARE_PASSWORD=… tp push notes.md --share --password  a link that asks for a password',
       '  tp push v2.md --replaces <id>     link this push to an earlier document as a new version',
+      '  tp push notes.md --update <id>    new text for the same document — same link, old text kept',
       '  tp list --q invoice               what is in the account, matching name or content',
       '  tp versions <id>                  every document in the same chain, oldest first',
       '  tp rm <id>                        delete one',
       '  tp summary <id>                   a short summary, generated once and cached',
       '  tp usage                          how much room is left',
       '',
-      'Options: --key, --name, --share link|people, --expires 7d|12h|2026-12-31, --password (from TP_SHARE_PASSWORD), --merge, --replaces, --force, --json',
+      'Options: --key, --name, --share link|people, --expires 7d|12h|2026-12-31, --password (from TP_SHARE_PASSWORD), --merge, --replaces, --update, --force, --json',
       '',
       '`tp login` leaves the key in your shell history. TP_API_KEY in the environment does not.',
       `Host:    ${HOST}  (TP_HOST to point elsewhere)`,

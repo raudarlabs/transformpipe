@@ -412,3 +412,37 @@ create table if not exists m2h_usage_daily (
 );
 
 create index if not exists m2h_usage_daily_event on m2h_usage_daily (event, day);
+
+-- When a document's text was last replaced in place, through PUT /api/v1/documents/:id. Null for
+-- one that still has the text it was created with — which is every document written before this
+-- column, and every one written by a POST, since a POST never updates anything.
+
+alter table m2h_document
+  add column if not exists updated_at timestamptz;
+
+-- The text a document had before each in-place update: the newest ten, per document.
+--
+-- Updating in place keeps a document's id and link, which is the point — a note published from
+-- Obsidian and edited next week is still the page that was sent — and it would also mean a reader
+-- of the old text loses it, and the owner loses the draft before. So the text that is replaced is
+-- kept here first. Ten, because a revision is a draft somebody might want back, not an archive;
+-- the eleventh update drops the oldest. They count towards the account's bytes, like the document
+-- they came from, but not towards its document count, or editing one note would use up the limit.
+--
+-- The text goes where the document's does: to the store when there is one, beside the document's
+-- own file, and in `markdown` when there is not.
+
+create table if not exists m2h_document_revision (
+  id          uuid        primary key default gen_random_uuid(),
+  document_id uuid        not null references m2h_document (id) on delete cascade,
+  -- When that text was written: the document's created_at, or its updated_at if it had one.
+  written_at  timestamptz not null,
+  replaced_at timestamptz not null default now(),
+  name        text        not null,
+  size        integer     not null,
+  markdown    text,
+  blob_path   text
+);
+
+create index if not exists m2h_document_revision_document
+  on m2h_document_revision (document_id, replaced_at desc);

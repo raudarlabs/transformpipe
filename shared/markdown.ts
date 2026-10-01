@@ -1029,6 +1029,8 @@ interface SharedPageOptions {
   title: string;
   body: string;
   createdAt?: number;
+  /** When its text was last replaced, so a reader can tell an edited page from the first one. */
+  updatedAt?: number;
   /** Where the Download link points; omitted for a page nobody should save from. */
   downloadHref?: string;
   /** The same document's Markdown source, offered beside the HTML in the download menu. */
@@ -1130,6 +1132,7 @@ export function buildSharedPage({
   title,
   body,
   createdAt = Date.now(),
+  updatedAt,
   downloadHref,
   markdownHref,
   reportHref,
@@ -1193,6 +1196,8 @@ ${SHARED_CHROME_STYLE}
 ${body}
 </article>
 <p class="md-footer">Shared document · converted ${escapeHtml(stamp)}${
+    updatedAt ? ` · updated ${escapeHtml(new Date(updatedAt).toISOString().slice(0, 10))}` : ''
+  }${
     reportHref
       ? ` · <a href="${escapeHtml(reportHref)}">Report this document</a>`
       : ''

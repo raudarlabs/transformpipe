@@ -33,6 +33,7 @@ import { jsonToMarkdown } from '../shared/from-json.js';
 import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
+import { dropRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { hashPassword, readPassword } from './share-password.js';
@@ -209,6 +210,7 @@ interface DocumentRow {
   summary?: string | null;
   summary_created_at?: string | null;
   replaces?: string | null;
+  updated_at?: string | null;
 }
 
 /*
@@ -235,6 +237,8 @@ const asDocument = (
   size: row.size,
   words: row.stats?.words ?? 0,
   created_at: row.created_at,
+  // When its text was last replaced in place, or null if it still has the text it was made with.
+  updated_at: isoOrNull(row.updated_at),
   share: {
     mode: row.share_mode,
     url: shareUrl(c, row.share_token),
@@ -267,7 +271,7 @@ v1.get('/documents', async (c) => {
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at
           from m2h_document
           where user_id = ${c.get('caller').id}
             and search @@ websearch_to_tsquery('simple', ${q})
@@ -275,7 +279,7 @@ v1.get('/documents', async (c) => {
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at
           from m2h_document
           where user_id = ${c.get('caller').id}
           order by created_at desc
@@ -741,6 +745,165 @@ v1.post('/documents', async (c) => {
   return c.json({ document: asDocument(c, created[0], { words: stats.words }) }, 201);
 });
 
+/*
+ * Replacing a document's text in place: the same id, the same link, the same password, end and
+ * recipients, and the opens already counted.
+ *
+ * What it takes is Markdown — the raw body, or `{ "markdown": "…", "name": "…" }` — and nothing
+ * else: converting a .docx is what POST is for, and the caller who has the Markdown already is the
+ * one this is for (the Obsidian plugin, `tp push --update`). The text it replaces is kept first as
+ * a revision, the newest ten of them, so an update loses nothing; see `server/revisions.ts`.
+ *
+ * Unchanged text is not an update: it answers 200 with `changed: false`, keeps no revision and
+ * moves no date, so pressing Publish twice costs nothing.
+ *
+ * Opt-in by being a different request. A POST never updates anything, so a link in an old
+ * pull-request comment still shows what that commit said.
+ */
+v1.put('/documents/:id', async (c) => {
+  const userId = c.get('caller').id;
+  const row = await findDocument(userId, c.req.param('id'));
+
+  if (!row) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  let markdown: unknown;
+  let name: unknown = c.req.query('name');
+
+  if ((c.req.header('content-type') ?? '').includes('application/json')) {
+    const body = await c.req.json<{ markdown?: unknown; name?: unknown }>().catch(() => null);
+
+    markdown = body?.markdown;
+    name = body?.name ?? name;
+  } else {
+    markdown = await c.req.text();
+  }
+
+  if (typeof markdown !== 'string' || markdown.trim() === '') {
+    return c.json({ error: 'Send the new Markdown as the body, or as `markdown` in JSON' }, 400);
+  }
+
+  if (name !== undefined && (typeof name !== 'string' || name.trim() === '')) {
+    return c.json({ error: 'name must be text' }, 400);
+  }
+
+  const nextName = typeof name === 'string' ? name.trim().slice(0, 200) : row.name;
+  const size = new TextEncoder().encode(markdown).length;
+
+  if (size > QUOTA.documentBytes) {
+    return c.json(
+      {
+        error: `That document is ${mb(size)}; the limit for one document is ${mb(QUOTA.documentBytes)}.`,
+      },
+      413
+    );
+  }
+
+  const previous = (await readSource(row)) ?? '';
+
+  if (previous === markdown && nextName === row.name) {
+    return c.json({ document: asDocument(c, row, { words: row.stats?.words ?? 0 }), changed: false });
+  }
+
+  /* The new text and the kept old one are both on the account until the eleventh update. */
+  const usage = await usageOf(userId);
+
+  if (usage.bytes + size > QUOTA.bytes) {
+    return c.json(
+      {
+        error: `That would take the account past ${mb(QUOTA.bytes)}. Delete documents, or older versions go when you update one ten more times.`,
+        usage,
+      },
+      403
+    );
+  }
+
+  const revision = await keepRevision(userId, row, previous).catch(() => null);
+
+  if (!revision) {
+    return c.json({ error: 'Could not keep the previous version, so nothing was changed' }, 502);
+  }
+
+  try {
+    const stored = await putSource(userId, row.id, markdown);
+    const html = markdownToHtml(markdown);
+    const stats = getDocStats(markdown, html);
+
+    /*
+     * The summary goes: it described the text that was replaced, and a summary of last week's
+     * draft shown over this week's is worse than none until somebody asks again.
+     */
+    const [updated] = (await sql()`
+      update m2h_document
+      set size = ${size}, stats = ${JSON.stringify(stats)}::jsonb, name = ${nextName},
+          search = to_tsvector('simple', ${markdown}),
+          blob_path = ${stored.blobPath}, markdown = ${stored.markdown},
+          summary = null, summary_created_at = null, updated_at = now()
+      where user_id = ${userId} and id = ${row.id}
+      returning id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at,
+                share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at
+    `) as DocumentRow[];
+
+    const kept = await pruneRevisions(row.id);
+
+    return c.json({ document: asDocument(c, updated, { words: stats.words }), changed: true, revisions: kept });
+  } catch (cause) {
+    await dropRevision(revision).catch(() => undefined);
+
+    const why = cause instanceof Error ? cause.message : 'upload failed';
+
+    return c.json({ error: `Could not store the new text, so nothing was changed: ${why}` }, 502);
+  }
+});
+
+/** The texts a document had before its in-place updates, newest first, without the text itself. */
+v1.get('/documents/:id/revisions', async (c) => {
+  const row = await findDocument(c.get('caller').id, c.req.param('id'));
+
+  if (!row) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  const revisions = await listRevisions(row.id);
+
+  return c.json({
+    revisions: revisions.map((one) => ({
+      id: one.id,
+      name: one.name,
+      size: one.size,
+      written_at: isoOrNull(one.written_at),
+      replaced_at: isoOrNull(one.replaced_at),
+    })),
+  });
+});
+
+/** One of them, with its Markdown. */
+v1.get('/documents/:id/revisions/:revision', async (c) => {
+  const row = await findDocument(c.get('caller').id, c.req.param('id'));
+
+  if (!row || !looksLikeId(c.req.param('revision'))) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  const one = await readRevision(row.id, c.req.param('revision'));
+
+  if (!one) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  return c.json({
+    revision: {
+      id: one.id,
+      name: one.name,
+      size: one.size,
+      written_at: isoOrNull(one.written_at),
+      replaced_at: isoOrNull(one.replaced_at),
+      markdown: one.markdown,
+    },
+  });
+});
+
 /** Postgres rejects a malformed uuid with an error, which reaches the caller as a 500. */
 async function findDocument(userId: string, id: string) {
   if (!looksLikeId(id)) {
@@ -750,7 +913,7 @@ async function findDocument(userId: string, id: string) {
   const rows = (await sql()`
     select id, user_id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at,
            share_views, share_viewed_at, share_password_hash,
-           markdown, blob_path, summary, summary_created_at, replaces
+           markdown, blob_path, summary, summary_created_at, replaces, updated_at
     from m2h_document
     where user_id = ${userId} and id = ${id}
   `) as Array<
@@ -1009,6 +1172,7 @@ v1.delete('/documents/:id', async (c) => {
     return c.json({ error: 'Not found' }, 404);
   }
 
+  const revisions = await revisionFiles(c.get('caller').id, c.req.param('id'));
   const removed = (await sql()`
     delete from m2h_document
     where user_id = ${c.get('caller').id} and id = ${c.req.param('id')}
@@ -1019,7 +1183,7 @@ v1.delete('/documents/:id', async (c) => {
     return c.json({ error: 'Not found' }, 404);
   }
 
-  await deleteSources(removed.map((row) => row.blob_path));
+  await deleteSources([...removed.map((row) => row.blob_path), ...revisions]);
 
   return c.json({ ok: true });
 });

@@ -166,6 +166,10 @@ export const docsPage = {
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
   'docs.api.delete': 'Removes the row and its stored source.',
+  'docs.api.update':
+    'New text for the same document: Markdown as the body, or JSON with markdown and name. The id, the link and everything set on it stay; the text it replaces is kept as a revision, the newest ten. The same text again changes nothing.',
+  'docs.api.revisions':
+    'The texts a document had before its updates, newest first; add a revision’s id to read one with its Markdown.',
   'docs.api.share':
     '{modes}. {private} drops the token. {expiry} is an ISO 8601 date-time, or null for no end. {password} sets one on a link, in the body only, and null removes it.',
   'docs.api.views':

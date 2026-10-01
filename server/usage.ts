@@ -176,6 +176,9 @@ const API_ROUTES = new Set([
   '/documents/:id/summary',
   '/documents/:id/versions',
   '/documents/:id/share',
+  '/documents/:id/views',
+  '/documents/:id/revisions',
+  '/documents/:id/revisions/:revision',
 ]);
 
 /** A /api/v1 request as the route it hit, without the id in it. */
@@ -184,7 +187,8 @@ export function apiRouteKey(method: string, path: string): string {
     path
       .replace(/^\/api\/v1/, '')
       .replace(/\/+$/, '')
-      .replace(/^\/documents\/[^/]+/, '/documents/:id') || '/';
+      .replace(/^\/documents\/[^/]+/, '/documents/:id')
+      .replace(/^(\/documents\/:id\/revisions)\/[^/]+$/, '$1/:revision') || '/';
 
   return ['GET', 'POST', 'PUT', 'DELETE'].includes(method) && API_ROUTES.has(shape)
     ? `${method} ${shape}`

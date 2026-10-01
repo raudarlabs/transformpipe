@@ -170,6 +170,10 @@ export const docsPage = {
   'docs.api.one': 'Metadaten und der Markdown-Quelltext.',
   'docs.api.html': 'Das eigenständige Dokument. {theme} optional.',
   'docs.api.delete': 'Entfernt die Zeile und die gespeicherte Quelle.',
+  'docs.api.update':
+    'Neuer Text für dasselbe Dokument: Markdown als Body oder JSON mit markdown und name. Id, Link und alles, was daran eingestellt ist, bleiben; der ersetzte Text wird als Revision aufgehoben, die neuesten zehn. Derselbe Text noch einmal ändert nichts.',
+  'docs.api.revisions':
+    'Die Texte, die ein Dokument vor seinen Aktualisierungen hatte, neueste zuerst; mit der Id einer Revision lesen Sie sie samt Markdown.',
   'docs.api.share':
     '{modes}. {private} verwirft das Token. {expiry} ist ein Zeitpunkt nach ISO 8601 oder null für kein Ende. {password} setzt eines auf einen Link, nur im Body, und null entfernt es.',
   'docs.api.views':

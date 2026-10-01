@@ -67,6 +67,35 @@ export async function putSource(
 }
 
 /**
+ * Writes the text a document is about to lose, beside the document's own file.
+ *
+ * Its own path per revision, so replacing the document's file cannot touch it, and the prefix is
+ * the document's, so the reconcile script can tell a revision from an orphan.
+ */
+export async function putRevisionSource(
+  userId: string,
+  documentId: string,
+  revisionId: string,
+  markdown: string
+): Promise<StoredSource> {
+  if (!blobEnabled()) {
+    return { blobPath: null, markdown };
+  }
+
+  const path = `sources/${userId}/${documentId}.rev-${revisionId}.md`;
+
+  await put(path, markdown, {
+    access: 'private',
+    contentType: 'text/markdown; charset=utf-8',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    ...auth(),
+  });
+
+  return { blobPath: path, markdown: null };
+}
+
+/**
  * Reads a source back, from wherever the row says it is — and moves it if it is still in the row.
  *
  * Documents written before the store existed keep their text in the column, and so do any written

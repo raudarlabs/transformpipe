@@ -45,6 +45,21 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
       · sharing, versions and the Word export already exist, and so does the MCP server — which is
       the way in to VS Code, Cursor and SSMS without writing an extension for any of them
 
+### Obsidian
+
+Decided on 1 October: Publish makes a link, ten revisions are kept, linked notes wait for 1.1, and
+Cursor comes in with the sign-in work because it needs the same thing.
+
+- [ ] **The Obsidian plugin** — Publish note (a link, and the same link again after an edit), Copy
+      link, Share with people, Make private, Export as Word or PDF; vault pictures carried inside
+      · `raudarlabs/transformpipe-obsidian`; signs in with OAuth through `obsidian://`, keeps its
+      tokens in Obsidian's SecretStorage; reviewed at community.obsidian.md, BRAT meanwhile
+- [ ] **Cursor connects** — its `cursor://` callback is accepted now; seen to work end to end, and
+      its row in the assistants' table moves
+- [ ] **A page for Obsidian, and an article** — `/obsidian` and the post, five languages each
+- [ ] **Linked notes become linked pages** — a `[[note]]` that is published too opens its page
+      · the plugin's 1.1
+
 ### The pull request, and the link
 
 - [ ] **The GitHub App** — install once, and every pull request touching Markdown gets a rendered
@@ -96,6 +111,9 @@ says otherwise.
 
 ### 1 October
 
+- [x] **Update a document in place** — `PUT /api/v1/documents/:id` and `tp push --update`: the same
+      id and link, the old text kept as a revision (ten, as bytes not documents), the shared page
+      saying when. What the Obsidian plugin's Publish stands on; a POST still never updates
 - [x] **ChatGPT connects** — a connector in developer mode, the same sign-in and the same cards as
       Claude. ChatGPT's client document would rather sign its token requests and lists `none`
       beside it, so it connects as a public client under PKCE; verifying `private_key_jwt` is the

@@ -32,8 +32,19 @@ export interface Usage {
 }
 
 export async function usageOf(userId: string): Promise<Usage> {
+  /*
+   * A document's kept revisions are bytes the account holds, so they count here; they are not
+   * documents, so they do not count there — editing one note ten times must not use up ten of
+   * the five hundred.
+   */
   const rows = (await sql()`
-    select coalesce(sum(size), 0)::bigint as bytes, count(*)::int as documents
+    select
+      coalesce(sum(size), 0)::bigint + coalesce((
+        select sum(r.size) from m2h_document_revision r
+        join m2h_document d on d.id = r.document_id
+        where d.user_id = ${userId}
+      ), 0)::bigint as bytes,
+      count(*)::int as documents
     from m2h_document
     where user_id = ${userId}
   `) as Array<{ bytes: string; documents: number }>;
