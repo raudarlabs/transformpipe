@@ -773,7 +773,20 @@ try {
     ['docx', 'PK', 'officedocument'],
     ['pdf', '%PDF-', 'application/pdf'],
   ]) {
-    const response = await v1(`/documents/${exported.id}.${format}`);
+    let response = await v1(`/documents/${exported.id}.${format}`);
+
+    /*
+     * Everything above has spent most of this minute's sixty requests; waiting out the limit is
+     * the API working, not the export failing.
+     */
+    if (response.status === 429) {
+      const wait = Number(response.headers.get('retry-after') ?? '30');
+
+      console.log(`  …  waiting ${wait}s for the rate limit`);
+      await new Promise((resolve) => setTimeout(resolve, (wait + 1) * 1000));
+      response = await v1(`/documents/${exported.id}.${format}`);
+    }
+
     const bytes = Buffer.from(await response.arrayBuffer());
 
     check(
