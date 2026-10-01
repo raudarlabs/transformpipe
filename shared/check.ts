@@ -1,5 +1,5 @@
 import { Marked, type Token, type Tokens } from 'marked';
-import { slugify } from './markdown.js';
+import { githubSlug, slugify } from './markdown.js';
 
 /*
  * What is wrong with a document, without touching it.
@@ -50,6 +50,19 @@ export interface Finding {
  * the links and headings it looks at are written in either way.
  */
 const reader = new Marked({ gfm: true, breaks: false });
+
+/** A link's fragment as the renderer matches it: decoded, and in lower case. */
+function fragment(href: string): string {
+  let wanted = href.slice(1);
+
+  try {
+    wanted = decodeURIComponent(wanted);
+  } catch {
+    // Left as written.
+  }
+
+  return wanted.toLowerCase();
+}
 
 /** Every heading in the document, in order, with the anchor it will be given. */
 function headings(tokens: Token[]): { text: string; id: string }[] {
@@ -113,10 +126,15 @@ export function checkDocument(markdown: string): Finding[] {
    * only against the prefixed form would have called every internal link in every ordinary
    * document dead, which is the kind of checker people switch off.
    */
+  /* The same spellings the renderer turns into the heading's id — see `linkAnchors`. */
+  const github = new Map<string, number>();
   const anchors = new Set(
     headings(blocks).flatMap((heading) => [
       heading.id,
       heading.id.replace(/^doc-/, ''),
+      githubSlug(heading.text.trim(), github),
+      heading.text.trim().toLowerCase(),
+      heading.text.trim().toLowerCase().replace(/\s+/g, '-'),
     ])
   );
   const findings: Finding[] = [];
@@ -180,7 +198,7 @@ export function checkDocument(markdown: string): Finding[] {
           add('empty-href', start, text);
         } else if (!text) {
           add('empty-link', start, link.href);
-        } else if (link.href.startsWith('#') && !anchors.has(link.href.slice(1))) {
+        } else if (link.href.startsWith('#') && !anchors.has(fragment(link.href))) {
           /*
            * A near miss is worth naming: a link written before a heading was reworded is the
            * common case, and the anchor it wants is usually one edit away from one that exists.

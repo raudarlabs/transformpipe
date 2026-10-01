@@ -440,6 +440,89 @@ export function slugify(text: string, used: Map<string, number>): string {
 }
 
 /**
+ * The anchor GitHub gives a heading, which is the one people write links to.
+ *
+ * github-slugger's rule: lower case, drop everything but letters, marks, digits, `_`, `-` and
+ * spaces, then every space a hyphen — each one, so "Tier 2 — watching" is `tier-2--watching`, where
+ * `slugify` above collapses the run. Repeats take `-1`, `-2`, in order, given the same `used` map.
+ */
+export function githubSlug(text: string, used?: Map<string, number>): string {
+  const base = text.toLowerCase().replace(/[^\p{L}\p{M}\p{N}\p{Pc}\- ]/gu, '').replace(/ /g, '-');
+
+  if (!used) {
+    return base;
+  }
+
+  const seen = used.get(base) ?? 0;
+
+  used.set(base, seen + 1);
+
+  return seen === 0 ? base : `${base}-${seen}`;
+}
+
+/**
+ * Points every link to a heading at the heading's real id.
+ *
+ * A heading here is `id="doc-…"` (see `slugify`), and a link in the document is whatever its writer
+ * typed: `#setup` as GitHub and most editors make it, `#tier-2--watching` with GitHub's doubled
+ * hyphen, `#Setup%20and%20use` as Obsidian writes it, or the prefixed form. None of those but the
+ * last ever reached a heading, so a table of contents did nothing — while the document check,
+ * which accepts every spelling, called the same links fine. Rewritten here, once, so the preview,
+ * the shared page and the downloaded file all jump.
+ *
+ * Only links that start with `#` and only when one of a heading's spellings matches; anything else
+ * — a footnote, the back-to-top control, a link to a heading that does not exist — is left alone.
+ */
+function linkAnchors(html: string, headings: Array<{ id: string; plain: string }>): string {
+  if (headings.length === 0) {
+    return html;
+  }
+
+  const ids = new Set(headings.map((heading) => heading.id));
+  const target = new Map<string, string>();
+  const github = new Map<string, number>();
+  const add = (spelling: string, id: string) => {
+    if (spelling && !target.has(spelling)) {
+      target.set(spelling, id);
+    }
+  };
+
+  for (const heading of headings) {
+    const words = heading.plain.trim().toLowerCase();
+
+    add(heading.id.replace(/^doc-/, ''), heading.id);
+    add(githubSlug(heading.plain.trim(), github), heading.id);
+    add(words, heading.id);
+    add(words.replace(/\s+/g, '-'), heading.id);
+  }
+
+  return html.replace(/href="#([^"]+)"/g, (whole, raw: string) => {
+    if (ids.has(raw)) {
+      return whole;
+    }
+
+    let wanted = raw
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+
+    try {
+      wanted = decodeURIComponent(wanted);
+    } catch {
+      // A stray % is still a fragment somebody meant.
+    }
+
+    wanted = wanted.toLowerCase();
+
+    const id = target.get(wanted) ?? target.get(wanted.replace(/^doc-/, ''));
+
+    return id ? `href="#${id}"` : whole;
+  });
+}
+
+/**
  * What survives sanitising: exactly what this converter can produce, and nothing else.
  *
  * The list lives here because the two runtimes sanitise with different tools — DOMPurify against
@@ -485,6 +568,7 @@ export type Sanitize = (html: string) => string;
 /** Markdown -> sanitized HTML fragment (no <html> wrapper). */
 export function renderMarkdown(markdown: string, sanitize: Sanitize): string {
   const used = new Map<string, number>();
+  const headings: Array<{ id: string; plain: string }> = [];
 
   notes = { order: [], text: new Map() };
 
@@ -508,6 +592,8 @@ export function renderMarkdown(markdown: string, sanitize: Sanitize): string {
           .replace(/&gt;/g, '>')
           .replace(/&amp;/g, '&');
         const id = slugify(plain, used);
+
+        headings.push({ id, plain });
 
         return `<h${depth} id="${id}">${text}</h${depth}>\n`;
       },
@@ -600,7 +686,7 @@ export function renderMarkdown(markdown: string, sanitize: Sanitize): string {
    * prose. `notes.ts` explains why both are dropped rather than shown.
    */
   const source = rewriteWikilinks(stripFrontmatter(markdown));
-  const body = marked.parse(source, { async: false }) as string;
+  const body = linkAnchors(marked.parse(source, { async: false }) as string, headings);
   const collected = notes;
 
   notes = null;

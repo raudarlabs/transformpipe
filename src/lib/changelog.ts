@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Links to a heading jump to it',
+    body:
+      'A table of contents — [Setup](#setup) — did nothing in the preview, on a shared page or in the '
+      + 'downloaded file, because a heading’s anchor carries a prefix the link did not. Links now find '
+      + 'their heading however they were written: as GitHub or Obsidian writes them, in any language.',
+  },
+  {
+    date: '2026-10-01',
     title: 'Assistants can update a document and keep its link',
     body:
       'Ask Claude or ChatGPT to fix or rewrite a document you already have, and the new connector tool '
