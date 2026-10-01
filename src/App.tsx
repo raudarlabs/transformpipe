@@ -592,7 +592,7 @@ function Shell() {
         return;
       }
 
-      const label = format === 'html' ? 'HTML' : 'Markdown';
+      const label = format === 'html' ? 'HTML' : format === 'obsidian' ? 'Markdown for Obsidian' : 'Markdown';
 
       toast.success(
         saved === 1

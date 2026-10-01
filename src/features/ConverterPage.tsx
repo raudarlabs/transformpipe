@@ -252,7 +252,7 @@ export function ConverterPage({
    * format follows the conversion, and the rest stay one click away.
    */
   const primary: DocFormat = conversion.to === 'html' ? 'html' : 'md';
-  const secondary: DocFormat[] = (['md', 'html', 'txt'] as DocFormat[]).filter(
+  const secondary: DocFormat[] = (['md', 'obsidian', 'html', 'txt'] as DocFormat[]).filter(
     (one) => one !== primary
   );
 

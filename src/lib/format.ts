@@ -217,12 +217,17 @@ export function toHtmlFileName(markdownName: string): string {
 
 /** The document's own format: what the row shows, and what a download hands over. */
 /** What a stored document can be handed over as. Markdown is what it is; the rest are made. */
-export type DocFormat = 'md' | 'html' | 'txt';
+/**
+ * `obsidian` is Markdown too — the same file, with its links to its own headings written the way
+ * Obsidian reads them (see shared/to-obsidian.ts), for somebody moving it into a vault.
+ */
+export type DocFormat = 'md' | 'html' | 'txt' | 'obsidian';
 
 export const FORMAT_LABELS: Record<DocFormat, string> = {
   html: 'HTML',
   md: 'Markdown',
   txt: 'Plain text',
+  obsidian: 'Markdown for Obsidian',
 };
 
 export function toMarkdownFileName(name: string): string {

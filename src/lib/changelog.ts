@@ -114,6 +114,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-01',
+    title: 'Download Markdown for Obsidian',
+    body:
+      'Obsidian finds a heading by its words, not by the short anchor GitHub writes, so a table of '
+      + 'contents did nothing once a downloaded file was in a vault. The new download, next to Markdown '
+      + 'in the app and on a shared page, writes those links the way Obsidian reads them; they still '
+      + 'work here. The plain .md is still the source, exactly as written.',
+  },
+  {
+    date: '2026-10-01',
     title: 'Links to a heading jump to it',
     body:
       'A table of contents — [Setup](#setup) — did nothing in the preview, on a shared page or in the '

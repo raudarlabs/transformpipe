@@ -37,7 +37,7 @@ export type UsageEvent = BrowserEvent | ServerEvent;
 export const USAGE_LANGS = ['en', 'de', 'fr', 'es', 'it'] as const;
 
 /** Every format a download can be. Printing is not a download and is not counted. */
-export const DOWNLOAD_FORMATS = ['md', 'html', 'txt', 'docx'] as const;
+export const DOWNLOAD_FORMATS = ['md', 'html', 'txt', 'docx', 'obsidian'] as const;
 
 /** `link` is a public link turned on; `people` is an address added to a document. */
 export const SHARE_KINDS = ['link', 'people'] as const;

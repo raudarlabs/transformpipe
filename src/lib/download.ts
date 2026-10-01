@@ -1,5 +1,6 @@
 import { buildStandaloneHtml, markdownToHtml } from './markdown';
 import { inlineDiagrams } from './mermaid';
+import { obsidianHeadingLinks } from '@shared/to-obsidian';
 import { markdownToText } from '@shared/to-text';
 import { type DocFormat, toFileName } from './format';
 import type { Translate } from './i18n/context';
@@ -40,6 +41,11 @@ export async function downloadDoc(
 ) {
   if (format === 'md') {
     save(toFileName(name, 'md'), markdown, 'text/markdown;charset=utf-8');
+    return;
+  }
+
+  if (format === 'obsidian') {
+    save(toFileName(name, 'md'), obsidianHeadingLinks(markdown), 'text/markdown;charset=utf-8');
     return;
   }
 

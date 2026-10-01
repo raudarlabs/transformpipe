@@ -765,6 +765,36 @@ try {
     `${removedUpdate.status}, ${leftRevisions.n} left`
   );
 
+  /*
+   * Markdown for Obsidian: the same source with its table of contents rewritten the way a vault
+   * reads it. The plain .md stays the source, byte for byte.
+   */
+  console.log('\n— Markdown for Obsidian');
+
+  const tocText = '## Contents\n\n- [Tier 2 — watching](#tier-2--watching)\n\n## Tier 2 — watching\n';
+  const tocToken = randomBytes(16).toString('base64url');
+  const [tocRow] = await sql`
+    insert into m2h_document (user_id, name, size, markdown, stats, share_mode, share_token)
+    values (${someone.id}, 'check-obsidian.md', ${tocText.length}, ${tocText}, '{}'::jsonb, 'link', ${tocToken})
+    returning id
+  `;
+  made.documents.push(tocRow.id);
+
+  const forVault = await get(`/s/${tocToken}?download=obsidian`);
+  const forVaultText = await forVault.text();
+  const plainMd = await (await get(`/s/${tocToken}?download=md`)).text();
+  const tocPage = await (await get(`/s/${tocToken}`)).text();
+
+  check(
+    'the Obsidian download writes heading links the way a vault reads them',
+    forVault.status === 200 &&
+      forVaultText.includes('](#Tier%202%20—%20watching)') &&
+      (forVault.headers.get('content-disposition') ?? '').includes('.md'),
+    `${forVault.status} ${forVaultText.slice(0, 120)}`
+  );
+  check('while the plain .md is still the source exactly', plainMd === tocText, plainMd.slice(0, 120));
+  check('and the shared page offers it', tocPage.includes('?download=obsidian'));
+
   console.log('\n— Word and PDF');
 
   const exported = await shared();

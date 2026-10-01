@@ -1121,6 +1121,8 @@ interface SharedPageOptions {
   downloadHref?: string;
   /** The same document's Markdown source, offered beside the HTML in the download menu. */
   markdownHref?: string;
+  /** The same source with its links to its own headings written for Obsidian — see to-obsidian.ts. */
+  obsidianHref?: string;
   /** Where a reader can say this document should not be here. */
   reportHref?: string;
   /** The document in the app, where somebody signed in can keep a copy of it. */
@@ -1194,7 +1196,7 @@ const ICON_CHEVRON =
  * closes with no JavaScript at all. The HTML stays the button because it is the one a reader can
  * open anywhere; the Markdown is for somebody who means to keep working on the thing.
  */
-function downloadMenu(htmlHref?: string, markdownHref?: string): string {
+function downloadMenu(htmlHref?: string, markdownHref?: string, obsidianHref?: string): string {
   if (!htmlHref) {
     return '';
   }
@@ -1208,7 +1210,11 @@ function downloadMenu(htmlHref?: string, markdownHref?: string): string {
       <details class="formats">
         <summary aria-label="More formats" title="More formats">${ICON_CHEVRON}</summary>
         <div class="menu">
-          <a href="${escapeHtml(markdownHref)}">${ICON_DOWNLOAD}<span>Markdown <em>.md</em></span></a>
+          <a href="${escapeHtml(markdownHref)}">${ICON_DOWNLOAD}<span>Markdown <em>.md</em></span></a>${
+            obsidianHref
+              ? `\n          <a href="${escapeHtml(obsidianHref)}">${ICON_DOWNLOAD}<span>Markdown for Obsidian <em>.md</em></span></a>`
+              : ''
+          }
         </div>
       </details>
     </div>`;
@@ -1221,6 +1227,7 @@ export function buildSharedPage({
   updatedAt,
   downloadHref,
   markdownHref,
+  obsidianHref,
   reportHref,
   openHref,
   seenHref,
@@ -1275,7 +1282,7 @@ ${SHARED_CHROME_STYLE}
   </div>
   <div class="actions">
     ${openHref ? `<a class="save" href="${escapeHtml(openHref)}">Save to your account</a>` : ''}
-    ${downloadMenu(downloadHref, markdownHref)}
+    ${downloadMenu(downloadHref, markdownHref, obsidianHref)}
   </div>
 </div>
 <article class="md-page md-doc">

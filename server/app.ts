@@ -53,6 +53,7 @@ import {
 import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
+import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
@@ -1351,6 +1352,14 @@ app.get('/s/:token', async (c) => {
     return c.body(source);
   }
 
+  /* The same source, its links to its own headings rewritten so they work in an Obsidian vault. */
+  if (download === 'obsidian') {
+    c.header('content-type', 'text/markdown; charset=utf-8');
+    c.header('content-disposition', attachment(`${base}.md`));
+
+    return c.body(obsidianHeadingLinks(source));
+  }
+
   const body = markdownToHtml(source);
 
   /* `?download` alone is the address every earlier shared page printed, so it stays the HTML. */
@@ -1382,6 +1391,7 @@ app.get('/s/:token', async (c) => {
       updatedAt: document.updated_at ? new Date(document.updated_at).getTime() : undefined,
       downloadHref: `/s/${encodeURIComponent(token)}?download`,
       markdownHref: `/s/${encodeURIComponent(token)}?download=md`,
+      obsidianHref: `/s/${encodeURIComponent(token)}?download=obsidian`,
       reportHref: `/report/${encodeURIComponent(token)}`,
       /*
        * The same document in the app, which is where a copy can be kept: this page runs no script
