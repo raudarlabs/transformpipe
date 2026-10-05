@@ -1025,9 +1025,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Reescribe sin perder el primer borrador',
-            body: 'Cuando el asistente actualiza un documento, el texto nuevo se guarda como una versión junto a la anterior, en vez de encima. Puedes ver qué sustituyó a qué, preguntar qué cambió entre dos versiones y volver a abrir el primer borrador cuando quieras.',
+            body: 'Cuando el asistente actualiza un documento, lo modifica directamente y muestra las líneas que cambió. El enlace que ya enviaste muestra el texto nuevo, y cada texto anterior se queda en el historial, donde puedes volver a leerlo o preguntar qué cambió.',
             ask: '«Actualiza la especificación y conserva la versión anterior.»',
-            result: 'v1 → v2 · se conservan las dos',
+            result: 'Actualizado · se conserva el texto anterior',
           },
         ],
       },
@@ -1199,7 +1199,7 @@ export const pages: Content['pages'] = {
   'agents-claude': {
     label: 'Claude',
     title: 'Guarda y comparte lo que escribe Claude',
-    lede: 'Claude redacta las notas de versión, la especificación, el resumen de la reunión… y todo se queda en esa conversación. Añade TransformPipe como conector y Claude guarda cada documento en tu cuenta, conserva sus versiones y te da un enlace que se abre como una página terminada.',
+    lede: 'Claude redacta las notas de versión, la especificación, el acta… y todo se queda en ese chat. Añade TransformPipe como conector y Claude guarda cada texto en tu cuenta, conserva sus versiones y te da un enlace que se abre como una página terminada.',
     sections: [],
     landing: {
       eyebrow: 'Para Claude',
@@ -1243,9 +1243,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Reescribe sin perder el primer borrador',
-            body: 'Una actualización se guarda como versión nueva junto a la anterior, y Claude puede leer las dos y decirte qué ha cambiado.',
+            body: 'Claude actualiza el documento directamente y muestra las líneas que cambió. El enlace que enviaste muestra el texto nuevo, y cada texto anterior se queda en el historial, listo para volver a leerlo.',
             ask: '«Actualiza la especificación y conserva la versión anterior.»',
-            result: 'v1 → v2 · se conservan las dos',
+            result: 'Actualizado · se conserva el texto anterior',
           },
         ],
       },
@@ -1474,9 +1474,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Reescribe sin perder el primer borrador',
-            body: 'Una actualización se guarda como versión nueva junto a la anterior, así que el primer borrador nunca se pierde. ChatGPT puede leer las dos y decirte qué ha cambiado antes de que compartas la nueva, y el enlace antiguo sigue abriendo la antigua.',
+            body: 'ChatGPT actualiza el documento directamente y muestra las líneas que cambió. El enlace que ya enviaste muestra el texto nuevo, y el primer borrador se queda en el historial, a una pregunta de distancia.',
             ask: '«Actualiza el plan y conserva la versión anterior.»',
-            result: 'v1 → v2 · ambas guardadas',
+            result: 'Actualizado · se conserva el texto anterior',
           },
         ],
       },
@@ -1650,14 +1650,15 @@ export const pages: Content['pages'] = {
   },
   obsidian: {
     label: 'Plugin de Obsidian',
-    title: 'Publica una nota de Obsidian como página web',
-    lede: 'Un solo comando convierte la nota en una página limpia con su enlace, ya copiado en el portapapeles. Edita la nota y vuelve a publicarla: la página se actualiza y el enlace que ya enviaste sigue funcionando.',
+    title: 'Publica notas de Obsidian como página web',
+    lede: 'Tus notas viven en Obsidian y quienes las reciben no lo tienen. Un comando convierte la nota en una página limpia con su enlace ya copiado. Edítala y vuelve a publicarla: la página se actualiza y el enlace enviado sigue funcionando.',
     sections: [],
     plugin: {
       eyebrow: 'Plugin de Obsidian',
       listed: 'En Complementos de la comunidad',
       add: 'Añadir a Obsidian',
       directory: 'Verlo en el directorio',
+      copy: 'Copiar el enlace de instalación',
       facts: ['Cuenta gratuita', 'Escritorio y móvil', 'Código abierto, MIT'],
       features: {
         heading: 'Qué hace',

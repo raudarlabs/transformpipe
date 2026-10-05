@@ -7,7 +7,7 @@ import { cn } from '@/ui/lib/utils';
  * a screenshot in a frame, the opening picture — the tool, and over it the page its link opens —
  * and a feature as words on one side and its screenshot on the other.
  *
- * `/obsidian` was the first page built this way and the assistants' pages followed it, so the
+ * `/agents/obsidian` was the first page built this way and the assistants' pages followed it, so the
  * pieces live here rather than in either page. Every picture they are given is a real one: the
  * tool running, and a page drawn by TransformPipe's own renderer.
  */
@@ -40,31 +40,50 @@ export function Shot({ art, className, eager = false }: { art: Art; className?: 
  * The picture a page opens on: the tool, just after it did the thing — and, over it, in a browser
  * frame, the page its link opens.
  */
-export function ShowcaseHero({ back, front, url }: { back: Art; front: Art; url: string }) {
+export function ShowcaseHero({
+  back,
+  front,
+  url,
+  chatFirst = false,
+}: {
+  back: Art;
+  front: Art;
+  url: string;
+  /*
+   * The tool in front and the page behind it. An assistant's picture is a card in a chat, and a
+   * card is read across its whole width — the state on the right, the buttons along the bottom — so
+   * the page that would sit over half of it goes behind instead, its head showing above the chat.
+   */
+  chatFirst?: boolean;
+}) {
+  const page = (
+    <div className="overflow-hidden rounded-2xl border border-stroke bg-surface-card shadow-2xl">
+      <div className="flex items-center gap-1.5 border-stroke border-b bg-surface-page px-3 py-2">
+        <span className="size-2 rounded-full bg-ink-inactive/50" />
+        <span className="size-2 rounded-full bg-ink-inactive/50" />
+        <span className="size-2 rounded-full bg-ink-inactive/50" />
+        <span className="ml-2 inline-flex min-w-0 items-center gap-1.5 truncate rounded-md bg-surface-card2 px-2 py-0.5 font-mono text-[11px] text-ink-secondary">
+          <Link2 className="size-3 shrink-0 text-brand-tertiary" />
+          {url}
+        </span>
+      </div>
+      <img src={front.src} alt="" width={front.width} height={front.height} decoding="async" className="block h-auto w-full" />
+    </div>
+  );
+
+  if (chatFirst) {
+    return (
+      <div aria-hidden="true" className="relative pt-[30%]">
+        <div className="absolute top-0 right-0 w-[62%]">{page}</div>
+        <Shot art={back} className="relative w-[86%]" eager />
+      </div>
+    );
+  }
+
   return (
     <div aria-hidden="true" className="relative pb-16 sm:pb-24">
       <Shot art={back} className="w-[88%]" eager />
-      <div className="absolute right-0 bottom-0 w-[62%]">
-        <div className="overflow-hidden rounded-2xl border border-stroke bg-surface-card shadow-2xl">
-          <div className="flex items-center gap-1.5 border-stroke border-b bg-surface-page px-3 py-2">
-            <span className="size-2 rounded-full bg-ink-inactive/50" />
-            <span className="size-2 rounded-full bg-ink-inactive/50" />
-            <span className="size-2 rounded-full bg-ink-inactive/50" />
-            <span className="ml-2 inline-flex min-w-0 items-center gap-1.5 truncate rounded-md bg-surface-card2 px-2 py-0.5 font-mono text-[11px] text-ink-secondary">
-              <Link2 className="size-3 shrink-0 text-brand-tertiary" />
-              {url}
-            </span>
-          </div>
-          <img
-            src={front.src}
-            alt=""
-            width={front.width}
-            height={front.height}
-            decoding="async"
-            className="block h-auto w-full"
-          />
-        </div>
-      </div>
+      <div className="absolute right-0 bottom-0 w-[62%]">{page}</div>
     </div>
   );
 }

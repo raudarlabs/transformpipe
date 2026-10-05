@@ -638,14 +638,15 @@ function Shell() {
         onOpenPage={openPage}
         onHome={startOver}
         onAgentsPage={view === 'page' && pageId !== null && staticPage(pageId).group === 'agents'}
+        currentPage={view === 'page' ? pageId : null}
       />
 
       <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">
         {view === 'page' && pageId ? (
-          staticPage(pageId).group === 'agents' ? (
-            <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
-          ) : pageId === 'obsidian' ? (
+          pageId === 'obsidian' ? (
             <ObsidianPage page={staticPage(pageId)} onGoToConverter={startOver} />
+          ) : staticPage(pageId).group === 'agents' ? (
+            <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
           ) : (
             <StaticPage page={staticPage(pageId)} onGoToConverter={startOver} />
           )

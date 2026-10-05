@@ -1027,9 +1027,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Rewrite without losing the first draft',
-            body: 'When the assistant updates a document, the new text is kept as a version beside the old one rather than written over it. You can see what replaced what, ask what changed between two versions, and open the first draft again whenever you need it.',
+            body: 'When the assistant updates a document, it changes it in place and shows the lines it changed. The link you already sent shows the new text, and every earlier text stays in the history, where you can read it again or ask what changed.',
             ask: '“Update the spec and keep the old version.”',
-            result: 'v1 → v2 · both kept',
+            result: 'Updated · earlier text kept',
           },
         ],
       },
@@ -1245,9 +1245,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Rewrite without losing the first draft',
-            body: 'An update is kept as a new version beside the old one, and Claude can read both and tell you what moved.',
+            body: 'Claude updates the document in place and shows the lines it changed. The link you sent shows the new text, and every earlier one stays in the history, ready to read again.',
             ask: '“Update the spec and keep the old version.”',
-            result: 'v1 → v2 · both kept',
+            result: 'Updated · earlier text kept',
           },
         ],
       },
@@ -1476,9 +1476,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Rewrite without losing the first draft',
-            body: 'An update is kept as a new version beside the old one, so the first draft is never lost. ChatGPT can read both and tell you what moved before you share the new one — and the link you sent earlier still opens the old one.',
+            body: 'ChatGPT updates the document in place and shows the lines it changed. The link you already sent shows the new text, and the first draft stays in the history, one question away.',
             ask: '“Update the plan and keep the old version.”',
-            result: 'v1 → v2 · both kept',
+            result: 'Updated · earlier text kept',
           },
         ],
       },
@@ -1653,13 +1653,14 @@ export const pages: Content['pages'] = {
   obsidian: {
     label: 'Obsidian plugin',
     title: 'Publish an Obsidian note as a web page',
-    lede: 'One command turns the note into a clean page with a link, already on your clipboard. Edit the note and publish again: the page updates, and the link you already sent keeps working.',
+    lede: 'Your notes live in Obsidian, and the people you send them to don’t have it. One command turns a note into a clean page with a link, already on your clipboard. Edit the note and publish again: the page updates, and the link you sent keeps working.',
     sections: [],
     plugin: {
       eyebrow: 'Obsidian plugin',
       listed: 'In Community plugins',
       add: 'Add to Obsidian',
       directory: 'See it in the directory',
+      copy: 'Copy the install link',
       facts: ['Free account', 'Desktop and mobile', 'Open source, MIT'],
       features: {
         heading: 'What it does',

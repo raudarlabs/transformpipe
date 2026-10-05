@@ -1022,9 +1022,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Réécrire sans perdre le premier jet',
-            body: 'Quand l’assistant met un document à jour, le nouveau texte est conservé comme une version à côté de l’ancienne plutôt que par-dessus. Vous voyez ce qui a remplacé quoi, pouvez demander ce qui a changé entre deux versions et rouvrir le premier jet quand vous voulez.',
+            body: 'Quand l’assistant met un document à jour, il le modifie sur place et montre les lignes modifiées. Le lien que vous avez déjà envoyé affiche le nouveau texte, et chaque texte précédent reste dans l’historique, où vous pouvez le relire ou demander ce qui a changé.',
             ask: '« Mettez à jour la spécification et gardez l’ancienne version. »',
-            result: 'v1 → v2 · les deux conservées',
+            result: 'Mis à jour · texte précédent conservé',
           },
         ],
       },
@@ -1240,9 +1240,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Réécrire sans perdre le premier jet',
-            body: 'Une mise à jour est conservée comme nouvelle version à côté de l’ancienne, et Claude peut lire les deux et vous dire ce qui a bougé.',
+            body: 'Claude met le document à jour sur place et montre les lignes modifiées. Le lien que vous avez envoyé affiche le nouveau texte, et chaque texte précédent reste dans l’historique, prêt à être relu.',
             ask: '« Mettez à jour la spécification et gardez l’ancienne version. »',
-            result: 'v1 → v2 · les deux conservées',
+            result: 'Mis à jour · texte précédent conservé',
           },
         ],
       },
@@ -1471,9 +1471,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Réécrire sans perdre le premier jet',
-            body: 'Une mise à jour est gardée comme nouvelle version à côté de l’ancienne : le premier jet n’est jamais perdu. ChatGPT peut lire les deux et vous dire ce qui a changé avant que vous partagiez la nouvelle — et l’ancien lien ouvre toujours l’ancienne.',
+            body: 'ChatGPT met le document à jour sur place et montre les lignes modifiées. Le lien que vous avez déjà envoyé affiche le nouveau texte, et le premier jet reste dans l’historique : une question suffit pour le retrouver.',
             ask: '« Mettez le plan à jour et gardez l’ancienne version. »',
-            result: 'v1 → v2 · les deux gardées',
+            result: 'Mis à jour · texte précédent conservé',
           },
         ],
       },
@@ -1648,13 +1648,14 @@ export const pages: Content['pages'] = {
   obsidian: {
     label: 'Plugin Obsidian',
     title: 'Publier une note Obsidian en page web',
-    lede: 'Une commande transforme la note en page soignée, avec son lien déjà dans votre presse-papiers. Modifiez la note et publiez à nouveau : la page se met à jour, et le lien que vous avez déjà envoyé continue de fonctionner.',
+    lede: 'Vos notes vivent dans Obsidian, vos destinataires ne l’ont pas. Une commande transforme la note en page soignée, avec son lien déjà dans le presse-papiers. Modifiez la note et publiez à nouveau : la page se met à jour, et le lien déjà envoyé continue de fonctionner.',
     sections: [],
     plugin: {
       eyebrow: 'Plugin Obsidian',
       listed: 'Dans les plugins communautaires',
       add: 'Ajouter à Obsidian',
       directory: 'Le voir dans l’annuaire',
+      copy: 'Copier le lien d’installation',
       facts: ['Compte gratuit', 'Ordinateur et mobile', 'Open source, MIT'],
       features: {
         heading: 'Ce qu’il fait',

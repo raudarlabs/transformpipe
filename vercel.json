@@ -10,6 +10,16 @@
       "source": "/:locale(de|fr|es|it)/contact",
       "destination": "/:locale/support",
       "permanent": true
+    },
+    {
+      "source": "/obsidian",
+      "destination": "/agents/obsidian",
+      "permanent": true
+    },
+    {
+      "source": "/:locale(de|fr|es|it)/obsidian",
+      "destination": "/:locale/agents/obsidian",
+      "permanent": true
     }
   ],
   "rewrites": [

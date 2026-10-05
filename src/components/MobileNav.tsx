@@ -15,6 +15,8 @@ import {
   type ConversionId,
 } from '@shared/conversions';
 import { useI18n, useT } from '@/lib/i18n/context';
+import { AGENT_LINKS } from './agentLinks';
+import { BrandLogo } from './BrandLogo';
 import { LOCALE_NAMES, LOCALES } from '@/lib/i18n/locales';
 import { pagesIn, type StaticPageId } from '@/lib/pages';
 import { LocaleFlag } from './LocaleFlag';
@@ -38,6 +40,8 @@ interface MobileNavProps {
   historyCount: number;
   /** Whether the page open is one of the assistants pages, for the row that leads there. */
   onAgentsPage: boolean;
+  /** The page open, if a page is, so its row among the assistants is lit. */
+  currentPage?: StaticPageId | null;
   onViewChange: (view: Destination) => void;
   onConversionChange: (id: ConversionId) => void;
   onOpenPage: (id: StaticPageId) => void;
@@ -79,6 +83,7 @@ export function MobileNav({
   conversionId,
   historyCount,
   onAgentsPage,
+  currentPage = null,
   onViewChange,
   onConversionChange,
   onOpenPage,
@@ -180,13 +185,11 @@ export function MobileNav({
               );
             })}
 
-            {/* A page rather than a view, so not in DESTINATIONS — but a destination all the same. */}
-            <button
-              type="button"
-              onClick={go(() => onOpenPage('agents'))}
-              aria-current={onAgentsPage ? 'page' : undefined}
-              className={cn(row, onAgentsPage && 'bg-surface-accent')}
-            >
+            {/*
+              * The assistants, under their name rather than behind it: `/agents` is Claude's page
+              * in all but name, so the heading is a heading and the three below are the links.
+              */}
+            <div className={cn(row, 'cursor-default hover:bg-transparent')}>
               <Bot className="size-4 shrink-0 text-brand-tertiary" />
               <Typography
                 variant="span"
@@ -196,7 +199,32 @@ export function MobileNav({
               >
                 {t('header.nav.agents')}
               </Typography>
-            </button>
+            </div>
+
+            {/* The same three the bar's menu lists, one step in, so the plugin is a tap away too. */}
+            <div className="flex flex-col gap-1 pl-6">
+              {AGENT_LINKS.map((one) => (
+                <button
+                  key={one.id}
+                  type="button"
+                  onClick={go(() => onOpenPage(one.id))}
+                  aria-current={currentPage === one.id ? 'page' : undefined}
+                  className={cn(row, 'py-1.5', currentPage === one.id && 'bg-surface-accent')}
+                >
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-stroke bg-surface-card2 text-ink-primary">
+                    <BrandLogo name={one.logo} className="size-4" />
+                  </span>
+                  <span className="flex min-w-0 flex-col text-left">
+                    <Typography variant="span" weight="medium" textColor="primary" className="text-sm">
+                      {content.pages[one.id].label}
+                    </Typography>
+                    <Typography variant="span" textColor="secondary" className="text-xs">
+                      {t(one.hint)}
+                    </Typography>
+                  </span>
+                </button>
+              ))}
+            </div>
           </section>
 
           {/*

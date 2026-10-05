@@ -192,11 +192,6 @@ export const STATIC_PAGES: StaticPage[] = [
   /* The extension page ends on a button per store rather than the one `action` gives a page, so it
    * has none: see `publishedStores` above and `src/features/StaticPage.tsx`. */
   { id: 'extension', path: '/extension', group: 'company' },
-  /*
-   * The other thing that is installed rather than opened: the Obsidian plugin. Drawn by its own
-   * page from `plugin` words, the way the assistants' pages are drawn from `landing`.
-   */
-  { id: 'obsidian', path: '/obsidian', group: 'company' },
   { id: 'privacy', path: '/privacy', group: 'legal', updated: PRIVACY_UPDATED },
   { id: 'terms', path: '/terms', group: 'legal', updated: UPDATED },
   { id: 'cookies', path: '/cookies', group: 'legal', updated: COOKIES_UPDATED },
@@ -259,6 +254,12 @@ export const STATIC_PAGES: StaticPage[] = [
   { id: 'agents', path: '/agents', group: 'agents' },
   { id: 'agents-claude', path: '/agents/claude', group: 'agents', parent: 'agents' },
   { id: 'agents-chatgpt', path: '/agents/chatgpt', group: 'agents', parent: 'agents' },
+  /*
+   * The Obsidian plugin, beside the assistants: the same account and the same documents from the
+   * other place people write, and a page built the way theirs are. It was `/obsidian` until
+   * 6 October 2026; vercel.json sends that address here.
+   */
+  { id: 'obsidian', path: '/agents/obsidian', group: 'agents', parent: 'agents' },
 ];
 
 /** The pages of one group, in the order declared — what the footer builds a column from. */

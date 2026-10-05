@@ -1,4 +1,4 @@
-import { Check, ExternalLink, Github, Link2, X } from 'lucide-react';
+import { ArrowRight, Check, Github, Link2, X } from 'lucide-react';
 import { AppBreadcrumbs } from '@/components/AppBreadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { crumbsForStaticPage } from '@/lib/breadcrumbs';
@@ -7,11 +7,22 @@ import { useI18n } from '@/lib/i18n/context';
 import { OBSIDIAN_DIRECTORY, OBSIDIAN_INSTALL, OBSIDIAN_SOURCE } from '@/lib/obsidian-facts';
 import type { StaticPage as Page } from '@/lib/pages';
 import { cn } from '@/ui/lib/utils';
-import { Clients, Compare, inlineCode, Label, Questions, SectionHead } from './AgentsPage';
+import {
+  Clients,
+  Compare,
+  CopyField,
+  InvitationBand,
+  inlineCode,
+  Label,
+  Questions,
+  SectionHead,
+  WayButton,
+  WaysRow,
+} from './AgentsPage';
 import { FeatureRow, PhoneStrip, ShowcaseHero } from './showcase';
 
 /*
- * The Obsidian plugin's page, `/obsidian`.
+ * The Obsidian plugin's page, `/agents/obsidian`.
  *
  * The assistants' pages sell a connector, whose one action is an address to copy. This one sells a
  * plugin, whose action is Obsidian's own: a link that opens the app on the plugin, and the
@@ -31,29 +42,35 @@ const FEATURE_ART = [
   { src: '/obsidian/export.webp', width: 1440, height: 900 },
 ];
 
+/*
+ * What somebody runs to get each feature — the command, as Obsidian's palette shows it. The
+ * assistants' pages put the sentence a person types in the same place; here it is a command, and
+ * commands are Obsidian's own words, the same in every language.
+ */
+const FEATURE_ASK = ['Publish note', 'Open in browser', 'Share with people…', 'Export as PDF'];
+
 const PHONE_ART = ['/obsidian/phone-palette.webp', '/obsidian/phone-published.webp', '/obsidian/phone-page.webp'];
 
-const primary =
-  'inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-6 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary';
-const secondary =
-  'inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-stroke bg-surface-card px-5 font-semibold text-base text-ink-primary no-underline transition-colors hover:bg-state-hover';
-
-/** Obsidian itself, and the listing beside it. */
+/*
+ * Obsidian itself, the way the assistants' pages offer theirs: the link that opens the app on the
+ * plugin, to copy, and beside it the button that follows it. Same row, same sizes, so the three
+ * pages read alike.
+ */
 function WaysIn({ words, centred = false }: { words: PluginWords; centred?: boolean }) {
   return (
-    <div className={cn('flex flex-wrap gap-3', centred && 'justify-center')}>
-      <a href={OBSIDIAN_INSTALL} className={primary}>
-        {words.add}
-      </a>
-      <a href={OBSIDIAN_DIRECTORY} target="_blank" rel="noreferrer noopener" className={secondary}>
-        {words.directory}
-        <ExternalLink className="size-4" />
-      </a>
-    </div>
+    <WaysRow
+      field={<CopyField text={OBSIDIAN_INSTALL} copyLabel={words.copy} />}
+      button={
+        <WayButton href={OBSIDIAN_INSTALL} external={false}>
+          {words.add}
+        </WayButton>
+      }
+      centred={centred}
+    />
   );
 }
 
-/** The invitation halfway down and at the end, on the worksheet texture. */
+/** The invitation halfway down and at the end — the assistants' band, with Obsidian's way in. */
 function Invitation({
   title,
   text,
@@ -66,18 +83,9 @@ function Invitation({
   centred?: boolean;
 }) {
   return (
-    <section
-      className={cn(
-        'dot-grid flex flex-col gap-6 rounded-3xl border border-stroke bg-surface-card px-4 py-10 sm:px-6 md:px-12 md:py-14',
-        centred ? 'items-center text-center' : 'lg:flex-row lg:items-center lg:justify-between'
-      )}
-    >
-      <div className={cn('flex max-w-xl flex-col gap-2', centred && 'items-center')}>
-        <span className="font-semibold text-2xl text-ink-primary tracking-tight md:text-3xl">{title}</span>
-        <span className="text-base text-ink-secondary">{text}</span>
-      </div>
+    <InvitationBand title={title} text={text} centred={centred}>
       <WaysIn words={words} centred={centred} />
-    </section>
+    </InvitationBand>
   );
 }
 
@@ -206,40 +214,43 @@ export function ObsidianPage({ page, onGoToConverter }: { page: Page; onGoToConv
           </h1>
           <p className="text-ink-secondary text-lg leading-relaxed">{words.lede}</p>
           <WaysIn words={plugin} />
-          <ul className="flex flex-wrap gap-x-5 gap-y-2 text-ink-secondary text-sm">
-            {plugin.facts.map((fact) => (
-              <li key={fact} className="inline-flex items-center gap-1.5">
-                <Check className="size-3.5 text-brand-primary" />
-                {fact}
-              </li>
-            ))}
-            <li>
-              <a
-                href={OBSIDIAN_SOURCE}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"
-              >
-                <Github className="size-3.5" />
-                GitHub
-              </a>
-            </li>
-          </ul>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <a
+              href={OBSIDIAN_DIRECTORY}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"
+            >
+              {plugin.directory}
+              <ArrowRight className="size-3.5" />
+            </a>
+            <a
+              href={OBSIDIAN_SOURCE}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"
+            >
+              <Github className="size-3.5" />
+              GitHub
+            </a>
+          </div>
         </div>
         <ShowcaseHero
           back={{ src: '/obsidian/note.webp', width: 1440, height: 900 }}
           front={{ src: '/obsidian/page.webp', width: 1290, height: 1133 }}
           url="transformpipe.com/s/k3v9q2"
+          chatFirst
         />
       </header>
 
       {/* ------------------------------------------------------------------ what it does */}
-      <section className="flex flex-col gap-14">
+      <section className="flex flex-col gap-10">
         <SectionHead title={plugin.features.heading} intro={plugin.features.intro} />
         <div className="flex flex-col gap-20">
           {plugin.features.items.map((item, index) => (
             <FeatureRow
               key={item.title}
+              ask={FEATURE_ASK[index]}
               title={item.title}
               body={item.body}
               result={item.result}

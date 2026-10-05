@@ -123,6 +123,14 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-06',
+    title: 'Claude, ChatGPT and Obsidian, one click from any page',
+    body:
+      'The assistants’ icon in the header opens a list of the three that work today, each with its '
+      + 'own logo, and the plugin for Obsidian now lives beside them at /agents/obsidian, built the '
+      + 'same way as the Claude and ChatGPT pages. The old /obsidian address still opens it.',
+  },
+  {
+    date: '2026-10-06',
     title: 'A chat shows what changed, and asks with a button',
     body:
       'An update made from Claude or ChatGPT now shows the lines it changed, added in green and '

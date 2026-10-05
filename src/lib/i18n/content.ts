@@ -124,7 +124,7 @@ export interface LandingWords {
 }
 
 /**
- * The words of the Obsidian plugin's page, `/obsidian`.
+ * The words of the Obsidian plugin's page, `/agents/obsidian`.
  *
  * Not `LandingWords`: that shape is an MCP connector's — an address to copy, a row of assistants —
  * and a plugin is installed from Obsidian's own directory instead. The parts that are the same
@@ -138,6 +138,8 @@ export interface PluginWords {
   /** The two ways in: Obsidian itself, and the listing for a reader not on that machine. */
   add: string;
   directory: string;
+  /** The label on the button that copies the install link, read aloud and shown as its tooltip. */
+  copy: string;
   /** Short facts under the buttons. */
   facts: string[];
   features: { heading: string; intro: string; items: (TitledWords & { result: string })[] };

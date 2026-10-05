@@ -1020,9 +1020,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Riscrivi senza perdere la prima bozza',
-            body: 'Quando l’assistente aggiorna un documento, il nuovo testo viene conservato come versione accanto a quello vecchio, non sopra. Puoi vedere cosa ha sostituito cosa, chiedere cosa è cambiato tra due versioni e riaprire la prima bozza quando vuoi.',
+            body: 'Quando l’assistente aggiorna un documento, lo modifica direttamente e mostra le righe cambiate. Il link che hai già inviato mostra il nuovo testo, e ogni testo precedente resta nella cronologia, dove puoi rileggerlo o chiedere cosa è cambiato.',
             ask: '“Aggiorna la specifica e tieni la versione precedente.”',
-            result: 'v1 → v2 · entrambe conservate',
+            result: 'Aggiornato · testo precedente conservato',
           },
         ],
       },
@@ -1194,7 +1194,7 @@ export const pages: Content['pages'] = {
   'agents-claude': {
     label: 'Claude',
     title: 'Salva e condividi quello che scrive Claude',
-    lede: 'Claude scrive le note di rilascio, la specifica, il riassunto della riunione — e tutto resta in quella conversazione. Aggiungi TransformPipe come connettore e Claude salva ogni documento nel tuo account, ne conserva le versioni e ti dà un link che si apre come una pagina finita.',
+    lede: 'Claude scrive le note di rilascio, la specifica, il verbale — e tutto resta in quella chat. Aggiungi TransformPipe come connettore e Claude salva ogni documento nel tuo account, ne conserva le versioni e ti dà un link che si apre come una pagina finita.',
     sections: [],
     landing: {
       eyebrow: 'Per Claude',
@@ -1238,9 +1238,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Riscrivi senza perdere la prima bozza',
-            body: 'Un aggiornamento viene conservato come nuova versione accanto a quella vecchia, e Claude può leggerle entrambe e dirti cosa è cambiato.',
+            body: 'Claude aggiorna il documento direttamente e mostra le righe cambiate. Il link che hai inviato mostra il nuovo testo, e ogni testo precedente resta nella cronologia, pronto da rileggere.',
             ask: '“Aggiorna la specifica e tieni la versione precedente.”',
-            result: 'v1 → v2 · entrambe conservate',
+            result: 'Aggiornato · testo precedente conservato',
           },
         ],
       },
@@ -1469,9 +1469,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Riscrivi senza perdere la prima bozza',
-            body: 'Un aggiornamento viene conservato come nuova versione accanto alla precedente, così la prima bozza non va mai persa. ChatGPT può leggerle entrambe e dirti cosa è cambiato prima che tu condivida la nuova, e il vecchio link apre ancora la vecchia.',
+            body: 'ChatGPT aggiorna il documento direttamente e mostra le righe cambiate. Il link che hai già inviato mostra il nuovo testo, e la prima bozza resta nella cronologia, a portata di domanda.',
             ask: '“Aggiorna il piano e conserva la versione precedente.”',
-            result: 'v1 → v2 · entrambe conservate',
+            result: 'Aggiornato · testo precedente conservato',
           },
         ],
       },
@@ -1645,14 +1645,15 @@ export const pages: Content['pages'] = {
   },
   obsidian: {
     label: 'Plugin per Obsidian',
-    title: 'Pubblica una nota di Obsidian come pagina web',
-    lede: 'Un solo comando trasforma la nota in una pagina pulita, con il link già negli appunti. Modifichi la nota e la pubblichi di nuovo: la pagina si aggiorna, e il link che hai già mandato continua a funzionare.',
+    title: 'Pubblica note di Obsidian come pagina web',
+    lede: 'Le tue note vivono in Obsidian, e chi le riceve non lo usa. Un solo comando trasforma la nota in una pagina pulita, con il link già negli appunti. Modifica la nota e pubblicala di nuovo: la pagina si aggiorna, e il link che hai già mandato continua a funzionare.',
     sections: [],
     plugin: {
       eyebrow: 'Plugin per Obsidian',
       listed: 'Nei Plugin della community',
       add: 'Aggiungi a Obsidian',
       directory: 'Vedilo nella directory',
+      copy: 'Copia il link di installazione',
       facts: ['Account gratuito', 'Desktop e mobile', 'Open source, MIT'],
       features: {
         heading: 'Cosa fa',

@@ -29,6 +29,7 @@ import {
 import { Faq } from '@/ui/components/Faq';
 import { SectionHeading } from '@/ui/components/SectionHeading';
 import { cn } from '@/ui/lib/utils';
+import { BrandLogo, type BrandName } from '@/components/BrandLogo';
 import { type Art, FeatureRow, PhoneStrip, ShowcaseHero } from './showcase';
 import { toast } from '@/ui/components/Toast';
 
@@ -57,19 +58,13 @@ const USE_CASE_ART = [
   '/agents/find.webp',
   '/agents/versions.webp',
 ];
-const CLIENT_ART = [
-  '/agents/client-claude.webp',
-  '/agents/client-chatgpt.webp',
-  '/agents/client-obsidian.webp',
-  '/agents/client-gemini.webp',
-  '/agents/client-vscode.webp',
-  '/agents/client-windsurf.webp',
-];
+/* Each assistant's own logo, in the table's order — see `BrandLogo`. */
+const CLIENT_LOGOS: BrandName[] = ['claude', 'chatgpt', 'obsidian', 'gemini', 'vscode', 'windsurf'];
 
 /*
  * The real thing, where it has been photographed: the assistant just after it saved and shared a
  * document, the page that link opens, and one screenshot per use case, in the catalogue's order.
- * A page with an entry here is drawn the way `/obsidian` is — words beside screenshots — and one
+ * A page with an entry here is drawn the way `/agents/obsidian` is — words beside screenshots — and one
  * without keeps the drawing of the pipe and the illustrated cards.
  */
 interface Showcase {
@@ -82,15 +77,15 @@ interface Showcase {
 const SHOWCASE: Partial<Record<'claude' | 'chatgpt', Showcase>> = {
   claude: {
     hero: {
-      back: { src: '/agents/claude/chat-link.webp', width: 1000, height: 625 },
+      back: { src: '/agents/claude/chat-link.webp', width: 1024, height: 640 },
       front: { src: '/agents/claude/page.webp', width: 1290, height: 1133 },
       url: 'transformpipe.com/s/ScwxxPECB6…',
     },
     features: [
-      { src: '/agents/claude/chat-saved.webp', width: 1022, height: 672 },
+      { src: '/agents/claude/chat-saved.webp', width: 1095, height: 720 },
       { src: '/agents/claude/page-wide.webp', width: 1260, height: 1095 },
-      { src: '/agents/claude/chat-found.webp', width: 1188, height: 702 },
-      { src: '/agents/claude/chat-updated.webp', width: 1000, height: 625 },
+      { src: '/agents/claude/chat-found.webp', width: 1056, height: 624 },
+      { src: '/agents/claude/chat-updated.webp', width: 1056, height: 660 },
     ],
     phones: ['/agents/claude/phone-share.webp', '/agents/claude/phone-list.webp', '/agents/claude/phone-page.webp'],
   },
@@ -98,7 +93,7 @@ const SHOWCASE: Partial<Record<'claude' | 'chatgpt', Showcase>> = {
     hero: {
       back: { src: '/agents/chatgpt/chat-link.webp', width: 1056, height: 660 },
       front: { src: '/agents/chatgpt/page.webp', width: 1290, height: 1133 },
-      url: 'transformpipe.com/s/-Dsf83Omfu…',
+      url: 'transformpipe.com/s/sO7bQxFavT…',
     },
     features: [
       { src: '/agents/chatgpt/chat-saved.webp', width: 1095, height: 720 },
@@ -106,7 +101,7 @@ const SHOWCASE: Partial<Record<'claude' | 'chatgpt', Showcase>> = {
       { src: '/agents/chatgpt/chat-found.webp', width: 1056, height: 624 },
       { src: '/agents/chatgpt/chat-updated.webp', width: 1056, height: 660 },
     ],
-    phones: ['/agents/chatgpt/phone-list.webp', '/agents/chatgpt/phone-page.webp'],
+    phones: ['/agents/chatgpt/phone-share.webp', '/agents/chatgpt/phone-list.webp', '/agents/chatgpt/phone-page.webp'],
   },
 };
 
@@ -174,9 +169,17 @@ function useCopy(text: string) {
  * own corner is where a copy control is looked for; its words stay as the tooltip and the label a
  * screen reader reads, and the tick after a copy says it worked.
  */
-function AddressField({ copyLabel }: { copyLabel: string }) {
-  const url = `${window.location.origin}${MCP_PATH}`;
-  const { copied, copy } = useCopy(url);
+export function CopyField({
+  text,
+  breakAt,
+  copyLabel,
+}: {
+  text: string;
+  /** Where the text may wrap when the line is too short — after the host, before the path. */
+  breakAt?: number;
+  copyLabel: string;
+}) {
+  const { copied, copy } = useCopy(text);
 
   return (
     <div className="relative flex min-h-12 w-full min-w-0 items-center rounded-xl border border-stroke bg-surface-card">
@@ -186,9 +189,9 @@ function AddressField({ copyLabel }: { copyLabel: string }) {
         * server it is. `break-words` is only for a screen too narrow even for the host.
         */}
       <code className="min-w-0 flex-1 select-all break-words py-3 pr-12 pl-3.5 font-mono text-ink-body text-sm">
-        {window.location.origin}
-        <wbr />
-        {MCP_PATH}
+        {breakAt ? text.slice(0, breakAt) : text}
+        {breakAt ? <wbr /> : null}
+        {breakAt ? text.slice(breakAt) : null}
       </code>
       <button
         type="button"
@@ -209,38 +212,43 @@ function AddressField({ copyLabel }: { copyLabel: string }) {
   );
 }
 
+/** The MCP address, which every client is given. */
+function AddressField({ copyLabel }: { copyLabel: string }) {
+  return (
+    <CopyField
+      text={`${window.location.origin}${MCP_PATH}`}
+      breakAt={window.location.origin.length}
+      copyLabel={copyLabel}
+    />
+  );
+}
+
+/** The primary way in, as one button: a directory, a settings screen, an app. */
+export function WayButton({ href, children, external = true }: { href: string; children: ReactNode; external?: boolean }) {
+  return (
+    <a
+      href={href}
+      {...(external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+      className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-5 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary"
+    >
+      {children}
+      <ExternalLink className="size-4" />
+    </a>
+  );
+}
+
 /** The one-click way in: TransformPipe's listing in Claude's connector directory. */
 function AddToClaude() {
   const t = useT();
 
-  return (
-    <a
-      href={CLAUDE_DIRECTORY}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-5 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary"
-    >
-      {t('agents.claude.add')}
-      <ExternalLink className="size-4" />
-    </a>
-  );
+  return <WayButton href={CLAUDE_DIRECTORY}>{t('agents.claude.add')}</WayButton>;
 }
 
 /** ChatGPT's way in: the Plugins screen, where Add, then Create MCP App, takes the address. */
 function OpenChatGpt() {
   const t = useT();
 
-  return (
-    <a
-      href={CHATGPT_PLUGINS}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-primary px-5 font-semibold text-base text-white no-underline shadow-lg transition-colors hover:bg-brand-secondary"
-    >
-      {t('agents.chatgpt.open')}
-      <ExternalLink className="size-4" />
-    </a>
-  );
+  return <WayButton href={CHATGPT_PLUGINS}>{t('agents.chatgpt.open')}</WayButton>;
 }
 
 /*
@@ -257,6 +265,15 @@ function OpenChatGpt() {
  * wraps onto on top. The grow factors do the widths: 1000 to 1 means that in a row the field takes
  * the spare space and the button keeps its size, and alone on a line the button fills it.
  */
+export function WaysRow({ field, button, centred = false }: { field: ReactNode; button: ReactNode; centred?: boolean }) {
+  return (
+    <div className={cn('flex w-full flex-wrap-reverse items-start gap-3', centred && 'justify-center')}>
+      <div className="flex min-w-0 flex-[1000_1_26rem]">{field}</div>
+      <div className="flex flex-[1_0_auto]">{button}</div>
+    </div>
+  );
+}
+
 function WaysIn({
   action,
   way,
@@ -267,14 +284,11 @@ function WaysIn({
   centred?: boolean;
 }) {
   return (
-    <div className={cn('flex w-full flex-wrap-reverse items-start gap-3', centred && 'justify-center')}>
-      <div className="flex min-w-0 flex-[1000_1_26rem]">
-        <AddressField copyLabel={action} />
-      </div>
-      <div className="flex flex-[1_0_auto]">
-        {way === 'chatgpt' ? <OpenChatGpt /> : <AddToClaude />}
-      </div>
-    </div>
+    <WaysRow
+      field={<AddressField copyLabel={action} />}
+      button={way === 'chatgpt' ? <OpenChatGpt /> : <AddToClaude />}
+      centred={centred}
+    />
   );
 }
 
@@ -432,6 +446,25 @@ function AddressBlock({
   centred?: boolean;
 }) {
   return (
+    <InvitationBand title={title} text={text} centred={centred}>
+      <WaysIn action={action} way={way} centred={centred} />
+    </InvitationBand>
+  );
+}
+
+/** The invitation halfway down and at the end, on the worksheet texture, with a way in beside it. */
+export function InvitationBand({
+  title,
+  text,
+  centred = false,
+  children,
+}: {
+  title: string;
+  text: string;
+  centred?: boolean;
+  children: ReactNode;
+}) {
+  return (
     <section
       className={`dot-grid flex flex-col gap-6 rounded-3xl border border-stroke bg-surface-card px-4 py-10 sm:px-6 md:px-12 md:py-14 ${
         centred ? 'items-center text-center' : 'lg:flex-row lg:items-center lg:justify-between'
@@ -446,9 +479,7 @@ function AddressBlock({
       {/* 38rem beside the words, 42 on its own: room for the address on one line and the button
           beside it (26rem + the button). Any narrower and `WaysIn` stacks them, which is right on
           a phone and wrong on a desktop, where the button belongs where the copy button was. */}
-      <div className={centred ? 'w-full max-w-2xl' : 'w-full lg:w-[38rem] lg:shrink-0'}>
-        <WaysIn action={action} way={way} centred={centred} />
-      </div>
+      <div className={centred ? 'w-full max-w-2xl' : 'w-full lg:w-[38rem] lg:shrink-0'}>{children}</div>
     </section>
   );
 }
@@ -665,14 +696,9 @@ export function Clients({ words, current }: { words: LandingWords['clients']; cu
                   <span className="grid flex-1 grid-cols-[1fr_auto] items-center gap-4 text-left md:grid-cols-[1.2fr_1.6fr_9rem_8rem]">
                     <span className="flex items-center gap-3">
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-card2">
-                        <img
-                          src={CLIENT_ART[index] ?? CLIENT_ART[CLIENT_ART.length - 1]}
-                          alt=""
-                          width={1024}
-                          height={1024}
-                          loading="lazy"
-                          decoding="async"
-                          className="size-8 object-contain"
+                        <BrandLogo
+                          name={CLIENT_LOGOS[index] ?? CLIENT_LOGOS[CLIENT_LOGOS.length - 1]}
+                          className="size-6 text-ink-primary"
                         />
                       </span>
                       <span className="font-semibold text-base text-ink-primary">{item.name}</span>
@@ -882,7 +908,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
           </div>
         </div>
         {showcase ? (
-          <ShowcaseHero {...showcase.hero} />
+          <ShowcaseHero {...showcase.hero} chatFirst />
         ) : (
           /* Drawn first on a wide screen, after the words on a narrow one: the words are what a
              phone reader needs before the picture of them. */

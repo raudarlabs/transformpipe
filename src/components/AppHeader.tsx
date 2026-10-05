@@ -14,6 +14,8 @@ import { useBreadcrumbSlot } from './BreadcrumbSlot';
 import { CommandPalette } from './CommandPalette';
 import { Logo } from './Logo';
 import { LanguageMenu } from './LanguageMenu';
+import { AGENT_LINKS } from './agentLinks';
+import { BrandLogo } from './BrandLogo';
 import { MobileNav } from './MobileNav';
 import { UserMenu } from './UserMenu';
 import type { HistoryEntry } from '@/lib/history';
@@ -48,6 +50,8 @@ interface AppHeaderProps {
   onHome: () => void;
   /** On `/agents` or a page under it, so its glyph is lit the way Docs and Blog are on theirs. */
   onAgentsPage: boolean;
+  /** The page open, if a page is: the assistants' menu ticks the one being read. */
+  currentPage?: StaticPageId | null;
 }
 
 /*
@@ -96,6 +100,7 @@ export function AppHeader({
   onOpenPage,
   onHome,
   onAgentsPage,
+  currentPage = null,
 }: AppHeaderProps) {
   const t = useT();
   const { content } = useI18n();
@@ -347,22 +352,60 @@ export function AppHeader({
                 *
                 * Not in `NAV_ITEMS`: those are views, and this opens a page.
                 */}
-              <button
-                type="button"
-                onClick={() => onOpenPage('agents')}
-                aria-current={onAgentsPage ? 'page' : undefined}
-                aria-label={t('header.nav.agents')}
-                title={t('header.nav.agents')}
-                className={cn(
-                  'relative flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
-                  onAgentsPage
-                    ? 'bg-surface-accent text-ink-highlight'
-                    : 'text-brand-tertiary hover:bg-state-hover'
-                )}
-              >
-                <Bot className="size-4 shrink-0" />
-              </button>
+              {/*
+                * And a menu, not a link: the glyph says "assistants" and nothing about which, and
+                * the plugin for Obsidian was a row at the foot of a table nobody scrolled to. No
+                * "all assistants" item: `/agents` is Claude's page in all but name, so it would be
+                * the first row twice.
+                */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-current={onAgentsPage ? 'page' : undefined}
+                    aria-label={t('header.nav.agents')}
+                    title={t('header.nav.agents')}
+                    className={cn(
+                      'relative flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
+                      onAgentsPage
+                        ? 'bg-surface-accent text-ink-highlight'
+                        : 'text-brand-tertiary hover:bg-state-hover'
+                    )}
+                  >
+                    <Bot className="size-4 shrink-0" />
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-80">
+                  {AGENT_LINKS.map((one) => (
+                    <DropdownMenuItem
+                      key={one.id}
+                      onSelect={() => onOpenPage(one.id)}
+                      className="flex items-center gap-3"
+                    >
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-stroke bg-surface-card2 text-ink-primary">
+                        <BrandLogo name={one.logo} className="size-5" />
+                      </span>
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <Typography variant="span" weight="medium" textColor="primary">
+                          {content.pages[one.id].label}
+                        </Typography>
+                        <Typography variant="span" textColor="secondary" className="text-xs">
+                          {t(one.hint)}
+                        </Typography>
+                      </span>
+                      <Check
+                        className={cn(
+                          'size-4 shrink-0',
+                          currentPage === one.id ? 'text-brand-tertiary' : 'invisible'
+                        )}
+                      />
+                    </DropdownMenuItem>
+                  ))}
+
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
 
             {/*
@@ -382,6 +425,7 @@ export function AppHeader({
               conversionId={conversionId}
               historyCount={historyCount}
               onAgentsPage={onAgentsPage}
+              currentPage={currentPage}
               onViewChange={onViewChange}
               onConversionChange={onConversionChange}
               onOpenPage={onOpenPage}

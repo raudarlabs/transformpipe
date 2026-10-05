@@ -1029,9 +1029,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Umschreiben, ohne den ersten Entwurf zu verlieren',
-            body: 'Wenn der Assistent ein Dokument aktualisiert, wird der neue Text als Version neben dem alten aufbewahrt, statt ihn zu überschreiben. Sie sehen, was was ersetzt hat, können fragen, was sich zwischen zwei Versionen geändert hat, und den ersten Entwurf jederzeit wieder öffnen.',
+            body: 'Wenn der Assistent ein Dokument aktualisiert, ändert er es direkt und zeigt die geänderten Zeilen. Der Link, den Sie bereits verschickt haben, zeigt den neuen Text, und jeder frühere Text bleibt im Verlauf, wo Sie ihn erneut lesen oder fragen können, was sich geändert hat.',
             ask: '„Aktualisiere die Spec und behalte die alte Version.“',
-            result: 'v1 → v2 · beide behalten',
+            result: 'Aktualisiert · früherer Text bleibt',
           },
         ],
       },
@@ -1203,7 +1203,7 @@ export const pages: Content['pages'] = {
   'agents-claude': {
     label: 'Claude',
     title: 'Speichern und teilen, was Claude schreibt',
-    lede: 'Claude entwirft die Release Notes, die Spezifikation, die Zusammenfassung der Besprechung — und alles bleibt in diesem einen Gespräch. Fügen Sie TransformPipe als Connector hinzu, und Claude speichert jedes davon in Ihrem Konto, behält die Versionen und gibt Ihnen einen Link, der sich als fertige Seite öffnet.',
+    lede: 'Claude entwirft die Release Notes, die Spezifikation, das Protokoll — und alles bleibt in diesem einen Gespräch. Fügen Sie TransformPipe als Connector hinzu, und Claude speichert jedes davon in Ihrem Konto, behält die Versionen und gibt Ihnen einen Link, der sich als fertige Seite öffnet.',
     sections: [],
     landing: {
       eyebrow: 'Für Claude',
@@ -1247,9 +1247,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Umschreiben, ohne den ersten Entwurf zu verlieren',
-            body: 'Eine Aktualisierung wird als neue Version neben der alten aufbewahrt, und Claude kann beide lesen und Ihnen sagen, was sich verschoben hat.',
+            body: 'Claude aktualisiert das Dokument direkt und zeigt die geänderten Zeilen. Der Link, den Sie verschickt haben, zeigt den neuen Text, und jeder frühere bleibt im Verlauf, jederzeit wieder lesbar.',
             ask: '„Aktualisiere die Spec und behalte die alte Version.“',
-            result: 'v1 → v2 · beide behalten',
+            result: 'Aktualisiert · früherer Text bleibt',
           },
         ],
       },
@@ -1478,9 +1478,9 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Überarbeiten, ohne den ersten Entwurf zu verlieren',
-            body: 'Eine Änderung wird als neue Version neben der alten aufgehoben, der erste Entwurf geht also nie verloren. ChatGPT kann beide lesen und sagen, was sich verschoben hat, bevor Sie die neue teilen — und der alte Link öffnet weiter die alte.',
+            body: 'ChatGPT aktualisiert das Dokument direkt und zeigt die geänderten Zeilen. Der Link, den Sie bereits verschickt haben, zeigt den neuen Text, und der erste Entwurf bleibt im Verlauf, nur eine Frage entfernt.',
             ask: '„Aktualisiere den Plan und behalte die alte Version.“',
-            result: 'v1 → v2 · beide behalten',
+            result: 'Aktualisiert · früherer Text bleibt',
           },
         ],
       },
@@ -1655,13 +1655,14 @@ export const pages: Content['pages'] = {
   obsidian: {
     label: 'Obsidian-Plugin',
     title: 'Eine Obsidian-Notiz als Webseite veröffentlichen',
-    lede: 'Ein Befehl macht aus der Notiz eine aufgeräumte Seite mit Link, und der Link liegt schon in Ihrer Zwischenablage. Ändern Sie die Notiz und veröffentlichen Sie erneut: Die Seite wird aktualisiert, und der Link, den Sie bereits verschickt haben, funktioniert weiter.',
+    lede: 'Ihre Notizen liegen in Obsidian, die Empfänger haben es nicht. Ein Befehl macht aus der Notiz eine aufgeräumte Seite mit Link, der schon in Ihrer Zwischenablage liegt. Ändern Sie die Notiz und veröffentlichen Sie erneut: Die Seite wird aktualisiert, und der verschickte Link funktioniert weiter.',
     sections: [],
     plugin: {
       eyebrow: 'Obsidian-Plugin',
       listed: 'In den Community-Plugins',
       add: 'Zu Obsidian hinzufügen',
       directory: 'Im Verzeichnis ansehen',
+      copy: 'Installationslink kopieren',
       facts: ['Kostenloses Konto', 'Desktop und Mobilgeräte', 'Open Source, MIT'],
       features: {
         heading: 'Was es kann',

@@ -626,7 +626,7 @@ const PAGES = [
   ['about', 'What TransformPipe is', 'Company', ACCENTS.Converting],
   ['support', 'Support', 'Company', ACCENTS.Workflow],
   ['extension', 'The browser extension', 'Company', ACCENTS.Converting],
-  ['obsidian', 'TransformPipe for Obsidian', 'Obsidian plugin', ACCENTS.Publishing],
+  ['agents/obsidian', 'TransformPipe for Obsidian', 'Obsidian plugin', ACCENTS.Publishing],
   /*
    * These four went out with no cover, and every share of them pointed at a file that was never
    * drawn. The changelog's one picture is also every entry's — see `pageCover`.
