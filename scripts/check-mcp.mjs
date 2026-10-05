@@ -807,6 +807,11 @@ check(
 );
 
 check(
+  'summarising sends the text to an outside model, and is marked open-world',
+  tools.find((one) => one.name === 'tp_summarize_document')?.annotations?.openWorldHint === true
+);
+
+check(
   'the two document tools point at the card',
   ['tp_save_document', 'tp_get_document'].every(
     (name) => tools.find((one) => one.name === name)?._meta?.ui?.resourceUri === cardResource?.uri

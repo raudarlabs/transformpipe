@@ -1176,7 +1176,12 @@ const TOOLS: Record<McpToolName, Tool> = {
       readOnlyHint: false,
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: false,
+      /*
+       * Open-world: the summary is written by a model the account does not run — the document's
+       * text goes to Google's Gemini API (see server/summarize.ts). Flagged by ChatGPT's tool
+       * review on 5 October 2026, and right: that is an outside system acting on the document.
+       */
+      openWorldHint: true,
     },
     writes: true,
     inputSchema: {
