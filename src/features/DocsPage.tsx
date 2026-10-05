@@ -405,7 +405,7 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             <Rich
               text={t('docs.sharing.safety')}
               parts={{
-                csp: <InlineCode>script-src 'none'</InlineCode>,
+                csp: <InlineCode>script-src 'self'</InlineCode>,
               }}
             />
           </p>

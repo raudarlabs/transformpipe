@@ -1230,7 +1230,12 @@ api.delete('/documents', async (c) => {
 const SHARED_PAGE_HEADERS: Record<string, string> = {
   'content-security-policy': [
     "default-src 'none'",
-    "script-src 'none'",
+    /*
+     * 'self', not 'none': the page loads /share/diagrams.js, which draws its diagrams, and the
+     * chunks that imports. Still nothing inline — no <script> in a document, no event handler,
+     * no javascript: link — which is what 'none' was there to stop. See src/share-diagrams.ts.
+     */
+    "script-src 'self'",
     "style-src 'unsafe-inline' https://fonts.googleapis.com",
     'font-src https://fonts.gstatic.com',
     // 'self' for the page's own counting picture — `https:` alone refused it wherever the site is
@@ -1399,6 +1404,11 @@ app.get('/s/:token', async (c) => {
        */
       openHref: `/open/${encodeURIComponent(token)}`,
       seenHref: `/s/${encodeURIComponent(token)}/seen`,
+      /* The dev server serves the source and transforms it; a build has the fixed-name entry. */
+      diagramsScript:
+        process.env.VERCEL || process.env.NODE_ENV === 'production'
+          ? '/share/diagrams.js'
+          : '/src/share-diagrams.ts',
       watched: verdict.reader !== null && !verdict.reader.isOwner,
       size: document.size,
       stats: document.stats ?? undefined,

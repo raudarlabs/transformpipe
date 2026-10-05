@@ -774,6 +774,36 @@ ${body}
  * is a link into the app, which knows how to ask somebody to sign in.
  */
 const SHARED_CHROME_STYLE = `
+/*
+ * The Full screen button src/share-diagrams.ts puts on a diagram, and on a table too wide for the
+ * page — the app's own button, here because this page has no app stylesheet — and the frame it
+ * puts on the whole screen: a diagram fitted to it, a table at its own size, scrolling.
+ */
+.md-diagram-frame { position: relative; }
+.md-diagram-open { position: absolute; top: 0.5rem; right: 0.5rem; }
+.md-table-frame { display: flex; flex-direction: column; margin: 1.15em 0; }
+.md-table-frame > .md-table { margin: 0.4rem 0 0; }
+.md-table-open { align-self: flex-end; }
+.md-expand {
+  display: inline-flex; align-items: center; gap: 0.35rem; height: 1.75rem; padding: 0 0.6rem;
+  border: 1px solid var(--md-stroke); border-radius: 0.5rem; background: var(--md-card);
+  color: var(--md-secondary); font: inherit; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+}
+.md-expand:hover, .md-expand:focus-visible { color: var(--md-ink); border-color: var(--md-brand); }
+.md-diagram-frame:fullscreen, .md-table-frame:fullscreen {
+  box-sizing: border-box; padding: 1.5rem; overflow: auto; background: var(--md-page);
+}
+.md-diagram-frame:fullscreen { display: flex; align-items: center; justify-content: center; }
+.md-diagram-frame:fullscreen .md-diagram {
+  margin: 0; border: 0; overflow: visible; width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.md-diagram-frame:fullscreen svg { max-width: 100% !important; max-height: 100%; width: auto; height: auto; }
+.md-table-frame:fullscreen .md-table { overflow: visible; }
+.md-table-frame:fullscreen thead th { position: sticky; top: -1.5rem; z-index: 1; }
+:fullscreen .md-expand span { display: none; }
+@media print { .md-expand { display: none; } }
+
 .md-bar {
   display: flex;
   align-items: center;
@@ -991,9 +1021,10 @@ const SHARED_CHROME_STYLE = `
 /*
  * Back to the top of a long document — a link, not a button.
  *
- * This page carries somebody else's content and is served with script-src 'none', which is the
- * one thing standing between an injection that survived the sanitiser and a page that runs it. So
- * the control is an anchor to the top of the document and nothing else. It is rendered only when
+ * This page carries somebody else's content and is served with script-src 'self': the one script
+ * it may load is ours, src/share-diagrams.ts, and nothing inline runs — which is what stands
+ * between an injection that survived the sanitiser and a page that runs it. So the control is an
+ * anchor to the top of the document and nothing else. It is rendered only when
  * the document is long enough to need it, which the server knows because it has the document.
  */
 .md-top {
@@ -1134,6 +1165,12 @@ interface SharedPageOptions {
    */
   seenHref?: string;
   /**
+   * The script that draws the page's diagrams and puts a wide table or a diagram on the whole
+   * screen — src/share-diagrams.ts. Loaded only when the document has either; a page of prose runs
+   * nothing, as every shared page used to.
+   */
+  diagramsScript?: string;
+  /**
    * Addressed to this reader by name, so the owner can see their opens. Said on the page, because
    * a reader who is being counted by name is owed knowing it.
    */
@@ -1231,6 +1268,7 @@ export function buildSharedPage({
   reportHref,
   openHref,
   seenHref,
+  diagramsScript,
   watched,
   size,
   stats,
@@ -1317,6 +1355,10 @@ ${
   }${
     seenHref
       ? `\n<img src="${escapeHtml(seenHref)}" alt="" width="1" height="1" fetchpriority="low" style="position:absolute;left:-9999px">`
+      : ''
+  }${
+    diagramsScript && /class="md-(mermaid|table)"/.test(body)
+      ? `\n<script type="module" src="${escapeHtml(diagramsScript)}"></script>`
       : ''
   }
 </body>

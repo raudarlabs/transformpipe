@@ -371,8 +371,11 @@ trade against running a cache beside the database.
 ## Abuse
 
 A shared page carries other people's content on our domain, so it is served with
-`script-src 'none'` and `frame-ancestors 'none'` — an injection that somehow survived the sanitiser
-still cannot run, and the document cannot be framed as someone else's page. Every shared page links
+`script-src 'self'` and `frame-ancestors 'none'` — an injection that somehow survived the sanitiser
+still cannot run, and the document cannot be framed as someone else's page. 'self' rather than
+'none' since 5 October 2026: the page loads one script of ours, `/share/diagrams.js`
+(`src/share-diagrams.ts`), which draws Mermaid diagrams and puts a diagram or a wide table on the
+whole screen. Nothing inline runs — no `<script>` in a document, no event handler. Every shared page links
 to `/report/<token>`, a form that needs no JavaScript, and reports land in `m2h_report`.
 
 Nothing is revoked automatically. `npm run reports` lists what is open, `-- --revoke <id>` kills the

@@ -114,6 +114,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'Diagrams are drawn on a public link',
+    body:
+      'A document shared as a link that anyone can open showed every Mermaid diagram as its source '
+      + 'text: the page ran no script at all, and a diagram needs one to be drawn. It now loads one '
+      + 'of ours, and only that \u2014 nothing in a document can run \u2014 which draws the diagrams '
+      + 'in the page\u2019s light or dark and gives a diagram, or a table too wide for the page, a '
+      + 'Full screen button. Every link already sent shows them; nothing needs to be shared again.',
+  },
+  {
+    date: '2026-10-05',
     title: 'A wide table opens on the whole screen',
     body:
       'A table too wide for the page now has a Full screen button above it, like a diagram. It '

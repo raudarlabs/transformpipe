@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import { apiDevServer } from './server/vite-plugin-api';
 import { blogIndex } from './vite-plugin-blog';
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react(), apiDevServer(), blogIndex()],
   resolve: {
     alias: {
@@ -43,7 +43,27 @@ export default defineConfig({
    */
   build: {
     rollupOptions: {
+      /*
+       * Two entries: the app, and the one script a shared page runs to draw its diagrams. The
+       * second keeps a fixed name, because the server writes it into every shared page and has no
+       * manifest to look a hash up in; the chunks it imports are hashed like everything else.
+       */
+      /* The client build only: the prerenderer's SSR build names its own entry on the command line. */
+      ...(isSsrBuild
+        ? {}
+        : {
+            input: {
+              index: path.resolve(__dirname, 'index.html'),
+              'share-diagrams': path.resolve(__dirname, 'src/share-diagrams.ts'),
+            },
+          }),
       output: {
+        ...(isSsrBuild
+          ? {}
+          : {
+              entryFileNames: (chunk: { name: string }) =>
+                chunk.name === 'share-diagrams' ? 'share/diagrams.js' : 'assets/[name]-[hash].js',
+            }),
         assetFileNames: (asset) => {
           const names = asset.names ?? (asset.name ? [asset.name] : []);
 
@@ -58,4 +78,4 @@ export default defineConfig({
     port: 5180,
     host: '127.0.0.1',
   },
-});
+}));
