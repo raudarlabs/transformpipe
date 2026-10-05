@@ -280,6 +280,8 @@ export const ui: Content['ui'] = {
   'diagram.zoomOut': 'Alejar',
   'diagram.fit': 'Ajustar a la pantalla',
   'diagram.close': 'Cerrar',
+  'table.open': 'Abrir la tabla a pantalla completa',
+  'table.viewer': 'Tabla a pantalla completa',
   'converter.summary.needsSave': 'Guarda este documento en tu cuenta para resumirlo.',
   'converter.summary.loading': 'Leyendo el documento…',
   'converter.summary.writing': 'Escribiendo el resumen…',

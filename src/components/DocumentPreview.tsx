@@ -6,6 +6,7 @@ import {
 } from '@shared/md-doc-css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DiagramViewer } from './DiagramViewer';
+import { TableViewer } from './TableViewer';
 import { inlineDiagrams } from '@/lib/mermaid';
 import { useT } from '@/lib/i18n/context';
 import { useTheme } from '@/lib/theme';
@@ -25,8 +26,8 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
   const { theme } = useTheme();
   const t = useT();
   const doc = useRef<HTMLDivElement>(null);
-  /* The diagram open over the page, as its own markup; null when none is. */
-  const [opened, setOpened] = useState<string | null>(null);
+  /* What is open over the page — a diagram or a table, as its own markup; null when nothing is. */
+  const [opened, setOpened] = useState<{ kind: 'diagram' | 'table'; markup: string } | null>(null);
 
   /*
    * The fragment with its diagrams drawn into it, once there are any.
@@ -58,57 +59,78 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
   }, [html, theme]);
 
   /*
-   * A button on every drawn diagram, put there after it renders.
+   * A Full screen button on every drawn diagram, and on every table too wide for the page, put
+   * there after it renders.
    *
    * Added to the live DOM rather than to the markup, because the markup is also what a download is
    * made from and an exported file has no viewer to open. After every render, not only when the
    * document changes: React may write the same markup back — it did on entering fullscreen, and the
    * buttons went with it — and a frame already in place is skipped, so running again costs nothing.
+   *
+   * Each goes on a frame around its element rather than inside it, because the element is what
+   * scrolls sideways when it is wider than the page, and a button inside slid off with it.
    */
   useEffect(() => {
     const root = doc.current;
 
     if (!root) return;
 
-    for (const figure of root.querySelectorAll<HTMLElement>('figure.md-diagram')) {
-      if (figure.parentElement?.classList.contains('md-diagram-frame')) continue;
+    const frame = (element: HTMLElement, kind: 'diagram' | 'table', label: string) => {
+      const wrapper = element.ownerDocument.createElement('div');
+      const button = element.ownerDocument.createElement('button');
 
-      /*
-       * Outside the figure, not in it: the figure is what scrolls sideways when the drawing is
-       * wider than the page, and a button inside it slid off with the drawing.
-       */
-      const frame = figure.ownerDocument.createElement('div');
-      const button = figure.ownerDocument.createElement('button');
-
-      frame.className = 'md-diagram-frame';
+      wrapper.className = `md-${kind}-frame`;
       button.type = 'button';
-      button.className = 'md-diagram-open';
-      button.setAttribute('aria-label', t('diagram.open'));
-      button.title = t('diagram.open');
+      button.className = `md-expand md-${kind}-open`;
+      button.setAttribute('aria-label', label);
+      button.title = label;
       /* lucide's maximize-2, drawn inline: this button is not React's to render. */
       button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg><span>${t('diagram.expand')}</span>`;
-      figure.replaceWith(frame);
-      frame.append(figure, button);
+      element.replaceWith(wrapper);
+      /* A table's button goes above it, where it covers no cell; a diagram's sits in its corner. */
+      if (kind === 'table') wrapper.append(button, element);
+      else wrapper.append(element, button);
+    };
+
+    for (const figure of root.querySelectorAll<HTMLElement>('figure.md-diagram')) {
+      if (!figure.parentElement?.classList.contains('md-diagram-frame')) {
+        frame(figure, 'diagram', t('diagram.open'));
+      }
+    }
+
+    /* Only a table that does not fit: a button on every small one would be clutter. */
+    for (const table of root.querySelectorAll<HTMLElement>('.md-table')) {
+      if (table.parentElement?.classList.contains('md-table-frame')) continue;
+
+      if (table.scrollWidth > table.clientWidth + 1) {
+        frame(table, 'table', t('table.open'));
+      }
     }
   });
 
   /* The same object for the same markup, so a render for any other reason leaves the DOM alone. */
   const markup = useMemo(() => ({ __html: shown }), [shown]);
 
-  /* One listener for every diagram: the button, or a double click anywhere on the drawing. */
+  /* One listener for every frame: its button, or a double click anywhere on a diagram. */
   const open = (event: React.MouseEvent<HTMLDivElement>, onDouble: boolean) => {
     const target = event.target as HTMLElement;
-    const figure = target
+    const pressed = Boolean(target.closest('.md-expand'));
+    const diagram = target
       .closest<HTMLElement>('.md-diagram-frame')
-      ?.querySelector<HTMLElement>('figure.md-diagram');
+      ?.querySelector<HTMLElement>('figure.md-diagram svg');
 
-    if (!figure || (!onDouble && !target.closest('.md-diagram-open'))) return;
-
-    const svg = figure.querySelector('svg');
-
-    if (svg) {
+    if (diagram && (pressed || onDouble)) {
       event.preventDefault();
-      setOpened(svg.outerHTML);
+      setOpened({ kind: 'diagram', markup: diagram.outerHTML });
+
+      return;
+    }
+
+    const table = target.closest<HTMLElement>('.md-table-frame')?.querySelector('table');
+
+    if (table && pressed) {
+      event.preventDefault();
+      setOpened({ kind: 'table', markup: table.outerHTML });
     }
   };
 
@@ -129,7 +151,12 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
         />
       </div>
 
-      {opened && <DiagramViewer svg={opened} onClose={() => setOpened(null)} />}
+      {opened?.kind === 'diagram' && (
+        <DiagramViewer svg={opened.markup} onClose={() => setOpened(null)} />
+      )}
+      {opened?.kind === 'table' && (
+        <TableViewer table={opened.markup} onClose={() => setOpened(null)} />
+      )}
     </>
   );
 }

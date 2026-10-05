@@ -289,6 +289,8 @@ export const ui: Content['ui'] = {
   'diagram.zoomOut': 'Verkleinern',
   'diagram.fit': 'An Bildschirm anpassen',
   'diagram.close': 'Schließen',
+  'table.open': 'Tabelle im Vollbild öffnen',
+  'table.viewer': 'Tabelle im Vollbild',
   'converter.summary.needsSave':
     'Speichern Sie dieses Dokument in Ihrem Konto, um es zusammenzufassen.',
   'converter.summary.loading': 'Dokument wird gelesen…',

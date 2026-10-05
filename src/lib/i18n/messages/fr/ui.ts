@@ -275,6 +275,8 @@ export const ui: Content['ui'] = {
   'diagram.zoomOut': 'Zoom arrière',
   'diagram.fit': 'Ajuster à l’écran',
   'diagram.close': 'Fermer',
+  'table.open': 'Ouvrir le tableau en plein écran',
+  'table.viewer': 'Tableau en plein écran',
   'converter.summary.needsSave':
     'Enregistrez ce document dans votre compte pour le résumer.',
   'converter.summary.loading': 'Lecture du document…',

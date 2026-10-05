@@ -114,6 +114,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'A wide table opens on the whole screen',
+    body:
+      'A table too wide for the page now has a Full screen button above it, like a diagram. It '
+      + 'opens at its own size across the whole screen \u2014 not shrunk, because shrinking text is '
+      + 'how it stops being readable \u2014 scrolls both ways, and keeps its header row in sight as '
+      + 'the rows go past. Tables that fit get no button. A downloaded file is unchanged.',
+  },
+  {
+    date: '2026-10-05',
     title: 'A diagram opens on the whole screen',
     body:
       'A Mermaid diagram keeps its own size in a document, so a big one ran off the side of the '

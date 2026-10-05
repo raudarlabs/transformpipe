@@ -559,6 +559,30 @@ export const MD_PREVIEW_STYLE = `
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
+}
+/*
+ * A table's sits above the table, right-aligned, where it covers no cell — the table's own top
+ * margin moves to the frame so the pair keeps the spacing a table has on its own.
+ */
+.md-doc .md-table-frame {
+  display: flex;
+  flex-direction: column;
+  margin: 1.15em 0;
+}
+.md-doc .md-table-frame > .md-table {
+  margin: 0.4rem 0 0;
+}
+.md-doc .md-table-open {
+  align-self: flex-end;
+}
+/* The header row of a table opened on the whole screen stays in sight as the rows go past. */
+.md-table-viewer thead th {
+  position: sticky;
+  top: -1.5rem;
+  z-index: 1;
+  box-shadow: inset 0 -1px 0 var(--md-stroke);
+}
+.md-doc .md-expand {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -575,8 +599,8 @@ export const MD_PREVIEW_STYLE = `
   opacity: 0.9;
   transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
 }
-.md-doc .md-diagram-open:hover,
-.md-doc .md-diagram-open:focus-visible {
+.md-doc .md-expand:hover,
+.md-doc .md-expand:focus-visible {
   opacity: 1;
   color: var(--md-ink);
   border-color: var(--md-brand);
