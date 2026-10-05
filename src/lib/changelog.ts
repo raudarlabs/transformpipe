@@ -119,7 +119,9 @@ const ENTRIES: ChangelogEntry[] = [
       'A table too wide for the page now has a Full screen button above it, like a diagram. It '
       + 'opens at its own size across the whole screen \u2014 not shrunk, because shrinking text is '
       + 'how it stops being readable \u2014 scrolls both ways, and keeps its header row in sight as '
-      + 'the rows go past. Tables that fit get no button. A downloaded file is unchanged.',
+      + 'the rows go past. Tables that fit get no button. A downloaded file is unchanged. Opened '
+      + 'from a document read full screen, Escape now closes the table or diagram and leaves the '
+      + 'document full screen, in Chrome and Edge; elsewhere a second Escape does it.',
   },
   {
     date: '2026-10-05',

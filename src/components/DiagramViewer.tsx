@@ -2,6 +2,7 @@ import { Maximize, Minus, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useT } from '@/lib/i18n/context';
+import { useEscapeInFullscreen } from '@/lib/use-escape-in-fullscreen';
 import { IconButton } from '@/ui/components/IconButton';
 
 /*
@@ -45,6 +46,8 @@ const clamp = (value: number) => Math.min(MAX, Math.max(MIN, value));
 
 export function DiagramViewer({ svg, onClose }: { svg: string; onClose: () => void }) {
   const t = useT();
+
+  useEscapeInFullscreen();
   const stage = useRef<HTMLDivElement>(null);
   const drawing = useRef<HTMLDivElement>(null);
   const size = useRef({ width: 0, height: 0 });

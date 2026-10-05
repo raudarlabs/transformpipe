@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useT } from '@/lib/i18n/context';
+import { useEscapeInFullscreen } from '@/lib/use-escape-in-fullscreen';
 import { IconButton } from '@/ui/components/IconButton';
 
 /*
@@ -17,6 +18,8 @@ import { IconButton } from '@/ui/components/IconButton';
  */
 export function TableViewer({ table, onClose }: { table: string; onClose: () => void }) {
   const t = useT();
+
+  useEscapeInFullscreen();
 
   useEffect(() => {
     const keys = (event: KeyboardEvent) => {
