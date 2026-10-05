@@ -544,6 +544,41 @@ body {
  * 27-inch monitor.
  */
 export const MD_PREVIEW_STYLE = `
+/*
+ * The button that opens a diagram on the whole screen. Only the preview has it — this stylesheet
+ * is not in a download, and neither is the button. Out of the way until the diagram is pointed at,
+ * and always there on a screen with no pointer to hover with.
+ */
+.md-doc .md-diagram {
+  position: relative;
+}
+.md-doc .md-diagram-open {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--md-stroke);
+  border-radius: 0.5rem;
+  background: var(--md-card);
+  color: var(--md-ink);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.md-doc .md-diagram:hover .md-diagram-open,
+.md-doc .md-diagram-open:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .md-doc .md-diagram-open {
+    opacity: 1;
+  }
+}
+
 /* The sheet the document sits on — painted here so its padding is part of the page, not a gap. */
 .md-sheet {
   background: var(--md-card);

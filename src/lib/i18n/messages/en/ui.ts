@@ -276,6 +276,13 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'AI Summary',
   'converter.fullscreen.enter': 'Read fullscreen',
   'converter.fullscreen.exit': 'Exit fullscreen',
+  /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
+  'diagram.open': 'Open the diagram full screen',
+  'diagram.viewer': 'Diagram, full screen',
+  'diagram.zoomIn': 'Zoom in',
+  'diagram.zoomOut': 'Zoom out',
+  'diagram.fit': 'Fit to screen',
+  'diagram.close': 'Close',
   'converter.summary.needsSave': 'Save this document to your account to summarise it.',
   'converter.summary.loading': 'Reading the document…',
   'converter.summary.writing': 'Writing the summary…',

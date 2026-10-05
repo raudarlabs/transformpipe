@@ -113,6 +113,16 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-05',
+    title: 'A diagram opens on the whole screen',
+    body:
+      'A Mermaid diagram keeps its own size in a document, so a big one ran off the side of the '
+      + 'preview. Each now has a button in its corner \u2014 or double-click it \u2014 that opens it '
+      + 'over the whole screen, fitted to it. Zoom with the wheel, a pinch or the buttons, drag to '
+      + 'move, Escape to close. In the converter, the live preview, shared pages and the blog; a '
+      + 'downloaded file is unchanged.',
+  },
+  {
     date: '2026-10-01',
     title: 'Download Markdown for Obsidian',
     body:

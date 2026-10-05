@@ -264,6 +264,13 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'Riepilogo IA',
   'converter.fullscreen.enter': 'Leggi a schermo intero',
   'converter.fullscreen.exit': 'Esci da schermo intero',
+  /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
+  'diagram.open': 'Apri lo schema a schermo intero',
+  'diagram.viewer': 'Schema a schermo intero',
+  'diagram.zoomIn': 'Ingrandisci',
+  'diagram.zoomOut': 'Riduci',
+  'diagram.fit': 'Adatta allo schermo',
+  'diagram.close': 'Chiudi',
   'converter.summary.needsSave': 'Salva questo documento nel tuo account per riassumerlo.',
   'converter.summary.loading': 'Lettura del documento…',
   'converter.summary.writing': 'Scrittura del riassunto…',

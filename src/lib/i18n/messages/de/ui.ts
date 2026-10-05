@@ -281,6 +281,13 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'KI-Zusammenfassung',
   'converter.fullscreen.enter': 'Im Vollbild lesen',
   'converter.fullscreen.exit': 'Vollbild beenden',
+  /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
+  'diagram.open': 'Diagramm im Vollbild öffnen',
+  'diagram.viewer': 'Diagramm im Vollbild',
+  'diagram.zoomIn': 'Vergrößern',
+  'diagram.zoomOut': 'Verkleinern',
+  'diagram.fit': 'An Bildschirm anpassen',
+  'diagram.close': 'Schließen',
   'converter.summary.needsSave':
     'Speichern Sie dieses Dokument in Ihrem Konto, um es zusammenzufassen.',
   'converter.summary.loading': 'Dokument wird gelesen…',

@@ -267,6 +267,13 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'Résumé IA',
   'converter.fullscreen.enter': 'Lire en plein écran',
   'converter.fullscreen.exit': 'Quitter le plein écran',
+  /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
+  'diagram.open': 'Ouvrir le schéma en plein écran',
+  'diagram.viewer': 'Schéma en plein écran',
+  'diagram.zoomIn': 'Zoom avant',
+  'diagram.zoomOut': 'Zoom arrière',
+  'diagram.fit': 'Ajuster à l’écran',
+  'diagram.close': 'Fermer',
   'converter.summary.needsSave':
     'Enregistrez ce document dans votre compte pour le résumer.',
   'converter.summary.loading': 'Lecture du document…',

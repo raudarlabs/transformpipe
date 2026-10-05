@@ -272,6 +272,13 @@ export const ui: Content['ui'] = {
   'converter.tab.summary': 'Resumen con IA',
   'converter.fullscreen.enter': 'Leer a pantalla completa',
   'converter.fullscreen.exit': 'Salir de pantalla completa',
+  /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
+  'diagram.open': 'Abrir el diagrama a pantalla completa',
+  'diagram.viewer': 'Diagrama a pantalla completa',
+  'diagram.zoomIn': 'Acercar',
+  'diagram.zoomOut': 'Alejar',
+  'diagram.fit': 'Ajustar a la pantalla',
+  'diagram.close': 'Cerrar',
   'converter.summary.needsSave': 'Guarda este documento en tu cuenta para resumirlo.',
   'converter.summary.loading': 'Leyendo el documento…',
   'converter.summary.writing': 'Escribiendo el resumen…',
