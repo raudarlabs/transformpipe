@@ -1329,6 +1329,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_share_document: {
     description:
       'Changes who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list rather than adding to it. Returns the mode, the URL and the addresses as they now stand.',
+    ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Share a document',
       readOnlyHint: false,
@@ -1422,7 +1423,15 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       const emails = (changed.body.emails ?? []) as string[];
 
-      return say(
+      /*
+       * The card shows the share as it now stands — who, how often opened, the shared link — and it
+       * needs the document's name and size for its head, which the share answer does not carry. A
+       * read that fails costs the head, not the card.
+       */
+      const found = await callApi(c, `/api/v1/documents/${segment(id)}`);
+      const document = found.status === 200 ? found.body.document : { id, name: '', kind: 'markdown', size: 0 };
+
+      return card(
         [
           `Now ${changed.body.mode}.`,
           changed.body.url ? changed.body.url : 'The link is revoked, so one already sent no longer opens.',
@@ -1432,7 +1441,17 @@ const TOOLS: Record<McpToolName, Tool> = {
           emails.length > 0 ? `Readers: ${emails.join(', ')}` : null,
         ]
           .filter(Boolean)
-          .join('\n')
+          .join('\n'),
+        {
+          ...forCard(c, document),
+          share: changed.body.mode,
+          shareUrl: changed.body.url ?? '',
+          shareExpires: changed.body.expires_at ?? '',
+          sharing: true,
+          readers: emails,
+          opens: changed.body.views ?? 0,
+          lastOpened: changed.body.last_viewed_at ?? '',
+        }
       );
     },
   },

@@ -986,6 +986,11 @@ if (blobless) {
     /private/.test(shared.text) && /no longer opens/.test(shared.text),
     shared.text
   );
+  check(
+    'and its card says so: the document by name, private, no shared link',
+    shared.data?.sharing === true && shared.data?.share === 'private' && shared.data?.shareUrl === '' && Boolean(shared.data?.name),
+    JSON.stringify(shared.data ?? null).slice(0, 200)
+  );
 
   /*
    * Updating in place: a private document changes when asked; a shared one is a page other people
@@ -1024,6 +1029,11 @@ if (blobless) {
 
   const published = await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'link', confirm: true });
   const link = (published.text.match(/https?:\/\/\S+\/s\/[\w-]+/) ?? [])[0];
+  check(
+    'a share draws the card with who can open it and the shared link',
+    published.data?.sharing === true && published.data?.share === 'link' && published.data?.shareUrl === link && published.data?.opens === 0,
+    JSON.stringify(published.data ?? null).slice(0, 200)
+  );
 
   const ungatedUpdate = await tool(tokens.access_token, 'tp_update_document', {
     id: savedId,

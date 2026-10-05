@@ -123,6 +123,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-05',
+    title: 'Sharing from a chat shows who can open it',
+    body:
+      'Sharing a document from Claude or ChatGPT used to end in a sentence. It now ends in a card: '
+      + 'the document, whether it is shared, who it is shared with, how often the link has been '
+      + 'opened, and a button for the shared link — the same answer every time, not only when '
+      + 'somebody asks for one.',
+  },
+  {
+    date: '2026-10-05',
     title: 'Ask an assistant what changed in a document',
     body:
       'Updating a document keeps the text it replaced, the newest ten of them, and until now an '

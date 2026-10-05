@@ -82,29 +82,29 @@ interface Showcase {
 const SHOWCASE: Partial<Record<'claude' | 'chatgpt', Showcase>> = {
   claude: {
     hero: {
-      back: { src: '/agents/claude/chat-link.webp', width: 1000, height: 320 },
+      back: { src: '/agents/claude/chat-link.webp', width: 1000, height: 625 },
       front: { src: '/agents/claude/page.webp', width: 1290, height: 1133 },
       url: 'transformpipe.com/s/ScwxxPECB6…',
     },
     features: [
-      { src: '/agents/claude/chat-saved.webp', width: 1000, height: 645 },
+      { src: '/agents/claude/chat-saved.webp', width: 1022, height: 672 },
       { src: '/agents/claude/page-wide.webp', width: 1260, height: 1095 },
-      { src: '/agents/claude/chat-found.webp', width: 1000, height: 700 },
-      { src: '/agents/claude/chat-updated.webp', width: 1000, height: 590 },
+      { src: '/agents/claude/chat-found.webp', width: 1188, height: 702 },
+      { src: '/agents/claude/chat-updated.webp', width: 1000, height: 625 },
     ],
-    phones: ['/agents/claude/phone-list.webp', '/agents/claude/phone-page.webp'],
+    phones: ['/agents/claude/phone-share.webp', '/agents/claude/phone-list.webp', '/agents/claude/phone-page.webp'],
   },
   chatgpt: {
     hero: {
-      back: { src: '/agents/chatgpt/chat-link.webp', width: 1050, height: 480 },
+      back: { src: '/agents/chatgpt/chat-link.webp', width: 1056, height: 660 },
       front: { src: '/agents/chatgpt/page.webp', width: 1290, height: 1133 },
       url: 'transformpipe.com/s/-Dsf83Omfu…',
     },
     features: [
-      { src: '/agents/chatgpt/chat-saved.webp', width: 1050, height: 530 },
+      { src: '/agents/chatgpt/chat-saved.webp', width: 1095, height: 720 },
       { src: '/agents/chatgpt/page-wide.webp', width: 1260, height: 1095 },
-      { src: '/agents/chatgpt/chat-found.webp', width: 1050, height: 400 },
-      { src: '/agents/chatgpt/chat-updated.webp', width: 1050, height: 540 },
+      { src: '/agents/chatgpt/chat-found.webp', width: 1056, height: 624 },
+      { src: '/agents/chatgpt/chat-updated.webp', width: 1056, height: 660 },
     ],
     phones: ['/agents/chatgpt/phone-list.webp', '/agents/chatgpt/phone-page.webp'],
   },
@@ -844,7 +844,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
       />
 
       {/* ------------------------------------------------------------------ the opening */}
-      <header className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <header className="grid items-center gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
         <div className="flex flex-col gap-6">
           <div className="flex flex-wrap items-center gap-3">
             <Label>{landing.eyebrow}</Label>

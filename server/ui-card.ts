@@ -179,6 +179,25 @@ button {
 button.quiet { background: transparent; border-color: var(--stroke); color: var(--ink); }
 button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .empty { color: var(--muted); font-size: 13px; }
+/* A share, as it now stands: the state on the right of the head, and who, how often, until when below. */
+.top .grow { flex: 1; min-width: 0; }
+.state {
+  flex: none;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: color-mix(in srgb, #16a34a 16%, transparent);
+  color: #15803d;
+}
+:root[data-theme="dark"] .state:not(.off) { color: #4ade80; }
+.state.off { background: var(--page); color: var(--muted); }
+.rows { margin-top: 12px; padding-top: 4px; border-top: 1px solid var(--stroke); }
+.row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 13px; }
+.row .label { flex: none; color: var(--muted); }
+.row .value { min-width: 0; text-align: right; color: var(--ink); overflow-wrap: anywhere; }
+.row .value.link { color: var(--brand); }
+.actions.wide button { flex: 1; }
 </style>
 </head>
 <body>
@@ -211,7 +230,78 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
       ? (bytes / 1024).toFixed(1) + ' kB'
       : (bytes / 1048576).toFixed(1) + ' MB';
 
+  const day = (when) => String(when || '').slice(0, 10);
+
+  /* After tp_share_document: not the document's contents but who can now open it. */
+  function drawShare(document_) {
+    const card = document.getElementById('card');
+    card.textContent = '';
+
+    const shared = document_.share && document_.share !== 'private';
+    const top = el('div', 'top');
+    top.append(el('div', 'glyph', 'T>'));
+
+    const words = el('div', 'grow');
+    words.append(el('h1', null, document_.name || 'Document'));
+    const meta = [
+      weigh(document_.size),
+      document_.words ? document_.words.toLocaleString('en-GB') + ' words' : '',
+    ].filter(Boolean).join(' · ');
+    if (meta) words.append(el('div', 'meta', meta));
+    top.append(words);
+    top.append(el('span', shared ? 'state' : 'state off', shared ? 'Shared' : 'Private'));
+    card.append(top);
+
+    const rows = el('div', 'rows');
+    const row = (label, value, className) => {
+      const line = el('div', 'row');
+      line.append(el('span', 'label', label));
+      line.append(el('span', className ? 'value ' + className : 'value', value));
+      rows.append(line);
+    };
+
+    row('Access', document_.share === 'link'
+      ? 'Anyone with the link'
+      : document_.share === 'people'
+        ? 'Specific people'
+        : 'Only you — the old link no longer opens');
+
+    const readers = Array.isArray(document_.readers) ? document_.readers : [];
+    if (document_.share === 'people') {
+      row(readers.length === 1 ? 'Reader' : 'Readers', readers.join(', ') || 'Nobody yet', 'link');
+    }
+
+    if (shared) {
+      row('Opens', !document_.opens
+        ? 'Not opened yet'
+        : (document_.opens === 1 ? 'Once' : document_.opens + ' times') +
+          (document_.lastOpened ? ', last ' + day(document_.lastOpened) : ''));
+    }
+
+    if (shared && document_.shareExpires) row('Link ends', day(document_.shareExpires));
+
+    card.append(rows);
+
+    const actions = el('div', 'actions wide');
+
+    if (document_.shareUrl) {
+      const open = el('button', null, 'Open shared link');
+      open.addEventListener('click', () => openLink(document_.shareUrl));
+      actions.append(open);
+    }
+
+    if (document_.url) {
+      const app = el('button', document_.shareUrl ? 'quiet' : null, 'Open in TransformPipe');
+      app.addEventListener('click', () => openLink(document_.url));
+      actions.append(app);
+    }
+
+    if (actions.children.length) card.append(actions);
+  }
+
   function draw(document_) {
+    if (document_.sharing) return drawShare(document_);
+
     const card = document.getElementById('card');
     card.textContent = '';
 
