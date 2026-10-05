@@ -18,8 +18,13 @@ import { cn } from '@/ui/lib/utils';
  * gets told (see `INTL_LOCALES`): "8 September 2026", not "September 8, 2026".
  */
 
-/** 4:3, so all five sit on the same box whatever their real proportions are. */
-const BOX = 'aria-hidden shrink-0 rounded-[1px]';
+/*
+ * 4:3, so all five sit on the same box whatever their real proportions are — and a hairline round
+ * that box, in the border colour, because a box is only the same size if it can be seen to be. On
+ * the dark theme Germany's black stripe vanished into the page and its flag read a third shorter
+ * than the rest; on the light one the white of France and Italy did the same at the edges.
+ */
+const BOX = 'aria-hidden shrink-0 rounded-[1px] ring-1 ring-stroke';
 
 function Flag({
   className,
