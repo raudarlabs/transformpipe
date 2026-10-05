@@ -42,10 +42,14 @@ const OPENAI_BRIDGE = `
       ? Promise.resolve(openai().openExternal({ href: url }))
       : request('ui/open-link', { url });
 
+  /* A call the host never answers is a button that never comes back; after a while it says so. */
   const callTool = (name, args) =>
-    openai() && typeof openai().callTool === 'function'
-      ? Promise.resolve(openai().callTool(name, args))
-      : request('tools/call', { name, arguments: args });
+    Promise.race([
+      openai() && typeof openai().callTool === 'function'
+        ? Promise.resolve(openai().callTool(name, args))
+        : request('tools/call', { name, arguments: args }),
+      new Promise((resolve, reject) => setTimeout(() => reject(new Error('no answer from the assistant')), 30000)),
+    ]);
 
   /* An empty object is what ChatGPT holds for a result with no structured content: nothing to draw. */
   const fromOpenAI = () => {

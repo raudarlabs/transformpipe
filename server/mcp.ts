@@ -1807,6 +1807,12 @@ const LISTED = MCP_TOOL_NAMES.map((name) => ({
         _meta: {
           ui: { resourceUri: TOOLS[name].ui },
           'openai/outputTemplate': TOOLS[name].ui,
+          /*
+           * ChatGPT lets a card call a tool only when the tool says it may. The cards call these
+           * back — a history reads an earlier text, a refused publish or delete runs on the
+           * button — and without it every such button did nothing at all.
+           */
+          'openai/widgetAccessible': true,
         },
       }
     : {}),

@@ -830,6 +830,12 @@ check(
 );
 
 check(
+  'every tool with a card lets ChatGPT call it from the card',
+  tools.filter((one) => one._meta?.ui).every((one) => one._meta['openai/widgetAccessible'] === true) &&
+    ['tp_document_versions', 'tp_share_document', 'tp_delete_document'].every((name) => tools.find((one) => one.name === name)?._meta?.['openai/widgetAccessible'] === true)
+);
+
+check(
   'the two document tools point at the card',
   ['tp_save_document', 'tp_get_document'].every(
     (name) => tools.find((one) => one.name === name)?._meta?.ui?.resourceUri === cardResource?.uri
