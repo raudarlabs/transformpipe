@@ -44,8 +44,9 @@ import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
-import type { LandingWords } from '../src/lib/i18n/content.js';
+import type { LandingWords, PluginWords } from '../src/lib/i18n/content.js';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
+import { OBSIDIAN_DIRECTORY, OBSIDIAN_SOURCE } from '../src/lib/obsidian-facts.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
 import { hasTranslation } from '../src/lib/route.js';
 import {
@@ -307,7 +308,8 @@ function landingHtml(landing: LandingWords, locale: Locale, here: string): strin
   const chatgpt = STATIC_PAGES.find((one) => one.id === 'agents-chatgpt')!;
   const guide = STATIC_PAGES.find((one) => one.id === 'how-to-assistant')!;
   /* The assistants with a page of their own, by their row in the table. */
-  const clientPages: Record<number, typeof claude> = { 0: claude, 1: chatgpt };
+  const obsidian = STATIC_PAGES.find((one) => one.id === 'obsidian')!;
+  const clientPages: Record<number, typeof claude> = { 0: claude, 1: chatgpt, 2: obsidian };
 
   return [
     // ChatGPT's page leads with ChatGPT's way in; every other page with Claude's listing.
@@ -374,6 +376,48 @@ function landingHtml(landing: LandingWords, locale: Locale, here: string): strin
   ].join('');
 }
 
+/*
+ * The Obsidian plugin's page, as prose: every word the app draws, in order, with the listing and
+ * the source as links. `obsidian://` is left out — it means nothing to a crawler, and the listing
+ * is where the same Install button is for everybody.
+ */
+function pluginHtml(plugin: PluginWords): string {
+  const titled = (items: { title: string; body: string }[]) =>
+    items.map((item) => `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p>`).join('');
+  const list = (lines: string[]) => `<ul>${lines.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
+
+  return [
+    `<p><a href="${OBSIDIAN_DIRECTORY}">${escapeHtml(plugin.directory)}</a> · ${escapeHtml(
+      plugin.listed
+    )} · <a href="${OBSIDIAN_SOURCE}">GitHub</a></p>`,
+    list(plugin.facts),
+    `<section><h2>${escapeHtml(plugin.features.heading)}</h2><p>${escapeHtml(
+      plugin.features.intro
+    )}</p>${plugin.features.items
+      .map((item) => `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.body)}</p><p>${escapeHtml(item.result)}</p>`)
+      .join('')}</section>`,
+    `<section><h2>${escapeHtml(plugin.phone.heading)}</h2><p>${escapeHtml(plugin.phone.text)}</p></section>`,
+    `<section><h2>${escapeHtml(plugin.compare.heading)}</h2><p>${escapeHtml(
+      plugin.compare.intro
+    )}</p><table><thead><tr><th></th><th>${escapeHtml(plugin.compare.left)}</th><th>${escapeHtml(
+      plugin.compare.right
+    )}</th></tr></thead><tbody>${plugin.compare.rows
+      .map(
+        (row) =>
+          `<tr><th>${escapeHtml(row.label)}</th><td>${escapeHtml(row.left)}</td><td>${escapeHtml(row.right)}</td></tr>`
+      )
+      .join('')}</tbody></table></section>`,
+    `<section><h2>${escapeHtml(plugin.steps.heading)}</h2>${titled(plugin.steps.items)}</section>`,
+    `<section><h2>${escapeHtml(plugin.trust.heading)}</h2><h3>${escapeHtml(plugin.trust.sent)}</h3>${list(
+      plugin.trust.can
+    )}<h3>${escapeHtml(plugin.trust.never)}</h3>${list(plugin.trust.cannot)}${titled(plugin.trust.notes)}</section>`,
+    `<section><h2>${escapeHtml(plugin.faq.heading)}</h2>${plugin.faq.items
+      .map((item) => `<h3>${escapeHtml(item.question)}</h3><p>${escapeHtml(item.answer)}</p>`)
+      .join('')}</section>`,
+    `<p>${escapeHtml(plugin.bottom.title)}. ${escapeHtml(plugin.bottom.text)}</p>`,
+  ].join('');
+}
+
 function render(page: Page): string {
   const url = `${SITE}${page.path === '/' ? '' : page.path}`;
   const locale = page.locale ?? DEFAULT_LOCALE;
@@ -427,7 +471,7 @@ function render(page: Page): string {
  */
 function siteFooter(locale: Locale): string {
   const catalogue = CATALOGUES[locale];
-  const page = (id: 'extension' | 'agents' | 'support' | 'privacy' | 'terms' | 'cookies') => {
+  const page = (id: 'extension' | 'obsidian' | 'agents' | 'support' | 'privacy' | 'terms' | 'cookies') => {
     const one = STATIC_PAGES.find((each) => each.id === id)!;
 
     return anchor(localePath(locale, one.path), catalogue.pages[id].label);
@@ -440,6 +484,7 @@ function siteFooter(locale: Locale): string {
     anchor(localePath(locale, '/markdown-live-preview'), catalogue.ui['footer.live']),
     anchor(localePath(locale, '/changelog'), catalogue.ui['footer.changelog']),
     page('extension'),
+    page('obsidian'),
     page('agents'),
     page('support'),
     page('privacy'),
@@ -958,12 +1003,12 @@ for (const locale of LOCALES) {
        * page of words keeps them in `faq` beside its sections. Same markup, same condition — the
        * answers are on the page, in the accordion at its foot.
        */
-      ((said.landing?.faq ?? said.faq)
+      ((said.landing?.faq ?? said.plugin?.faq ?? said.faq)
         ? jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             inLanguage: locale,
-            mainEntity: (said.landing?.faq ?? said.faq)!.items.map((entry) => ({
+            mainEntity: (said.landing?.faq ?? said.plugin?.faq ?? said.faq)!.items.map((entry) => ({
               '@type': 'Question',
               name: entry.question,
               acceptedAnswer: { '@type': 'Answer', text: entry.answer },
@@ -1024,7 +1069,7 @@ for (const locale of LOCALES) {
             )
           )}</p>`
         : ''
-    }${said.landing ? landingHtml(said.landing, locale, one.id) : ''}${said.sections
+    }${said.landing ? landingHtml(said.landing, locale, one.id) : ''}${said.plugin ? pluginHtml(said.plugin) : ''}${said.sections
       .map(
         (section) =>
           `<section><h2>${escapeHtml(section.heading)}</h2>${section.body

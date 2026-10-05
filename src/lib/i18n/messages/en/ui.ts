@@ -545,6 +545,8 @@ export const ui: Content['ui'] = {
   'agents.col.how': 'How it connects',
   'agents.col.status': 'Status',
   'agents.status.works': 'Works today',
+  'agents.open': 'Open page',
+  'agents.more': 'More about {name}',
   'agents.status.testing': 'Being tested',
   'agents.claude.add': 'Add to Claude',
   'agents.listed': 'Listed in Claude’s connector directory',

@@ -989,6 +989,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Für KI-Assistenten',
+      phone: {
+        heading: 'Auch auf dem Handy',
+        text: 'Dasselbe Konto in den Apps von Claude und ChatGPT auf iPhone und Android: in der einen speichern, in der anderen wiederfinden.',
+      },
       demo: {
         from: 'Im Chat',
         to: 'In Ihrem Konto',
@@ -1102,9 +1106,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT Plugins öffnen, auf Add klicken, Create MCP App wählen und https://transformpipe.com/api/mcp eintragen. Nach der Anmeldung erscheinen Dokumente als Karten im Chat. Im Verzeichnis von ChatGPT noch nicht gelistet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote-MCP-Server',
-            body: 'Cursor fügt Remote-MCP-Server mit Anmeldung hinzu, kehrt danach aber über ein eigenes Link-Schema in den Editor zurück, das dieser Server noch nicht akzeptiert. Daran wird gerade gearbeitet.',
+            name: 'Obsidian',
+            how: 'Plugin · Community-Plugins',
+            body: 'Kein Assistent, aber dasselbe Konto: Das TransformPipe-Plugin veröffentlicht eine Notiz mit einem Befehl als Seite, und Claude oder ChatGPT findet sie zusammen mit allem anderen.',
           },
           {
             name: 'Gemini',
@@ -1203,6 +1207,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Für Claude',
+      phone: {
+        heading: 'Auch auf dem Handy',
+        text: 'Derselbe Connector in der Claude-App auf iPhone und Android, sobald er im Web hinzugefügt ist: Dokumente vom Handy aus speichern, teilen und finden.',
+      },
       demo: {
         from: 'Im Chat',
         to: 'In Ihrem Konto',
@@ -1325,9 +1333,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT Plugins öffnen, auf Add klicken, Create MCP App wählen und https://transformpipe.com/api/mcp eintragen. Nach der Anmeldung erscheinen Dokumente als Karten im Chat. Im Verzeichnis von ChatGPT noch nicht gelistet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote-MCP-Server',
-            body: 'Cursor fügt Remote-MCP-Server mit Anmeldung hinzu, kehrt danach aber über ein eigenes Link-Schema in den Editor zurück, das dieser Server noch nicht akzeptiert. Daran wird gerade gearbeitet.',
+            name: 'Obsidian',
+            how: 'Plugin · Community-Plugins',
+            body: 'Kein Assistent, aber dasselbe Konto: Das TransformPipe-Plugin veröffentlicht eine Notiz mit einem Befehl als Seite, und Claude oder ChatGPT findet sie zusammen mit allem anderen.',
           },
           {
             name: 'Gemini',
@@ -1430,6 +1438,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Für ChatGPT',
+      phone: {
+        heading: 'Auch auf dem Handy',
+        text: 'Dieselbe App in ChatGPT auf iPhone und Android, sobald sie im Web hinzugefügt ist: vom Handy aus fragen, und es sind dieselben Dokumente.',
+      },
       demo: {
         from: 'Im Chat',
         to: 'In Ihrem Konto',
@@ -1547,9 +1559,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT Plugins öffnen, auf Add klicken, Create MCP App wählen und https://transformpipe.com/api/mcp eintragen. Nach der Anmeldung erscheinen Dokumente als Karten im Chat. Im Verzeichnis von ChatGPT noch nicht gelistet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote-MCP-Server',
-            body: 'Cursor fügt Remote-MCP-Server mit Anmeldung hinzu, kehrt danach aber über ein eigenes Link-Schema in den Editor zurück, das dieser Server noch nicht akzeptiert. Daran wird gerade gearbeitet.',
+            name: 'Obsidian',
+            how: 'Plugin · Community-Plugins',
+            body: 'Kein Assistent, aber dasselbe Konto: Das TransformPipe-Plugin veröffentlicht eine Notiz mit einem Befehl als Seite, und Claude oder ChatGPT findet sie zusammen mit allem anderen.',
           },
           {
             name: 'Gemini',
@@ -1638,6 +1650,179 @@ export const pages: Content['pages'] = {
       title: 'Speichern und teilen, was ChatGPT schreibt, als Link — TransformPipe',
       description:
         'TransformPipe als MCP-App zu ChatGPT hinzufügen: Es speichert, was ChatGPT schreibt, in Ihrem Konto, hebt Versionen auf und teilt jedes Dokument als Seite.',
+    },
+  },
+  obsidian: {
+    label: 'Obsidian-Plugin',
+    title: 'Eine Obsidian-Notiz als Webseite veröffentlichen',
+    lede: 'Ein Befehl macht aus der Notiz eine aufgeräumte Seite mit Link, und der Link liegt schon in Ihrer Zwischenablage. Ändern Sie die Notiz und veröffentlichen Sie erneut: Die Seite wird aktualisiert, und der Link, den Sie bereits verschickt haben, funktioniert weiter.',
+    sections: [],
+    plugin: {
+      eyebrow: 'Obsidian-Plugin',
+      listed: 'In den Community-Plugins',
+      add: 'Zu Obsidian hinzufügen',
+      directory: 'Im Verzeichnis ansehen',
+      facts: ['Kostenloses Konto', 'Desktop und Mobilgeräte', 'Open Source, MIT'],
+      features: {
+        heading: 'Was es kann',
+        intro: 'Vier Dinge, jedes ein Befehl in der Befehlspalette, und für keines müssen Sie Obsidian verlassen.',
+        items: [
+          {
+            title: 'Notiz ändern. Der Link bleibt.',
+            body: 'Einmal veröffentlicht, wird die Notiz zu einer Seite, die per Link geteilt wird. Einen Tippfehler korrigieren, einen Abschnitt ergänzen, erneut veröffentlichen: Dieselbe Seite wird aktualisiert, und alle, die den Link haben, sehen die neue Fassung. Kein zweiter Link zum Verschicken, kein „Nimm lieber diesen hier“. Die letzten zehn Versionen werden aufbewahrt.',
+            result: 'Derselbe Link nach jeder Änderung',
+          },
+          {
+            title: 'Es sieht aus wie in Obsidian',
+            body: 'Tabellen, Callouts, Code, Aufgabenlisten, Fußnoten, Hervorhebungen und Mermaid-Diagramme kommen richtig heraus, im hellen oder dunklen Design des Lesers. Bilder aus dem Vault stecken in der Seite selbst, sodass es später nichts kaputt macht, wenn Sie Dateien verschieben.',
+            result: 'Mermaid, Callouts und Tabellen',
+          },
+          {
+            title: 'Nur die Personen, die Sie wählen',
+            body: '„Share with people…“ beschränkt eine Notiz auf die E-Mail-Adressen, die Sie nennen: Nur diese Personen können sie öffnen, nach der Anmeldung, und jede erhält den Link per E-Mail. „Make private“ beendet das Teilen in einem Schritt, und der alte Link funktioniert endgültig nicht mehr.',
+            result: 'Genannte Personen oder niemand',
+          },
+          {
+            title: 'Word und PDF, direkt neben der Notiz',
+            body: 'Sie brauchen eine Datei für eine E-Mail oder ein Formular? „Export as Word“ und „Export as PDF“ erstellen sie aus dem aktuellen Text der Notiz und legen sie neben der Notiz in Ihrem Vault ab, bereit zum Anhängen.',
+            result: '.docx und .pdf im Vault',
+          },
+        ],
+      },
+      phone: {
+        heading: 'Auch auf dem Handy',
+        text: 'Dieselben Befehle auf iPhone, iPad und Android. Im Zug veröffentlichen und den Link in den Chat einfügen, bevor Sie aussteigen.',
+      },
+      others: {
+        heading: 'Ein Konto, von überall',
+        intro: 'Was Sie aus Obsidian veröffentlichen, können Claude und ChatGPT finden und teilen — und was die beiden speichern, können Sie hier öffnen. Ein Konto, gleich welches Werkzeug fragt.',
+      },
+      compare: {
+        heading: 'Warum die Notiz nicht einfach verschicken?',
+        intro: 'Was einer Notiz auf dem Weg zu jemand anderem meist passiert, und was mit dem Plugin passiert.',
+        left: 'Von Hand verschickt',
+        right: 'Mit dem Plugin',
+        rows: [
+          {
+            label: 'Wie es aussieht',
+            left: 'Eingefügtes Markdown kommt als Sternchen und senkrechte Striche an; ein Screenshot schneidet die Tabelle ab',
+            right: 'Eine Seite mit dargestellten Tabellen, Callouts und Diagrammen',
+          },
+          {
+            label: 'Nach einer Änderung',
+            left: 'Eine neue Datei oder ein neues Einfügen, während die alte Fassung weiter kursiert',
+            right: 'Derselbe Link zeigt die neue Fassung',
+          },
+          {
+            label: 'Wer es öffnen kann',
+            left: 'Jeder, an den es weitergeleitet wurde',
+            right: 'Alle mit dem Link, nur genannte Personen oder niemand',
+          },
+          {
+            label: 'Zurücknehmen',
+            left: 'Nach dem Versenden nicht mehr möglich',
+            right: '„Make private“, und der Link funktioniert nicht mehr',
+          },
+          {
+            label: 'Eine Datei für die E-Mail',
+            left: 'Exportieren, umbenennen, suchen, anhängen',
+            right: 'Word oder PDF, neben der Notiz gespeichert',
+          },
+        ],
+      },
+      steps: {
+        heading: 'In drei Schritten zum ersten Link',
+        items: [
+          {
+            title: 'Installieren',
+            body: 'Drücken Sie auf dieser Seite „Zu Obsidian hinzufügen“, oder öffnen Sie in Obsidian „Settings“, „Community plugins“, „Browse“ und suchen Sie nach TransformPipe. Dann „Install“ und „Enable“.',
+          },
+          {
+            title: 'Anmelden',
+            body: 'Drücken Sie in den Einstellungen des Plugins auf „Sign in“. TransformPipe öffnet sich in Ihrem Browser, Sie bestätigen, und der Browser bringt Sie zurück zu Obsidian. Es gibt keinen API-Schlüssel einzufügen.',
+          },
+          {
+            title: 'Veröffentlichen',
+            body: 'Öffnen Sie eine Notiz, drücken Sie `Ctrl/Cmd + P` und führen Sie „Publish note“ aus. Die Seite ist online, und ihr Link liegt in Ihrer Zwischenablage.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'Was gesendet wird, und wann',
+        sent: 'Gesendet, wenn Sie einen Befehl ausführen',
+        never: 'Nie gesendet',
+        can: [
+          'Die Notiz, auf die Sie den Befehl anwenden',
+          'Die Bilder aus dem Vault, die diese Notiz einbettet',
+          'Die E-Mail-Adressen, mit denen Sie sie teilen',
+        ],
+        cannot: [
+          'Die anderen Notizen in Ihrem Vault',
+          'Die Einstellungen Ihres Vaults und die Daten anderer Plugins',
+          'Analyse- oder Telemetriedaten: Das Plugin erhebt keine',
+        ],
+        notes: [
+          {
+            title: 'Wo die Anmeldung liegt',
+            body: 'Im geschützten Speicher von Obsidian, also im Schlüsselbund Ihres Systems, und nicht in der Einstellungsdatei des Plugins — sie wandert also nicht mit einem synchronisierten Vault mit. „Sign out“ gibt sie an TransformPipe zurück.',
+          },
+          {
+            title: 'Wo die Notiz liegt',
+            body: 'In Ihrem TransformPipe-Konto, bis Sie sie löschen, und sie wird nie zum Trainieren eines Modells verwendet. Sie ist nicht Ende-zu-Ende-verschlüsselt: Um daraus eine Seite oder eine Word-Datei zu erzeugen, muss sie gelesen werden.',
+          },
+          {
+            title: 'Open Source',
+            body: 'Das Plugin steht unter MIT-Lizenz auf GitHub, und das Verzeichnis von Obsidian baut jedes Release aus diesem Quellcode neu und prüft, ob es Byte für Byte mit der veröffentlichten Datei übereinstimmt.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Fragen zum Obsidian-Plugin',
+        intro: 'Das Konto, der Link und was mit einer Notiz geschieht, sobald sie den Vault verlässt.',
+        items: [
+          {
+            question: 'Ist das Plugin kostenlos?',
+            answer: 'Ja. Das Plugin ist kostenlos und Open Source, und das TransformPipe-Konto, in dem es veröffentlicht, ist ebenfalls kostenlos. Ein Konto fasst bis zu 500 Dokumente und 100 MB — das sind sehr viele Notizen.',
+          },
+          {
+            question: 'Brauche ich ein Konto?',
+            answer: 'Ja. Beim Veröffentlichen landet die Notiz in Ihrem TransformPipe-Konto; nur so kann derselbe Link eine neuere Fassung zeigen, und nur so können Sie sie später zurücknehmen. Sie melden sich einmal an, aus den Einstellungen des Plugins und in Ihrem Browser — mit Google oder mit E-Mail-Adresse und Passwort —, und Obsidian bewahrt die Anmeldung im Schlüsselbund Ihres Systems auf.',
+          },
+          {
+            question: 'Was ist der Unterschied zu Obsidian Publish?',
+            answer: 'Obsidian Publish macht aus einer Sammlung von Notizen eine Website mit eigener Navigation, auf dem kostenpflichtigen Dienst von Obsidian. Dieses Plugin schickt jeweils eine Notiz als eine Seite mit einem Link — für den Fall, dass Sie ein Dokument teilen und keine Website betreiben wollen. Die beiden kommen sich nicht in die Quere.',
+          },
+          {
+            question: 'Ändert sich der Link, wenn ich die Notiz bearbeite?',
+            answer: 'Nein. „Publish note“ aktualisiert die Seite, auf der die Notiz veröffentlicht wurde, und der Link bleibt gleich; das Plugin merkt ihn sich in drei Front-Matter-Feldern der Notiz. Nur „Make private“ beendet einen Link — wer danach erneut veröffentlicht, erhält einen neuen.',
+          },
+          {
+            question: 'Was passiert mit Wikilinks und eingebetteten Notizen?',
+            answer: 'Ein `[[link]]` erscheint als sein Text, und mit `![[picture.png]]` eingebettete Bilder werden in der Seite mitgeführt. Eine eingebettete Notiz wird noch nicht eingefügt, und ein Link auf eine andere veröffentlichte Notiz zeigt noch nicht auf deren Seite; beides ist geplant.',
+          },
+          {
+            question: 'Wie groß darf eine Notiz sein?',
+            answer: 'Bis zu 4 MB samt Bildern. Jedes Bild darf bis zu 1 MB groß sein, und eine Notiz kann insgesamt 2 MB davon mitführen; ein größeres Bild bleibt ein Link, und das Plugin sagt Ihnen, welche das sind.',
+          },
+          {
+            question: 'Funktioniert es auf dem Handy?',
+            answer: 'Ja. Das Plugin läuft in Obsidian auf iPhone, iPad und Android mit denselben Befehlen, und die Anmeldung führt über den Browser des Handys und zurück in Obsidian.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Ihre nächste Notiz ist nur einen Befehl von einem Link entfernt',
+        text: 'Plugin installieren, einmal anmelden, veröffentlichen.',
+      },
+      bottom: {
+        title: 'Veröffentlichen Sie Ihre erste Notiz',
+        text: 'Kostenloses Konto. Desktop und Mobilgeräte. Derselbe Link nach jeder Änderung.',
+      },
+    },
+    seo: {
+      title: 'Obsidian-Plugin: Notiz als Webseite veröffentlichen — TransformPipe',
+      description:
+        'Jede Obsidian-Notiz mit einem Befehl als saubere Webseite veröffentlichen. Der Link bleibt nach jeder Änderung gleich. Gezielt teilen, als Word oder PDF sichern.',
     },
   },
 };

@@ -980,6 +980,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Per gli assistenti AI',
+      phone: {
+        heading: 'Anche sul telefono',
+        text: 'Lo stesso account nelle app di Claude e ChatGPT su iPhone e Android: salva da una, ritrova dall’altra.',
+      },
       demo: {
         from: 'Nella chat',
         to: 'Nel tuo account',
@@ -1093,9 +1097,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT apri Plugins, premi Add, scegli Create MCP App e indica https://transformpipe.com/api/mcp. Dopo l’accesso, i documenti compaiono come schede nella chat. Non ancora nella directory di ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Server MCP remoto',
-            body: 'Cursor aggiunge server MCP remoti con un accesso, ma per tornare all’editor usa un proprio schema di link, che questo server non accetta ancora. È la parte su cui si sta lavorando.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugin della community',
+            body: 'Non è un assistente, ma è lo stesso account: il plugin di TransformPipe pubblica una nota come pagina con un solo comando, e Claude o ChatGPT la ritrova insieme a tutto il resto.',
           },
           {
             name: 'Gemini',
@@ -1194,6 +1198,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Per Claude',
+      phone: {
+        heading: 'Anche sul telefono',
+        text: 'Lo stesso connettore nell’app di Claude su iPhone e Android, una volta aggiunto sul web: salva, condividi e ritrova i documenti dal telefono.',
+      },
       demo: {
         from: 'Nella chat',
         to: 'Nel tuo account',
@@ -1316,9 +1324,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT apri Plugins, premi Add, scegli Create MCP App e indica https://transformpipe.com/api/mcp. Dopo l’accesso, i documenti compaiono come schede nella chat. Non ancora nella directory di ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Server MCP remoto',
-            body: 'Cursor aggiunge server MCP remoti con un accesso, ma per tornare all’editor usa un proprio schema di link, che questo server non accetta ancora. È la parte su cui si sta lavorando.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugin della community',
+            body: 'Non è un assistente, ma è lo stesso account: il plugin di TransformPipe pubblica una nota come pagina con un solo comando, e Claude o ChatGPT la ritrova insieme a tutto il resto.',
           },
           {
             name: 'Gemini',
@@ -1421,6 +1429,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Per ChatGPT',
+      phone: {
+        heading: 'Anche sul telefono',
+        text: 'La stessa app in ChatGPT su iPhone e Android, una volta aggiunta sul web: chiedi dal telefono e i documenti sono gli stessi.',
+      },
       demo: {
         from: 'Nella chat',
         to: 'Nel tuo account',
@@ -1538,9 +1550,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT apri Plugins, premi Add, scegli Create MCP App e indica https://transformpipe.com/api/mcp. Dopo l’accesso, i documenti compaiono come schede nella chat. Non ancora nella directory di ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Server MCP remoto',
-            body: 'Cursor aggiunge server MCP remoti con un accesso, ma per tornare all’editor usa un proprio schema di link, che questo server non accetta ancora. È la parte su cui si sta lavorando.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugin della community',
+            body: 'Non è un assistente, ma è lo stesso account: il plugin di TransformPipe pubblica una nota come pagina con un solo comando, e Claude o ChatGPT la ritrova insieme a tutto il resto.',
           },
           {
             name: 'Gemini',
@@ -1629,6 +1641,179 @@ export const pages: Content['pages'] = {
       title: 'Salva e condividi quello che scrive ChatGPT, come link — TransformPipe',
       description:
         'Aggiungi TransformPipe a ChatGPT come app MCP: salva nel tuo account quello che scrive ChatGPT, conserva le versioni e condivide ogni documento come pagina.',
+    },
+  },
+  obsidian: {
+    label: 'Plugin per Obsidian',
+    title: 'Pubblica una nota di Obsidian come pagina web',
+    lede: 'Un solo comando trasforma la nota in una pagina pulita, con il link già negli appunti. Modifichi la nota e la pubblichi di nuovo: la pagina si aggiorna, e il link che hai già mandato continua a funzionare.',
+    sections: [],
+    plugin: {
+      eyebrow: 'Plugin per Obsidian',
+      listed: 'Nei Plugin della community',
+      add: 'Aggiungi a Obsidian',
+      directory: 'Vedilo nella directory',
+      facts: ['Account gratuito', 'Desktop e mobile', 'Open source, MIT'],
+      features: {
+        heading: 'Cosa fa',
+        intro: 'Quattro cose, ognuna un comando nella palette, e nessuna ti chiede di uscire da Obsidian.',
+        items: [
+          {
+            title: 'Modifichi la nota. Il link resta.',
+            body: 'Pubblichi una volta e la nota diventa una pagina condivisa tramite link. Correggi un refuso, aggiungi una sezione, pubblichi di nuovo: si aggiorna la stessa pagina, e chi ha il link vede la nuova versione. Nessun secondo link da mandare, nessun “usa questo invece”. Vengono conservate le ultime dieci versioni.',
+            result: 'Lo stesso link dopo ogni modifica',
+          },
+          {
+            title: 'Appare come in Obsidian',
+            body: 'Tabelle, callout, codice, liste di attività, note a piè di pagina, evidenziazioni e diagrammi Mermaid escono come devono, nel tema chiaro o scuro di chi legge. Le immagini del vault viaggiano dentro la pagina, quindi spostare i file in seguito non rompe nulla.',
+            result: 'Mermaid, callout e tabelle',
+          },
+          {
+            title: 'Solo le persone che scegli tu',
+            body: 'Share with people… limita una nota agli indirizzi email che indichi: solo loro possono aprirla, dopo aver effettuato l’accesso, e ognuno riceve il link per email. Make private interrompe la condivisione in un solo passaggio, e il vecchio link smette di funzionare per sempre.',
+            result: 'Persone indicate per nome, o nessuno',
+          },
+          {
+            title: 'Word e PDF, accanto alla nota',
+            body: 'Ti serve un file per un’email o un modulo? Export as Word ed Export as PDF lo creano dal testo più recente della nota e lo salvano accanto alla nota nel tuo vault, pronto da allegare.',
+            result: '.docx e .pdf nel vault',
+          },
+        ],
+      },
+      phone: {
+        heading: 'Anche sul telefono',
+        text: 'Gli stessi comandi su iPhone, iPad e Android. Pubblichi dal treno e incolli il link nella chat prima di scendere.',
+      },
+      others: {
+        heading: 'Stesso account, ovunque tu sia',
+        intro: 'Quello che pubblichi da Obsidian, Claude e ChatGPT lo ritrovano e lo condividono — e quello che salvano loro, lo apri qui. Un solo account, qualunque strumento lo chieda.',
+      },
+      compare: {
+        heading: 'Perché non mandare semplicemente la nota?',
+        intro: 'Cosa succede di solito a una nota mentre arriva a qualcun altro, e cosa succede con il plugin.',
+        left: 'Mandarla a mano',
+        right: 'Con il plugin',
+        rows: [
+          {
+            label: 'Come appare',
+            left: 'Il Markdown incollato arriva come asterischi e barre verticali; uno screenshot taglia la tabella',
+            right: 'Una pagina con tabelle, callout e diagrammi già disegnati',
+          },
+          {
+            label: 'Dopo una modifica',
+            left: 'Un nuovo file o un nuovo incolla, mentre quello vecchio continua a circolare',
+            right: 'Lo stesso link mostra la nuova versione',
+          },
+          {
+            label: 'Chi può aprirla',
+            left: 'Chiunque l’abbia ricevuta inoltrata',
+            right: 'Chiunque abbia il link, solo le persone indicate, o nessuno',
+          },
+          {
+            label: 'Ritirarla',
+            left: 'Impossibile una volta mandata',
+            right: 'Make private, e il link smette di funzionare',
+          },
+          {
+            label: 'Un file per l’email',
+            left: 'Esportarla, rinominarla, ritrovarla, allegarla',
+            right: 'Word o PDF salvato accanto alla nota',
+          },
+        ],
+      },
+      steps: {
+        heading: 'Tre passaggi per il primo link',
+        items: [
+          {
+            title: 'Installa',
+            body: 'Premi Aggiungi a Obsidian in questa pagina, oppure in Obsidian apri Impostazioni, Plugin della community, Sfoglia, e cerca TransformPipe. Install, poi Enable.',
+          },
+          {
+            title: 'Accedi',
+            body: 'Nelle impostazioni del plugin premi Sign in. TransformPipe si apre nel browser, approvi, e il browser ti riporta in Obsidian. Nessuna chiave API da incollare.',
+          },
+          {
+            title: 'Pubblica',
+            body: 'Apri una nota, premi `Ctrl/Cmd + P` ed esegui Publish note. La pagina è online e il suo link è negli appunti.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'Cosa viene inviato, e quando',
+        sent: 'Inviato quando esegui un comando',
+        never: 'Mai inviato',
+        can: [
+          'La nota su cui esegui il comando',
+          'Le immagini del vault incorporate in quella nota',
+          'Gli indirizzi email con cui la condividi',
+        ],
+        cannot: [
+          'Le altre note del tuo vault',
+          'Le impostazioni del vault o i dati degli altri plugin',
+          'Analitica o telemetria: il plugin non ne ha',
+        ],
+        notes: [
+          {
+            title: 'Dove viene conservato l’accesso',
+            body: 'Nell’archivio segreto di Obsidian, cioè il portachiavi del sistema, e non nel file delle impostazioni del plugin, quindi non viaggia con un vault sincronizzato. Sign out lo restituisce a TransformPipe.',
+          },
+          {
+            title: 'Dove viene conservata la nota',
+            body: 'Nel tuo account TransformPipe finché non la elimini, e non viene mai usata per addestrare un modello. Non è cifrata end-to-end: per disegnare una pagina o un file Word bisogna leggerla.',
+          },
+          {
+            title: 'Open source',
+            body: 'Il plugin è su GitHub con licenza MIT, e la directory di Obsidian ricompila ogni release da quel sorgente e verifica che corrisponda byte per byte al file pubblicato.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Domande sul plugin per Obsidian',
+        intro: 'L’account, il link, e cosa succede a una nota quando esce dal vault.',
+        items: [
+          {
+            question: 'Il plugin è gratuito?',
+            answer: 'Sì. Il plugin è gratuito e open source, e anche l’account TransformPipe su cui pubblica è gratuito. Un account contiene fino a 500 documenti e 100 MB, che sono parecchie note.',
+          },
+          {
+            question: 'Mi serve un account?',
+            answer: 'Sì. Pubblicare conserva la nota nel tuo account TransformPipe, ed è questo che permette allo stesso link di mostrare una versione più recente e a te di ritirarla in seguito. Accedi una volta sola, dalle impostazioni del plugin, nel browser — con Google, oppure con email e password — e Obsidian conserva l’accesso nel portachiavi del sistema.',
+          },
+          {
+            question: 'In cosa è diverso da Obsidian Publish?',
+            answer: 'Obsidian Publish trasforma un insieme di note in un sito web con una navigazione propria, sul servizio a pagamento di Obsidian. Questo plugin manda una nota alla volta come una pagina con un link, per quando vuoi condividere un documento e non gestire un sito. I due non si intralciano a vicenda.',
+          },
+          {
+            question: 'Il link cambia quando modifico la nota?',
+            answer: 'No. Publish note aggiorna la pagina su cui la nota è stata pubblicata, e il link resta lo stesso; il plugin lo ricorda in tre campi del front matter della nota. Solo Make private chiude un link — pubblicare dopo quel momento ne crea uno nuovo.',
+          },
+          {
+            question: 'Cosa succede ai wikilink e alle note incorporate?',
+            answer: 'Un `[[link]]` esce come il suo testo, e le immagini incorporate con `![[picture.png]]` viaggiano dentro la pagina. Una nota incorporata non viene ancora inserita nel testo, e un link a un’altra nota pubblicata non punta ancora alla sua pagina; sono previsti entrambi.',
+          },
+          {
+            question: 'Quanto può essere grande una nota?',
+            answer: 'Fino a 4 MB con le sue immagini. Ogni immagine può arrivare a 1 MB e una nota può portarne con sé 2 MB; un’immagine più grande resta un link, e il plugin ti dice quali.',
+          },
+          {
+            question: 'Funziona sul telefono?',
+            answer: 'Sì. Il plugin gira in Obsidian su iPhone, iPad e Android con gli stessi comandi, e l’accesso passa dal browser del telefono per poi tornare in Obsidian.',
+          },
+        ],
+      },
+      middle: {
+        title: 'La tua prossima nota è a un comando da un link',
+        text: 'Installa il plugin, accedi una volta, pubblica.',
+      },
+      bottom: {
+        title: 'Pubblica la tua prima nota',
+        text: 'Account gratuito. Desktop e mobile. Lo stesso link dopo ogni modifica.',
+      },
+    },
+    seo: {
+      title: 'Plugin per Obsidian: pubblica una nota come pagina web — TransformPipe',
+      description:
+        'Pubblica una nota di Obsidian come pagina web pulita con un comando. Il link resta lo stesso a ogni modifica. Condividila con chi vuoi o esportala in Word e PDF.',
     },
   },
 };

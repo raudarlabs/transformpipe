@@ -104,6 +104,8 @@ export interface LandingWords {
     rows: { label: string; left: string; right: string }[];
   };
   steps: { heading: string; items: TitledWords[] };
+  /** The band of phone screenshots, on a page that has them. */
+  phone?: { heading: string; text: string };
   /** The terminal client, where there is one: a command rather than a settings screen. */
   command?: { heading: string; body: string; code: string };
   /** What the connector may do and may not, side by side, and the notes under them. */
@@ -121,6 +123,35 @@ export interface LandingWords {
   bottom: { title: string; text: string };
 }
 
+/**
+ * The words of the Obsidian plugin's page, `/obsidian`.
+ *
+ * Not `LandingWords`: that shape is an MCP connector's — an address to copy, a row of assistants —
+ * and a plugin is installed from Obsidian's own directory instead. The parts that are the same
+ * idea keep the same shape, so the same blocks draw them: the comparison and the questions.
+ * Which screenshot goes with which feature is the renderer's, by position.
+ */
+export interface PluginWords {
+  eyebrow: string;
+  /** The badge beside it, linking the directory listing. */
+  listed: string;
+  /** The two ways in: Obsidian itself, and the listing for a reader not on that machine. */
+  add: string;
+  directory: string;
+  /** Short facts under the buttons. */
+  facts: string[];
+  features: { heading: string; intro: string; items: (TitledWords & { result: string })[] };
+  phone: { heading: string; text: string };
+  /** Over the table of every way into the account, shared with the assistants' pages. */
+  others: { heading: string; intro: string };
+  compare: LandingWords['compare'];
+  steps: { heading: string; items: TitledWords[] };
+  trust: { heading: string; sent: string; never: string; can: string[]; cannot: string[]; notes: TitledWords[] };
+  faq: LandingWords['faq'];
+  middle: { title: string; text: string };
+  bottom: { title: string; text: string };
+}
+
 export interface PageWords {
   label: string;
   title: string;
@@ -130,6 +161,8 @@ export interface PageWords {
   action?: string;
   /** Present on the assistant landing pages, which draw it instead of `sections`. */
   landing?: LandingWords;
+  /** Present on the Obsidian plugin's page, which draws it instead of `sections`. */
+  plugin?: PluginWords;
   /**
    * Questions under the sections, for a page somebody arrives at with one.
    *

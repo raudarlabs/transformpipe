@@ -29,6 +29,7 @@ import {
 import { Faq } from '@/ui/components/Faq';
 import { SectionHeading } from '@/ui/components/SectionHeading';
 import { cn } from '@/ui/lib/utils';
+import { type Art, FeatureRow, PhoneStrip, ShowcaseHero } from './showcase';
 import { toast } from '@/ui/components/Toast';
 
 /*
@@ -59,16 +60,62 @@ const USE_CASE_ART = [
 const CLIENT_ART = [
   '/agents/client-claude.webp',
   '/agents/client-chatgpt.webp',
-  '/agents/client-cursor.webp',
+  '/agents/client-obsidian.webp',
   '/agents/client-gemini.webp',
   '/agents/client-vscode.webp',
   '/agents/client-windsurf.webp',
 ];
 
+/*
+ * The real thing, where it has been photographed: the assistant just after it saved and shared a
+ * document, the page that link opens, and one screenshot per use case, in the catalogue's order.
+ * A page with an entry here is drawn the way `/obsidian` is — words beside screenshots — and one
+ * without keeps the drawing of the pipe and the illustrated cards.
+ */
+interface Showcase {
+  hero: { back: Art; front: Art; url: string };
+  features: Art[];
+  /** Phone screenshots, three, for the band under the use cases. */
+  phones?: string[];
+}
+
+const SHOWCASE: Partial<Record<'claude' | 'chatgpt', Showcase>> = {
+  claude: {
+    hero: {
+      back: { src: '/agents/claude/chat-link.webp', width: 1000, height: 320 },
+      front: { src: '/agents/claude/page.webp', width: 1290, height: 1133 },
+      url: 'transformpipe.com/s/ScwxxPECB6…',
+    },
+    features: [
+      { src: '/agents/claude/chat-saved.webp', width: 1000, height: 645 },
+      { src: '/agents/claude/page-wide.webp', width: 1260, height: 1095 },
+      { src: '/agents/claude/chat-found.webp', width: 1000, height: 700 },
+      { src: '/agents/claude/chat-updated.webp', width: 1000, height: 590 },
+    ],
+    phones: ['/agents/claude/phone-list.webp', '/agents/claude/phone-page.webp'],
+  },
+  chatgpt: {
+    hero: {
+      back: { src: '/agents/chatgpt/chat-link.webp', width: 1050, height: 480 },
+      front: { src: '/agents/chatgpt/page.webp', width: 1290, height: 1133 },
+      url: 'transformpipe.com/s/-Dsf83Omfu…',
+    },
+    features: [
+      { src: '/agents/chatgpt/chat-saved.webp', width: 1050, height: 530 },
+      { src: '/agents/chatgpt/page-wide.webp', width: 1260, height: 1095 },
+      { src: '/agents/chatgpt/chat-found.webp', width: 1050, height: 400 },
+      { src: '/agents/chatgpt/chat-updated.webp', width: 1050, height: 540 },
+    ],
+    phones: ['/agents/chatgpt/phone-list.webp', '/agents/chatgpt/phone-page.webp'],
+  },
+};
+
 /** Which row of the assistants' table has a page, and so works today. */
-const CLIENT_PAGES: Record<number, 'agents-claude' | 'agents-chatgpt'> = {
+const CLIENT_PAGES: Record<number, 'agents-claude' | 'agents-chatgpt' | 'obsidian'> = {
   0: 'agents-claude',
   1: 'agents-chatgpt',
+  /* Not an assistant: the Obsidian plugin, which publishes into the same account. */
+  2: 'obsidian',
 };
 
 /**
@@ -83,7 +130,7 @@ type Way = 'claude' | 'chatgpt';
 const wayFor = (id: Page['id']): Way => (id === 'agents-chatgpt' ? 'chatgpt' : 'claude');
 
 /** `like this` in the catalogue, as a code span — the one markup the static pages allow. */
-function inlineCode(text: string): ReactNode[] {
+export function inlineCode(text: string): ReactNode[] {
   return text.split('`').map((piece, index) =>
     index % 2 === 1 ? (
       <code
@@ -232,7 +279,7 @@ function WaysIn({
 }
 
 /** The small label over a heading: a bar of the brand colour and the words in mono. */
-function Label({ children }: { children: ReactNode }) {
+export function Label({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 font-mono text-ink-inactive text-xs uppercase tracking-wider">
       <span className="h-3.5 w-0.5 rounded-full bg-brand-primary" />
@@ -241,7 +288,7 @@ function Label({ children }: { children: ReactNode }) {
   );
 }
 
-function SectionHead({ title, intro }: { title: string; intro?: string }) {
+export function SectionHead({ title, intro }: { title: string; intro?: string }) {
   return (
     <div className="flex max-w-2xl flex-col gap-3">
       <h2 className="font-semibold text-2xl text-ink-primary tracking-tight md:text-3xl">
@@ -583,7 +630,7 @@ function Reach({ words }: { words: LandingWords['trust'] }) {
  * The assistants, as a table rather than a gallery: which connect, how, and whether it works yet.
  * A row opens to say more — for Claude, where its page is; for the rest, what is being tried.
  */
-function Clients({ words, current }: { words: LandingWords['clients']; current: Page['id'] }) {
+export function Clients({ words, current }: { words: LandingWords['clients']; current: Page['id'] }) {
   const t = useT();
   const { content, locale } = useI18n();
 
@@ -592,10 +639,11 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
       <SectionHead title={words.heading} intro={words.intro} />
 
       <div className="overflow-hidden rounded-3xl border border-stroke bg-surface-card">
-        <div className="hidden grid-cols-[1.2fr_1.6fr_9rem_1.5rem] gap-4 border-stroke border-b bg-surface-page px-5 py-3 font-mono text-ink-inactive text-xs uppercase tracking-wider md:grid">
+        <div className="hidden grid-cols-[1.2fr_1.6fr_9rem_8rem_1.5rem] gap-4 border-stroke border-b bg-surface-page px-5 py-3 font-mono text-ink-inactive text-xs uppercase tracking-wider md:grid">
           <span>{t('agents.col.assistant')}</span>
           <span>{t('agents.col.how')}</span>
           <span>{t('agents.col.status')}</span>
+          <span />
           <span />
         </div>
 
@@ -607,8 +655,14 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
 
             return (
               <AccordionItem key={item.name} value={item.name}>
+                {/*
+                  * The row opens to say more, and a row with a page of its own also links to it
+                  * straight from the row — outside the trigger, laid over a column kept free for
+                  * it, since a link inside a button is neither valid nor reachable.
+                  */}
+                <div className="relative">
                 <AccordionTrigger className="rounded-none px-5 py-4 hover:bg-surface-page">
-                  <span className="grid flex-1 grid-cols-[1fr_auto] items-center gap-4 text-left md:grid-cols-[1.2fr_1.6fr_9rem]">
+                  <span className="grid flex-1 grid-cols-[1fr_auto] items-center gap-4 text-left md:grid-cols-[1.2fr_1.6fr_9rem_8rem]">
                     <span className="flex items-center gap-3">
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-card2">
                         <img
@@ -636,8 +690,19 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
                       />
                       {works ? t('agents.status.works') : t('agents.status.testing')}
                     </span>
+                    <span aria-hidden="true" className="hidden md:block" />
                   </span>
                 </AccordionTrigger>
+                {link && (
+                  <a
+                    href={localePath(locale, link.path)}
+                    className="absolute top-1/2 right-[3.25rem] hidden -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-stroke px-3 py-1 font-semibold text-brand-tertiary text-xs no-underline transition-colors hover:border-brand-primary hover:bg-surface-accent md:inline-flex"
+                  >
+                    {t('agents.open')}
+                    <ArrowRight className="size-3.5" />
+                  </a>
+                )}
+                </div>
                 <AccordionContent className="px-5 pb-5 md:pl-[4.75rem]">
                   <div className="flex max-w-2xl flex-col gap-3">
                     <span className="text-ink-secondary text-sm md:hidden">{item.how}</span>
@@ -658,7 +723,7 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
                         href={localePath(locale, link.path)}
                         className="inline-flex items-center gap-1.5 self-start font-semibold text-brand-tertiary text-sm no-underline hover:underline"
                       >
-                        {content.pages[link.id].title}
+                        {t('agents.more').replace('{name}', item.name)}
                         <ArrowRight className="size-4" />
                       </a>
                     )}
@@ -678,7 +743,7 @@ function Clients({ words, current }: { words: LandingWords['clients']; current: 
  * is about is lit; the other is not crossed out — it is what most people do today, and a row
  * that sneered at it would be less believable than one that simply says what differs.
  */
-function Compare({ words }: { words: LandingWords['compare'] }) {
+export function Compare({ words }: { words: LandingWords['compare'] }) {
   return (
     <section className="flex flex-col gap-10">
       <SectionHead title={words.heading} intro={words.intro} />
@@ -733,7 +798,7 @@ function Compare({ words }: { words: LandingWords['compare'] }) {
  * The questions, drawn by the front page's own block — the same section, heading and accordion
  * — so that a question looks like a question everywhere on the site rather than three ways.
  */
-function Questions({ words }: { words: LandingWords['faq'] }) {
+export function Questions({ words }: { words: LandingWords['faq'] }) {
   const t = useT();
 
   return (
@@ -765,6 +830,7 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
   const guide = localePath(locale, staticPage('how-to-assistant').path);
   const action = words.action ?? '';
   const way = wayFor(page.id);
+  const showcase = SHOWCASE[way];
 
   if (!landing) {
     return null;
@@ -815,11 +881,15 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
             </a>
           </div>
         </div>
-        {/* Drawn first on a wide screen, after the words on a narrow one: the words are what a phone
-            reader needs before the picture of them. */}
-        <div className="lg:order-first">
-          <PipeDemo demo={landing.demo} />
-        </div>
+        {showcase ? (
+          <ShowcaseHero {...showcase.hero} />
+        ) : (
+          /* Drawn first on a wide screen, after the words on a narrow one: the words are what a
+             phone reader needs before the picture of them. */
+          <div className="lg:order-first">
+            <PipeDemo demo={landing.demo} />
+          </div>
+        )}
       </header>
 
       {/* ------------------------------------------------------------------ what it is for */}
@@ -835,12 +905,32 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
           * where they wrap differently. Two columns only — stacked on a phone, each card is as
           * tall as its own words.
           */}
-        <div className="grid gap-4 md:auto-rows-fr md:grid-cols-2">
-          {landing.useCases.items.map((item, index) => (
-            <UseCase key={item.title} item={item} art={USE_CASE_ART[index % USE_CASE_ART.length]} />
-          ))}
-        </div>
+        {showcase ? (
+          <div className="flex flex-col gap-20">
+            {landing.useCases.items.map((item, index) => (
+              <FeatureRow
+                key={item.title}
+                ask={unquote(item.ask)}
+                title={item.title}
+                body={item.body}
+                result={item.result}
+                art={showcase.features[index % showcase.features.length]}
+                flip={index % 2 === 1}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4 md:auto-rows-fr md:grid-cols-2">
+            {landing.useCases.items.map((item, index) => (
+              <UseCase key={item.title} item={item} art={USE_CASE_ART[index % USE_CASE_ART.length]} />
+            ))}
+          </div>
+        )}
       </section>
+
+      {showcase?.phones && landing.phone && (
+        <PhoneStrip heading={landing.phone.heading} text={landing.phone.text} phones={showcase.phones} />
+      )}
 
       <Compare words={landing.compare} />
 

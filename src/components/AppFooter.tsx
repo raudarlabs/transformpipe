@@ -119,6 +119,7 @@ export function AppFooter({
          * blog, the live preview — and it is the way in that has to be installed.
          */
         page('extension'),
+        page('obsidian'),
         page('agents'),
         /*
          * What this is, next to where to ask about it. `/about` had its own address and no way in

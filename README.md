@@ -4,10 +4,8 @@
 
 # TransformPipe
 
-**Fifteen document conversions that run in your browser.** Word, PowerPoint, Excel, EPUB, HTML, CSV,
-JSON or a whole Notion, Confluence, Obsidian or Evernote export in — a clean document out, as
-Markdown, HTML, Word, plain text or print. Signed out, nothing is uploaded and nothing needs a
-network.
+**Turn a Word file, a web page or a whole Notion export into a clean document, keep it, and send it
+as a page with one link.**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-14a8af.svg)](LICENSE)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Ftransformpipe.com&label=transformpipe.com&color=14a8af)](https://transformpipe.com)
@@ -23,7 +21,100 @@ network.
 
 </div>
 
+![Write Markdown, see the page](brand/producthunt/07-live-preview.png)
+
+Documents arrive in the wrong shape. A Word file you need as Markdown. A Notion export that is
+forty pages in a zip. A spec your assistant wrote, gone once the chat scrolls away. Markdown pasted
+into an email, landing as a wall of asterisks.
+
+TransformPipe turns all of them into one thing: a clean Markdown document. See it as a finished
+page, take it away as Markdown, HTML, Word or PDF, or keep it and send a link instead of an
+attachment. Open [transformpipe.com](https://transformpipe.com) and drop a file. No account is
+needed to convert.
+
+## Fifteen conversions, in your browser
+
+Word, PowerPoint, Excel, EPUB, OpenDocument, rich text, HTML, CSV, JSON, plain text, Evernote, or a
+whole Notion, Confluence or Obsidian export. Each comes back as Markdown with its headings, lists,
+links and tables intact, and Markdown goes the other way, into a finished page.
+
+The conversion runs on your machine. Signed out, nothing is uploaded and nothing needs a network.
+Drop several files and they become one document, in the order you picked them.
+
+![Fifteen conversions, in your browser](brand/producthunt/05-fifteen-conversions.png)
+
+## Markdown in, a finished page out
+
+Tables, code, task lists, maths and Mermaid diagrams come out the way they were meant to look. The
+download is one self-contained `.html` file that fetches nothing when it opens: no scripts and no
+webfonts. A saved document also downloads as Word, and any document
+prints to PDF.
+
+![Markdown in, a finished page out](brand/producthunt/04-markdown-to-a-page.png)
+
+## Send a link, not an attachment
+
+Share a saved document with anyone who has the link, or only with the addresses you name. Give the
+link a password or an end date if it needs one, and see how often it was opened. **Make private**
+stops it in one step, and the old link stops working for good.
+
+Publish new text from the API, the command line, an assistant or Obsidian, and the link people
+already have shows it. The text it replaced is kept as a revision.
+
+## What your assistant writes, kept
+
+TransformPipe is in [Claude's connector directory](https://claude.ai/directory/tp): press
+**Connect**, sign in, and ask in plain words. "Save this as the Q3 plan." "Publish it and give me
+the link." "Find the migration spec from last week." The document goes into your account, with a
+title you can search for, long after the chat has scrolled away.
+
+ChatGPT [connects too](https://transformpipe.com/agents/chatgpt), by address, and both see the same
+documents.
+
+![What your assistant writes, kept](brand/producthunt/01-the-pipe.png)
+
+## One library, not forty chats
+
+Everything you convert, save or have an assistant save lands in one list: searchable, filtered by
+format, with versions side by side and a line-level diff between them. Signed in, it is the same
+list on every device.
+
+![One library, not forty chats](brand/producthunt/09-one-library.png)
+
+## Any web page, as Markdown
+
+The [browser extension](https://transformpipe.com/extension), for Chrome and Firefox, takes the page
+you are on and hands back the article without the navigation or the cookie notice. Copy it, download
+it, or save the page as a self-contained `.html` file. Signed out, it never talks to us.
+
+![Any web page, as Markdown](brand/producthunt/10-the-extension.png)
+
+## Your documents, your account
+
+An assistant acts as you, on your documents only. It cannot change the account, see your password
+or create API keys, and it deletes nothing without an explicit confirmation. A grant can be
+read-only. The service is free, and the limits are written down: 500 documents and 100 MB an
+account, 4 MB a document. Reaching one refuses the save; nothing is deleted to make room.
+
+![Your documents, your account](brand/producthunt/08-your-account.png)
+
+## Every way in
+
+- **The web app** at [transformpipe.com](https://transformpipe.com): convert, preview, keep and
+  share.
+- **Claude**, from the [connector directory](https://claude.ai/directory/tp) on claude.ai and in
+  Claude Desktop, or by [address](#in-an-assistant) in Claude Code.
+- **ChatGPT**, as an MCP app: [the three steps](https://transformpipe.com/agents/chatgpt).
+- **The [browser extension](https://transformpipe.com/extension)**, for Chrome and the browsers
+  built on Chromium, and for Firefox on the desktop and on Android.
+- **[TransformPipe for Obsidian](https://community.obsidian.md/plugins/transformpipe)**: publish a
+  note as a page, and keep the same link after every edit.
+- **A script**: the [API](#api), the [command line](#from-a-terminal) and a
+  [GitHub Action](#as-a-github-action).
+
 ---
+
+## Conversions
 
 Live at **[transformpipe.com](https://transformpipe.com)**. The old `md-2-html.vercel.app` still
 answers, so links already shared keep working; the canonical URLs, the sitemap and every default in
@@ -72,8 +163,8 @@ drops its address — Obsidian's own `[[wikilinks]]` included: once every page i
 document, there is nowhere left for it to point.
 
 Conversion happens in the browser — the `.docx` reader and the HTML parser load only when their
-page is used, so the front page's bundle does not carry them. Sign in with Google to keep your
-documents in the account and reach them from any device.
+page is used, so the front page's bundle does not carry them. Sign in — with Google, or an email
+and a password — to keep your documents in the account and reach them from any device.
 
 ## Run locally
 
@@ -142,7 +233,7 @@ step; a deployment made before them needs a redeploy to see them. The build is a
 - **Share** — a document in your account can be opened by anyone with the link, or only by the
   addresses you list (they sign in with that address). `/s/<token>` is a read-only page: the
   document and a download, nothing else. Revoking drops the token, so a link already sent stops
-  working. No email is sent — you pass the link on yourself.
+  working. Each address you list is emailed the link once.
 - **Shared with me** — a chip in the history lists documents other people addressed to you, with
   who shared each one. They are read-only: open and download, no delete, no re-share. Only
   addressed shares appear; a link share belongs to whoever holds the link, not to a list.
@@ -177,7 +268,7 @@ step; a deployment made before them needs a redeploy to see them. The build is a
   links a document to an earlier one as a new version of it — opt-in and explicit, never inferred,
   so a new push stays the unrelated document it has always been unless told otherwise. Linked
   documents get a chain icon in the history and a line-level diff against the version before them.
-- **Sign-in** — Google, through Neon Auth.
+- **Sign-in** — Google, or an email and a password, through Neon Auth.
 - **Summary** — a saved document gets a third tab: a paragraph on what it is and where it lands,
   then its specifics as a short list, from Gemini, streamed into the tab as it is written and called
   directly with a Google AI Studio key (`GOOGLE_GENERATIVE_AI_API_KEY` — free tier, no card
@@ -385,7 +476,7 @@ deserve a person reading it first.
 
 ## Blog and documentation
 
-`/docs` is the manual and `/blog` is twenty articles about converting Markdown; both are pages of
+`/docs` is the manual and `/blog` is seventy articles about converting Markdown; both are pages of
 this app, built from the same design system, and the articles are Markdown files in `content/blog/`
 rendered by the converter itself. There is no second pipeline to keep in step, and a bug in the
 renderer shows on our own pages before it shows on anyone else's document.

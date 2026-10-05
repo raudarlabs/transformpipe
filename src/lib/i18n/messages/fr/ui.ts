@@ -535,6 +535,8 @@ export const ui: Content['ui'] = {
   'agents.col.how': 'Mode de connexion',
   'agents.col.status': 'État',
   'agents.status.works': 'Fonctionne dès aujourd’hui',
+  'agents.open': 'Voir la page',
+  'agents.more': 'En savoir plus sur {name}',
   'agents.status.testing': 'En cours de test',
   'agents.claude.add': 'Ajouter à Claude',
   'agents.listed': 'Référencé dans l’annuaire des connecteurs de Claude',

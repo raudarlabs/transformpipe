@@ -114,6 +114,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'Pages that show the real thing',
+    body:
+      '/obsidian is new: what the plugin does, in screenshots of it running, in five languages. The '
+      + 'Claude and ChatGPT pages show real chats now too — a document saved, published, found from '
+      + 'another chat and updated under the same link — and each has a section for the phone. The '
+      + 'table of ways in lists the Obsidian plugin where Cursor was.',
+  },
+  {
+    date: '2026-10-05',
     title: 'Ask an assistant what changed in a document',
     body:
       'Updating a document keeps the text it replaced, the newest ten of them, and until now an '

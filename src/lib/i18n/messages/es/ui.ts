@@ -537,6 +537,8 @@ export const ui: Content['ui'] = {
   'agents.col.how': 'Cómo se conecta',
   'agents.col.status': 'Estado',
   'agents.status.works': 'Funciona hoy',
+  'agents.open': 'Ver página',
+  'agents.more': 'Más sobre {name}',
   'agents.status.testing': 'En pruebas',
   'agents.claude.add': 'Añadir a Claude',
   'agents.listed': 'En el directorio de conectores de Claude',

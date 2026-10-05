@@ -987,6 +987,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'For AI assistants',
+      phone: {
+        heading: 'On your phone too',
+        text: 'The same account in the Claude and ChatGPT apps on iPhone and Android: save from one, find it from the other.',
+      },
       demo: {
         from: 'In the chat',
         to: 'In your account',
@@ -1100,9 +1104,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote MCP server',
-            body: 'Cursor adds remote MCP servers with a sign-in, but returns from it to the editor through its own link scheme, which this server does not accept yet. That is the part being worked on.',
+            name: 'Obsidian',
+            how: 'Plugin · Community plugins',
+            body: 'Not an assistant, but the same account: the TransformPipe plugin publishes a note as a page in one command, and Claude or ChatGPT finds it with everything else.',
           },
           {
             name: 'Gemini',
@@ -1201,6 +1205,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'For Claude',
+      phone: {
+        heading: 'On your phone too',
+        text: 'The same connector in the Claude app on iPhone and Android, once it is added on the web: save, share and find documents from your phone.',
+      },
       demo: {
         from: 'In the chat',
         to: 'In your account',
@@ -1323,9 +1331,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote MCP server',
-            body: 'Cursor adds remote MCP servers with a sign-in, but returns from it to the editor through its own link scheme, which this server does not accept yet. That is the part being worked on.',
+            name: 'Obsidian',
+            how: 'Plugin · Community plugins',
+            body: 'Not an assistant, but the same account: the TransformPipe plugin publishes a note as a page in one command, and Claude or ChatGPT finds it with everything else.',
           },
           {
             name: 'Gemini',
@@ -1428,6 +1436,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'For ChatGPT',
+      phone: {
+        heading: 'On your phone too',
+        text: 'The same app in ChatGPT on iPhone and Android, once it is added on the web: ask from your phone and the documents are the same ones.',
+      },
       demo: {
         from: 'In the chat',
         to: 'In your account',
@@ -1545,9 +1557,9 @@ export const pages: Content['pages'] = {
             body: 'In ChatGPT, open Plugins, press Add, choose Create MCP App and give it https://transformpipe.com/api/mcp. Sign in, and documents come back as cards in the chat. Not in ChatGPT’s directory yet.',
           },
           {
-            name: 'Cursor',
-            how: 'Remote MCP server',
-            body: 'Cursor adds remote MCP servers with a sign-in, but returns from it to the editor through its own link scheme, which this server does not accept yet. That is the part being worked on.',
+            name: 'Obsidian',
+            how: 'Plugin · Community plugins',
+            body: 'Not an assistant, but the same account: the TransformPipe plugin publishes a note as a page in one command, and Claude or ChatGPT finds it with everything else.',
           },
           {
             name: 'Gemini',
@@ -1636,6 +1648,179 @@ export const pages: Content['pages'] = {
       title: 'Save and share what ChatGPT writes, as a link — TransformPipe',
       description:
         'Add TransformPipe to ChatGPT as an MCP app: it saves what ChatGPT writes to your account, keeps versions, and shares each document as a page.',
+    },
+  },
+  obsidian: {
+    label: 'Obsidian plugin',
+    title: 'Publish an Obsidian note as a web page',
+    lede: 'One command turns the note into a clean page with a link, already on your clipboard. Edit the note and publish again: the page updates, and the link you already sent keeps working.',
+    sections: [],
+    plugin: {
+      eyebrow: 'Obsidian plugin',
+      listed: 'In Community plugins',
+      add: 'Add to Obsidian',
+      directory: 'See it in the directory',
+      facts: ['Free account', 'Desktop and mobile', 'Open source, MIT'],
+      features: {
+        heading: 'What it does',
+        intro: 'Four things, each one command in the palette, and none of them asks you to leave Obsidian.',
+        items: [
+          {
+            title: 'Edit the note. The link stays.',
+            body: 'Publish once and the note becomes a page shared by link. Fix a typo, add a section, publish again: the same page updates, and everybody who has the link sees the new version. No second link to send, no “use this one instead”. The last ten versions are kept.',
+            result: 'The same link after every edit',
+          },
+          {
+            title: 'It looks the way Obsidian shows it',
+            body: 'Tables, callouts, code, task lists, footnotes, highlights and Mermaid diagrams come out right, in the reader’s light or dark theme. Pictures from the vault travel inside the page, so moving files around later breaks nothing.',
+            result: 'Mermaid, callouts and tables',
+          },
+          {
+            title: 'Only the people you choose',
+            body: 'Share with people… limits a note to the email addresses you name: only they can open it, once signed in, and each gets the link by email. Make private stops sharing in one step, and the old link stops working for good.',
+            result: 'Named people, or nobody',
+          },
+          {
+            title: 'Word and PDF, next to the note',
+            body: 'Need a file for an email or a form? Export as Word and Export as PDF build it from the note’s latest text and save it beside the note in your vault, ready to attach.',
+            result: '.docx and .pdf in the vault',
+          },
+        ],
+      },
+      phone: {
+        heading: 'On your phone too',
+        text: 'The same commands on iPhone, iPad and Android. Publish from the train and paste the link into the chat before you get off.',
+      },
+      others: {
+        heading: 'Same account, from anywhere',
+        intro: 'What you publish from Obsidian, Claude and ChatGPT can find and share — and what they save, you can open here. One account, whichever tool is asking.',
+      },
+      compare: {
+        heading: 'Why not just send the note?',
+        intro: 'What usually happens to a note on its way to somebody else, and what happens with the plugin.',
+        left: 'Sending it by hand',
+        right: 'With the plugin',
+        rows: [
+          {
+            label: 'How it looks',
+            left: 'Pasted Markdown arrives as asterisks and pipes; a screenshot crops the table',
+            right: 'A page with the tables, callouts and diagrams drawn',
+          },
+          {
+            label: 'After an edit',
+            left: 'A new file or a new paste, while the old one keeps circulating',
+            right: 'The same link shows the new version',
+          },
+          {
+            label: 'Who can open it',
+            left: 'Whoever it was forwarded to',
+            right: 'Anyone with the link, named people only, or nobody',
+          },
+          {
+            label: 'Taking it back',
+            left: 'Not possible once it is sent',
+            right: 'Make private, and the link stops working',
+          },
+          {
+            label: 'A file for email',
+            left: 'Export, rename, find it, attach it',
+            right: 'Word or PDF saved next to the note',
+          },
+        ],
+      },
+      steps: {
+        heading: 'Three steps to the first link',
+        items: [
+          {
+            title: 'Install',
+            body: 'Press Add to Obsidian on this page, or in Obsidian open Settings, Community plugins, Browse, and search for TransformPipe. Install, then Enable.',
+          },
+          {
+            title: 'Sign in',
+            body: 'In the plugin’s settings, press Sign in. TransformPipe opens in your browser, you approve, and the browser hands you back to Obsidian. There is no API key to paste.',
+          },
+          {
+            title: 'Publish',
+            body: 'Open a note, press `Ctrl/Cmd + P` and run Publish note. The page is up and its link is on your clipboard.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'What is sent, and when',
+        sent: 'Sent when you run a command',
+        never: 'Never sent',
+        can: [
+          'The note you run the command on',
+          'The pictures that note embeds from the vault',
+          'The email addresses you share it with',
+        ],
+        cannot: [
+          'The other notes in your vault',
+          'Your vault’s settings or other plugins’ data',
+          'Analytics or telemetry: the plugin has none',
+        ],
+        notes: [
+          {
+            title: 'Where the sign-in lives',
+            body: 'In Obsidian’s secret storage, which is your system keychain, and not in the plugin’s settings file, so it does not travel with a synced vault. Sign out hands it back to TransformPipe.',
+          },
+          {
+            title: 'Where the note lives',
+            body: 'In your TransformPipe account until you delete it, and it is never used to train a model. It is not end-to-end encrypted: drawing a page or a Word file means reading it.',
+          },
+          {
+            title: 'Open source',
+            body: 'The plugin is MIT-licensed on GitHub, and Obsidian’s directory rebuilds every release from that source and checks it matches the published file byte for byte.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Questions about the Obsidian plugin',
+        intro: 'The account, the link, and what happens to a note once it leaves the vault.',
+        items: [
+          {
+            question: 'Is the plugin free?',
+            answer: 'Yes. The plugin is free and open source, and the TransformPipe account it publishes to is free as well. An account holds up to 500 documents and 100 MB, which is a lot of notes.',
+          },
+          {
+            question: 'Do I need an account?',
+            answer: 'Yes. Publishing keeps the note in your TransformPipe account, which is what lets the same link show a newer version and lets you take it back later. You sign in once, from the plugin’s settings, in your browser — with Google, or an email and a password — and Obsidian keeps the sign-in in your system keychain.',
+          },
+          {
+            question: 'How is this different from Obsidian Publish?',
+            answer: 'Obsidian Publish turns a set of notes into a website with its own navigation, on Obsidian’s paid service. This plugin sends one note at a time as one page with one link, for when you want to share a document rather than run a site. The two do not get in each other’s way.',
+          },
+          {
+            question: 'Does the link change when I edit the note?',
+            answer: 'No. Publish note updates the page the note was published to, and the link stays the same; the plugin remembers it in three front-matter fields on the note. Only Make private ends a link — publishing after that makes a new one.',
+          },
+          {
+            question: 'What happens to wikilinks and embedded notes?',
+            answer: 'A `[[link]]` comes out as its text, and pictures embedded with `![[picture.png]]` are carried inside the page. An embedded note is not inlined yet, and a link to another published note does not point at its page yet; both are planned.',
+          },
+          {
+            question: 'How big can a note be?',
+            answer: 'Up to 4 MB with its pictures. Each picture can be up to 1 MB and a note can carry 2 MB of them; a bigger picture stays a link, and the plugin tells you which ones.',
+          },
+          {
+            question: 'Does it work on a phone?',
+            answer: 'Yes. The plugin runs in Obsidian on iPhone, iPad and Android with the same commands, and signing in goes through the phone’s browser and back into Obsidian.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Your next note is one command from a link',
+        text: 'Install the plugin, sign in once, publish.',
+      },
+      bottom: {
+        title: 'Publish your first note',
+        text: 'Free account. Desktop and mobile. The same link after every edit.',
+      },
+    },
+    seo: {
+      title: 'Obsidian plugin: publish a note as a web page — TransformPipe',
+      description:
+        'Publish any Obsidian note as a clean web page in one command. The link stays the same after every edit. Share with named people, or export Word and PDF.',
     },
   },
 };

@@ -83,6 +83,10 @@ const PICTURES = {
     'a large rounded arrow-shaped mouse pointer block leaning on a flat slab with three raised bars like lines of code',
     'sky blue',
   ],
+  'client-obsidian': [
+    'a faceted crystal gem standing on a flat rounded note card with three raised text lines',
+    'deep purple',
+  ],
   'client-gemini': [
     'two smooth four-pointed sparkle stars of different sizes floating one above the other',
     'periwinkle blue',

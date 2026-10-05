@@ -982,6 +982,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Pour les assistants IA',
+      phone: {
+        heading: 'Sur votre téléphone aussi',
+        text: 'Le même compte dans les applications Claude et ChatGPT sur iPhone et Android : enregistrez dans l’une, retrouvez dans l’autre.',
+      },
       demo: {
         from: 'Dans la conversation',
         to: 'Dans votre compte',
@@ -1095,9 +1099,9 @@ export const pages: Content['pages'] = {
             body: 'Dans ChatGPT, ouvrez Plugins, cliquez sur Add, choisissez Create MCP App et indiquez https://transformpipe.com/api/mcp. Après la connexion, les documents s’affichent en cartes dans la conversation. Pas encore dans le répertoire de ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Serveur MCP distant',
-            body: 'Cursor ajoute des serveurs MCP distants avec une connexion, mais revient ensuite à l’éditeur par son propre schéma de liens, que ce serveur n’accepte pas encore. C’est la partie en chantier.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugins communautaires',
+            body: 'Pas un assistant, mais le même compte : le plugin TransformPipe publie une note en page d’une seule commande, et Claude ou ChatGPT la retrouve avec tout le reste.',
           },
           {
             name: 'Gemini',
@@ -1196,6 +1200,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Pour Claude',
+      phone: {
+        heading: 'Sur votre téléphone aussi',
+        text: 'Le même connecteur dans l’application Claude sur iPhone et Android, une fois ajouté sur le web : enregistrez, partagez et retrouvez vos documents depuis le téléphone.',
+      },
       demo: {
         from: 'Dans la conversation',
         to: 'Dans votre compte',
@@ -1318,9 +1326,9 @@ export const pages: Content['pages'] = {
             body: 'Dans ChatGPT, ouvrez Plugins, cliquez sur Add, choisissez Create MCP App et indiquez https://transformpipe.com/api/mcp. Après la connexion, les documents s’affichent en cartes dans la conversation. Pas encore dans le répertoire de ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Serveur MCP distant',
-            body: 'Cursor ajoute des serveurs MCP distants avec une connexion, mais revient ensuite à l’éditeur par son propre schéma de liens, que ce serveur n’accepte pas encore. C’est la partie en chantier.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugins communautaires',
+            body: 'Pas un assistant, mais le même compte : le plugin TransformPipe publie une note en page d’une seule commande, et Claude ou ChatGPT la retrouve avec tout le reste.',
           },
           {
             name: 'Gemini',
@@ -1423,6 +1431,10 @@ export const pages: Content['pages'] = {
     sections: [],
     landing: {
       eyebrow: 'Pour ChatGPT',
+      phone: {
+        heading: 'Sur votre téléphone aussi',
+        text: 'La même application dans ChatGPT sur iPhone et Android, une fois ajoutée sur le web : demandez depuis le téléphone, ce sont les mêmes documents.',
+      },
       demo: {
         from: 'Dans la conversation',
         to: 'Dans votre compte',
@@ -1540,9 +1552,9 @@ export const pages: Content['pages'] = {
             body: 'Dans ChatGPT, ouvrez Plugins, cliquez sur Add, choisissez Create MCP App et indiquez https://transformpipe.com/api/mcp. Après la connexion, les documents s’affichent en cartes dans la conversation. Pas encore dans le répertoire de ChatGPT.',
           },
           {
-            name: 'Cursor',
-            how: 'Serveur MCP distant',
-            body: 'Cursor ajoute des serveurs MCP distants avec une connexion, mais revient ensuite à l’éditeur par son propre schéma de liens, que ce serveur n’accepte pas encore. C’est la partie en chantier.',
+            name: 'Obsidian',
+            how: 'Plugin · Plugins communautaires',
+            body: 'Pas un assistant, mais le même compte : le plugin TransformPipe publie une note en page d’une seule commande, et Claude ou ChatGPT la retrouve avec tout le reste.',
           },
           {
             name: 'Gemini',
@@ -1631,6 +1643,179 @@ export const pages: Content['pages'] = {
       title: 'Enregistrer et partager ce qu’écrit ChatGPT, par lien — TransformPipe',
       description:
         'Ajoutez TransformPipe à ChatGPT comme app MCP : il enregistre ce qu’écrit ChatGPT dans votre compte, garde les versions et partage chaque document en page.',
+    },
+  },
+  obsidian: {
+    label: 'Plugin Obsidian',
+    title: 'Publier une note Obsidian en page web',
+    lede: 'Une commande transforme la note en page soignée, avec son lien déjà dans votre presse-papiers. Modifiez la note et publiez à nouveau : la page se met à jour, et le lien que vous avez déjà envoyé continue de fonctionner.',
+    sections: [],
+    plugin: {
+      eyebrow: 'Plugin Obsidian',
+      listed: 'Dans les plugins communautaires',
+      add: 'Ajouter à Obsidian',
+      directory: 'Le voir dans l’annuaire',
+      facts: ['Compte gratuit', 'Ordinateur et mobile', 'Open source, MIT'],
+      features: {
+        heading: 'Ce qu’il fait',
+        intro: 'Quatre choses, chacune à une commande de la palette, et aucune ne vous demande de quitter Obsidian.',
+        items: [
+          {
+            title: 'Modifiez la note. Le lien reste.',
+            body: 'Publiez une fois, et la note devient une page partagée par lien. Corrigez une coquille, ajoutez une section, publiez à nouveau : la même page se met à jour, et tous ceux qui ont le lien voient la nouvelle version. Pas de second lien à envoyer, pas de « prenez plutôt celui-ci ». Les dix dernières versions sont conservées.',
+            result: 'Le même lien après chaque modification',
+          },
+          {
+            title: 'Elle s’affiche comme dans Obsidian',
+            body: 'Tableaux, callouts, code, listes de tâches, notes de bas de page, surlignages et diagrammes Mermaid sortent correctement, dans le thème clair ou sombre du lecteur. Les images du coffre voyagent dans la page : déplacer des fichiers plus tard ne casse rien.',
+            result: 'Mermaid, callouts et tableaux',
+          },
+          {
+            title: 'Seulement les personnes que vous choisissez',
+            body: 'Share with people… réserve une note aux adresses e-mail que vous indiquez : elles seules peuvent l’ouvrir, une fois connectées, et chacune reçoit le lien par e-mail. Make private arrête le partage en une étape, et l’ancien lien cesse de fonctionner pour de bon.',
+            result: 'Des personnes nommées, ou personne',
+          },
+          {
+            title: 'Word et PDF, à côté de la note',
+            body: 'Besoin d’un fichier pour un e-mail ou un formulaire ? Export as Word et Export as PDF le produisent à partir du dernier texte de la note et l’enregistrent à côté d’elle dans votre coffre, prêt à joindre.',
+            result: '.docx et .pdf dans le coffre',
+          },
+        ],
+      },
+      phone: {
+        heading: 'Sur votre téléphone aussi',
+        text: 'Les mêmes commandes sur iPhone, iPad et Android. Publiez depuis le train et collez le lien dans la conversation avant de descendre.',
+      },
+      others: {
+        heading: 'Le même compte, d’où que vous veniez',
+        intro: 'Ce que vous publiez depuis Obsidian, Claude et ChatGPT peuvent le retrouver et le partager — et ce qu’ils enregistrent, vous pouvez l’ouvrir ici. Un seul compte, quel que soit l’outil qui le demande.',
+      },
+      compare: {
+        heading: 'Pourquoi ne pas simplement envoyer la note ?',
+        intro: 'Ce qui arrive d’ordinaire à une note en route vers quelqu’un d’autre, et ce qui se passe avec le plugin.',
+        left: 'L’envoyer à la main',
+        right: 'Avec le plugin',
+        rows: [
+          {
+            label: 'Son apparence',
+            left: 'Le Markdown collé arrive en astérisques et en barres verticales ; une capture d’écran rogne le tableau',
+            right: 'Une page où les tableaux, les callouts et les diagrammes sont dessinés',
+          },
+          {
+            label: 'Après une modification',
+            left: 'Un nouveau fichier ou un nouveau collage, pendant que l’ancien continue de circuler',
+            right: 'Le même lien affiche la nouvelle version',
+          },
+          {
+            label: 'Qui peut l’ouvrir',
+            left: 'Quiconque l’a reçue en transfert',
+            right: 'Toute personne ayant le lien, seulement des personnes nommées, ou personne',
+          },
+          {
+            label: 'La reprendre',
+            left: 'Impossible une fois envoyée',
+            right: 'Make private, et le lien cesse de fonctionner',
+          },
+          {
+            label: 'Un fichier à envoyer par e-mail',
+            left: 'Exporter, renommer, le retrouver, le joindre',
+            right: 'Word ou PDF enregistré à côté de la note',
+          },
+        ],
+      },
+      steps: {
+        heading: 'Trois étapes jusqu’au premier lien',
+        items: [
+          {
+            title: 'Installer',
+            body: 'Cliquez sur Ajouter à Obsidian sur cette page, ou, dans Obsidian, ouvrez Settings, Community plugins, Browse, et cherchez TransformPipe. Cliquez sur Install, puis sur Enable.',
+          },
+          {
+            title: 'Se connecter',
+            body: 'Dans les réglages du plugin, cliquez sur Sign in. TransformPipe s’ouvre dans votre navigateur, vous approuvez, et le navigateur vous renvoie dans Obsidian. Aucune clé API à coller.',
+          },
+          {
+            title: 'Publier',
+            body: 'Ouvrez une note, appuyez sur `Ctrl/Cmd + P` et lancez Publish note. La page est en ligne et son lien est dans votre presse-papiers.',
+          },
+        ],
+      },
+      trust: {
+        heading: 'Ce qui est envoyé, et quand',
+        sent: 'Envoyé quand vous lancez une commande',
+        never: 'Jamais envoyé',
+        can: [
+          'La note sur laquelle vous lancez la commande',
+          'Les images que cette note intègre depuis le coffre',
+          'Les adresses e-mail avec lesquelles vous la partagez',
+        ],
+        cannot: [
+          'Les autres notes de votre coffre',
+          'Les réglages de votre coffre ou les données des autres plugins',
+          'Analytique ou télémétrie : le plugin n’en contient aucune',
+        ],
+        notes: [
+          {
+            title: 'Où se trouve la connexion',
+            body: 'Dans le stockage secret d’Obsidian, c’est-à-dire le trousseau de votre système, et non dans le fichier de réglages du plugin : elle ne voyage donc pas avec un coffre synchronisé. Sign out la rend à TransformPipe.',
+          },
+          {
+            title: 'Où se trouve la note',
+            body: 'Dans votre compte TransformPipe jusqu’à ce que vous la supprimiez, et elle ne sert jamais à entraîner un modèle. Elle n’est pas chiffrée de bout en bout : dessiner une page ou un fichier Word suppose de la lire.',
+          },
+          {
+            title: 'Open source',
+            body: 'Le plugin est sous licence MIT sur GitHub, et l’annuaire d’Obsidian recompile chaque version à partir de cette source et vérifie qu’elle correspond octet pour octet au fichier publié.',
+          },
+        ],
+      },
+      faq: {
+        heading: 'Questions sur le plugin Obsidian',
+        intro: 'Le compte, le lien, et ce que devient une note une fois sortie du coffre.',
+        items: [
+          {
+            question: 'Le plugin est-il gratuit ?',
+            answer: 'Oui. Le plugin est gratuit et open source, et le compte TransformPipe sur lequel il publie est gratuit lui aussi. Un compte contient jusqu’à 500 documents et 100 Mo, ce qui fait beaucoup de notes.',
+          },
+          {
+            question: 'Faut-il un compte ?',
+            answer: 'Oui. Publier conserve la note dans votre compte TransformPipe : c’est ce qui permet au même lien d’afficher une version plus récente, et à vous de la retirer plus tard. Vous vous connectez une fois, depuis les réglages du plugin, dans votre navigateur — avec Google, ou avec une adresse e-mail et un mot de passe — et Obsidian garde la connexion dans le trousseau de votre système.',
+          },
+          {
+            question: 'En quoi est-ce différent d’Obsidian Publish ?',
+            answer: 'Obsidian Publish fait d’un ensemble de notes un site web doté de sa propre navigation, sur le service payant d’Obsidian. Ce plugin envoie une note à la fois, en une page avec un lien, pour quand vous voulez partager un document plutôt que tenir un site. Les deux ne se gênent pas.',
+          },
+          {
+            question: 'Le lien change-t-il quand je modifie la note ?',
+            answer: 'Non. Publish note met à jour la page sur laquelle la note a été publiée, et le lien reste le même ; le plugin le retient dans trois champs du front matter de la note. Seul Make private met fin à un lien — publier ensuite en crée un nouveau.',
+          },
+          {
+            question: 'Que deviennent les wikiliens et les notes intégrées ?',
+            answer: 'Un `[[link]]` ressort sous forme de texte, et les images intégrées avec `![[picture.png]]` sont portées dans la page. Une note intégrée n’est pas encore insérée dans la page, et un lien vers une autre note publiée ne pointe pas encore vers sa page ; les deux sont prévus.',
+          },
+          {
+            question: 'Quelle taille peut faire une note ?',
+            answer: 'Jusqu’à 4 Mo avec ses images. Chaque image peut aller jusqu’à 1 Mo, et une note peut en porter 2 Mo ; une image plus grande reste un lien, et le plugin vous dit lesquelles.',
+          },
+          {
+            question: 'Est-ce que ça marche sur un téléphone ?',
+            answer: 'Oui. Le plugin tourne dans Obsidian sur iPhone, iPad et Android avec les mêmes commandes, et la connexion passe par le navigateur du téléphone avant de revenir dans Obsidian.',
+          },
+        ],
+      },
+      middle: {
+        title: 'Votre prochaine note est à une commande d’un lien',
+        text: 'Installez le plugin, connectez-vous une fois, publiez.',
+      },
+      bottom: {
+        title: 'Publiez votre première note',
+        text: 'Compte gratuit. Ordinateur et mobile. Le même lien après chaque modification.',
+      },
+    },
+    seo: {
+      title: 'Plugin Obsidian : publier une note en page web — TransformPipe',
+      description:
+        'Publiez une note Obsidian en page web en une commande. Le lien reste le même après chaque modification. Partage avec des personnes nommées, export Word et PDF.',
     },
   },
 };

@@ -24,6 +24,7 @@ import { NotFoundPage } from './features/NotFoundPage';
 import { SharedDocumentPage } from './features/SharedDocumentPage';
 import { StaticPage } from './features/StaticPage';
 import { AgentsPage } from './features/AgentsPage';
+import { ObsidianPage } from './features/ObsidianPage';
 import { staticPage, type StaticPageId } from './lib/pages';
 import { AuthProvider, useAuth } from './lib/auth';
 import { ConsentProvider } from './lib/consent';
@@ -643,6 +644,8 @@ function Shell() {
         {view === 'page' && pageId ? (
           staticPage(pageId).group === 'agents' ? (
             <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
+          ) : pageId === 'obsidian' ? (
+            <ObsidianPage page={staticPage(pageId)} onGoToConverter={startOver} />
           ) : (
             <StaticPage page={staticPage(pageId)} onGoToConverter={startOver} />
           )
