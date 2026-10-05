@@ -315,12 +315,13 @@ function lineDiff(before: string, after: string) {
       middle.push({ t: ' ', s: x[i] });
       i++;
       j++;
-    } else if (j < y.length && (i >= x.length || table[i * width + j + 1] >= table[(i + 1) * width + j])) {
-      middle.push({ t: '+', s: y[j] });
-      j++;
-    } else {
+    } else if (i < x.length && (j >= y.length || table[(i + 1) * width + j] >= table[i * width + j + 1])) {
+      // The line that went before the line that replaced it, the way a reviewer reads a change.
       middle.push({ t: '-', s: x[i] });
       i++;
+    } else {
+      middle.push({ t: '+', s: y[j] });
+      j++;
     }
   }
 
