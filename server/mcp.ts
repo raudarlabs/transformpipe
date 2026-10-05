@@ -1734,8 +1734,15 @@ mcp.post('/', async (c) => {
 
   if (method === 'resources/read') {
     const uri = String((params as { uri?: unknown }).uri ?? '');
-    // By its current address, or by the one it had before addresses carried a version.
-    const view = VIEWS.find((one) => one.uri === uri || unversioned(one.uri) === uri);
+    /*
+     * By its name, whatever version the address carries. A host holds the tool list it fetched
+     * when it connected, and with it the address each view had then: after a deploy that changed
+     * a view, Claude and ChatGPT both asked for the old hash, were told there was no such
+     * resource, and drew "Unable to reach TransformPipe" in place of every card until they
+     * reconnected. An old address gets the current page — the same answer the unversioned one
+     * always had.
+     */
+    const view = VIEWS.find((one) => unversioned(one.uri) === unversioned(uri));
 
     if (!view) {
       return c.json(rpcError(id ?? null, -32602, `No resource at ${uri}`), 200);

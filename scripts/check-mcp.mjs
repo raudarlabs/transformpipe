@@ -734,6 +734,12 @@ check(
   'and the address it had before versions still answers, with the current page',
   legacyRead.body?.result?.contents?.[0]?.text === contents?.text
 );
+const staleRead = await call(tokens.access_token, 'resources/read', { uri: 'ui://transformpipe/0123456789/document-card' });
+check(
+  'and so does an address from an earlier version, which a host that has not reconnected still asks for',
+  staleRead.body?.result?.contents?.[0]?.text === contents?.text,
+  JSON.stringify(staleRead.body?.error ?? null)
+);
 check(
   'and it fetches nothing',
   !/\b(src|href)=["']https?:/.test(contents?.text ?? 'src="https://'),
