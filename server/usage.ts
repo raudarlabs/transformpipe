@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import type { Context } from 'hono';
 import { clientAddress } from './address.js';
 import { sql } from './db.js';
@@ -168,6 +169,19 @@ export function countServerEvent(
  * on purpose has only made their own requests go uncounted.
  */
 export const INTERNAL_CALL_HEADER = 'x-tp-internal';
+
+/*
+ * The same request, proved: a key made when the process starts, which `server/mcp.ts` sends to
+ * /api/v1 in process and nothing outside ever sees.
+ *
+ * The per-minute limit has to tell a tool's own requests apart, because a tool call is already
+ * counted once as itself: sharing reads the document, the readers and the share, and counting each
+ * made one share cost four of the sixty — and a read past the limit came back empty, so a tool said
+ * a document had no readers when it had. `INTERNAL_CALL_HEADER` cannot decide that, since anybody
+ * can send it; this can, since nobody else has it.
+ */
+export const INTERNAL_KEY_HEADER = 'x-tp-internal-key';
+export const INTERNAL_CALL_KEY = randomBytes(24).toString('hex');
 
 const API_ROUTES = new Set([
   '/usage',

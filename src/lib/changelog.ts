@@ -122,6 +122,32 @@ const ENTRIES: ChangelogEntry[] = [
       + 'table of ways in lists the Obsidian plugin where Cursor was.',
   },
   {
+    date: '2026-10-06',
+    title: 'A chat shows what changed, and asks with a button',
+    body:
+      'An update made from Claude or ChatGPT now shows the lines it changed, added in green and '
+      + 'removed struck through. Asking for a document\'s history draws every earlier text as a '
+      + 'timeline, each one readable in place. And publishing, sharing with people or changing a '
+      + 'shared page no longer waits for a typed "yes": the card shows what would happen and a '
+      + 'button that does it.',
+  },
+  {
+    date: '2026-10-06',
+    title: 'Share with one more person without losing the others',
+    body:
+      'Asked to share a document with somebody else, an assistant could only replace the list of '
+      + 'readers, so it stopped to ask which was meant. It now adds or removes one address and '
+      + 'leaves everyone else where they were, and reading a document says who it is shared with.',
+  },
+  {
+    date: '2026-10-06',
+    title: 'Cards no longer say "Unable to reach TransformPipe"',
+    body:
+      'After an update to TransformPipe, Claude and ChatGPT showed "Unable to reach '
+      + 'TransformPipe" where a card should have been, until the connector was reconnected. A '
+      + 'card is now found whichever version the assistant asks for.',
+  },
+  {
     date: '2026-10-05',
     title: 'Sharing from a chat shows who can open it',
     body:

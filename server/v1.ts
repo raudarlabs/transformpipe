@@ -37,7 +37,7 @@ import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevisi
 import { deleteSources, putSource, readSource } from './source.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { hashPassword, readPassword } from './share-password.js';
-import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
+import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER, INTERNAL_CALL_KEY, INTERNAL_KEY_HEADER } from './usage.js';
 
 /*
  * The public API.
@@ -155,7 +155,11 @@ v1.use('*', async (c, next) => {
  */
 v1.use('*', async (c, next) => {
   const caller = c.get('caller');
-  const verdict = await countCall(`${caller.via}:${caller.id}`);
+  // A tool's own request was counted as the tool call it belongs to — see INTERNAL_CALL_KEY.
+  const verdict =
+    c.req.header(INTERNAL_KEY_HEADER) === INTERNAL_CALL_KEY
+      ? { ok: true, retryAfter: 0 }
+      : await countCall(`${caller.via}:${caller.id}`);
 
   if (!verdict.ok) {
     c.header('retry-after', String(verdict.retryAfter));

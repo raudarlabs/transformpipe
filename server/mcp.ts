@@ -21,7 +21,7 @@ import {
   DOCUMENT_LIST_URI,
   unversioned,
 } from './ui-card.js';
-import { countServerEvent, INTERNAL_CALL_HEADER } from './usage.js';
+import { countServerEvent, INTERNAL_CALL_HEADER, INTERNAL_CALL_KEY, INTERNAL_KEY_HEADER } from './usage.js';
 import v1 from './v1.js';
 
 /*
@@ -233,6 +233,141 @@ const card = (text: string, data: Record<string, unknown>) => ({
   isError: false,
 });
 
+/*
+ * A gated call, refused, with what the card needs to make it anyway.
+ *
+ * The delete card has always had its button; publishing, sharing with people and changing a page
+ * other people read are the same kind of decision and ended in a sentence the model had to relay.
+ * Now the refusal carries the call it refused, and the card offers it back as a button: the
+ * person agrees to the thing on the screen, and the call that runs is exactly the one that was
+ * refused, with `confirm: true` added. A text too long to carry back through the view gets no
+ * button — the sentence still says what to do.
+ */
+const CONFIRM_TEXT_LIMIT = 200_000;
+
+const refusedCard = (
+  text: string,
+  data: Record<string, unknown>,
+  confirm: { tool: string; args: Record<string, unknown>; label: string; note: string }
+) => {
+  const markdown = confirm.args.markdown;
+  const carried = typeof markdown !== 'string' || markdown.length <= CONFIRM_TEXT_LIMIT;
+
+  return {
+    content: [{ type: 'text', text }],
+    structuredContent: carried ? { ...data, confirm } : { ...data, confirmNote: confirm.note },
+    isError: true,
+  };
+};
+
+/*
+ * What an update changed, line by line — for the card, not the model.
+ *
+ * The model has both texts and says what changed in the person's words; the card shows the lines
+ * themselves, the way a reviewer would look. Common head and tail are trimmed first, so a fix in a
+ * long document compares a few lines rather than all of them, and a change too large to compare
+ * cheaply is counted and not drawn. Runs of unchanged lines inside the change fold to one "…".
+ */
+type DiffLine = { t: '+' | '-' | ' ' | '…'; s: string };
+
+const DIFF_LINES = 40;
+
+function lineDiff(before: string, after: string) {
+  const a = before.split('\n');
+  const b = after.split('\n');
+  let start = 0;
+
+  while (start < a.length && start < b.length && a[start] === b[start]) start++;
+
+  let endA = a.length;
+  let endB = b.length;
+
+  while (endA > start && endB > start && a[endA - 1] === b[endB - 1]) {
+    endA--;
+    endB--;
+  }
+
+  const x = a.slice(start, endA);
+  const y = b.slice(start, endB);
+
+  if (x.length * y.length > 4_000_000) {
+    return { added: y.length, removed: x.length, lines: [] as DiffLine[] };
+  }
+
+  const width = y.length + 1;
+  const table = new Uint32Array((x.length + 1) * width);
+
+  for (let i = x.length - 1; i >= 0; i--) {
+    for (let j = y.length - 1; j >= 0; j--) {
+      table[i * width + j] =
+        x[i] === y[j]
+          ? table[(i + 1) * width + j + 1] + 1
+          : Math.max(table[(i + 1) * width + j], table[i * width + j + 1]);
+    }
+  }
+
+  const middle: DiffLine[] = [];
+  let i = 0;
+  let j = 0;
+
+  while (i < x.length || j < y.length) {
+    if (i < x.length && j < y.length && x[i] === y[j]) {
+      middle.push({ t: ' ', s: x[i] });
+      i++;
+      j++;
+    } else if (j < y.length && (i >= x.length || table[i * width + j + 1] >= table[(i + 1) * width + j])) {
+      middle.push({ t: '+', s: y[j] });
+      j++;
+    } else {
+      middle.push({ t: '-', s: x[i] });
+      i++;
+    }
+  }
+
+  const added = middle.filter((line) => line.t === '+').length;
+  const removed = middle.filter((line) => line.t === '-').length;
+
+  /* One line of context either side, and unchanged runs longer than two folded. */
+  const lines: DiffLine[] = [];
+
+  if (start > 0) lines.push({ t: ' ', s: a[start - 1] });
+
+  for (let k = 0; k < middle.length; k++) {
+    const line = middle[k];
+
+    if (line.t === ' ') {
+      let run = k;
+      while (run < middle.length && middle[run].t === ' ') run++;
+      if (run - k > 2) {
+        lines.push(middle[k], { t: '…', s: '' }, middle[run - 1]);
+        k = run - 1;
+        continue;
+      }
+    }
+
+    lines.push(line);
+  }
+
+  if (endA < a.length) lines.push({ t: ' ', s: a[endA] });
+
+  const shown = lines
+    .filter((line, index) => !(line.t !== '…' && !line.s.trim() && (index === 0 || index === lines.length - 1)))
+    .map((line) => ({ t: line.t, s: line.s.length > 240 ? `${line.s.slice(0, 240)}…` : line.s }));
+
+  return {
+    added,
+    removed,
+    lines: shown.length > DIFF_LINES ? [...shown.slice(0, DIFF_LINES), { t: '…' as const, s: '' }] : shown,
+  };
+}
+
+/** Who a document shared with people is shared with — the list the share tool now edits. */
+async function readersOf(c: Context, id: string): Promise<string[]> {
+  const got = await callApi(c, `/api/v1/documents/${segment(id)}/share`);
+
+  return got.status === 200 && Array.isArray(got.body?.emails) ? (got.body.emails as string[]) : [];
+}
+
 /** Says what it dropped. Silent truncation reads as completeness, which is worse than a gap. */
 function clip(text: string, limit = MAX_TEXT): string {
   if (text.length <= limit) {
@@ -395,6 +530,7 @@ async function callApi(
 
   /* The tool call is what gets counted, not the API requests it makes — see server/usage.ts. */
   headers.set(INTERNAL_CALL_HEADER, '1');
+  headers.set(INTERNAL_KEY_HEADER, INTERNAL_CALL_KEY);
 
   const response = await v1.fetch(
     new Request(`${selfOrigin(c)}${path}`, { ...init, headers })
@@ -807,7 +943,10 @@ const TOOLS: Record<McpToolName, Tool> = {
        * "private" is not gated: it discloses nothing, and a save is the ordinary case.
        */
       if (share && args.confirm !== true) {
-        return say(
+        const { confirm: _unasked, ...asked } = args;
+        const named = Array.isArray(args.emails) ? args.emails.map(String) : [];
+
+        return refusedCard(
           `Nothing was saved. \`share: "${share}"\` would ${
             share === 'link'
               ? 'publish this document as a page on the public web that anyone holding the URL can open'
@@ -817,7 +956,16 @@ const TOOLS: Record<McpToolName, Tool> = {
                     : 'the addresses given'
                 } an email with a link to it`
           } — ask the person, then call this again with confirm: true. To save it to the account without publishing, omit \`share\`.`,
-          true
+          { ...forConversion(name, markdown), share, readers: named },
+          {
+            tool: 'tp_save_document',
+            args: asked,
+            label: share === 'link' ? 'Save and publish' : named.length === 1 ? `Save and share with ${named[0]}` : 'Save and share',
+            note:
+              share === 'link'
+                ? 'It becomes a page on the public web that anyone holding the link can open.'
+                : 'The people named get an email with a link to it.',
+          }
         );
       }
 
@@ -959,20 +1107,24 @@ const TOOLS: Record<McpToolName, Tool> = {
        * "the Q3 plan, shared by link" rather than to an id.
        */
       if (current.share?.mode !== 'private' && args.confirm !== true) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Nothing changed. ${current.name} is ${
-                current.share?.mode === 'people'
-                  ? 'shared with named people, so the new text is what they will read'
-                  : 'shared by link, so the new text is what anyone holding the link will read'
-              } — ask the person, then call this again with confirm: true.`,
-            },
-          ],
-          structuredContent: forCard(c, current),
-          isError: true,
-        };
+        const people = current.share?.mode === 'people';
+
+        return refusedCard(
+          `Nothing changed. ${current.name} is ${
+            people
+              ? 'shared with named people, so the new text is what they will read'
+              : 'shared by link, so the new text is what anyone holding the link will read'
+          } — ask the person, then call this again with confirm: true.`,
+          { ...forCard(c, current), diff: lineDiff(current.markdown ?? '', markdown) },
+          {
+            tool: 'tp_update_document',
+            args: { id, markdown, ...(name ? { name } : {}) },
+            label: 'Update the shared page',
+            note: people
+              ? 'The people it is shared with will read the new text.'
+              : 'Anyone holding the link will read the new text.',
+          }
+        );
       }
 
       const updated = await callApi(c, `/api/v1/documents/${segment(id)}`, {
@@ -986,15 +1138,16 @@ const TOOLS: Record<McpToolName, Tool> = {
       }
 
       const document = updated.body.document;
+      const diff = lineDiff(current.markdown ?? '', markdown);
 
       return card(
         updated.body.changed
           ? [
               `Updated ${document.name} — the same id${document.share?.url ? ` and the same link: ${document.share.url}` : ''}.`,
-              `The text it replaced is kept as a revision (${updated.body.revisions} kept).`,
+              `${diff.added} line${diff.added === 1 ? '' : 's'} added, ${diff.removed} removed. The text it replaced is kept as a revision (${updated.body.revisions} kept).`,
             ].join('\n')
           : `Nothing to update: ${document.name} already says exactly that.`,
-        forCard(c, document, markdown)
+        updated.body.changed ? { ...forCard(c, document, markdown), diff } : forCard(c, document, markdown)
       );
     },
   },
@@ -1132,6 +1285,7 @@ const TOOLS: Record<McpToolName, Tool> = {
               authorization: c.req.header('authorization') ?? '',
               cookie: c.req.header('cookie') ?? '',
               [INTERNAL_CALL_HEADER]: '1',
+              [INTERNAL_KEY_HEADER]: INTERNAL_CALL_KEY,
             },
           })
         );
@@ -1153,11 +1307,14 @@ const TOOLS: Record<McpToolName, Tool> = {
       }
 
       const document = got.body.document;
+      // Who it is shared with, so "share it with Sam too" is answered from the list, not a guess.
+      const readers = document.share?.mode === 'people' ? await readersOf(c, id) : [];
 
       return card(
         clip(
           [
             `${document.name} — ${bytes(document.size)}`,
+            readers.length ? `Shared with: ${readers.join(', ')}` : null,
             document.share?.url ? linkEnds(document.share.expires_at) : null,
             document.share?.url
               ? linkOpens(document.share.views, document.share.last_viewed_at)
@@ -1169,7 +1326,7 @@ const TOOLS: Record<McpToolName, Tool> = {
             .filter((line) => line !== null)
             .join('\n')
         ),
-        forCard(c, document, document.markdown ?? '')
+        { ...forCard(c, document, document.markdown ?? ''), readers }
       );
     },
   },
@@ -1230,6 +1387,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_document_versions: {
     description:
       'A document\'s history, of both kinds. Its earlier texts: each tp_update_document keeps the text it replaced as a revision (the newest ten), listed newest first with an id — pass one as `revision` to get that earlier text as Markdown, then compare it with tp_get_document. And the documents linked to it as versions of the same thing, oldest first — the chain built by tp_save_document\'s `replaces`. Use it when the person asks what changed, what a document said before, or for an earlier draft.',
+    ui: DOCUMENT_CARD_URI,
     annotations: { title: 'Document history', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
@@ -1265,16 +1423,23 @@ const TOOLS: Record<McpToolName, Tool> = {
 
         const kept = one.body.revision as { name: string; replaced_at: string | null; markdown: string };
 
-        return say(
+        return card(
           clip(
             `${kept.name}, as it read until ${kept.replaced_at ? new Date(kept.replaced_at).toISOString().slice(0, 16).replace('T', ' ') : 'it was replaced'} UTC:\n\n${kept.markdown}`
-          )
+          ),
+          {
+            ...forConversion(kept.name, kept.markdown),
+            id,
+            url: `${selfOrigin(c)}/?doc=${segment(id)}`,
+            revisionOf: kept.replaced_at ?? '',
+          }
         );
       }
 
-      const [found, history] = await Promise.all([
+      const [found, history, now] = await Promise.all([
         callApi(c, `/api/v1/documents/${segment(id)}/versions`),
         callApi(c, `/api/v1/documents/${segment(id)}/revisions`),
+        callApi(c, `/api/v1/documents/${segment(id)}`),
       ]);
 
       if (found.status !== 200) {
@@ -1318,17 +1483,32 @@ const TOOLS: Record<McpToolName, Tool> = {
         );
       }
 
+      /*
+       * The card: the text as it stands at the top, each earlier one under it with a button that
+       * reads it back, and the linked documents after — the same order the sentence gives.
+       */
+      const current = now.status === 200 ? now.body.document : null;
+      const timeline = {
+        ...(current ? forCard(c, current) : { id, name: chain.find((one) => one.id === id)?.name ?? '' }),
+        history: true,
+        updated: current?.updated_at ?? '',
+        revisions: revisions.map((one) => ({ id: one.id, size: one.size, at: one.replaced_at ?? '' })),
+        chain: chain.length > 1
+          ? chain.map((one) => ({ id: one.id, name: one.name, created: one.created_at, url: `${selfOrigin(c)}/?doc=${segment(one.id)}` }))
+          : [],
+      };
+
       if (parts.length === 0) {
-        return say('This document has not been updated since it was saved, and no other versions are linked to it.');
+        return card('This document has not been updated since it was saved, and no other versions are linked to it.', timeline);
       }
 
-      return say(clip(parts.join('\n\n')));
+      return card(clip(parts.join('\n\n')), timeline);
     },
   },
 
   tp_share_document: {
     description:
-      'Changes who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list rather than adding to it. Returns the mode, the URL and the addresses as they now stand.',
+      'Changes who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list; `add` and `remove` change the list it already has, so "share it with Sam too" is `add: ["sam@…"]` and nobody else is touched. Only addresses new to the list are emailed. Returns the mode, the URL and the addresses as they now stand.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Share a document',
@@ -1353,7 +1533,17 @@ const TOOLS: Record<McpToolName, Tool> = {
         emails: {
           type: 'array',
           items: { type: 'string' },
-          description: 'The whole address list, for mode "people".',
+          description: 'The whole address list, for mode "people" — it replaces the list. To change it by a name or two, use `add` or `remove` instead.',
+        },
+        add: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Addresses to add to the list it has, for mode "people". Only these are emailed.',
+        },
+        remove: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Addresses to take off the list it has, for mode "people".',
         },
         confirm: {
           type: 'boolean',
@@ -1379,6 +1569,23 @@ const TOOLS: Record<McpToolName, Tool> = {
        * disclosure. The refusal reads the document first so it can name what would have been
        * published, because a person can agree to "Q3-handbook.md" and can only guess at an id.
        */
+      /*
+       * The list as it will stand. `emails` is the whole of it; `add` and `remove` are changes to
+       * the one it has, which is what "share it with Sam too" means — a replacing list made from
+       * that sentence would drop everybody the model had not been told about.
+       */
+      const listed = (value: unknown) =>
+        Array.isArray(value) ? value.map((one) => String(one).trim().toLowerCase()).filter(Boolean) : [];
+      const adding = listed(args.add);
+      const removing = new Set(listed(args.remove));
+      const editing = adding.length > 0 || removing.size > 0;
+      const before = editing || mode === 'people' ? await readersOf(c, id) : [];
+      const emails: string[] | undefined = Array.isArray(args.emails)
+        ? listed(args.emails)
+        : editing
+          ? [...new Set([...before, ...adding])].filter((email) => !removing.has(email))
+          : undefined;
+
       if (mode !== 'private' && args.confirm !== true) {
         const found = await callApi(c, `/api/v1/documents/${segment(id)}`);
 
@@ -1389,29 +1596,41 @@ const TOOLS: Record<McpToolName, Tool> = {
           );
         }
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `Nothing changed. ${found.body.document.name} would ${
-                mode === 'link'
-                  ? 'become a page on the public web that anyone holding the URL can open'
-                  : 'be emailed as a link to the addresses given'
-              } — ask the person, then call this again with confirm: true.`,
-            },
-          ],
-          structuredContent: forCard(c, found.body.document),
-          isError: true,
-        };
+        const readers = emails ?? before;
+        const fresh = readers.filter((email) => !before.includes(email));
+
+        return refusedCard(
+          `Nothing changed. ${found.body.document.name} would ${
+            mode === 'link'
+              ? 'become a page on the public web that anyone holding the URL can open'
+              : `be shared with ${readers.join(', ') || 'nobody yet'}${fresh.length ? `; ${fresh.join(', ')} would be emailed a link` : ''}`
+          }${before.length ? ` (shared now with ${before.join(', ')})` : ''} — ask the person, then call this again with confirm: true.`,
+          { ...forCard(c, found.body.document), sharing: true, share: mode, readers, opens: found.body.document.share?.views ?? 0, shareUrl: '' },
+          {
+            tool: 'tp_share_document',
+            args: { id, mode, ...(emails ? { emails } : {}) },
+            label:
+              mode === 'link'
+                ? 'Publish by link'
+                : fresh.length === 1
+                  ? `Share with ${fresh[0]}`
+                  : fresh.length > 1
+                    ? `Share with ${fresh.length} people`
+                    : 'Share',
+            note:
+              mode === 'link'
+                ? 'Anyone holding the link will be able to open it.'
+                : fresh.length
+                  ? 'Only the people listed can open it, and each new one is emailed the link.'
+                  : 'Only the people listed can open it.',
+          }
+        );
       }
 
       const changed = await callApi(c, `/api/v1/documents/${segment(id)}/share`, {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          mode,
-          ...(Array.isArray(args.emails) ? { emails: args.emails } : {}),
-        }),
+        body: JSON.stringify({ mode, ...(emails ? { emails } : {}) }),
       });
 
       if (changed.status !== 200) {
@@ -1421,7 +1640,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         );
       }
 
-      const emails = (changed.body.emails ?? []) as string[];
+      const readers = (changed.body.emails ?? []) as string[];
 
       /*
        * The card shows the share as it now stands — who, how often opened, the shared link — and it
@@ -1438,7 +1657,7 @@ const TOOLS: Record<McpToolName, Tool> = {
           changed.body.url ? linkEnds(changed.body.expires_at) : null,
           changed.body.url ? linkOpens(changed.body.views, changed.body.last_viewed_at) : null,
           changed.body.url && changed.body.has_password ? LOCKED : null,
-          emails.length > 0 ? `Readers: ${emails.join(', ')}` : null,
+          readers.length > 0 ? `Readers: ${readers.join(', ')}` : null,
         ]
           .filter(Boolean)
           .join('\n'),
@@ -1448,7 +1667,7 @@ const TOOLS: Record<McpToolName, Tool> = {
           shareUrl: changed.body.url ?? '',
           shareExpires: changed.body.expires_at ?? '',
           sharing: true,
-          readers: emails,
+          readers,
           opens: changed.body.views ?? 0,
           lastOpened: changed.body.last_viewed_at ?? '',
         }

@@ -60,7 +60,7 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_document_versions:
     'A document\'s history: the texts its updates replaced, each readable again, and any documents linked to it as versions.',
   tp_share_document:
-    'Changes who may open a document: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
+    'Changes who may open a document: a link, named addresses, or nobody — and adds or removes one reader without touching the rest. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
   tp_usage: 'What the account is using against its limits.',
   tp_delete_document:
     'Deletes one document, permanently, and only with an explicit confirmation.',

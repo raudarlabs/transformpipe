@@ -198,6 +198,50 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .row .value { min-width: 0; text-align: right; color: var(--ink); overflow-wrap: anywhere; }
 .row .value.link { color: var(--brand); }
 .actions.wide button { flex: 1; }
+/* What an update changed: removed lines struck in red, added ones in green, folds as a dot row. */
+.diff {
+  margin-top: 12px;
+  padding: 8px 0;
+  max-height: 260px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--page);
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.diff div { padding: 0 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff .add { background: color-mix(in srgb, #16a34a 14%, transparent); color: var(--ink); }
+.diff .del { background: color-mix(in srgb, #dc2626 12%, transparent); color: var(--muted); text-decoration: line-through; }
+.diff .ctx { color: var(--muted); }
+.diff .fold { color: var(--muted); text-align: center; letter-spacing: 2px; }
+.counts { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.counts .plus { color: #15803d; }
+.counts .minus { color: #b91c1c; }
+:root[data-theme="dark"] .counts .plus { color: #4ade80; }
+:root[data-theme="dark"] .counts .minus { color: #f87171; }
+/* A gated call: what it would do, and the button that does it. */
+.ask {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand) 40%, var(--stroke));
+  background: color-mix(in srgb, var(--brand) 7%, transparent);
+  font-size: 13px;
+  color: var(--body);
+}
+.ask .actions { margin-top: 10px; }
+.note { margin-top: 8px; font-size: 12px; color: var(--muted); }
+/* History: the text as it stands, then each earlier one. */
+.timeline { margin-top: 12px; border-top: 1px solid var(--stroke); }
+.step { padding: 8px 0; border-bottom: 1px solid var(--stroke); }
+.step:last-child { border-bottom: 0; }
+.step .line { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.step .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--stroke); }
+.step.now .dot { background: var(--brand); }
+.step .when { flex: 1; min-width: 0; color: var(--ink); }
+.step .size { color: var(--muted); font-size: 12px; }
+.step button { padding: 3px 10px; font-size: 12px; }
+.step .excerpt { margin-top: 8px; }
+.section { margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 </style>
 </head>
 <body>
@@ -231,6 +275,154 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
       : (bytes / 1048576).toFixed(1) + ' MB';
 
   const day = (when) => String(when || '').slice(0, 10);
+  const minute = (when) => String(when || '').slice(0, 16).replace('T', ' ');
+
+  /* ChatGPT says so by having the call; the extension says so in its answer to ui/initialize. */
+  let canCallTools = Boolean(window.openai && typeof window.openai.callTool === 'function');
+
+  /* What a call made from the card came back with, as the card draws it or as the sentence. */
+  const answered = (result) => {
+    const r = result && result.result && !result.content ? result.result : result;
+    return {
+      data: r && r.structuredContent && typeof r.structuredContent === 'object' ? r.structuredContent : null,
+      text: r && r.content && r.content[0] && r.content[0].text ? r.content[0].text : '',
+      failed: Boolean(r && r.isError),
+    };
+  };
+
+  /* The refused call, offered back: a note on what it does and a button that does it. */
+  function drawConfirm(card, document_) {
+    if (!document_.confirm && !document_.confirmNote) return;
+    const box = el('div', 'ask');
+    const confirm = document_.confirm;
+    box.append(el('div', null, confirm ? confirm.note : document_.confirmNote));
+
+    if (!confirm || !canCallTools) {
+      box.append(el('div', 'note', 'Tell the assistant to go ahead, and it will.'));
+      card.append(box);
+      return;
+    }
+
+    const actions = el('div', 'actions');
+    const go = el('button', null, confirm.label);
+    go.addEventListener('click', async () => {
+      go.disabled = true;
+      go.textContent = 'Working…';
+      try {
+        const back = answered(await callTool(confirm.tool, Object.assign({}, confirm.args, { confirm: true })));
+        if (back.data && !back.failed) {
+          draw(back.data);
+        } else {
+          go.disabled = false;
+          go.textContent = confirm.label;
+          box.append(el('div', 'note', back.text || 'It did not go through.'));
+        }
+      } catch (failure) {
+        go.disabled = false;
+        go.textContent = confirm.label;
+        box.append(el('div', 'note', 'It did not go through: ' + (failure && failure.message ? failure.message : 'the call was refused')));
+      }
+      reportSize();
+    });
+    actions.append(go);
+    box.append(actions);
+    card.append(box);
+  }
+
+  function drawDiff(card, diff) {
+    if (!diff || !Array.isArray(diff.lines) || !diff.lines.length) return;
+    const block = el('div', 'diff');
+    diff.lines.forEach((line) => {
+      if (line.t === '…') { block.append(el('div', 'fold', '· · ·')); return; }
+      block.append(el('div', line.t === '+' ? 'add' : line.t === '-' ? 'del' : 'ctx', (line.t === ' ' ? '  ' : line.t + ' ') + line.s));
+    });
+    card.append(block);
+  }
+
+  const counts = (diff) => {
+    const span = el('span', 'counts');
+    span.append(el('span', 'plus', '+' + diff.added), document.createTextNode(' '), el('span', 'minus', '−' + diff.removed));
+    return span;
+  };
+
+  /* After tp_document_versions: the text as it stands, then every earlier one, newest first. */
+  function drawHistory(document_) {
+    const card = document.getElementById('card');
+    card.textContent = '';
+
+    const top = el('div', 'top');
+    top.append(el('div', 'glyph', 'T>'));
+    const words = el('div', 'grow');
+    words.append(el('h1', null, document_.name || 'Document'));
+    const revisions = Array.isArray(document_.revisions) ? document_.revisions : [];
+    words.append(el('div', 'meta', revisions.length
+      ? revisions.length + (revisions.length === 1 ? ' earlier version' : ' earlier versions')
+      : 'No earlier versions yet'));
+    top.append(words);
+    card.append(top);
+
+    const timeline = el('div', 'timeline');
+    const now = el('div', 'step now');
+    const nowLine = el('div', 'line');
+    nowLine.append(el('span', 'dot'), el('span', 'when', 'Now' + (document_.updated ? ' · updated ' + minute(document_.updated) : document_.created ? ' · saved ' + day(document_.created) : '')), el('span', 'size', weigh(document_.size)));
+    now.append(nowLine);
+    timeline.append(now);
+
+    revisions.forEach((revision) => {
+      const step = el('div', 'step');
+      const line = el('div', 'line');
+      line.append(el('span', 'dot'), el('span', 'when', 'Until ' + minute(revision.at)), el('span', 'size', weigh(revision.size)));
+      if (canCallTools) {
+        const read = el('button', 'quiet', 'Read');
+        let shown = null;
+        read.addEventListener('click', async () => {
+          if (shown) { shown.remove(); shown = null; read.textContent = 'Read'; reportSize(); return; }
+          read.disabled = true;
+          try {
+            const back = answered(await callTool('tp_document_versions', { id: document_.id, revision: revision.id }));
+            shown = el('div', 'excerpt', back.data && back.data.excerpt ? back.data.excerpt : back.text);
+            step.append(shown);
+            read.textContent = 'Hide';
+          } catch (failure) {
+            step.append(el('div', 'note', 'It could not be read.'));
+          }
+          read.disabled = false;
+          reportSize();
+        });
+        line.append(read);
+      }
+      step.append(line);
+      timeline.append(step);
+    });
+    card.append(timeline);
+
+    const chain = Array.isArray(document_.chain) ? document_.chain : [];
+    if (chain.length) {
+      card.append(el('div', 'section', 'Linked versions'));
+      const linked = el('div', 'timeline');
+      chain.forEach((one) => {
+        const step = el('div', one.id === document_.id ? 'step now' : 'step');
+        const line = el('div', 'line');
+        line.append(el('span', 'dot'), el('span', 'when', one.name), el('span', 'size', day(one.created)));
+        if (one.url && one.id !== document_.id) {
+          const open = el('button', 'quiet', 'Open');
+          open.addEventListener('click', () => openLink(one.url));
+          line.append(open);
+        }
+        step.append(line);
+        linked.append(step);
+      });
+      card.append(linked);
+    }
+
+    if (document_.url) {
+      const actions = el('div', 'actions');
+      const open = el('button', null, 'Open in TransformPipe');
+      open.addEventListener('click', () => openLink(document_.url));
+      actions.append(open);
+      card.append(actions);
+    }
+  }
 
   /* After tp_share_document: not the document's contents but who can now open it. */
   function drawShare(document_) {
@@ -249,7 +441,9 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     ].filter(Boolean).join(' · ');
     if (meta) words.append(el('div', 'meta', meta));
     top.append(words);
-    top.append(el('span', shared ? 'state' : 'state off', shared ? 'Shared' : 'Private'));
+    top.append(document_.confirm || document_.confirmNote
+      ? el('span', 'state off', 'Not yet')
+      : el('span', shared ? 'state' : 'state off', shared ? 'Shared' : 'Private'));
     card.append(top);
 
     const rows = el('div', 'rows');
@@ -271,7 +465,7 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
       row(readers.length === 1 ? 'Reader' : 'Readers', readers.join(', ') || 'Nobody yet', 'link');
     }
 
-    if (shared) {
+    if (shared && !document_.confirm && !document_.confirmNote) {
       row('Opens', !document_.opens
         ? 'Not opened yet'
         : (document_.opens === 1 ? 'Once' : document_.opens + ' times') +
@@ -281,6 +475,11 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     if (shared && document_.shareExpires) row('Link ends', day(document_.shareExpires));
 
     card.append(rows);
+
+    if (document_.confirm || document_.confirmNote) {
+      drawConfirm(card, document_);
+      return;
+    }
 
     const actions = el('div', 'actions wide');
 
@@ -299,7 +498,11 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     if (actions.children.length) card.append(actions);
   }
 
+  let lastDrawn = null;
+
   function draw(document_) {
+    lastDrawn = document_;
+    if (document_.history) return drawHistory(document_);
     if (document_.sharing) return drawShare(document_);
 
     const card = document.getElementById('card');
@@ -325,12 +528,34 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
       document_.created ? String(document_.created).slice(0, 10) : '',
     ].filter(Boolean).join(' · ');
 
-    if (meta) words.append(el('div', 'meta', meta));
+    if (meta || document_.diff) {
+      const line = el('div', 'meta', meta);
+      if (document_.diff) {
+        if (meta) line.append(document.createTextNode(' · '));
+        line.append(counts(document_.diff));
+      }
+      words.append(line);
+    }
+
+    if (document_.revisionOf) words.append(el('div', 'meta', 'As it read until ' + minute(document_.revisionOf) + ' UTC'));
+
+    if (Array.isArray(document_.readers) && document_.readers.length) {
+      words.append(el('div', 'meta', 'Shared with ' + document_.readers.join(', ')));
+    }
 
     top.append(words);
     card.append(top);
 
-    if (document_.excerpt) card.append(el('div', 'excerpt', document_.excerpt));
+    if (document_.diff && document_.diff.lines && document_.diff.lines.length) {
+      drawDiff(card, document_.diff);
+    } else if (document_.excerpt) {
+      card.append(el('div', 'excerpt', document_.excerpt));
+    }
+
+    if (document_.confirm || document_.confirmNote) {
+      drawConfirm(card, document_);
+      return;
+    }
 
     const actions = el('div', 'actions');
 
@@ -387,6 +612,10 @@ ${OPENAI_BRIDGE}
     .then((result) => {
       const theme = result && result.hostContext && result.hostContext.theme;
       if (theme) document.documentElement.dataset.theme = theme;
+      /* A result drawn before the host said it runs tools gets its buttons now. */
+      const could = canCallTools;
+      canCallTools = canCallTools || Boolean(result && result.hostCapabilities && result.hostCapabilities.serverTools);
+      if (!could && canCallTools && lastDrawn) draw(lastDrawn);
       notify('ui/notifications/initialized');
       reportSize();
     })

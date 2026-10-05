@@ -68,8 +68,20 @@ const call = async (token, method, params) => {
   };
 };
 
+/*
+ * The server allows sixty calls a minute and this script makes more than that, so a call told to
+ * wait does — what an assistant would do — rather than failing a check that has nothing to do
+ * with the limit.
+ */
 const tool = async (token, name, args = {}) => {
-  const { body } = await call(token, 'tools/call', { name, arguments: args });
+  let { body } = await call(token, 'tools/call', { name, arguments: args });
+
+  for (let tries = 0; tries < 3; tries++) {
+    const wait = /Too many calls.*Try again in (\d+)s/.exec(body?.result?.content?.[0]?.text ?? '');
+    if (!wait) break;
+    await new Promise((resolve) => setTimeout(resolve, (Number(wait[1]) + 1) * 1000));
+    ({ body } = await call(token, 'tools/call', { name, arguments: args }));
+  }
 
   return {
     text: body?.result?.content?.[0]?.text ?? '',
@@ -982,6 +994,11 @@ if (blobless) {
       /public web/.test(ungatedShare.text),
     ungatedShare.text.slice(0, 140)
   );
+  check(
+    'and its card offers the refused call back as a button',
+    ungatedShare.data?.confirm?.tool === 'tp_share_document' && ungatedShare.data?.confirm?.args?.mode === 'link' && ungatedShare.data.confirm.args.confirm === undefined,
+    JSON.stringify(ungatedShare.data?.confirm ?? null)
+  );
 
   const shared = await tool(tokens.access_token, 'tp_share_document', {
     id: savedId,
@@ -1012,6 +1029,11 @@ if (blobless) {
     !updatedPrivate.isError && /^Updated /.test(updatedPrivate.text) && /revision/.test(updatedPrivate.text),
     updatedPrivate.text.slice(0, 160)
   );
+  check(
+    'and its card shows the lines that changed',
+    updatedPrivate.data?.diff?.added >= 1 && updatedPrivate.data.diff.lines.some((line) => line.t === '+' && /Updated by/.test(line.s)),
+    JSON.stringify(updatedPrivate.data?.diff ?? null).slice(0, 200)
+  );
 
   /* The text an update replaced is in the history, and reads back whole — what "what changed?" needs. */
   const history = await tool(tokens.access_token, 'tp_document_versions', { id: savedId });
@@ -1021,6 +1043,11 @@ if (blobless) {
     !history.isError && /Earlier texts of this document/.test(history.text) && Boolean(revisionId),
     history.text.slice(0, 200)
   );
+  check(
+    'and draws it as a timeline with every earlier text',
+    history.data?.history === true && history.data.revisions?.some((one) => one.id === revisionId),
+    JSON.stringify(history.data ?? null).slice(0, 200)
+  );
   const earlier = revisionId
     ? await tool(tokens.access_token, 'tp_document_versions', { id: savedId, revision: revisionId })
     : { isError: true, text: 'no revision id' };
@@ -1029,6 +1056,7 @@ if (blobless) {
     !earlier.isError && /as it read until/.test(earlier.text) && !earlier.text.includes('Updated by scripts/check-mcp.mjs'),
     earlier.text.slice(0, 200)
   );
+  check('and the earlier text comes with a card that says when it was replaced', Boolean(earlier.data?.revisionOf) && Boolean(earlier.data?.excerpt));
 
   const sameAgain = await tool(tokens.access_token, 'tp_update_document', { id: savedId, markdown: privateText });
   check('the same text again changes nothing', /Nothing to update/.test(sameAgain.text), sameAgain.text.slice(0, 120));
@@ -1050,6 +1078,11 @@ if (blobless) {
     ungatedUpdate.isError && /confirm: true/.test(ungatedUpdate.text) && /anyone holding the link/.test(ungatedUpdate.text),
     ungatedUpdate.text.slice(0, 160)
   );
+  check(
+    'and its card shows the change and offers the update as a button',
+    ungatedUpdate.data?.confirm?.tool === 'tp_update_document' && ungatedUpdate.data?.diff?.added >= 1,
+    JSON.stringify(ungatedUpdate.data?.confirm ?? null).slice(0, 160)
+  );
 
   const gatedUpdate = await tool(tokens.access_token, 'tp_update_document', {
     id: savedId,
@@ -1063,6 +1096,24 @@ if (blobless) {
     !gatedUpdate.isError && Boolean(link) && gatedUpdate.text.includes(link) && page.includes('A change the link shows'),
     JSON.stringify({ link, published: published.text.slice(0, 160), status: pageResponse?.status, title: (page.match(/<title>[^<]*<\/title>/) ?? [''])[0], url: pageResponse?.url, redirected: pageResponse?.redirected, has: page.includes('change the link') })
   );
+
+  /* Readers are added and removed one at a time; nobody already on the list is dropped. */
+  await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'people', emails: ['first@example.invalid'], confirm: true });
+  const askAdd = await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'people', add: ['second@example.invalid'] });
+  check(
+    'adding a reader asks first, names who has it now, and keeps them on the list',
+    askAdd.isError && /first@example\.invalid/.test(askAdd.text) && askAdd.data?.confirm?.args?.emails?.join() === 'first@example.invalid,second@example.invalid',
+    askAdd.text.slice(0, 200)
+  );
+  const added = await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'people', add: ['second@example.invalid'], confirm: true });
+  const removed = await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'people', remove: ['first@example.invalid'], confirm: true });
+  check(
+    'and add and remove change the list one name at a time',
+    added.data?.readers?.join() === 'first@example.invalid,second@example.invalid' && removed.data?.readers?.join() === 'second@example.invalid',
+    JSON.stringify({ added: added.data?.readers, removed: removed.data?.readers })
+  );
+  const readBack = await tool(tokens.access_token, 'tp_get_document', { id: savedId });
+  check('reading a document names who it is shared with', /Shared with: second@example\.invalid/.test(readBack.text), JSON.stringify(readBack.text.slice(0, 200)));
 
   await tool(tokens.access_token, 'tp_share_document', { id: savedId, mode: 'private' });
 }
@@ -1278,16 +1329,28 @@ const WORD = docx({
     '</w:body></w:document>',
 });
 
-const postWord = (body) =>
-  fetch(`${HOST}/api/v1/documents?kind=word-to-markdown&name=probe.docx`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${tokens.access_token}`,
-      'content-type':
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    },
-    body,
-  });
+const postWord = async (body) => {
+  const send = () =>
+    fetch(`${HOST}/api/v1/documents?kind=word-to-markdown&name=probe.docx`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${tokens.access_token}`,
+        'content-type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      },
+      body,
+    });
+  let response = await send();
+
+  // The same patience as `tool`: told to wait, it waits.
+  for (let tries = 0; tries < 3 && response.status === 429; tries++) {
+    const wait = Number(/in (\d+)s/.exec(await response.text())?.[1] ?? 5);
+    await new Promise((resolve) => setTimeout(resolve, (wait + 1) * 1000));
+    response = await send();
+  }
+
+  return response;
+};
 
 const wordUp = await postWord(WORD);
 const wordBody = await wordUp.json().catch(() => ({}));
