@@ -214,7 +214,8 @@ export function MobileNav({
               {t('header.menu.language')}
             </Typography>
 
-            <div className="flex flex-wrap gap-2 px-3">
+            {/* A grid, so every language gets the same pill: sized to its name, Italiano's came out the smallest. */}
+            <div className="grid grid-cols-2 gap-2 px-3">
               {LOCALES.map((one) => (
                 <button
                   key={one}
@@ -223,7 +224,7 @@ export function MobileNav({
                   onClick={go(() => setLocale(one))}
                   aria-current={one === locale ? 'true' : undefined}
                   className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
+                    'flex w-full cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand',
                     one === locale
                       ? 'border-brand-tertiary bg-surface-accent text-ink-highlight'
