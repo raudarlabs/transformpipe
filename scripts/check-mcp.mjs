@@ -989,6 +989,23 @@ if (blobless) {
     updatedPrivate.text.slice(0, 160)
   );
 
+  /* The text an update replaced is in the history, and reads back whole — what "what changed?" needs. */
+  const history = await tool(tokens.access_token, 'tp_document_versions', { id: savedId });
+  const revisionId = (history.text.match(/revision: ([0-9a-f-]{36})/) ?? [])[1];
+  check(
+    'the history lists the text an update replaced',
+    !history.isError && /Earlier texts of this document/.test(history.text) && Boolean(revisionId),
+    history.text.slice(0, 200)
+  );
+  const earlier = revisionId
+    ? await tool(tokens.access_token, 'tp_document_versions', { id: savedId, revision: revisionId })
+    : { isError: true, text: 'no revision id' };
+  check(
+    'and reads that earlier text back',
+    !earlier.isError && /as it read until/.test(earlier.text) && !earlier.text.includes('Updated by scripts/check-mcp.mjs'),
+    earlier.text.slice(0, 200)
+  );
+
   const sameAgain = await tool(tokens.access_token, 'tp_update_document', { id: savedId, markdown: privateText });
   check('the same text again changes nothing', /Nothing to update/.test(sameAgain.text), sameAgain.text.slice(0, 120));
 

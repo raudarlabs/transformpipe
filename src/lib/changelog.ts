@@ -114,6 +114,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'Ask an assistant what changed in a document',
+    body:
+      'Updating a document keeps the text it replaced, the newest ten of them, and until now an '
+      + 'assistant could not see those: asked what changed, Claude or ChatGPT answered that there '
+      + 'was no history. Document history now lists every earlier text and reads any of them back, '
+      + 'so the question gets an answer — what moved, what was added, what the first draft said.',
+  },
+  {
+    date: '2026-10-05',
     title: 'TransformPipe for Obsidian',
     body:
       'A plugin, listed in Obsidian\u2019s community directory: Publish note turns the note into a '

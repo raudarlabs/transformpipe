@@ -1218,24 +1218,53 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_document_versions: {
     description:
-      'Every document linked to this one as a version of the same thing, oldest first — the chain built by tp_save_document\'s `replaces`. Empty unless somebody deliberately linked documents together; nothing links them on its own.',
-    annotations: { title: 'Document versions', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+      'A document\'s history, of both kinds. Its earlier texts: each tp_update_document keeps the text it replaced as a revision (the newest ten), listed newest first with an id — pass one as `revision` to get that earlier text as Markdown, then compare it with tp_get_document. And the documents linked to it as versions of the same thing, oldest first — the chain built by tp_save_document\'s `replaces`. Use it when the person asks what changed, what a document said before, or for an earlier draft.',
+    annotations: { title: 'Document history', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
       required: ['id'],
       properties: {
-        id: { type: 'string', description: 'Any document id in the chain.' },
+        id: { type: 'string', description: 'The document id — any document in a chain will do.' },
+        revision: {
+          type: 'string',
+          description: 'A revision id from this tool\'s own list, to get that earlier text as Markdown.',
+        },
       },
     },
     run: async (c, args) => {
       const id = String(args.id ?? '');
+      const revision = args.revision ? String(args.revision) : '';
 
       if (!id) {
         return say('Which document? tp_list_documents prints the ids.', true);
       }
 
-      const found = await callApi(c, `/api/v1/documents/${segment(id)}/versions`);
+      /*
+       * One earlier text, whole. Not a diff: the assistant asking has the current text from
+       * tp_get_document and says what changed better than a line diff would, in the words the
+       * person used.
+       */
+      if (revision) {
+        const one = await callApi(c, `/api/v1/documents/${segment(id)}/revisions/${segment(revision)}`);
+
+        if (one.status !== 200) {
+          return say('That is not one of this document\'s revisions. Call tp_document_versions without `revision` for the list.', true);
+        }
+
+        const kept = one.body.revision as { name: string; replaced_at: string | null; markdown: string };
+
+        return say(
+          clip(
+            `${kept.name}, as it read until ${kept.replaced_at ? new Date(kept.replaced_at).toISOString().slice(0, 16).replace('T', ' ') : 'it was replaced'} UTC:\n\n${kept.markdown}`
+          )
+        );
+      }
+
+      const [found, history] = await Promise.all([
+        callApi(c, `/api/v1/documents/${segment(id)}/versions`),
+        callApi(c, `/api/v1/documents/${segment(id)}/revisions`),
+      ]);
 
       if (found.status !== 200) {
         return say(
@@ -1249,21 +1278,40 @@ const TOOLS: Record<McpToolName, Tool> = {
         name: string;
         created_at: string;
       }>;
+      const revisions = (history.status === 200 ? history.body.revisions : []) as Array<{
+        id: string;
+        size: number;
+        replaced_at: string | null;
+      }>;
+      const parts: string[] = [];
 
-      if (chain.length <= 1) {
-        return say('This document has no other versions linked to it.');
+      if (revisions.length > 0) {
+        parts.push(
+          `Earlier texts of this document, newest first (${revisions.length}):\n${revisions
+            .map(
+              (one) =>
+                `- replaced ${one.replaced_at ? new Date(one.replaced_at).toISOString().slice(0, 16).replace('T', ' ') : '?'} UTC · ${(one.size / 1024).toFixed(1)} kB · revision: ${one.id}`
+            )
+            .join('\n')}\nPass a revision as \`revision\` to read that text.`
+        );
       }
 
-      return say(
-        clip(
-          chain
+      if (chain.length > 1) {
+        parts.push(
+          `Documents linked to it as versions, oldest first:\n${chain
             .map(
               (version) =>
                 `${version.name}\n  id: ${version.id}\n  ${new Date(version.created_at).toISOString().slice(0, 10)}`
             )
-            .join('\n')
-        )
-      );
+            .join('\n')}`
+        );
+      }
+
+      if (parts.length === 0) {
+        return say('This document has not been updated since it was saved, and no other versions are linked to it.');
+      }
+
+      return say(clip(parts.join('\n\n')));
     },
   },
 

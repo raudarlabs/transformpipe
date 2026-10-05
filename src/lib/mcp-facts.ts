@@ -58,7 +58,7 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_summarize_document:
     'A short summary of a document, cached on the account so asking again is free.',
   tp_document_versions:
-    'Every document linked to this one as a version of the same thing, oldest first.',
+    'A document\'s history: the texts its updates replaced, each readable again, and any documents linked to it as versions.',
   tp_share_document:
     'Changes who may open a document: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
   tp_usage: 'What the account is using against its limits.',
