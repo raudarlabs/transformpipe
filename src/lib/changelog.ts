@@ -120,7 +120,8 @@ const ENTRIES: ChangelogEntry[] = [
       + 'text: the page ran no script at all, and a diagram needs one to be drawn. It now loads one '
       + 'of ours, and only that \u2014 nothing in a document can run \u2014 which draws the diagrams '
       + 'in the page\u2019s light or dark and gives a diagram, or a table too wide for the page, a '
-      + 'Full screen button. Every link already sent shows them; nothing needs to be shared again.',
+      + 'Full screen button. Every link already sent shows them; nothing needs to be shared again. '
+      + 'Download .html on that page gives the file with the diagrams drawn into it too.',
   },
   {
     date: '2026-10-05',

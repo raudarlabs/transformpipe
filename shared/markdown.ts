@@ -1323,7 +1323,7 @@ ${SHARED_CHROME_STYLE}
     ${downloadMenu(downloadHref, markdownHref, obsidianHref)}
   </div>
 </div>
-<article class="md-page md-doc">
+<article class="md-page md-doc" data-created="${createdAt}">
 ${body}
 </article>
 <p class="md-footer">Shared document · converted ${escapeHtml(stamp)}${

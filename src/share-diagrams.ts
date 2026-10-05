@@ -48,12 +48,53 @@ function frame(element: HTMLElement, kind: 'diagram' | 'table'): void {
   else wrapper.append(element, button);
 }
 
+/*
+ * Download .html, with the diagrams drawn into it.
+ *
+ * The server builds that file and cannot draw a diagram, so it came out with each one as source
+ * text. Where the document has diagrams the page builds the file itself instead — the app's own
+ * `buildStandaloneHtml` and `inlineDiagrams`, in the light palette the server's file uses — from
+ * the markup as the server sent it, before anything here touched it. Only where there are
+ * diagrams, and only the .html link: without this script the link still works, through the server.
+ */
+function drawnDownload(doc: HTMLElement, source: string): void {
+  const link = document.querySelector<HTMLAnchorElement>('.md-bar a.keep');
+
+  if (!link || !/[?&]download(=html)?$/.test(link.getAttribute('href') ?? '')) return;
+
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    void (async () => {
+      const [{ buildStandaloneHtml }, { saveBlob }, { toFileName }] = await Promise.all([
+        import('@/lib/markdown'),
+        import('@/lib/download'),
+        import('@/lib/format'),
+      ]);
+      const name = document.title;
+      const html = buildStandaloneHtml({
+        title: name,
+        body: await inlineDiagrams(source, 'light'),
+        createdAt: Number(doc.dataset.created) || Date.now(),
+        theme: 'light',
+      });
+
+      saveBlob(toFileName(name, 'html'), new Blob([html], { type: 'text/html;charset=utf-8' }));
+    })().catch(() => {
+      /* Anything wrong on this side, and the server's file is still one click away. */
+      window.location.href = link.href;
+    });
+  });
+}
+
 async function run(): Promise<void> {
   const doc = document.querySelector<HTMLElement>('article.md-doc');
 
   if (!doc) return;
 
   if (doc.querySelector('pre.md-mermaid')) {
+    drawnDownload(doc, doc.innerHTML);
+
     const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
     doc.innerHTML = await inlineDiagrams(doc.innerHTML, theme);
