@@ -1,4 +1,10 @@
 import { useCallback, useEffect, useState, type RefObject } from 'react';
+import {
+  escapeIsFree,
+  escapeLeavesFullscreen,
+  holdEscape,
+  releaseEscape,
+} from './use-escape-in-fullscreen';
 
 /*
  * Reading one element full screen, on a platform that may not have the API for it.
@@ -39,12 +45,27 @@ export function useFullscreen(frame: RefObject<HTMLElement | null>): Fullscreen 
 
   // Escape and the browser's own chrome can leave fullscreen without us, so follow the event.
   useEffect(() => {
-    const sync = () => setNative(document.fullscreenElement !== null);
+    const sync = () => {
+      const on = document.fullscreenElement !== null;
+
+      setNative(on);
+      /* However fullscreen ended — Escape, the browser's own control, a held key — the key goes back. */
+      if (!on) releaseEscape();
+    };
 
     document.addEventListener('fullscreenchange', sync);
 
     return () => document.removeEventListener('fullscreenchange', sync);
   }, []);
+
+  /* With Escape held by the page, the page has to do what the key used to: see use-escape-in-fullscreen. */
+  useEffect(() => {
+    if (!native) return;
+
+    document.addEventListener('keydown', escapeLeavesFullscreen);
+
+    return () => document.removeEventListener('keydown', escapeLeavesFullscreen);
+  }, [native]);
 
   /*
    * The page behind must not scroll under the overlay, and the overlay must not outlive the
@@ -55,7 +76,7 @@ export function useFullscreen(frame: RefObject<HTMLElement | null>): Fullscreen 
     if (!overlaid) return;
 
     const escape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOverlaid(false);
+      if (event.key === 'Escape' && escapeIsFree()) setOverlaid(false);
     };
 
     const scroll = document.body.style.overflow;
@@ -89,7 +110,12 @@ export function useFullscreen(frame: RefObject<HTMLElement | null>): Fullscreen 
      * case on a phone, not an error, and asking first keeps it out of the console.
      */
     if (element && typeof element.requestFullscreen === 'function') {
-      void element.requestFullscreen().catch(() => setOverlaid(true));
+      /* In the same gesture, so the lock is in place as fullscreen begins. */
+      holdEscape();
+      void element.requestFullscreen().catch(() => {
+        releaseEscape();
+        setOverlaid(true);
+      });
 
       return;
     }
