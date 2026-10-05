@@ -23,6 +23,7 @@ import { formatBytes, formatDateTime, toFileName } from '@/lib/format';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { buildStandaloneHtml, markdownToHtml } from '@/lib/markdown';
+import { inlineDiagrams } from '@/lib/mermaid';
 import { AuthDialog } from '@/components/AuthDialog';
 import { useTheme } from '@/lib/theme';
 import { Badge } from '@/ui/components/Badge';
@@ -153,16 +154,18 @@ export function SharedDocumentPage({ token }: { token: string }) {
     }
   };
 
-  const download = () => {
+  const download = async () => {
     if (!document) {
       return;
     }
 
+    /* With the diagrams drawn, like every other download: the bare render left them as source. */
     const html = buildStandaloneHtml({
       title: document.name,
-      body: markdownToHtml(document.markdown),
+      body: await inlineDiagrams(markdownToHtml(document.markdown), theme),
       createdAt: document.createdAt,
       theme,
+      expandable: true,
     });
     const url = URL.createObjectURL(
       new Blob([html], { type: 'text/html;charset=utf-8' })
@@ -379,7 +382,7 @@ export function SharedDocumentPage({ token }: { token: string }) {
                 <Button
                   size="sm"
                   leftSlot={<Download />}
-                  onClick={download}
+                  onClick={() => void download()}
                 >
                   {t('converter.download', { format: 'html' })}
                 </Button>

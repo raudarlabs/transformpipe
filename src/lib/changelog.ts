@@ -114,6 +114,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'A downloaded file opens its diagrams full screen too',
+    body:
+      'Each diagram in a downloaded .html now has a Full screen link that lays it over the whole '
+      + 'page, fitted to the screen, and a \u00d7 \u2014 or the browser\u2019s Back \u2014 that puts '
+      + 'it away where the reader was. Done with CSS alone: the file still runs no script, so it is '
+      + 'as safe to open from an email as it was. The download from a document opened by link now '
+      + 'has its diagrams drawn as well; it had been leaving them as source.',
+  },
+  {
+    date: '2026-10-05',
     title: 'Diagrams are drawn on a public link',
     body:
       'A document shared as a link that anyone can open showed every Mermaid diagram as its source '

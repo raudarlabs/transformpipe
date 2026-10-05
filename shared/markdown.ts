@@ -719,6 +719,64 @@ interface StandaloneOptions {
   createdAt?: number;
   /** Matches whatever the preview is showing, so the file looks like what was seen. */
   theme?: 'dark' | 'light';
+  /**
+   * A Full screen link on every drawn diagram — see `withExpandableDiagrams`. For a file somebody
+   * downloads; not for the HTML a person copies or pastes, which is going into somebody else's page.
+   */
+  expandable?: boolean;
+}
+
+/*
+ * Full screen for a diagram in a downloaded file, with no script.
+ *
+ * The file is the deliverable — emailed, opened from disk, on a machine with no network — and it
+ * runs no JavaScript, on purpose: a document that executes is a document nobody should open from
+ * an attachment. So the viewer the app and the shared page have is not available, and this is the
+ * part of it that CSS alone can do: the link goes to the diagram's own id, and `:target` lays that
+ * figure over the whole page, fitted to it. A second link, and the browser's Back, put it away
+ * again — to the place in the document the reader was at, not the top of it.
+ */
+const EXPANDABLE_STYLE = `
+.md-diagram-frame { position: relative; }
+.md-diagram-frame > .md-expand {
+  position: absolute; top: 0.5rem; right: 0.5rem; z-index: 1;
+  display: inline-flex; align-items: center; gap: 0.35rem; height: 1.75rem; padding: 0 0.6rem;
+  border: 1px solid var(--md-stroke); border-radius: 0.5rem; background: var(--md-card);
+  color: var(--md-secondary); font-size: 0.75rem; font-weight: 600; text-decoration: none;
+}
+.md-diagram-frame > .md-expand:hover { color: var(--md-ink); border-color: var(--md-brand); }
+.md-diagram .md-close { display: none; }
+.md-diagram:target {
+  position: fixed; inset: 0; z-index: 10; margin: 0; padding: 3.5rem 1.5rem 1.5rem;
+  border: 0; border-radius: 0; overflow: auto; background: var(--md-page);
+  display: flex; align-items: center; justify-content: center;
+}
+.md-diagram:target svg { max-width: 100% !important; max-height: 100%; width: auto; height: auto; }
+.md-diagram:target .md-close {
+  position: fixed; top: 0.75rem; right: 0.75rem; display: inline-flex; align-items: center;
+  justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--md-stroke);
+  border-radius: 0.5rem; background: var(--md-card); color: var(--md-ink);
+  font-size: 1.1rem; line-height: 1; text-decoration: none;
+}
+@media print { .md-diagram-frame > .md-expand, .md-diagram .md-close { display: none; } }
+`;
+
+/** Every drawn diagram in `body`, framed with a link that puts it on the whole screen. */
+export function withExpandableDiagrams(body: string): string {
+  let n = 0;
+
+  return body.replace(/<figure class="md-diagram">([\s\S]*?)<\/figure>/g, (_, inner: string) => {
+    n += 1;
+
+    const id = `md-diagram-${n}`;
+
+    return (
+      `<div class="md-diagram-frame" id="${id}-at">` +
+      `<a class="md-expand" href="#${id}">⤢ Full screen</a>` +
+      `<figure class="md-diagram" id="${id}">` +
+      `<a class="md-close" href="#${id}-at" aria-label="Close">×</a>${inner}</figure></div>`
+    );
+  });
 }
 
 /**
@@ -730,6 +788,7 @@ export function buildStandaloneHtml({
   body,
   createdAt = Date.now(),
   theme = 'dark',
+  expandable = false,
 }: StandaloneOptions): string {
   const stamp = new Date(createdAt).toLocaleString();
 
@@ -752,11 +811,12 @@ ${mdDocTheme(theme, ':root, .md-doc')}
 ${mdDocPrintOverride(':root, .md-doc')}
 ${MD_DOC_PAGE_STYLE}
 ${MD_DOC_STYLE}
+${expandable && body.includes('class="md-diagram"') ? EXPANDABLE_STYLE : ''}
 </style>
 </head>
 <body>
 <article class="md-page md-doc">
-${body}
+${expandable ? withExpandableDiagrams(body) : body}
 </article>
 <p class="md-footer">${escapeHtml(title)} · converted ${escapeHtml(stamp)} · <a href="https://transformpipe.com/?from=file">made with TransformPipe</a></p>
 </body>

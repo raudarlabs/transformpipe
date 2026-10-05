@@ -77,6 +77,7 @@ function drawnDownload(doc: HTMLElement, source: string): void {
         body: await inlineDiagrams(source, 'light'),
         createdAt: Number(doc.dataset.created) || Date.now(),
         theme: 'light',
+        expandable: true,
       });
 
       saveBlob(toFileName(name, 'html'), new Blob([html], { type: 'text/html;charset=utf-8' }));

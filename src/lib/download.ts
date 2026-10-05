@@ -66,6 +66,7 @@ export async function downloadDoc(
       body: await inlineDiagrams(markdownToHtml(markdown), theme),
       createdAt,
       theme,
+      expandable: true,
     }),
     'text/html;charset=utf-8'
   );
