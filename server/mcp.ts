@@ -1059,11 +1059,17 @@ const TOOLS: Record<McpToolName, Tool> = {
         }
       }
 
+      /*
+       * An empty list is still a list: the card the host has already drawn waits for data, and
+       * plain text left it saying "Waiting for the list…" for good — seen in Claude on a phone,
+       * where a first search found nothing before a second one did.
+       */
       if (matching.length === 0) {
-        return say(
+        return card(
           needle
             ? `Nothing on this account has "${needle}" in its name or content.`
-            : 'This account has no documents yet.'
+            : 'This account has no documents yet.',
+          { total: 0, documents: [], query: needle || null }
         );
       }
 

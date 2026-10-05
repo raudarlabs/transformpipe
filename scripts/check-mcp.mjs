@@ -942,6 +942,14 @@ if (savedUrl) {
 const list = await tool(tokens.access_token, 'tp_list_documents', { query: 'mcp-e2e' });
 check('the list finds it and states what it showed', /1 of 1 shown/.test(list.text), list.text.slice(0, 100));
 
+/* A search that finds nothing still hands the card an empty list, so it does not wait for one. */
+const none = await tool(tokens.access_token, 'tp_list_documents', { query: 'no-such-document-zq' });
+check(
+  'a search that finds nothing returns an empty list for the card',
+  !none.isError && none.data?.total === 0 && Array.isArray(none.data?.documents) && /Nothing on this account/.test(none.text),
+  JSON.stringify(none).slice(0, 160)
+);
+
 const got = await tool(tokens.access_token, 'tp_get_document', { id: savedId });
 check('get returns the source', /Hello\./.test(got.text));
 

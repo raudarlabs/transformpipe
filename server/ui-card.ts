@@ -272,7 +272,16 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     if (message.method === 'ui/notifications/tool-result') {
       const data = message.params && message.params.structuredContent;
-      if (data && typeof data === 'object' && Object.keys(data).length > 0) draw(data);
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+        draw(data);
+      } else {
+        /* An answer with no list in it — an error, an older server — must not leave the card waiting. */
+        const said = message.params && message.params.content && message.params.content[0];
+        const card = document.getElementById('card');
+        card.textContent = '';
+        card.append(el('p', 'empty', (said && said.text) || 'No list to show.'));
+        reportSize();
+      }
     }
   });
 
@@ -429,7 +438,9 @@ button.row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px
     card.append(head);
 
     if (!documents.length) {
-      card.append(el('p', 'empty', 'Nothing on this account yet.'));
+      card.append(el('p', 'empty', data.query
+        ? 'Nothing matches \u201c' + data.query + '\u201d.'
+        : 'Nothing on this account yet.'));
       return;
     }
 
