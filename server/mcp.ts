@@ -711,7 +711,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_save_document: {
     description:
-      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `replaces` records this document as a new version of an earlier one; a save that omits it is an unrelated document.',
+      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `replaces` records this document as a new version of an earlier one, beside it and under a new link; a save that omits it is an unrelated document. To change a document that already exists — "update it", "fix it", "keep the old version", "keep the link" — use tp_update_document, which keeps the old text as a revision and the link as it is.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Save a document',
@@ -753,7 +753,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         replaces: {
           type: 'string',
           description:
-            'Id of an earlier document this is a new version of. tp_list_documents prints ids.',
+            'Id of an earlier document this is a separate new version of — a second document, with its own id and its own link. To change a document the person already has, or to keep its link, use tp_update_document instead: it keeps the replaced text as a revision on its own. tp_list_documents prints ids.',
         },
         confirm: {
           type: 'boolean',
