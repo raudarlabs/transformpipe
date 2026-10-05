@@ -45,7 +45,8 @@ export function LanguageMenu({ className }: { className?: string }) {
           aria-label="Language"
         >
           {/* The flag of the language you are in, so the control says what it will change. */}
-          <LocaleFlag locale={locale} className="h-3 w-4" />
+          {/* `!`, because IconButton makes every svg in it square. */}
+          <LocaleFlag locale={locale} className="!h-3 !w-4" />
         </IconButton>
       </DropdownMenuTrigger>
 
