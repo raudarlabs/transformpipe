@@ -944,14 +944,15 @@ export const pages: Content['pages'] = {
         body: [
           'Auf claude.ai ist TransformPipe im Connector-Verzeichnis unter `claude.ai/directory/tp` gelistet: Öffnen Sie den Eintrag, drücken Sie „Connect“ und melden Sie sich an, wenn danach gefragt wird — im nächsten Gespräch sind die Werkzeuge da. Wo das Verzeichnis abgeschaltet ist, nimmt „Settings“, dann „Connectors“, dann „Add custom connector“ denselben Server über seine Adresse an, `https://transformpipe.com/api/mcp`.',
           'Aus einem Terminal erledigt ein einziger Befehl dasselbe: `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp`.',
+          'In ChatGPT wird TransformPipe als MCP-App über die Adresse hinzugefügt: Öffnen Sie „Plugins“, klicken Sie auf „Add“, wählen Sie „Create MCP App“, tragen Sie `https://transformpipe.com/api/mcp` ein und melden Sie sich an, wenn danach gefragt wird. Dokumente kommen dann als Karten in den Chat zurück.',
           'Mehr ist nicht einzurichten. Der Connector lässt sich auf demselben Bildschirm wieder entfernen, und das Entfernen widerruft den Zugriff sofort.',
         ],
       },
       {
         heading: 'Was er dann kann',
         body: [
-          'Elf Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können.',
-          'Der Rest sind die, nach denen ein Assistent von sich aus greift: `tp_list_documents` und `tp_get_document`, um etwas wiederzufinden, das Sie früher gemacht haben, `tp_summarize_document`, um zu sagen, was in einem langen steht, `tp_update_document`, um eines zu ändern und seinen Link zu behalten, `tp_document_versions`, um zu zeigen, was was ersetzt hat, `tp_usage`, um zu prüfen, wie viel Platz noch bleibt, und `tp_delete_document`.',
+          'Zwölf Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können — oder einen einzelnen Leser hinzufügt oder entfernt.',
+          'Der Rest sind die, nach denen ein Assistent von sich aus greift: `tp_list_documents` und `tp_get_document`, um etwas wiederzufinden, das Sie früher gemacht haben, `tp_summarize_document`, um zu sagen, was in einem langen steht, `tp_update_document`, um eines zu ändern und seinen Link zu behalten, `tp_document_versions`, um zu zeigen, was was ersetzt hat, `tp_usage`, um zu prüfen, wie viel Platz noch bleibt, `tp_delete_document` und `tp_help`, das Fragen zu TransformPipe aus der Dokumentation beantwortet.',
           'In der Praxis ist der nützliche Satz kurz. Bitten Sie ihn, die Release Notes zu schreiben, und dann, sie zu veröffentlichen — der Assistent wandelt um, speichert und teilt und antwortet mit der Adresse.',
         ],
       },
@@ -974,7 +975,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Ein Dokument aus einem KI-Assistenten umwandeln und teilen — TransformPipe',
       description:
-        'Wie man TransformPipe als MCP-Connector zu Claude hinzufügt, was die elf Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
+        'Wie man TransformPipe per MCP zu Claude oder ChatGPT hinzufügt, was die zwölf Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
     },
   },
 
@@ -984,8 +985,18 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'KI-Assistenten',
-    title: 'Alles, was Ihr Assistent schreibt, als Link teilen',
-    lede: 'Ihr Assistent schreibt den ganzen Tag Markdown — Release Notes, Spezifikationen, Zusammenfassungen — und es bleibt im Chat. Verbinden Sie TransformPipe mit einem Klick und bitten Sie Claude oder einen anderen MCP-Assistenten, ein Dokument zu teilen: Sie erhalten die Adresse einer fertigen Seite, die jeder ohne Konto öffnen kann. Oder speichern Sie es einfach und finden Sie es später auf jedem Gerät wieder.',
+    title: 'Ein Konto für alles, was Ihre Assistenten schreiben',
+    lede: 'Claude, ChatGPT und Obsidian speichern in dasselbe TransformPipe-Konto. Ein Dokument aus dem einen finden, ändern und teilen Sie aus den anderen – als Seite mit einem Link, den jeder öffnen kann. Wählen Sie Ihren Assistenten und verbinden Sie ihn.',
+    hub: {
+      eyebrow: 'KI-Assistenten',
+      cards: {
+        heading: 'Funktioniert heute',
+        claude: 'Im Connector-Verzeichnis von Claude. Auf „Verbinden“ drücken, anmelden und Claude bitten, ein Dokument zu speichern, zu veröffentlichen oder zu finden.',
+        chatgpt: 'Eine App in ChatGPT, per Adresse hinzugefügt. Dokumente kommen als Karten in den Chat zurück, bereit zum Teilen oder Ändern.',
+        obsidian: 'Ein Community-Plugin. Eine Notiz mit einem Befehl als Seite veröffentlichen; ändern Sie sie, und derselbe Link zeigt die neue Fassung.',
+      },
+      other: { title: 'Ein anderer Assistent?', text: 'Cursor, Windsurf, VS Code und jeder andere MCP-Client verbinden sich mit dieser Adresse. Die Anleitung zeigt, wie.' },
+    },
     sections: [],
     landing: {
       eyebrow: 'Für KI-Assistenten',
@@ -1046,7 +1057,7 @@ export const pages: Content['pages'] = {
           { label: 'Aus einem anderen Assistenten', left: 'Eine andere App, ein anderer Verlauf', right: 'Dieselbe Liste, gleich welches Werkzeug es schrieb' },
           { label: 'Jemandem schicken', left: 'Eingefügtes Markdown, samt Sternchen', right: 'Ein Link zu einer fertigen Seite' },
           { label: 'Wer es öffnen kann', left: 'Wem auch immer Sie es weitergeleitet haben', right: 'Alle mit dem Link oder nur die Adressen, die Sie nennen' },
-          { label: 'Nach einer Überarbeitung', left: 'Der alte Text liegt, wo Sie ihn gelassen haben', right: 'Beide Versionen behalten, nebeneinander' },
+          { label: 'Nach einer Überarbeitung', left: 'Der alte Text liegt, wo Sie ihn gelassen haben', right: 'An Ort und Stelle geändert, jeder frühere Text behalten' },
         ],
       },
       steps: {
@@ -1072,7 +1083,7 @@ export const pages: Content['pages'] = {
           'Ein Dokument in Ihrem Konto speichern',
           'Ihre Dokumente auflisten, öffnen und zusammenfassen',
           'Eines per Link oder mit genannten Adressen teilen',
-          'Eine neue Version neben der alten behalten',
+          'Eines an Ort und Stelle ändern und den früheren Text behalten',
         ],
         cannot: [
           'Ihr Konto oder seine Einstellungen ändern',
@@ -1093,7 +1104,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Welche Assistenten sich verbinden lassen',
-        intro: 'Ein Konto und eine Liste von Dokumenten, gleich welcher dieser Assistenten sie geschrieben hat. Claude und ChatGPT lassen sich heute verbinden; die übrigen werden getestet.',
+        intro: 'Ein Konto und eine Liste von Dokumenten, gleich welcher dieser Assistenten sie geschrieben hat. Claude, ChatGPT und Obsidian funktionieren heute; die übrigen werden getestet.',
         items: [
           {
             name: 'Claude',
@@ -1295,7 +1306,7 @@ export const pages: Content['pages'] = {
           'Ein Dokument in Ihrem Konto speichern',
           'Ihre Dokumente auflisten, öffnen und zusammenfassen',
           'Eines per Link oder mit genannten Adressen teilen',
-          'Eine neue Version neben der alten behalten',
+          'Eines an Ort und Stelle ändern und den früheren Text behalten',
         ],
         cannot: [
           'Ihr Konto oder seine Einstellungen ändern',
@@ -1521,7 +1532,7 @@ export const pages: Content['pages'] = {
           'Ein Dokument in Ihrem Konto speichern',
           'Ihre Dokumente auflisten, öffnen und zusammenfassen',
           'Eines per Link oder mit genannten Adressen teilen',
-          'Eine neue Version neben der alten behalten',
+          'Eines an Ort und Stelle ändern und den früheren Text behalten',
         ],
         cannot: [
           'Ihr Konto oder seine Einstellungen ändern',

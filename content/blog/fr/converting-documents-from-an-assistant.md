@@ -1,6 +1,6 @@
 ---
 title: "Convertisseur de documents MCP : convertir et partager depuis une conversation"
-description: "Comment un convertisseur de documents MCP transforme le Markdown d'un assistant en page envoyable : les huit outils, la connexion sans clé et les vrais risques"
+description: "Comment un convertisseur de documents MCP transforme le Markdown d'un assistant en page envoyable : les douze outils, la connexion sans clé et les vrais risques"
 date: 2026-09-09
 tag: Automatisation
 keywords: convertisseur de documents mcp, serveur mcp markdown vers html, connecteur personnalisé claude, convertir du markdown dans un assistant, connecteur mcp oauth, partager un document depuis une conversation
@@ -44,16 +44,20 @@ L'argument en faveur du branchement d'un convertisseur de documents n'est pas qu
 
 Cinq verbes couvrent presque tout. Convertir, pour que le Markdown devienne une page. Enregistrer, pour qu'il ait une adresse au lieu de vivre dans un historique de défilement. Partager, pour que quelqu'un d'autre puisse l'ouvrir. Lister, pour que l'assistant puisse répondre à « qu'est-ce que j'ai ». Récupérer, pour qu'un document écrit il y a trois semaines puisse être modifié plutôt que réécrit de mémoire. Avec ces cinq-là, le modèle termine le travail dans la conversation au lieu de tendre au lecteur un mur d'astérisques en lui souhaitant bonne chance.
 
-Le connecteur de TransformPipe expose huit outils, et la répartition est délibérée : deux font le travail, quatre répondent à des questions, et deux modifient ce que d'autres personnes peuvent voir ou l'existence même d'un document.
+Le connecteur de TransformPipe expose douze outils, et la répartition est délibérée : quatre font le travail, six répondent à des questions, et deux modifient ce que d'autres personnes peuvent voir ou l'existence même d'un document.
 
 | Outil | À quoi il sert | Ce qu'il peut provoquer |
 | --- | --- | --- |
 | `tp_help` | Répond aux questions sur le fonctionnement du produit, depuis sa documentation plutôt que de mémoire | Rien. Il lit des sections de documentation et les renvoie |
 | `tp_convert_markdown` | Markdown en entrée, HTML assaini en sortie ; en option le document autonome complet | Rien n'est enregistré. La sortie repasse par la conversation, donc un long document coûte du contexte |
+| `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, texte brut, texte enrichi ou export Evernote en entrée, Markdown en sortie | Rien n'est enregistré. Le Markdown revient par la conversation, de la même façon |
 | `tp_save_document` | Enregistre du Markdown sur le compte, et le publie dans le même appel si on le lui demande | Écrit un document. Avec un mode de partage, publie une page sur le web public |
+| `tp_update_document` | Un nouveau texte pour un document déjà sur le compte — le même id et le même lien, l'ancien texte conservé comme révision | Change ce qu'affiche un lien. Sur un document partagé, exige une confirmation explicite |
 | `tp_list_documents` | Ce que contient le compte — noms, tailles, dates, statut de partage — avec l'id que prennent les autres outils | Lecture. Expose la liste des documents à la conversation |
 | `tp_get_document` | Un document, par id, sous forme de source Markdown ou de HTML rendu | Lecture. Fait entrer un document entier dans la conversation |
-| `tp_share_document` | Change qui peut ouvrir un document : un lien, des adresses nommées, ou personne | Publie ou dépublie. Révoquer casse une URL déjà envoyée |
+| `tp_summarize_document` | Un court résumé d'un document, mis en cache sur le compte pour que le redemander ne coûte rien | Lecture. Range le résumé à côté du document |
+| `tp_document_versions` | L'historique d'un document : les textes que ses modifications ont remplacés, chacun lisible à nouveau | Lecture. Les textes antérieurs reviennent dans la conversation sur demande |
+| `tp_share_document` | Change qui peut ouvrir un document : un lien, des adresses nommées, ou personne — ou ajoute ou retire un seul lecteur | Publie ou dépublie. Révoquer casse une URL déjà envoyée |
 | `tp_usage` | Ce que le compte consomme par rapport à ses limites | Lecture. Utile quand un enregistrement a été refusé |
 | `tp_delete_document` | Supprime un document, définitivement | Détruit des données. Exige une confirmation explicite, et n'en retire qu'un seul |
 
@@ -114,7 +118,7 @@ Un client approuvé est un autre objet. Il a un nom lisible, une portée plus é
 
 ## Les deux outils façonnés pour les ennuis qu'ils peuvent causer
 
-Six des huit outils sont ordinaires. Deux ne le sont pas, et ils sont écrits différemment à dessein.
+Dix des douze outils sont ordinaires — `tp_update_document` ne demande une confirmation que si le document est déjà partagé, parce que son nouveau texte est alors ce que lit quiconque détient le lien. Deux ne le sont pas, et ils sont écrits différemment à dessein.
 
 **Partager publie une page sur le web public.** Il y a trois modes, et la transition entre eux est la partie que les gens ratent.
 
@@ -122,9 +126,9 @@ Six des huit outils sont ordinaires. Deux ne le sont pas, et ils sont écrits di
 | --- | --- | --- |
 | `private` | Le propriétaire seul | Révoque entièrement un lien existant, donc une URL déjà envoyée cesse de fonctionner |
 | `link` | Quiconque détient l'URL | C'est sur le web public. Une URL n'est pas un mot de passe, et les liens voyagent |
-| `people` | Uniquement les adresses indiquées | La liste d'adresses est remplacée, pas complétée — envoyez la liste entière à chaque fois |
+| `people` | Uniquement les adresses indiquées | `emails` remplace la liste ; `add` et `remove` la modifient d'une adresse et laissent le reste. Seule une adresse nouvelle sur la liste reçoit un e-mail |
 
-L'enregistrement peut publier dans le même appel, ce qui est pratique et explique exactement pourquoi les instructions que le serveur donne au modèle lui disent de ne partager un document que si la personne l'a demandé. Un outil qui stocke et publie en une seule étape est un outil capable de transformer « garde ça » en « publie ça » par une seule phrase mal lue. L'atténuation n'a rien de subtil : la description dit ce qu'il fait dès sa première ligne, le mode est une énumération explicite plutôt qu'un booléen nommé `public`, et la réponse au modèle indique dans quel mode se trouve désormais le document et quelle est son URL, si bien que le résumé de l'assistant est une affirmation que vous pouvez vérifier.
+L'enregistrement peut publier dans le même appel, ce qui est pratique et explique exactement pourquoi les instructions que le serveur donne au modèle lui disent de ne partager un document que si la personne l'a demandé. Un outil qui stocke et publie en une seule étape est un outil capable de transformer « garde ça » en « publie ça » par une seule phrase mal lue. L'atténuation n'a rien de subtil : la description dit ce qu'il fait dès sa première ligne, le mode est une énumération explicite plutôt qu'un booléen nommé `public`, et la réponse au modèle indique dans quel mode se trouve désormais le document et quelle est son URL, si bien que le résumé de l'assistant est une affirmation que vous pouvez vérifier. Par-dessus cela, `link` et `people` exigent tous deux `confirm: true`, à l'enregistrement comme au partage : sans lui, l'appel indique ce qui serait divulgué et à qui, et ne change rien.
 
 **Supprimer exige une confirmation explicite et retire exactement un document.** `confirm: true` est obligatoire, et sans lui l'outil refuse et dit au modèle d'aller demander. Il n'y a ni annulation ni corbeille. Et il n'existe aucun outil qui en supprime plusieurs — pas de motif générique, pas de « supprimer tous les documents partagés », pas de plage de dates. C'est une absence délibérée plutôt qu'une fonctionnalité manquante. Une suppression en masse est le seul outil où une instruction mal comprise détruit un travail irrécupérable, et un connecteur incapable d'exprimer l'instruction est incapable de l'exécuter.
 

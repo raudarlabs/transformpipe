@@ -1,6 +1,6 @@
 ---
 title: "MCP Document Converter: Converting and Sharing Documents from a Conversation"
-description: How an MCP document converter turns Markdown an assistant just wrote into a page you can send — the eight tools, the sign-in with no key, and the real risks
+description: How an MCP document converter turns Markdown an assistant just wrote into a page you can send — the twelve tools, the sign-in with no key, and the real risks
 date: 2026-09-09
 tag: Automation
 keywords: mcp document converter, mcp server markdown to html, custom connector claude, convert markdown in an assistant, mcp oauth connector, share a document from a conversation
@@ -44,16 +44,20 @@ The case for connecting a document converter is not that conversion is difficult
 
 Five verbs cover almost all of it. Convert, so the Markdown becomes a page. Save, so it has an address instead of living in a scroll-back buffer. Share, so somebody else can open it. List, so the assistant can answer "what have I got". Fetch back, so a document written three weeks ago can be edited rather than rewritten from memory. With those five, the model finishes the job in the conversation rather than handing the reader a wall of asterisks and wishing them luck.
 
-TransformPipe's connector exposes eight tools, and the split is deliberate: two do work, four answer questions, and two change what other people can see or whether a document exists at all.
+TransformPipe's connector exposes twelve tools, and the split is deliberate: four do work, six answer questions, and two change what other people can see or whether a document exists at all.
 
 | Tool | What it is for | What it can cause |
 | --- | --- | --- |
 | `tp_help` | Answers questions about how the product works, from its documentation rather than from memory | Nothing. It reads documentation sections and returns them |
 | `tp_convert_markdown` | Markdown in, sanitised HTML out; optionally the whole self-contained document | Nothing is saved. The output travels back through the conversation, so a long document costs context |
+| `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out | Nothing is saved. The Markdown comes back through the conversation, the same way |
 | `tp_save_document` | Saves Markdown to the account, and publishes it in the same call when asked | Writes a document. With a share mode, publishes a page on the public web |
+| `tp_update_document` | New text for a document already on the account — the same id and the same link, the old text kept as a revision | Changes what a link shows. On a shared document, requires an explicit confirmation |
 | `tp_list_documents` | What is on the account — names, sizes, dates, whether each is shared — with the id the other tools take | Reads. Reveals the document list to the conversation |
 | `tp_get_document` | One document, by id, as its Markdown source or as rendered HTML | Reads. Pulls a whole document into the conversation |
-| `tp_share_document` | Changes who may open a document: a link, named addresses, or nobody | Publishes or unpublishes. Revoking breaks a URL already sent |
+| `tp_summarize_document` | A short summary of one document, cached on the account so asking again is free | Reads. Stores the summary beside the document |
+| `tp_document_versions` | A document's history: the texts its updates replaced, each readable again | Reads. Earlier texts come back into the conversation on request |
+| `tp_share_document` | Changes who may open a document: a link, named addresses, or nobody — or adds or removes one reader | Publishes or unpublishes. Revoking breaks a URL already sent |
 | `tp_usage` | What the account is using against its limits | Reads. Worth asking when a save was refused |
 | `tp_delete_document` | Deletes one document, permanently | Destroys data. Requires an explicit confirmation, and removes exactly one |
 
@@ -114,7 +118,7 @@ An approved client is a different object. It has a name you can read, a scope na
 
 ## The two tools shaped for the trouble they can cause
 
-Six of the eight tools are ordinary. Two are not, and they are written differently on purpose.
+Ten of the twelve tools are ordinary — `tp_update_document` asks for a confirmation only when the document is already shared, because its new text is then what everyone holding the link reads. Two are not ordinary, and they are written differently on purpose.
 
 **Sharing publishes a page on the public web.** There are three modes, and the transition between them is the part people get wrong.
 
@@ -122,9 +126,9 @@ Six of the eight tools are ordinary. Two are not, and they are written different
 | --- | --- | --- |
 | `private` | The owner only | Revokes an existing link entirely, so a URL already sent stops working |
 | `link` | Anyone holding the URL | It is on the public web. A URL is not a password, and links travel |
-| `people` | Only the addresses given | The address list is replaced, not appended — send the whole list every time |
+| `people` | Only the addresses given | `emails` replaces the list; `add` and `remove` change it by one address and leave the rest. Only an address new to the list is emailed |
 
-Saving can publish in the same call, which is convenient and is exactly why the server's own instructions to the model say to share a document only when the person asked for it. A tool that both stores and publishes in one step is a tool that can turn "keep this" into "post this" through a single misread sentence. The mitigation is not clever: the description says what it does in the first line, the mode is an explicit enumeration rather than a boolean called `public`, and the reply to the model says which mode the document is now in and what its URL is, so the assistant's summary to you is a statement you can check.
+Saving can publish in the same call, which is convenient and is exactly why the server's own instructions to the model say to share a document only when the person asked for it. A tool that both stores and publishes in one step is a tool that can turn "keep this" into "post this" through a single misread sentence. The mitigation is not clever: the description says what it does in the first line, the mode is an explicit enumeration rather than a boolean called `public`, and the reply to the model says which mode the document is now in and what its URL is, so the assistant's summary to you is a statement you can check. On top of that, `link` and `people` both take `confirm: true`, on a save as on a share: without it the call says what would be disclosed and to whom, and changes nothing.
 
 **Deleting takes an explicit confirmation and removes exactly one document.** `confirm: true` is required, and without it the tool refuses and tells the model to go and ask. There is no undo and no trash. And there is no tool that deletes several — no glob, no "delete all shared documents", no date range. That is a deliberate absence rather than a missing feature. A bulk delete is the one tool where a single misunderstood instruction destroys work that cannot be recovered, and a connector that cannot express the instruction cannot carry it out.
 

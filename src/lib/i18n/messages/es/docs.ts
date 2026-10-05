@@ -64,7 +64,7 @@ export const docs: Content['docs'] = {
   assistant: {
     title: 'MCP',
     summary:
-      'Añade TransformPipe a Claude como conector y podrá convertir, guardar, compartir y eliminar documentos de esta cuenta — en tu nombre y sin ninguna clave que pegar.',
+      'Añade TransformPipe a Claude como conector o a ChatGPT como app MCP y el asistente podrá convertir, guardar, compartir y eliminar documentos de esta cuenta — en tu nombre y sin ninguna clave que pegar.',
   },
   embed: {
     title: 'Solución integrada',
@@ -74,7 +74,7 @@ export const docs: Content['docs'] = {
   limits: {
     title: 'Límites',
     summary:
-      '10 MB por archivo para convertir y 4 MB para guardarlo en una cuenta, 100 MB y 500 documentos por cuenta, 60 peticiones por minuto. Llegar a uno rechaza la escritura en vez de eliminar nada.',
+      '10 MB por archivo para convertir y 4 MB para guardarlo en una cuenta, 100 MB y 500 documentos por cuenta, 60 peticiones por minuto. Llegar a uno rechaza la escritura en vez de eliminar nada. Una llamada a una herramienta desde un conector cuenta como una sola petición.',
   },
   faq: {
     title: 'Preguntas',

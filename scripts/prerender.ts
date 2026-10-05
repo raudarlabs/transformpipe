@@ -44,7 +44,7 @@ import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
-import type { LandingWords, PluginWords } from '../src/lib/i18n/content.js';
+import type { LandingWords, PageWords, PluginWords } from '../src/lib/i18n/content.js';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
 import { OBSIDIAN_DIRECTORY, OBSIDIAN_SOURCE } from '../src/lib/obsidian-facts.js';
 import { articleCover, COVER_SIZE, pageCover } from '../src/lib/covers.js';
@@ -300,6 +300,25 @@ function localiseLinks(html: string, locale: Locale): string {
  * headings and the links as links: the connector's address, the guide, and the pages of the
  * assistants that have one.
  */
+/*
+ * `/agents` as prose: a heading and a paragraph per assistant that works today, each linking to its
+ * own page — the cards the app draws, before the blocks the landing pages share.
+ */
+function hubHtml(hub: NonNullable<PageWords['hub']>, locale: Locale): string {
+  const cards: Array<['agents-claude' | 'agents-chatgpt' | 'obsidian', string]> = [
+    ['agents-claude', hub.cards.claude],
+    ['agents-chatgpt', hub.cards.chatgpt],
+    ['obsidian', hub.cards.obsidian],
+  ];
+
+  return `<section><h2>${escapeHtml(hub.cards.heading)}</h2>${cards
+    .map(([id, text]) => {
+      const target = STATIC_PAGES.find((one) => one.id === id)!;
+      return `<h3>${anchor(localePath(locale, target.path), CATALOGUES[locale].pages[id].label)}</h3><p>${escapeHtml(text)}</p>`;
+    })
+    .join('')}</section>`;
+}
+
 function landingHtml(landing: LandingWords, locale: Locale, here: string): string {
   const catalogue = CATALOGUES[locale];
   const titled = (items: { title: string; body: string }[]) =>
@@ -1069,7 +1088,7 @@ for (const locale of LOCALES) {
             )
           )}</p>`
         : ''
-    }${said.landing ? landingHtml(said.landing, locale, one.id) : ''}${said.plugin ? pluginHtml(said.plugin) : ''}${said.sections
+    }${said.hub ? hubHtml(said.hub, locale) : ''}${said.landing ? landingHtml(said.landing, locale, one.id) : ''}${said.plugin ? pluginHtml(said.plugin) : ''}${said.sections
       .map(
         (section) =>
           `<section><h2>${escapeHtml(section.heading)}</h2>${section.body

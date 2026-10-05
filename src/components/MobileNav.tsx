@@ -185,11 +185,13 @@ export function MobileNav({
               );
             })}
 
-            {/*
-              * The assistants, under their name rather than behind it: `/agents` is Claude's page
-              * in all but name, so the heading is a heading and the three below are the links.
-              */}
-            <div className={cn(row, 'cursor-default hover:bg-transparent')}>
+            {/* A page rather than a view, so not in DESTINATIONS — but a destination all the same. */}
+            <button
+              type="button"
+              onClick={go(() => onOpenPage('agents'))}
+              aria-current={currentPage === 'agents' ? 'page' : undefined}
+              className={cn(row, currentPage === 'agents' && 'bg-surface-accent')}
+            >
               <Bot className="size-4 shrink-0 text-brand-tertiary" />
               <Typography
                 variant="span"
@@ -199,7 +201,7 @@ export function MobileNav({
               >
                 {t('header.nav.agents')}
               </Typography>
-            </div>
+            </button>
 
             {/* The same three the bar's menu lists, one step in, so the plugin is a tap away too. */}
             <div className="flex flex-col gap-1 pl-6">

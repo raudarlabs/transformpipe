@@ -796,6 +796,40 @@ body,
  * The drop that runs down the pipe on the assistant pages, from the Markdown to the finished
  * document. Decoration only, so it is not there at all for somebody who asked for less motion.
  */
+/* The converter's note about the assistants, rising into its corner — see `ConnectorNudge`. */
+@keyframes nudge-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Each logo in turn, with a little overshoot; then the border glows twice and is still. */
+@keyframes nudge-face {
+  0% { opacity: 0; transform: scale(0.4); }
+  70% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes nudge-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--brand-primary) / 0); }
+  50% { box-shadow: 0 0 0 6px hsl(var(--brand-primary) / 0.28); }
+}
+
+.nudge-face {
+  animation: nudge-face 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.nudge-glow {
+  animation: nudge-glow 1.4s ease-in-out 600ms 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[nudge-in_300ms_ease-out\],
+  .nudge-face,
+  .nudge-glow {
+    animation: none;
+  }
+}
+
 @keyframes pipe-flow {
   0% { top: -6%; opacity: 0; }
   25% { opacity: 1; }

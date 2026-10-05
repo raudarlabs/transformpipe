@@ -166,6 +166,15 @@ export interface PageWords {
   /** Present on the Obsidian plugin's page, which draws it instead of `sections`. */
   plugin?: PluginWords;
   /**
+   * Present on `/agents`, which is the way in to all of them rather than a page about one: a card
+   * per assistant that works today, and a line for the ones that connect by address.
+   */
+  hub?: {
+    eyebrow: string;
+    cards: { heading: string; claude: string; chatgpt: string; obsidian: string };
+    other: { title: string; text: string };
+  };
+  /**
    * Questions under the sections, for a page somebody arrives at with one.
    *
    * The same shape the landing pages and the front page use, drawn by the same accordion, so the

@@ -200,15 +200,15 @@ export const docsPage = {
 
   /** `{path}` est l’adresse du connecteur, qui vient de `mcp-facts.ts`. */
   'docs.assistant.intro':
-    'TransformPipe est un serveur MCP, il peut donc être ajouté à Claude comme connecteur. L’adresse est ce déploiement suivi de {path} :',
+    'TransformPipe est un serveur MCP, il peut donc être ajouté à Claude comme connecteur et à ChatGPT comme app MCP. L’adresse est ce déploiement suivi de {path} :',
   'docs.assistant.adding':
-    'Sur claude.ai, il figure dans l’annuaire des connecteurs — `claude.ai/directory/tp`, puis Connecter — ou il s’ajoute par son adresse dans Réglages → Connecteurs → Ajouter un connecteur personnalisé. Depuis un terminal :',
+    'Sur claude.ai, il figure dans l’annuaire des connecteurs — `claude.ai/directory/tp`, puis Connecter — ou il s’ajoute par son adresse dans Réglages → Connecteurs → Ajouter un connecteur personnalisé. Dans ChatGPT, il s’ajoute par son adresse comme app MCP : Plugins → Add → Create MCP App, l’adresse ci-dessus, puis la connexion. Obsidian dispose plutôt d’un plugin communautaire, présenté sur /agents/obsidian. Avec Claude Code, depuis un terminal :',
   'docs.assistant.auth':
     'Il n’y a aucune clé à coller. Le premier appel revient non autorisé, votre assistant suit cela jusqu’à une page ici, et vous vous connectez avec le compte que vous utilisez déjà et approuvez un client nommé — c’est pourquoi la page vous dit au nom de quelle adresse il s’apprête à agir. Ce qu’il obtient est un jeton de notre part, valable pour vos documents et rien d’autre : pas votre compte, pas votre connexion, et pas vos clés API. Déconnectez-le depuis le menu du compte, sous Connecteur MCP, et il cesse de fonctionner au prochain appel.',
   'docs.assistant.tools':
-    'Les outils sont le même code que l’API ci-dessus, appelé dans le processus, de sorte qu’une conversation et un script obtiennent la même réponse. Deux d’entre eux sont taillés pour les dégâts qu’ils peuvent faire : le partage publie une page sur le web public, et la suppression exige une confirmation explicite et retire exactement un document.',
+    'Les outils sont le même code que l’API ci-dessus, appelé dans le processus, de sorte qu’une conversation et un script obtiennent la même réponse. Quatre cas exigent un `confirm: true` explicite, parce qu’ils divulguent, changent ce que d’autres lisent ou détruisent : enregistrer ou partager un document par lien public ou avec des personnes nommées, modifier un document déjà partagé, et supprimer, ce qui retire exactement un document, définitivement. Sans cette confirmation, l’appel est refusé et rien ne change.',
   'docs.assistant.cards':
-    'Un assistant qui sait les dessiner reçoit des cartes plutôt que des paragraphes : un document enregistré ou ouvert arrive en carte, avec ses chiffres, ses premières lignes et un bouton qui l’ouvre ici, et la question « qu’y a-t-il sur le compte » dessine une liste dont les lignes ouvrent un document. La réponse en texte reste la même dessous : un client qui ne dessine rien ne perd rien.',
+    'Un assistant qui sait les dessiner reçoit des cartes plutôt que des paragraphes. Un document enregistré ou ouvert arrive en carte, avec ses chiffres, ses premières lignes et un bouton qui l’ouvre ici ; la question « qu’y a-t-il sur le compte » dessine une liste dont les lignes ouvrent un document. Un partage montre qui peut ouvrir le document et combien de fois il a été ouvert, avec un bouton vers le lien partagé ; une modification montre les lignes qu’elle a changées ; l’historique est une frise où chaque texte antérieur se relit d’un bouton ; et un appel refusé faute de confirmation revient en carte, avec un bouton qui le confirme. La réponse en texte reste la même dessous : un client qui ne dessine rien ne perd rien.',
 
   /* Le tableau des limites : chaque terme et le chiffre à côté. */
   'docs.embed.intro':
@@ -230,7 +230,7 @@ export const docsPage = {
     '4 MB, et pas de notre fait : une Vercel Function refuse une requête ou un corps de réponse de plus de 4,5 MB avant que rien de ce code ne tourne, de sorte qu’un document plus gros ne pourrait être ni enregistré ni relu. Il se convertit, s’affiche et se télécharge quand même — il reste hors de l’historique, et l’application le dit au lieu d’annoncer un enregistrement qui n’a pas eu lieu',
   'docs.limits.caller.term': 'Par appelant',
   'docs.limits.caller.text':
-    '60 requêtes par minute, comptées par clé ou par session',
+    '60 requêtes par minute, comptées par clé ou par session ; un appel d’outil compte une fois',
   'docs.limits.refusal':
     'Atteindre une limite est un refus, pas une éviction silencieuse. Cette application supprimait autrefois le document le plus ancien pour rester sous son plafond, ce qui détruisait en silence quelque chose que son propriétaire avait choisi de garder ; maintenant elle dit quoi supprimer à la place.',
 

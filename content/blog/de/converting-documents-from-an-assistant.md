@@ -1,6 +1,6 @@
 ---
 title: "MCP-Dokumentkonverter: Dokumente aus einer Unterhaltung konvertieren und teilen"
-description: "Wie ein MCP-Dokumentkonverter Markdown aus einer Unterhaltung in eine Seite verwandelt — die acht Werkzeuge, die Anmeldung ohne Schlüssel und die echten Risiken"
+description: "Wie ein MCP-Dokumentkonverter Markdown aus einer Unterhaltung in eine Seite verwandelt — die zwölf Werkzeuge, die Anmeldung ohne Schlüssel und die echten Risiken"
 date: 2026-09-09
 tag: Automatisierung
 keywords: mcp dokumentkonverter, mcp server markdown zu html, custom connector claude, markdown in einem assistenten konvertieren, mcp oauth connector, dokument aus einer unterhaltung teilen
@@ -44,16 +44,20 @@ Das Argument, einen Dokumentkonverter anzuschließen, ist nicht, dass Konvertier
 
 Fünf Verben decken fast alles ab. Konvertieren, damit das Markdown zu einer Seite wird. Speichern, damit es eine Adresse hat statt in einem Scroll-Puffer zu leben. Teilen, damit jemand anderes es öffnen kann. Auflisten, damit der Assistent „was habe ich“ beantworten kann. Zurückholen, damit ein vor drei Wochen geschriebenes Dokument bearbeitet statt aus dem Gedächtnis neu geschrieben werden kann. Mit diesen fünf beendet das Modell die Aufgabe innerhalb der Unterhaltung, statt dem Leser eine Wand aus Sternchen zu übergeben und ihm Glück zu wünschen.
 
-TransformPipes Connector stellt acht Werkzeuge bereit, und die Aufteilung ist bewusst: zwei erledigen Arbeit, vier beantworten Fragen, und zwei ändern, was andere Leute sehen können oder ob ein Dokument überhaupt existiert.
+TransformPipes Connector stellt zwölf Werkzeuge bereit, und die Aufteilung ist bewusst: vier erledigen Arbeit, sechs beantworten Fragen, und zwei ändern, was andere Leute sehen können oder ob ein Dokument überhaupt existiert.
 
 | Werkzeug | Wofür es da ist | Was es bewirken kann |
 | --- | --- | --- |
 | `tp_help` | Beantwortet Fragen dazu, wie das Produkt funktioniert, aus seiner Dokumentation statt aus dem Gedächtnis | Nichts. Es liest Dokumentationsabschnitte und gibt sie zurück |
 | `tp_convert_markdown` | Markdown rein, bereinigtes HTML raus; optional das ganze eigenständige Dokument | Nichts wird gespeichert. Die Ausgabe reist durch die Unterhaltung zurück, ein langes Dokument kostet also Kontext |
+| `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, reiner Text, Rich Text oder ein Evernote-Export rein, Markdown raus | Nichts wird gespeichert. Das Markdown kommt auf demselben Weg durch die Unterhaltung zurück |
 | `tp_save_document` | Speichert Markdown im Konto und veröffentlicht es im selben Aufruf, wenn danach gefragt wird | Schreibt ein Dokument. Mit einem Freigabemodus wird eine Seite im öffentlichen Web veröffentlicht |
+| `tp_update_document` | Neuer Text für ein Dokument, das schon im Konto liegt — dieselbe ID und derselbe Link, der alte Text bleibt als Revision erhalten | Ändert, was ein Link zeigt. Bei einem geteilten Dokument braucht es eine ausdrückliche Bestätigung |
 | `tp_list_documents` | Was im Konto liegt — Namen, Größen, Daten, ob jedes geteilt ist — mit der ID, die die anderen Werkzeuge nehmen | Liest. Zeigt die Dokumentliste der Unterhaltung |
 | `tp_get_document` | Ein Dokument, per ID, als Markdown-Quelle oder als dargestelltes HTML | Liest. Zieht ein ganzes Dokument in die Unterhaltung |
-| `tp_share_document` | Ändert, wer ein Dokument öffnen darf: ein Link, benannte Adressen oder niemand | Veröffentlicht oder hebt die Veröffentlichung auf. Ein Widerruf bricht eine bereits verschickte URL |
+| `tp_summarize_document` | Eine kurze Zusammenfassung eines Dokuments, im Konto zwischengespeichert, sodass erneutes Fragen nichts kostet | Liest. Legt die Zusammenfassung neben dem Dokument ab |
+| `tp_document_versions` | Der Verlauf eines Dokuments: die Texte, die seine Änderungen ersetzt haben, jeder wieder lesbar | Liest. Frühere Texte kommen auf Wunsch in die Unterhaltung zurück |
+| `tp_share_document` | Ändert, wer ein Dokument öffnen darf: ein Link, benannte Adressen oder niemand — oder fügt einen einzelnen Leser hinzu oder entfernt ihn | Veröffentlicht oder hebt die Veröffentlichung auf. Ein Widerruf bricht eine bereits verschickte URL |
 | `tp_usage` | Was das Konto gegen seine Grenzen verbraucht | Liest. Lohnt sich zu fragen, wenn ein Speichern abgelehnt wurde |
 | `tp_delete_document` | Löscht ein Dokument, dauerhaft | Zerstört Daten. Braucht eine ausdrückliche Bestätigung und entfernt genau eines |
 
@@ -114,7 +118,7 @@ Ein genehmigter Client ist ein anderes Objekt. Er hat einen lesbaren Namen, eine
 
 ## Die zwei Werkzeuge, die für den Ärger, den sie anrichten können, extra geformt sind
 
-Sechs der acht Werkzeuge sind gewöhnlich. Zwei sind es nicht, und sie sind absichtlich anders geschrieben.
+Zehn der zwölf Werkzeuge sind gewöhnlich — `tp_update_document` verlangt nur dann eine Bestätigung, wenn das Dokument schon geteilt ist, weil sein neuer Text dann das ist, was jeder mit dem Link liest. Zwei sind es nicht, und sie sind absichtlich anders geschrieben.
 
 **Teilen veröffentlicht eine Seite im öffentlichen Web.** Es gibt drei Modi, und der Übergang zwischen ihnen ist der Teil, den Leute falsch machen.
 
@@ -122,9 +126,9 @@ Sechs der acht Werkzeuge sind gewöhnlich. Zwei sind es nicht, und sie sind absi
 | --- | --- | --- |
 | `private` | Nur der Eigentümer | Widerruft einen bestehenden Link vollständig, eine bereits verschickte URL funktioniert also nicht mehr |
 | `link` | Jeder mit der URL | Es ist im öffentlichen Web. Eine URL ist kein Passwort, und Links reisen |
-| `people` | Nur die angegebenen Adressen | Die Adressliste wird ersetzt, nicht ergänzt — schicken Sie jedes Mal die ganze Liste |
+| `people` | Nur die angegebenen Adressen | `emails` ersetzt die Liste; `add` und `remove` ändern sie um eine Adresse und lassen den Rest stehen. Eine Nachricht geht nur an Adressen, die neu auf der Liste sind |
 
-Speichern kann im selben Aufruf veröffentlichen, was praktisch ist und genau der Grund, warum die eigenen Anweisungen des Servers ans Modell sagen, ein Dokument nur zu teilen, wenn die Person danach gefragt hat. Ein Werkzeug, das im selben Schritt speichert und veröffentlicht, kann durch einen einzigen missverstandenen Satz „behalte das“ in „poste das“ verwandeln. Die Abhilfe ist nicht raffiniert: Die Beschreibung sagt in der ersten Zeile, was es tut, der Modus ist eine ausdrückliche Aufzählung statt eines Booleans namens `public`, und die Antwort ans Modell sagt, in welchem Modus das Dokument jetzt ist und wie seine URL lautet, sodass die Zusammenfassung des Assistenten für Sie eine überprüfbare Aussage ist.
+Speichern kann im selben Aufruf veröffentlichen, was praktisch ist und genau der Grund, warum die eigenen Anweisungen des Servers ans Modell sagen, ein Dokument nur zu teilen, wenn die Person danach gefragt hat. Ein Werkzeug, das im selben Schritt speichert und veröffentlicht, kann durch einen einzigen missverstandenen Satz „behalte das“ in „poste das“ verwandeln. Die Abhilfe ist nicht raffiniert: Die Beschreibung sagt in der ersten Zeile, was es tut, der Modus ist eine ausdrückliche Aufzählung statt eines Booleans namens `public`, und die Antwort ans Modell sagt, in welchem Modus das Dokument jetzt ist und wie seine URL lautet, sodass die Zusammenfassung des Assistenten für Sie eine überprüfbare Aussage ist. Hinzu kommt: `link` und `people` verlangen beide `confirm: true`, beim Speichern wie beim Teilen. Ohne die Bestätigung sagt der Aufruf, was an wen offengelegt würde, und ändert nichts.
 
 **Löschen braucht eine ausdrückliche Bestätigung und entfernt genau ein Dokument.** `confirm: true` ist erforderlich, und ohne das lehnt das Werkzeug ab und sagt dem Modell, es solle nachfragen. Es gibt kein Rückgängig und keinen Papierkorb. Und es gibt kein Werkzeug, das mehrere löscht — kein Glob, kein „alle geteilten Dokumente löschen“, keinen Datumsbereich. Das ist eine bewusste Abwesenheit, kein fehlendes Feature. Ein Massenlöschen ist das eine Werkzeug, bei dem ein einziges missverstandenes Anweisung Arbeit zerstört, die nicht wiederherzustellen ist, und ein Connector, der die Anweisung nicht ausdrücken kann, kann sie auch nicht ausführen.
 

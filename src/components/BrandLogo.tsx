@@ -9,6 +9,7 @@
  *  - VS Code: @vscode/codicons 0.0.46, `vscode.svg` (CC BY 4.0, Microsoft), in VS Code's blue.
  * The marks themselves belong to their owners and are used here to name their products.
  */
+import type React from 'react';
 import { cn } from '@/ui/lib/utils';
 
 export type BrandName = 'claude' | 'chatgpt' | 'obsidian' | 'gemini' | 'vscode' | 'windsurf';
@@ -40,7 +41,15 @@ const LOGOS: Record<BrandName, { viewBox: string; inner: string }> = {
   }
 };
 
-export function BrandLogo({ name, className }: { name: BrandName; className?: string }) {
+export function BrandLogo({
+  name,
+  className,
+  style,
+}: {
+  name: BrandName;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   const logo = LOGOS[name];
 
   return (
@@ -50,6 +59,7 @@ export function BrandLogo({ name, className }: { name: BrandName; className?: st
       fillRule="evenodd"
       aria-hidden="true"
       className={cn('shrink-0', className)}
+      style={style}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: static paths from the packages above
       dangerouslySetInnerHTML={{ __html: logo.inner }}
     />

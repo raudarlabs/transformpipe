@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppFooter } from './components/AppFooter';
 import { BreadcrumbSlotProvider } from './components/BreadcrumbSlot';
 import { CookieBanner } from './components/CookieBanner';
+import { ConnectorNudge } from './components/ConnectorNudge';
 import { AppHeader } from './components/AppHeader';
 import { MAX_FILE_SIZE } from './components/Dropzone';
 import { KEEP_BYTES } from '@shared/limits';
@@ -744,6 +745,8 @@ function Shell() {
           />
         )}
       </main>
+
+      {view === 'converter' && <ConnectorNudge conversionId={conversionId} converted={doc !== null} />}
 
       <AppFooter
         onConversionChange={chooseConversion}

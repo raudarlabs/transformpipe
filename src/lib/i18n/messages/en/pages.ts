@@ -942,14 +942,15 @@ export const pages: Content['pages'] = {
         body: [
           'On claude.ai, TransformPipe is listed in the connector directory at `claude.ai/directory/tp`: open it, press Connect, and sign in when asked — the tools appear in the next conversation. Where the directory is switched off, Settings, then Connectors, then Add custom connector takes the same server by address, `https://transformpipe.com/api/mcp`.',
           'From a terminal, one command does the same thing: `claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp`.',
+          'In ChatGPT, TransformPipe is added by address as an MCP app: open Plugins, press Add, choose Create MCP App, give it `https://transformpipe.com/api/mcp`, and sign in when asked. Documents then come back as cards in the chat.',
           'Nothing else is configured. The connector can be removed from the same screen, and removing it revokes the access immediately.',
         ],
       },
       {
         heading: 'What it can then do',
         body: [
-          'Eleven tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send.',
-          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_usage` to check how much room is left, and `tp_delete_document`.',
+          'Twelve tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send — or adds or removes one reader.',
+          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_usage` to check how much room is left, `tp_delete_document`, and `tp_help`, which answers questions about TransformPipe from its documentation.',
           'In practice the useful sentence is short. Ask it to write the release notes, then ask it to publish them — the assistant converts, saves and shares, and answers with the address.',
         ],
       },
@@ -972,7 +973,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convert and share a document from an AI assistant — TransformPipe',
       description:
-        'How to add TransformPipe to Claude as an MCP connector, what the eleven tools do, and what an assistant can and cannot reach in your account.',
+        'How to add TransformPipe to Claude or ChatGPT over MCP, what its twelve tools do, and what an assistant can and cannot reach in your account.',
     },
   },
 
@@ -982,8 +983,18 @@ export const pages: Content['pages'] = {
    */
   agents: {
     label: 'AI assistants',
-    title: 'Share anything your assistant writes, as a link',
-    lede: 'Your assistant writes Markdown all day — release notes, specs, summaries — and it stays in the chat. Connect TransformPipe in one click, then ask Claude or any MCP assistant to share a document: it hands you the address of a finished page anyone can open, no account needed. Or just save it, and find it later from any device.',
+    title: 'One account for everything your assistants write',
+    lede: 'Claude, ChatGPT and Obsidian save to the same TransformPipe account. A document written in one is found, updated and shared from the others, as a page with a link anyone can open. Pick the one you use and connect it.',
+    hub: {
+      eyebrow: 'AI assistants',
+      cards: {
+        heading: 'Works today',
+        claude: 'Listed in Claude’s connector directory. Press Connect, sign in, and ask Claude to save, publish or find a document.',
+        chatgpt: 'An app in ChatGPT, added by address. Documents come back as cards in the chat, ready to share or update.',
+        obsidian: 'A community plugin. Publish a note as a page in one command; edit it, and the same link shows the new version.',
+      },
+      other: { title: 'Another assistant?', text: 'Cursor, Windsurf, VS Code and any other MCP client connect with this address. The guide shows how.' },
+    },
     sections: [],
     landing: {
       eyebrow: 'For AI assistants',
@@ -1044,7 +1055,7 @@ export const pages: Content['pages'] = {
           { label: 'From another assistant', left: 'A different app, a different history', right: 'The same list, whichever tool wrote it' },
           { label: 'Sending it to someone', left: 'Pasted Markdown, asterisks and all', right: 'A link to a finished page' },
           { label: 'Who can open it', left: 'Whoever you forwarded it to', right: 'Anyone with the link, or only the addresses you name' },
-          { label: 'After a rewrite', left: 'The old text is wherever you left it', right: 'Both versions kept, side by side' },
+          { label: 'After a rewrite', left: 'The old text is wherever you left it', right: 'Updated in place, every earlier text kept' },
         ],
       },
       steps: {
@@ -1070,7 +1081,7 @@ export const pages: Content['pages'] = {
           'Save a document to your account',
           'List, open and summarise your documents',
           'Share one by link or with named addresses',
-          'Keep a new version beside the old one',
+          'Update one in place, keeping the earlier text',
         ],
         cannot: [
           'Change your account or its settings',
@@ -1091,7 +1102,7 @@ export const pages: Content['pages'] = {
       },
       clients: {
         heading: 'Which assistants connect',
-        intro: 'One account and one list of documents, whichever of these wrote them. Claude and ChatGPT connect today; the rest are being tested.',
+        intro: 'One account and one list of documents, whichever of these wrote them. Claude, ChatGPT and Obsidian work today; the rest are being tested.',
         items: [
           {
             name: 'Claude',
@@ -1293,7 +1304,7 @@ export const pages: Content['pages'] = {
           'Save a document to your account',
           'List, open and summarise your documents',
           'Share one by link or with named addresses',
-          'Keep a new version beside the old one',
+          'Update one in place, keeping the earlier text',
         ],
         cannot: [
           'Change your account or its settings',
@@ -1519,7 +1530,7 @@ export const pages: Content['pages'] = {
           'Save a document to your account',
           'List, open and summarise your documents',
           'Share one by link or with named addresses',
-          'Keep a new version beside the old one',
+          'Update one in place, keeping the earlier text',
         ],
         cannot: [
           'Change your account or its settings',

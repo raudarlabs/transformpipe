@@ -139,7 +139,7 @@ const MAX_TEXT = 40_000;
 
 const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
 
-Four of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to the addresses given; called without it, they return what would be disclosed and to whom, and change nothing. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+Four of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. On tp_share_document, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
 
 To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
 
@@ -1829,7 +1829,7 @@ const VIEWS = [
   {
     uri: DOCUMENT_CARD_URI,
     name: 'Document card',
-    description: 'The card drawn beside a document this connector saved or read.',
+    description: 'The card drawn beside a document this connector saved, read, shared, updated or looked back on.',
     html: DOCUMENT_CARD_HTML,
   },
   {

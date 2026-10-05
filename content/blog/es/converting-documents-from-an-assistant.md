@@ -1,6 +1,6 @@
 ---
 title: "Conversor de documentos por MCP: convertir y compartir documentos desde una conversación"
-description: "Cómo un conversor por MCP convierte el Markdown de un asistente en una página enviable: las ocho herramientas, el inicio de sesión sin clave y los riesgos reales"
+description: "Cómo un conversor por MCP convierte el Markdown de un asistente en una página enviable: las doce herramientas, el inicio de sesión sin clave y los riesgos reales"
 date: 2026-09-09
 tag: Automatización
 keywords: conversor de documentos mcp, servidor mcp markdown a html, conector personalizado para un asistente, convertir markdown dentro de un chat, mcp con oauth, compartir un documento desde una conversación
@@ -44,16 +44,20 @@ El argumento a favor de conectar un conversor de documentos no es que convertir 
 
 Cinco verbos cubren casi todo. Convertir, para que el Markdown se vuelva una página. Guardar, para que tenga una dirección en lugar de vivir en un búfer de scroll. Compartir, para que otra persona pueda abrirlo. Listar, para que el asistente pueda responder «qué tengo». Recuperar, para que un documento escrito hace tres semanas se pueda editar en lugar de reescribirse de memoria. Con esos cinco, el modelo termina el trabajo dentro de la conversación en lugar de entregarle al lector un muro de asteriscos y desearle suerte.
 
-El conector de TransformPipe expone ocho herramientas, y el reparto es deliberado: dos hacen trabajo, cuatro responden preguntas, y dos cambian lo que otras personas pueden ver o si un documento existe siquiera.
+El conector de TransformPipe expone doce herramientas, y el reparto es deliberado: cuatro hacen trabajo, seis responden preguntas, y dos cambian lo que otras personas pueden ver o si un documento existe siquiera.
 
 | Herramienta | Para qué sirve | Qué puede causar |
 | --- | --- | --- |
 | `tp_help` | Responde preguntas sobre cómo funciona el producto, a partir de su documentación y no de memoria | Nada. Lee secciones de documentación y las devuelve |
 | `tp_convert_markdown` | Markdown dentro, HTML saneado fuera; opcionalmente el documento completo autocontenido | No se guarda nada. La salida viaja de vuelta por la conversación, así que un documento largo cuesta contexto |
+| `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, texto plano, texto enriquecido o una exportación de Evernote dentro, Markdown fuera | No se guarda nada. El Markdown vuelve por la conversación, del mismo modo |
 | `tp_save_document` | Guarda Markdown en la cuenta, y lo publica en la misma llamada si se le pide | Escribe un documento. Con un modo de compartir, publica una página en la web pública |
+| `tp_update_document` | Texto nuevo para un documento que ya está en la cuenta — el mismo id y el mismo enlace, con el texto anterior guardado como revisión | Cambia lo que muestra un enlace. En un documento compartido, exige una confirmación explícita |
 | `tp_list_documents` | Qué hay en la cuenta —nombres, tamaños, fechas, si cada uno está compartido— con el id que aceptan las demás herramientas | Lee. Revela la lista de documentos a la conversación |
 | `tp_get_document` | Un documento, por id, como su fuente en Markdown o como HTML renderizado | Lee. Trae un documento entero a la conversación |
-| `tp_share_document` | Cambia quién puede abrir un documento: un enlace, direcciones concretas, o nadie | Publica o retira. Revocar rompe una URL ya enviada |
+| `tp_summarize_document` | Un resumen breve de un documento, guardado en caché en la cuenta para que volver a pedirlo no cueste nada | Lee. Guarda el resumen junto al documento |
+| `tp_document_versions` | El historial de un documento: los textos que sustituyeron sus actualizaciones, cada uno legible de nuevo | Lee. Los textos anteriores vuelven a la conversación cuando se piden |
+| `tp_share_document` | Cambia quién puede abrir un documento: un enlace, direcciones concretas, o nadie — o añade o quita un solo lector | Publica o retira. Revocar rompe una URL ya enviada |
 | `tp_usage` | Qué está usando la cuenta contra sus límites | Lee. Merece preguntarse cuando se rechaza un guardado |
 | `tp_delete_document` | Borra un documento, de forma permanente | Destruye datos. Exige una confirmación explícita, y elimina exactamente uno |
 
@@ -114,7 +118,7 @@ Un cliente aprobado es un objeto distinto. Tiene un nombre que puedes leer, un �
 
 ## Las dos herramientas hechas a medida del problema que pueden causar
 
-Seis de las ocho herramientas son normales. Dos no lo son, y están escritas de forma distinta a propósito.
+Diez de las doce herramientas son normales — `tp_update_document` pide una confirmación solo cuando el documento ya está compartido, porque su texto nuevo es entonces lo que lee cualquiera que tenga el enlace. Dos no lo son, y están escritas de forma distinta a propósito.
 
 **Compartir publica una página en la web pública.** Hay tres modos, y la transición entre ellos es la parte que la gente hace mal.
 
@@ -122,9 +126,9 @@ Seis de las ocho herramientas son normales. Dos no lo son, y están escritas de 
 | --- | --- | --- |
 | `private` | Solo el propietario | Revoca por completo un enlace existente, así que una URL ya enviada deja de funcionar |
 | `link` | Cualquiera que tenga la URL | Está en la web pública. Una URL no es una contraseña, y los enlaces viajan |
-| `people` | Solo las direcciones dadas | La lista de direcciones se sustituye, no se añade — envía la lista completa cada vez |
+| `people` | Solo las direcciones dadas | `emails` sustituye la lista; `add` y `remove` la cambian en una dirección y dejan el resto. Solo una dirección nueva en la lista recibe un correo |
 
-Guardar puede publicar en la misma llamada, lo cual es cómodo y es justo por lo que las propias instrucciones del servidor al modelo dicen que solo se comparta un documento cuando la persona lo pidió. Una herramienta que guarda y publica en un solo paso es una herramienta que puede convertir «guarda esto» en «publica esto» a través de una sola frase mal leída. La mitigación no es ingeniosa: la descripción dice lo que hace en la primera línea, el modo es una enumeración explícita y no un booleano llamado `public`, y la respuesta al modelo dice en qué modo quedó el documento y cuál es su URL, así que el resumen del asistente hacia ti es una frase que puedes comprobar.
+Guardar puede publicar en la misma llamada, lo cual es cómodo y es justo por lo que las propias instrucciones del servidor al modelo dicen que solo se comparta un documento cuando la persona lo pidió. Una herramienta que guarda y publica en un solo paso es una herramienta que puede convertir «guarda esto» en «publica esto» a través de una sola frase mal leída. La mitigación no es ingeniosa: la descripción dice lo que hace en la primera línea, el modo es una enumeración explícita y no un booleano llamado `public`, y la respuesta al modelo dice en qué modo quedó el documento y cuál es su URL, así que el resumen del asistente hacia ti es una frase que puedes comprobar. Además, `link` y `people` exigen los dos `confirm: true`, al guardar igual que al compartir: sin él, la llamada dice qué se revelaría y a quién, y no cambia nada.
 
 **Borrar exige una confirmación explícita y elimina exactamente un documento.** `confirm: true` es obligatorio, y sin él la herramienta se niega y le dice al modelo que vaya a preguntar. No hay deshacer y no hay papelera. Y no hay ninguna herramienta que borre varios —ni comodín, ni «borra todos los compartidos», ni rango de fechas. Esa es una ausencia deliberada y no una función que falte. Un borrado masivo es la única herramienta donde una sola instrucción mal entendida destruye trabajo que no se puede recuperar, y un conector que no puede expresar la instrucción no puede llevarla a cabo.
 

@@ -1,6 +1,6 @@
 ---
 title: "Convertitore di documenti MCP: convertire e condividere documenti da una conversazione"
-description: Come un convertitore di documenti MCP trasforma il Markdown di un assistente in una pagina da inviare — gli otto strumenti, l’accesso senza chiave e i rischi reali
+description: Come un convertitore di documenti MCP trasforma il Markdown di un assistente in una pagina da inviare — i dodici strumenti, l’accesso senza chiave e i rischi reali
 date: 2026-09-09
 tag: Automazione
 keywords: convertitore documenti mcp, server mcp markdown html, connettore personalizzato claude, convertire markdown da un assistente, connettore oauth mcp, condividere un documento da una conversazione
@@ -44,16 +44,20 @@ L’argomento per collegare un convertitore di documenti non è che convertire s
 
 Cinque verbi coprono quasi tutto. Convertire, così il Markdown diventa una pagina. Salvare, così ha un indirizzo invece di vivere in un buffer di scroll-back. Condividere, così qualcun altro può aprirlo. Elencare, così l’assistente può rispondere a “cosa ho”. Recuperare, così un documento scritto tre settimane fa si può modificare invece di riscriverlo a memoria. Con questi cinque, il modello finisce il lavoro dentro la conversazione invece di consegnare al lettore un muro di asterischi e augurargli buona fortuna.
 
-Il connettore di TransformPipe espone otto strumenti, e la divisione è deliberata: due lavorano, quattro rispondono a domande, e due cambiano cosa possono vedere altre persone o se un documento esiste.
+Il connettore di TransformPipe espone dodici strumenti, e la divisione è deliberata: quattro lavorano, sei rispondono a domande, e due cambiano cosa possono vedere altre persone o se un documento esiste.
 
 | Strumento | A cosa serve | Cosa può causare |
 | --- | --- | --- |
 | `tp_help` | Risponde a domande su come funziona il prodotto, dalla sua documentazione invece che dalla memoria | Niente. Legge sezioni di documentazione e le restituisce |
 | `tp_convert_markdown` | Markdown in ingresso, HTML sanitizzato in uscita; opzionalmente il documento completo autonomo | Niente viene salvato. L’output torna indietro attraverso la conversazione, quindi un documento lungo costa contesto |
+| `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, testo semplice, rich text o un’esportazione di Evernote in ingresso, Markdown in uscita | Niente viene salvato. Il Markdown torna attraverso la conversazione, allo stesso modo |
 | `tp_save_document` | Salva il Markdown sull’account, e lo pubblica nella stessa chiamata se richiesto | Scrive un documento. Con una modalità di condivisione, pubblica una pagina sul web pubblico |
+| `tp_update_document` | Nuovo testo per un documento già sull’account — lo stesso id e lo stesso link, con il vecchio testo conservato come revisione | Cambia ciò che mostra un link. Su un documento condiviso richiede una conferma esplicita |
 | `tp_list_documents` | Cosa c’è sull’account — nomi, dimensioni, date, se ognuno è condiviso — con l’id che gli altri strumenti usano | Legge. Rivela l’elenco dei documenti alla conversazione |
 | `tp_get_document` | Un documento, per id, come sorgente Markdown o come HTML renderizzato | Legge. Porta un intero documento dentro la conversazione |
-| `tp_share_document` | Cambia chi può aprire un documento: un link, indirizzi nominati, o nessuno | Pubblica o annulla la pubblicazione. Revocare rompe un URL già inviato |
+| `tp_summarize_document` | Un breve riassunto di un documento, in cache sull’account così chiederlo di nuovo non costa nulla | Legge. Conserva il riassunto accanto al documento |
+| `tp_document_versions` | La cronologia di un documento: i testi che i suoi aggiornamenti hanno sostituito, ognuno di nuovo leggibile | Legge. I testi precedenti tornano nella conversazione su richiesta |
+| `tp_share_document` | Cambia chi può aprire un documento: un link, indirizzi nominati, o nessuno — oppure aggiunge o toglie un solo lettore | Pubblica o annulla la pubblicazione. Revocare rompe un URL già inviato |
 | `tp_usage` | Cosa sta usando l’account rispetto ai suoi limiti | Legge. Vale la pena chiederlo quando un salvataggio è stato rifiutato |
 | `tp_delete_document` | Elimina un documento, in modo permanente | Distrugge dati. Richiede una conferma esplicita, e rimuove esattamente uno |
 
@@ -114,7 +118,7 @@ Un client approvato è un oggetto diverso. Ha un nome che puoi leggere, un ambit
 
 ## I due strumenti fatti apposta per i guai che possono causare
 
-Sei degli otto strumenti sono ordinari. Due non lo sono, e sono scritti diversamente apposta.
+Dieci dei dodici strumenti sono ordinari — `tp_update_document` chiede una conferma solo quando il documento è già condiviso, perché il suo nuovo testo è allora ciò che legge chiunque abbia il link. Due non lo sono, e sono scritti diversamente apposta.
 
 **Condividere pubblica una pagina sul web pubblico.** Ci sono tre modalità, e la transizione fra loro è la parte che le persone sbagliano.
 
@@ -122,9 +126,9 @@ Sei degli otto strumenti sono ordinari. Due non lo sono, e sono scritti diversam
 | --- | --- | --- |
 | `private` | Solo il proprietario | Revoca del tutto un link esistente, quindi un URL già inviato smette di funzionare |
 | `link` | Chiunque abbia l’URL | È sul web pubblico. Un URL non è una password, e i link viaggiano |
-| `people` | Solo gli indirizzi indicati | L’elenco degli indirizzi viene sostituito, non aggiunto — invia sempre l’elenco completo |
+| `people` | Solo gli indirizzi indicati | `emails` sostituisce l’elenco; `add` e `remove` lo cambiano di un indirizzo e lasciano il resto. Riceve un’email solo un indirizzo nuovo nell’elenco |
 
-Salvare può pubblicare nella stessa chiamata, il che è comodo ed è esattamente il motivo per cui le istruzioni del server al modello dicono di condividere un documento solo quando la persona lo ha chiesto. Uno strumento che sia salva sia pubblica in un solo passaggio è uno strumento che può trasformare “tienilo” in “pubblicalo” con una singola frase letta male. Il rimedio non è sofisticato: la descrizione dice cosa fa nella prima riga, la modalità è un’enumerazione esplicita invece di un booleano chiamato `public`, e la risposta al modello dice in quale modalità è ora il documento e qual è il suo URL, così il riassunto dell’assistente per te è un’affermazione che puoi verificare.
+Salvare può pubblicare nella stessa chiamata, il che è comodo ed è esattamente il motivo per cui le istruzioni del server al modello dicono di condividere un documento solo quando la persona lo ha chiesto. Uno strumento che sia salva sia pubblica in un solo passaggio è uno strumento che può trasformare “tienilo” in “pubblicalo” con una singola frase letta male. Il rimedio non è sofisticato: la descrizione dice cosa fa nella prima riga, la modalità è un’enumerazione esplicita invece di un booleano chiamato `public`, e la risposta al modello dice in quale modalità è ora il documento e qual è il suo URL, così il riassunto dell’assistente per te è un’affermazione che puoi verificare. In più, `link` e `people` richiedono entrambi `confirm: true`, nel salvataggio come nella condivisione: senza, la chiamata dice cosa verrebbe rivelato e a chi, e non cambia nulla.
 
 **Eliminare richiede una conferma esplicita e rimuove esattamente un documento.** `confirm: true` è obbligatorio, e senza di esso lo strumento si rifiuta e dice al modello di andare a chiedere. Non c’è annullamento e non c’è cestino. E non c’è nessuno strumento che ne elimina più di uno — nessun pattern generico, nessun “elimina tutti i documenti condivisi”, nessun intervallo di date. È un’assenza deliberata, non una funzione mancante. Un’eliminazione in massa è l’unico strumento in cui un singolo fraintendimento distrugge lavoro che non si può recuperare, e un connettore che non può esprimere l’istruzione non può eseguirla.
 

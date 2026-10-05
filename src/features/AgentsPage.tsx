@@ -19,6 +19,7 @@ import type { LandingWords } from '@/lib/i18n/content';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { localePath } from '@/lib/i18n/locales';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY, MCP_PATH } from '@/lib/mcp-facts';
+import { OBSIDIAN_INSTALL } from '@/lib/obsidian-facts';
 import { staticPage, type StaticPage as Page } from '@/lib/pages';
 import {
   Accordion,
@@ -30,7 +31,7 @@ import { Faq } from '@/ui/components/Faq';
 import { SectionHeading } from '@/ui/components/SectionHeading';
 import { cn } from '@/ui/lib/utils';
 import { BrandLogo, type BrandName } from '@/components/BrandLogo';
-import { type Art, FeatureRow, PhoneStrip, ShowcaseHero } from './showcase';
+import { type Art, FeatureRow, PhoneStrip, Shot, ShowcaseHero } from './showcase';
 import { toast } from '@/ui/components/Toast';
 
 /*
@@ -848,6 +849,127 @@ export function Questions({ words }: { words: LandingWords['faq'] }) {
   );
 }
 
+/*
+ * `/agents` itself: the way in to all of them rather than a page about one.
+ *
+ * It used to be Claude's page under another name — Claude's button, Claude's screenshots — so the
+ * breadcrumb and the footer that lead here led to Claude twice. Now it is a card per assistant
+ * that works today, each with the picture its own page opens on and its own way in, and below them
+ * the blocks that are true of all of them: the table, the comparison, what it can and cannot do.
+ */
+const HUB_CARDS: Array<{
+  id: 'agents-claude' | 'agents-chatgpt' | 'obsidian';
+  logo: BrandName;
+  key: 'claude' | 'chatgpt' | 'obsidian';
+  art: Art;
+}> = [
+  { id: 'agents-claude', logo: 'claude', key: 'claude', art: { src: '/agents/claude/chat-link.webp', width: 1024, height: 640 } },
+  { id: 'agents-chatgpt', logo: 'chatgpt', key: 'chatgpt', art: { src: '/agents/chatgpt/chat-link.webp', width: 1056, height: 660 } },
+  { id: 'obsidian', logo: 'obsidian', key: 'obsidian', art: { src: '/obsidian/note.webp', width: 1440, height: 900 } },
+];
+
+function AgentsHub({ page, onGoToConverter }: { page: Page; onGoToConverter: () => void }) {
+  const t = useT();
+  const { content, locale } = useI18n();
+  const words = content.pages[page.id];
+  const hub = words.hub;
+  const landing = words.landing;
+  const guide = localePath(locale, staticPage('how-to-assistant').path);
+
+  if (!hub || !landing) {
+    return null;
+  }
+
+  const wayIn = {
+    claude: <WayButton href={CLAUDE_DIRECTORY}>{t('agents.claude.add')}</WayButton>,
+    chatgpt: <WayButton href={CHATGPT_PLUGINS}>{t('agents.chatgpt.open')}</WayButton>,
+    obsidian: (
+      <WayButton href={OBSIDIAN_INSTALL} external={false}>
+        {content.pages.obsidian.plugin?.add ?? 'Obsidian'}
+      </WayButton>
+    ),
+  };
+
+  return (
+    <article className="flex w-full flex-col gap-20 pb-8 md:gap-24">
+      <AppBreadcrumbs items={crumbsForStaticPage(page, content, locale)} onNavigate={onGoToConverter} />
+
+      {/* ------------------------------------------------------------------ the opening */}
+      <header className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+        <Label>{hub.eyebrow}</Label>
+        <h1 className="font-semibold text-4xl text-ink-primary leading-[1.1] tracking-tight md:text-5xl">
+          {words.title}
+        </h1>
+        <p className="text-ink-secondary text-lg leading-relaxed">{words.lede}</p>
+      </header>
+
+      {/* ------------------------------------------------------------------ the three that work */}
+      <section className="flex flex-col gap-10">
+        <SectionHead title={hub.cards.heading} />
+        <div className="grid gap-6 lg:grid-cols-3">
+          {HUB_CARDS.map((card) => {
+            const target = staticPage(card.id);
+            // The table's short name — "Obsidian", not the page's "Obsidian plugin" — so the three
+            // headings are one line each and read alike.
+            const name = landing.clients.items[HUB_CARDS.indexOf(card)]?.name ?? content.pages[card.id].label;
+
+            return (
+              <div key={card.id} className="flex flex-col gap-5 rounded-3xl border border-stroke bg-surface-card p-5">
+                <a href={localePath(locale, target.path)} aria-label={name} className="block">
+                  <Shot art={card.art} className="shadow-none" />
+                </a>
+                <div className="flex items-center gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-card2">
+                    <BrandLogo name={card.logo} className="size-6 text-ink-primary" />
+                  </span>
+                  <span className="flex-1 font-semibold text-ink-primary text-lg">{name}</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-accent px-2.5 py-0.5 font-semibold text-[11px] text-brand-tertiary">
+                    <span className="size-1.5 rounded-full bg-brand-primary" />
+                    {t('agents.status.works')}
+                  </span>
+                </div>
+                <p className="flex-1 text-ink-secondary text-sm leading-relaxed">{hub.cards[card.key]}</p>
+                <div className="flex flex-col gap-3">
+                  {wayIn[card.key]}
+                  <a
+                    href={localePath(locale, target.path)}
+                    className="inline-flex items-center gap-1.5 self-start font-semibold text-brand-tertiary text-sm underline-offset-2 hover:underline"
+                  >
+                    {t('agents.more').replace('{name}', name)}
+                    <ArrowRight className="size-3.5" />
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <Clients words={landing.clients} current={page.id} />
+
+      <Compare words={landing.compare} />
+
+      <Reach words={landing.trust} />
+
+      <Questions words={landing.faq} />
+
+      <InvitationBand title={hub.other.title} text={hub.other.text} centred>
+        <WaysRow
+          field={<AddressField copyLabel={words.action ?? ''} />}
+          button={
+            <WayButton href={guide} external={false}>
+              {t('agents.guide')}
+            </WayButton>
+          }
+          centred
+        />
+      </InvitationBand>
+
+      <ScrollToTop />
+    </article>
+  );
+}
+
 export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConverter: () => void }) {
   const t = useT();
   const { content, locale } = useI18n();
@@ -857,6 +979,10 @@ export function AgentsPage({ page, onGoToConverter }: { page: Page; onGoToConver
   const action = words.action ?? '';
   const way = wayFor(page.id);
   const showcase = SHOWCASE[way];
+
+  if (words.hub) {
+    return <AgentsHub page={page} onGoToConverter={onGoToConverter} />;
+  }
 
   if (!landing) {
     return null;

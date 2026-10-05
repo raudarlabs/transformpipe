@@ -123,6 +123,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-06',
+    title: 'One page for every assistant',
+    body:
+      '/agents was Claude’s page under another name. It is now the way in to all of them: a card '
+      + 'each for Claude, ChatGPT and Obsidian with its own way to connect, the table of every '
+      + 'assistant and where it stands, and the address any other MCP client connects with. The '
+      + 'documentation now covers ChatGPT too, and says what an update and a share do today.',
+  },
+  {
+    date: '2026-10-06',
     title: 'Claude, ChatGPT and Obsidian, one click from any page',
     body:
       'The assistants’ icon in the header opens a list of the three that work today, each with its '

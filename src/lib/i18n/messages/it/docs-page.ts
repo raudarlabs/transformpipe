@@ -192,15 +192,15 @@ export const docsPage = {
 
   /** `{path}` is the connector's address, which comes from `mcp-facts.ts`. */
   'docs.assistant.intro':
-    'TransformPipe è un server MCP, quindi si può aggiungere a Claude come connettore. L’indirizzo è questo deployment più {path}:',
+    'TransformPipe è un server MCP, quindi si può aggiungere a Claude come connettore e a ChatGPT come app MCP. L’indirizzo è questo deployment più {path}:',
   'docs.assistant.adding':
-    'Su claude.ai è presente nella directory dei connettori — `claude.ai/directory/tp`, poi Connetti — oppure si aggiunge tramite indirizzo in Impostazioni → Connettori → Aggiungi connettore personalizzato. Da un terminale:',
+    'Su claude.ai è presente nella directory dei connettori — `claude.ai/directory/tp`, poi Connetti — oppure si aggiunge tramite indirizzo in Impostazioni → Connettori → Aggiungi connettore personalizzato. In ChatGPT si aggiunge tramite indirizzo come app MCP: Plugins → Add → Create MCP App, l’indirizzo qui sopra, poi l’accesso. Per Obsidian c’è invece un plugin della community, descritto in /agents/obsidian. Con Claude Code, da un terminale:',
   'docs.assistant.auth':
     'Non c’è nessuna chiave da incollare. La prima chiamata torna come non autorizzata, il tuo assistente segue quella risposta fino a una pagina qui, e tu accedi con lo stesso account che usi già e approvi un client con un nome — ed è per questo che la pagina dice con quale indirizzo sta per agire al posto tuo. Quello che ottiene è un token nostro, valido per i tuoi documenti e per nient’altro: non per l’account, non per l’accesso, non per le chiavi API. Scollegalo dal menu dell’account, sotto Connettore MCP, e smette di funzionare alla chiamata successiva.',
   'docs.assistant.tools':
-    'Gli strumenti sono lo stesso codice dell’API qui sopra, chiamato nello stesso processo, così una conversazione e uno script ottengono la stessa risposta. Due di essi sono fatti su misura per i guai che possono combinare: la condivisione pubblica una pagina sul web aperto, e l’eliminazione richiede una conferma esplicita e rimuove esattamente un documento.',
+    'Gli strumenti sono lo stesso codice dell’API qui sopra, chiamato nello stesso processo, così una conversazione e uno script ottengono la stessa risposta. Quattro casi richiedono un `confirm: true` esplicito, perché rivelano, cambiano ciò che altri leggono o distruggono: salvare o condividere un documento con un link pubblico o con persone indicate, aggiornarne uno già condiviso, ed eliminare, che rimuove esattamente un documento ed è definitivo. Senza la conferma la chiamata viene rifiutata e non cambia nulla.',
   'docs.assistant.cards':
-    'Un assistente che sa disegnarle riceve schede invece di paragrafi: un documento salvato o aperto arriva come scheda con i suoi numeri, le prime righe e un pulsante che lo apre qui, e chiedere che cosa c’è sull’account disegna un elenco le cui righe aprono un documento. La risposta testuale sotto resta la stessa: un client che non disegna nulla non perde nulla.',
+    'Un assistente che sa disegnarle riceve schede invece di paragrafi. Un documento salvato o aperto arriva come scheda con i suoi numeri, le prime righe e un pulsante che lo apre qui; chiedere che cosa c’è sull’account disegna un elenco le cui righe aprono un documento. Una condivisione mostra chi può aprire il documento e quante volte è stato aperto, con un pulsante per il link condiviso; un aggiornamento mostra le righe che ha cambiato; la cronologia è una sequenza temporale in cui ogni testo precedente si rilegge con un pulsante; e una chiamata rifiutata per mancanza di conferma torna come scheda con un pulsante che la conferma. La risposta testuale sotto resta la stessa: un client che non disegna nulla non perde nulla.',
 
   /* The limits table: each term and the figure beside it. */
   'docs.embed.intro':
@@ -222,7 +222,7 @@ export const docsPage = {
     '4 MB, e non per nostra scelta: una Vercel Function rifiuta una richiesta o un corpo di risposta oltre i 4,5 MB prima che una riga di questo codice venga eseguita, quindi un documento più grande non potrebbe essere né salvato né riletto. Si converte, si vede in anteprima e si scarica comunque: resta fuori dalla cronologia, e l’app lo dice invece di annunciare un salvataggio che non è avvenuto',
   'docs.limits.caller.term': 'Per chiamante',
   'docs.limits.caller.text':
-    '60 richieste al minuto, contate per chiave o per sessione',
+    '60 richieste al minuto, contate per chiave o per sessione; una chiamata a uno strumento conta una volta',
   'docs.limits.refusal':
     'Raggiungere un limite è un rifiuto, non uno sfratto silenzioso. Questa app eliminava il documento più vecchio per restare sotto il suo tetto, e così distruggeva in silenzio qualcosa che il proprietario aveva scelto di conservare; adesso dice invece cosa eliminare.',
 

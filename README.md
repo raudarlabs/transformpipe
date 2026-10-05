@@ -68,7 +68,8 @@ TransformPipe is in [Claude's connector directory](https://claude.ai/directory/t
 the link." "Find the migration spec from last week." The document goes into your account, with a
 title you can search for, long after the chat has scrolled away.
 
-ChatGPT [connects too](https://transformpipe.com/agents/chatgpt), by address, and both see the same
+ChatGPT [connects too](https://transformpipe.com/agents/chatgpt), by address, as an MCP app, and
+Obsidian has a [community plugin](https://transformpipe.com/agents/obsidian). All three see the same
 documents.
 
 ![What your assistant writes, kept](brand/producthunt/01-the-pipe.png)
@@ -406,7 +407,8 @@ previous push's id and the two show up linked, with a diff, in the account's his
 
 ## In an assistant
 
-TransformPipe is an MCP server at `/api/mcp`, so it can be added to Claude as a connector and convert, save,
+TransformPipe is an MCP server at `/api/mcp`, so it can be added to Claude as a connector, or to
+ChatGPT as an MCP app (Plugins → Add → Create MCP App, the address, then sign in), and convert, save,
 share, summarise, version and delete documents in one account. There is no key to paste:
 
 ```bash
@@ -434,10 +436,13 @@ account menu and revoked there, all tokens for a client at once, because revokin
 alone leaves it able to mint another within the minute.
 
 The tools call this app's own `/api/v1` in process with the caller's credential forwarded, so a
-conversation and a script get the same answer from the same code. Two are shaped for the trouble
-they can cause: sharing publishes a page on the public web, and deleting takes an explicit
-confirmation and removes exactly one document. A grant can be read-only, and then the writing tools
-refuse in a sentence.
+conversation and a script get the same answer from the same code. Four cases take `confirm: true`
+and are refused without it: `tp_save_document` or `tp_share_document` publishing a link or sharing
+with people, `tp_update_document` on a document that is shared, and `tp_delete_document` always,
+which removes exactly one document. A grant can be read-only, and then the writing tools refuse in a
+sentence. A client that draws MCP Apps gets cards: a saved or read document, the list, a share with
+who can open it, an update with the lines it changed, a history timeline, and a refused call with
+the button that confirms it.
 
 `npm run mcp:check` runs the whole flow against a local server and the real database — discovery,
 the 401, registration, an unregistered `redirect_uri`, PKCE, a burnt code, refresh rotation,
@@ -451,7 +456,7 @@ pressing Connect) is the one part it mints directly, exactly as `/approve` would
 | Per account | 100 MB, 500 documents |
 | Per conversion | 10 MB — roughly 1.5 million words. Runs in the browser, so this is a judgement about the machine, not a platform limit |
 | Per kept document | 4 MB. A Vercel Function refuses a request or response body over 4.5 MB with a bare 413 the app never sees, so a bigger document could be neither saved nor read back. Raising it means keeping the Markdown out of the request: a client upload straight to blob storage and reads redirecting to a signed URL. Both numbers live in `shared/limits.ts`, with the reason |
-| Per caller | 60 requests a minute, counted by key or by session |
+| Per caller | 60 requests a minute, counted by key or by session; a connector's tool call counts once |
 
 Reaching a limit is a refusal, not a silent eviction: this app used to drop the oldest document to
 stay under its cap, which quietly destroyed something its owner had chosen to keep. A refusal says

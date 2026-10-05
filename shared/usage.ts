@@ -23,6 +23,7 @@ export const BROWSER_EVENTS = [
   'download',
   'save',
   'share',
+  'nudge',
 ] as const;
 
 /** What the server counts on its own, where no browser is involved. */
@@ -38,6 +39,13 @@ export const USAGE_LANGS = ['en', 'de', 'fr', 'es', 'it'] as const;
 
 /** Every format a download can be. Printing is not a download and is not counted. */
 export const DOWNLOAD_FORMATS = ['md', 'html', 'txt', 'docx', 'obsidian'] as const;
+
+/*
+ * The note in the converter's corner that points at the assistants: which one it showed, and what
+ * became of it — shown, followed, or closed. `variant:action`, from these two lists only.
+ */
+export const NUDGE_VARIANTS = ['assistants', 'obsidian'] as const;
+export const NUDGE_ACTIONS = ['shown', 'click', 'dismiss'] as const;
 
 /** `link` is a public link turned on; `people` is an address added to a document. */
 export const SHARE_KINDS = ['link', 'people'] as const;
@@ -239,6 +247,7 @@ const KEYS: Record<Exclude<BrowserEvent, 'visit' | 'view'>, readonly string[]> =
   save: CONVERSIONS.map((one) => one.id),
   download: DOWNLOAD_FORMATS,
   share: SHARE_KINDS,
+  nudge: NUDGE_VARIANTS.flatMap((variant) => NUDGE_ACTIONS.map((action) => `${variant}:${action}`)),
 };
 
 /** One count, as the browser sends it and as the table stores it. */

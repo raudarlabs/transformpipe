@@ -199,15 +199,15 @@ export const docsPage = {
 
   /** `{path}` es la dirección del conector, que viene de `mcp-facts.ts`. */
   'docs.assistant.intro':
-    'TransformPipe es un servidor MCP, así que se puede añadir a Claude como conector. La dirección es este despliegue más {path}:',
+    'TransformPipe es un servidor MCP, así que se puede añadir a Claude como conector y a ChatGPT como app MCP. La dirección es este despliegue más {path}:',
   'docs.assistant.adding':
-    'En claude.ai figura en el directorio de conectores — `claude.ai/directory/tp`, y luego Conectar — o se añade por su dirección en Configuración → Conectores → Añadir conector personalizado. Desde un terminal:',
+    'En claude.ai figura en el directorio de conectores — `claude.ai/directory/tp`, y luego Conectar — o se añade por su dirección en Configuración → Conectores → Añadir conector personalizado. En ChatGPT se añade por su dirección como app MCP: Plugins → Add → Create MCP App, la dirección de arriba, y luego iniciar sesión. Para Obsidian hay en cambio un plugin de la comunidad, descrito en /agents/obsidian. Con Claude Code, desde un terminal:',
   'docs.assistant.auth':
     'No hay ninguna clave que pegar. La primera llamada vuelve sin autorizar, tu asistente sigue ese camino hasta una página de aquí, e inicias sesión con la misma cuenta que ya usas y apruebas un cliente con nombre — por eso la página te dice en nombre de qué dirección va a actuar. Lo que obtiene es un token nuestro, válido para tus documentos y para nada más: no para tu cuenta, ni para tu inicio de sesión, ni para tus claves API. Desconéctalo desde el menú de la cuenta, en Conector MCP, y deja de funcionar en la llamada siguiente.',
   'docs.assistant.tools':
-    'Las herramientas son el mismo código de la API de arriba, llamado en el mismo proceso, así que una conversación y un script obtienen la misma respuesta. Dos de ellas están pensadas por el daño que pueden hacer: compartir publica una página en la web abierta, y eliminar exige una confirmación explícita y quita exactamente un documento.',
+    'Las herramientas son el mismo código de la API de arriba, llamado en el mismo proceso, así que una conversación y un script obtienen la misma respuesta. Cuatro casos exigen un `confirm: true` explícito, porque revelan algo, cambian lo que otros leen o destruyen: guardar o compartir un documento con un enlace público o con personas concretas, actualizar uno que ya está compartido, y eliminar, que quita exactamente un documento y para siempre. Sin esa confirmación la llamada se rechaza y nada cambia.',
   'docs.assistant.cards':
-    'Un asistente que sabe dibujarlas recibe tarjetas en vez de párrafos: un documento guardado o abierto llega como una tarjeta con sus cifras, sus primeras líneas y un botón que lo abre aquí, y preguntar qué hay en la cuenta dibuja una lista cuyas filas abren un documento. La respuesta en texto sigue igual debajo: un cliente que no dibuja nada no pierde nada.',
+    'Un asistente que sabe dibujarlas recibe tarjetas en vez de párrafos. Un documento guardado o abierto llega como una tarjeta con sus cifras, sus primeras líneas y un botón que lo abre aquí; preguntar qué hay en la cuenta dibuja una lista cuyas filas abren un documento. Compartir muestra quién puede abrir el documento y cuántas veces se ha abierto, con un botón para el enlace compartido; una actualización muestra las líneas que cambió; el historial es una línea de tiempo en la que cada texto anterior se lee con un botón; y una llamada rechazada por falta de confirmación vuelve como una tarjeta con un botón que la confirma. La respuesta en texto sigue igual debajo: un cliente que no dibuja nada no pierde nada.',
 
   /* La tabla de límites: cada término y la cifra de al lado. */
   'docs.embed.intro':
@@ -229,7 +229,7 @@ export const docsPage = {
     '4 MB, y no por decisión nuestra: una Vercel Function rechaza una petición o un cuerpo de respuesta de más de 4,5 MB antes de que se ejecute nada de este código, así que un documento mayor no podría ni guardarse ni volver a leerse. Se convierte, se previsualiza y se descarga igual — solo se queda fuera del historial, y la aplicación lo dice en vez de informar de un guardado que no ha ocurrido',
   'docs.limits.caller.term': 'Por solicitante',
   'docs.limits.caller.text':
-    '60 peticiones por minuto, contadas por clave o por sesión',
+    '60 peticiones por minuto, contadas por clave o por sesión; una llamada a una herramienta cuenta una vez',
   'docs.limits.refusal':
     'Llegar a un límite es un rechazo, no un desalojo silencioso. Esta aplicación solía descartar el documento más antiguo para mantenerse por debajo de su tope, lo que destruía sin avisar algo que su dueño había decidido conservar; ahora dice qué eliminar.',
 

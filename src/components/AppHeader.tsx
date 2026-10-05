@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   BookOpen,
   Bot,
   Check,
@@ -354,9 +355,8 @@ export function AppHeader({
                 */}
               {/*
                 * And a menu, not a link: the glyph says "assistants" and nothing about which, and
-                * the plugin for Obsidian was a row at the foot of a table nobody scrolled to. No
-                * "all assistants" item: `/agents` is Claude's page in all but name, so it would be
-                * the first row twice.
+                * the plugin for Obsidian was a row at the foot of a table nobody scrolled to. The
+                * overview, `/agents`, is the last item, under the rule.
                 */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -404,6 +404,17 @@ export function AppHeader({
                     </DropdownMenuItem>
                   ))}
 
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onSelect={() => onOpenPage('agents')}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <Typography variant="span" weight="medium" textColor="primary">
+                      {t('header.agents.all')}
+                    </Typography>
+                    <ArrowRight className="size-4 shrink-0 text-ink-secondary" />
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </nav>

@@ -216,15 +216,15 @@ export const docsPage = {
 
   /** `{path}` ist die Adresse des Connectors, die aus `mcp-facts.ts` kommt. */
   'docs.assistant.intro':
-    'TransformPipe ist ein MCP-Server und lässt sich darum als Connector zu Claude hinzufügen. Die Adresse ist dieses Deployment plus {path}:',
+    'TransformPipe ist ein MCP-Server und lässt sich darum als Connector zu Claude und als MCP-App zu ChatGPT hinzufügen. Die Adresse ist dieses Deployment plus {path}:',
   'docs.assistant.adding':
-    'Auf claude.ai ist TransformPipe im Connector-Verzeichnis gelistet — `claude.ai/directory/tp`, dann „Verbinden“ — oder wird über die Adresse unter Einstellungen → Connectors → Eigenen Connector hinzufügen eingetragen. Aus einem Terminal:',
+    'Auf claude.ai ist TransformPipe im Connector-Verzeichnis gelistet — `claude.ai/directory/tp`, dann „Verbinden“ — oder wird über die Adresse unter Einstellungen → Connectors → Eigenen Connector hinzufügen eingetragen. In ChatGPT kommt es als MCP-App über die Adresse hinzu: Plugins → Add → Create MCP App, die Adresse von oben, dann anmelden. Für Obsidian gibt es stattdessen ein Community-Plugin, beschrieben unter /agents/obsidian. Mit Claude Code aus einem Terminal:',
   'docs.assistant.auth':
     'Es gibt keinen Schlüssel zum Einfügen. Der erste Aufruf kommt unautorisiert zurück, Ihr Assistent folgt dem auf eine Seite hier, und Sie melden sich mit demselben Konto an, das Sie ohnehin nutzen, und genehmigen einen benannten Client — deshalb nennt die Seite die Adresse, als die er handeln will. Was er bekommt, ist ein Token von uns, gut für Ihre Dokumente und für nichts sonst: nicht für Ihr Konto, nicht für Ihre Anmeldung und nicht für Ihre API-Schlüssel. Im Kontomenü, unter MCP-Konnektor, wieder trennen, und beim nächsten Aufruf ist Schluss.',
   'docs.assistant.tools':
-    'Die Werkzeuge sind derselbe Code wie die API oben, im Prozess aufgerufen, sodass ein Gespräch und ein Skript dieselbe Antwort bekommen. Zwei davon sind nach dem Schaden geformt, den sie anrichten können: Teilen veröffentlicht eine Seite im offenen Netz, und Löschen verlangt eine ausdrückliche Bestätigung und entfernt genau ein Dokument.',
+    'Die Werkzeuge sind derselbe Code wie die API oben, im Prozess aufgerufen, sodass ein Gespräch und ein Skript dieselbe Antwort bekommen. Vier Fälle verlangen ein ausdrückliches `confirm: true`, weil sie etwas offenlegen, ändern, was andere lesen, oder zerstören: ein Dokument als öffentlichen Link oder für benannte Personen speichern oder teilen, ein bereits geteiltes Dokument ändern und löschen, was genau ein Dokument endgültig entfernt. Ohne die Bestätigung wird der Aufruf abgewiesen, und nichts ändert sich.',
   'docs.assistant.cards':
-    'Ein Assistent, der sie zeichnet, bekommt Karten statt Absätze: Ein gespeichertes oder geöffnetes Dokument kommt als Karte mit seinen Zahlen, seinen ersten Zeilen und einer Schaltfläche, die es hier öffnet, und die Frage nach dem Konto zeichnet eine Liste, deren Zeilen ein Dokument öffnen. Die Textantwort darunter bleibt dieselbe — ein Client, der nichts zeichnet, verliert nichts.',
+    'Ein Assistent, der sie zeichnet, bekommt Karten statt Absätze. Ein gespeichertes oder geöffnetes Dokument kommt als Karte mit seinen Zahlen, seinen ersten Zeilen und einer Schaltfläche, die es hier öffnet; die Frage nach dem Konto zeichnet eine Liste, deren Zeilen ein Dokument öffnen. Eine Freigabe zeigt, wer das Dokument öffnen darf und wie oft es geöffnet wurde, mit einer Schaltfläche für den geteilten Link; eine Änderung zeigt die Zeilen, die sie geändert hat; der Verlauf ist eine Zeitleiste, in der sich jeder frühere Text per Schaltfläche wieder lesen lässt; und ein Aufruf, der mangels Bestätigung abgewiesen wurde, kommt als Karte mit einer Schaltfläche zurück, die ihn bestätigt. Die Textantwort darunter bleibt dieselbe — ein Client, der nichts zeichnet, verliert nichts.',
 
   /* Die Tabelle der Grenzen: jeder Begriff und die Zahl daneben. */
   'docs.embed.intro':
@@ -246,7 +246,7 @@ export const docsPage = {
     '4 MB, und nicht aus eigener Wahl: eine Vercel Function weist eine Anfrage oder einen Antwort-Body über 4.5 MB ab, bevor irgendetwas von diesem Code läuft, ein größeres Dokument könnte also weder gespeichert noch zurückgelesen werden. Es wandelt trotzdem um, zeigt eine Vorschau und lädt herunter — es bleibt nur aus dem Verlauf heraus, und die App sagt das, statt eine Speicherung zu melden, die nicht geschehen ist',
   'docs.limits.caller.term': 'Je Aufrufer',
   'docs.limits.caller.text':
-    '60 Anfragen je Minute, gezählt nach Schlüssel oder nach Sitzung',
+    '60 Anfragen je Minute, gezählt nach Schlüssel oder nach Sitzung; ein Werkzeugaufruf zählt einmal',
   'docs.limits.refusal':
     'Eine erreichte Grenze ist eine Abweisung, keine stille Verdrängung. Diese App hat früher das älteste Dokument verworfen, um unter ihrer Obergrenze zu bleiben, und damit still etwas zerstört, das sein Besitzer bewusst behalten hatte; jetzt sagt sie stattdessen, was zu löschen ist.',
 

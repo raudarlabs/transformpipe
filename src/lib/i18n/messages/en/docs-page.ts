@@ -210,15 +210,15 @@ export const docsPage = {
 
   /** `{path}` is the connector's address, which comes from `mcp-facts.ts`. */
   'docs.assistant.intro':
-    'TransformPipe is an MCP server, so it can be added to Claude as a connector. The address is this deployment plus {path}:',
+    'TransformPipe is an MCP server, so it can be added to Claude as a connector and to ChatGPT as an MCP app. The address is this deployment plus {path}:',
   'docs.assistant.adding':
-    'On claude.ai it is listed in the connector directory — `claude.ai/directory/tp`, then Connect — or it goes in by address under Settings → Connectors → Add custom connector. From a terminal:',
+    'On claude.ai it is listed in the connector directory — `claude.ai/directory/tp`, then Connect — or it goes in by address under Settings → Connectors → Add custom connector. ChatGPT takes it by address as an MCP app: Plugins → Add → Create MCP App, the address above, then sign in. Obsidian has a community plugin instead, described at /agents/obsidian. With Claude Code, from a terminal:',
   'docs.assistant.auth':
     'There is no key to paste. The first call comes back unauthorised, your assistant follows that to a page here, and you sign in with the same account you already use and approve a named client — which is why the page tells you which address it is about to act as. What it gets is a token of ours, good for your documents and nothing else: not your account, not your sign-in, and not your API keys. Disconnect it from the account menu, under MCP connector, and it stops working on the next call.',
   'docs.assistant.tools':
-    'The tools are the same code as the API above, called in process, so a conversation and a script get the same answer. Two of them are shaped for the trouble they can cause: sharing publishes a page on the public web, and deleting takes an explicit confirmation and removes exactly one document.',
+    'The tools are the same code as the API above, called in process, so a conversation and a script get the same answer. Four cases take an explicit `confirm: true`, because they disclose, change what others read, or destroy: saving or sharing a document as a public link or with named people, updating one that is already shared, and deleting, which removes exactly one document for good. Without it the call is refused and nothing changes.',
   'docs.assistant.cards':
-    'An assistant that draws them gets cards rather than paragraphs: a saved or opened document arrives as a card with its counts, its first lines and a button that opens it here, and asking what is on the account draws a list whose rows open a document. The text answer is unchanged underneath, so a client that draws nothing loses nothing.',
+    'An assistant that draws them gets cards rather than paragraphs. A saved or opened document arrives as a card with its counts, its first lines and a button that opens it here; asking what is on the account draws a list whose rows open a document. A share shows who can open the document and how often it has been opened, with a button for the shared link; an update shows the lines it changed; the history is a timeline in which each earlier text opens with a button; and a call refused for want of a confirmation comes back as a card with a button that confirms it. The text answer is unchanged underneath, so a client that draws nothing loses nothing.',
 
   /* The limits table: each term and the figure beside it. */
   'docs.embed.intro':
@@ -240,7 +240,7 @@ export const docsPage = {
     '4 MB, and not by our choice: a Vercel Function refuses a request or a response body over 4.5 MB before any of this code runs, so a larger document could be neither saved nor read back. It still converts, previews and downloads — it stays out of the history, and the app says so rather than reporting a save that did not happen',
   'docs.limits.caller.term': 'Per caller',
   'docs.limits.caller.text':
-    '60 requests a minute, counted by key or by session',
+    '60 requests a minute, counted by key or by session; one tool call counts once',
   'docs.limits.refusal':
     'Reaching a limit is a refusal, not a silent eviction. This app used to drop the oldest document to stay under its cap, which quietly destroyed something its owner had chosen to keep; now it says what to delete instead.',
 
