@@ -208,6 +208,10 @@ export function DiagramViewer({ svg, onClose }: { svg: string; onClose: () => vo
         />
       </div>
     </div>,
-    document.body
+    /*
+     * Into whatever is full screen, if anything is: the preview frame can be, and a dialog
+     * appended to the body is then behind it — drawn, focused, and invisible.
+     */
+    document.fullscreenElement ?? document.body
   );
 }

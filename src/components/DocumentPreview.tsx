@@ -4,7 +4,7 @@ import {
   MD_DOC_STYLE,
   MD_PREVIEW_STYLE,
 } from '@shared/md-doc-css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { DiagramViewer } from './DiagramViewer';
 import { inlineDiagrams } from '@/lib/mermaid';
 import { useT } from '@/lib/i18n/context';
@@ -61,8 +61,9 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
    * A button on every drawn diagram, put there after it renders.
    *
    * Added to the live DOM rather than to the markup, because the markup is also what a download is
-   * made from and an exported file has no viewer to open. Rendering again replaces the content and
-   * the buttons with it, so this runs whenever the drawn version does.
+   * made from and an exported file has no viewer to open. After every render, not only when the
+   * document changes: React may write the same markup back — it did on entering fullscreen, and the
+   * buttons went with it — and a frame already in place is skipped, so running again costs nothing.
    */
   useEffect(() => {
     const root = doc.current;
@@ -89,7 +90,10 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
       figure.replaceWith(frame);
       frame.append(figure, button);
     }
-  }, [shown, t]);
+  });
+
+  /* The same object for the same markup, so a render for any other reason leaves the DOM alone. */
+  const markup = useMemo(() => ({ __html: shown }), [shown]);
 
   /* One listener for every diagram: the button, or a double click anywhere on the drawing. */
   const open = (event: React.MouseEvent<HTMLDivElement>, onDouble: boolean) => {
@@ -121,7 +125,7 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
           onClick={(event) => open(event, false)}
           onDoubleClick={(event) => open(event, true)}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitised in markdownToHtml, and the diagrams again in inlineDiagrams
-          dangerouslySetInnerHTML={{ __html: shown }}
+          dangerouslySetInnerHTML={markup}
         />
       </div>
 
