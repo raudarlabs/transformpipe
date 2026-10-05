@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 1 October 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 5 October 2026.** Next up: **Markdown → Confluence storage format**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -50,10 +50,6 @@ two files into an answer. Hiding the one strategic bet in a list about storage i
 Decided on 1 October: Publish makes a link, ten revisions are kept, linked notes wait for 1.1, and
 Cursor comes in with the sign-in work because it needs the same thing.
 
-- [ ] **The Obsidian plugin** — Publish note (a link, and the same link again after an edit), Copy
-      link, Share with people, Make private, Export as Word or PDF; vault pictures carried inside
-      · `raudarlabs/transformpipe-obsidian`; signs in with OAuth through `obsidian://`, keeps its
-      tokens in Obsidian's SecretStorage; reviewed at community.obsidian.md, BRAT meanwhile
 - [ ] **Cursor connects** — its `cursor://` callback is accepted now; seen to work end to end, and
       its row in the assistants' table moves
 - [ ] **A page for Obsidian, and an article** — `/obsidian` and the post, five languages each
@@ -108,6 +104,14 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 5 October
+
+- [x] **The Obsidian plugin** — Publish note (a link, and the same link again after an edit), Copy
+      link, Share with people, Make private, Export as Word or PDF; vault pictures carried inside
+      · `raudarlabs/transformpipe-obsidian`; signs in with OAuth through `obsidian://`, keeps its
+      tokens in Obsidian's SecretStorage; listed at community.obsidian.md, its automated review
+      passed at 1.0.1
 
 ### 1 October
 

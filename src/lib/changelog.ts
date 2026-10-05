@@ -114,6 +114,17 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-05',
+    title: 'TransformPipe for Obsidian',
+    body:
+      'A plugin, listed in Obsidian\u2019s community directory: Publish note turns the note into a '
+      + 'page and copies its link, and publishing again after an edit updates the same page, so the '
+      + 'link already sent keeps working. Share it with named people instead, make it private, or '
+      + 'export it as Word or PDF into the vault. Pictures from the vault travel inside the page. It '
+      + 'signs in through the browser, with nothing to paste, and keeps the sign-in in the system '
+      + 'keychain. Desktop and mobile.',
+  },
+  {
+    date: '2026-10-05',
     title: 'A downloaded file opens its diagrams full screen too',
     body:
       'Each diagram in a downloaded .html now has a Full screen link that lays it over the whole '
