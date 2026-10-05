@@ -278,6 +278,7 @@ export const ui: Content['ui'] = {
   'converter.fullscreen.exit': 'Exit fullscreen',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Open the diagram full screen',
+  'diagram.expand': 'Full screen',
   'diagram.viewer': 'Diagram, full screen',
   'diagram.zoomIn': 'Zoom in',
   'diagram.zoomOut': 'Zoom out',

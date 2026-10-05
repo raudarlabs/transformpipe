@@ -269,6 +269,7 @@ export const ui: Content['ui'] = {
   'converter.fullscreen.exit': 'Quitter le plein écran',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Ouvrir le schéma en plein écran',
+  'diagram.expand': 'Plein écran',
   'diagram.viewer': 'Schéma en plein écran',
   'diagram.zoomIn': 'Zoom avant',
   'diagram.zoomOut': 'Zoom arrière',

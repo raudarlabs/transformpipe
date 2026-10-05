@@ -546,10 +546,13 @@ body {
 export const MD_PREVIEW_STYLE = `
 /*
  * The button that opens a diagram on the whole screen. Only the preview has it — this stylesheet
- * is not in a download, and neither is the button. Out of the way until the diagram is pointed at,
- * and always there on a screen with no pointer to hover with.
+ * is not in a download, and neither is the button.
+ *
+ * On a frame around the figure rather than in it, so it stays in the corner when a wide drawing
+ * is scrolled sideways; and always shown, with its word, because a control that appears only on
+ * hover is one most people never find — that was the first version.
  */
-.md-doc .md-diagram {
+.md-doc .md-diagram-frame {
   position: relative;
 }
 .md-doc .md-diagram-open {
@@ -558,25 +561,25 @@ export const MD_PREVIEW_STYLE = `
   right: 0.5rem;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  gap: 0.35rem;
+  height: 1.75rem;
+  padding: 0 0.6rem;
   border: 1px solid var(--md-stroke);
   border-radius: 0.5rem;
   background: var(--md-card);
-  color: var(--md-ink);
+  color: var(--md-secondary);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 120ms ease;
+  opacity: 0.9;
+  transition: opacity 120ms ease, color 120ms ease, border-color 120ms ease;
 }
-.md-doc .md-diagram:hover .md-diagram-open,
+.md-doc .md-diagram-open:hover,
 .md-doc .md-diagram-open:focus-visible {
   opacity: 1;
-}
-@media (hover: none) {
-  .md-doc .md-diagram-open {
-    opacity: 1;
-  }
+  color: var(--md-ink);
+  border-color: var(--md-brand);
 }
 
 /* The sheet the document sits on — painted here so its padding is part of the page, not a gap. */

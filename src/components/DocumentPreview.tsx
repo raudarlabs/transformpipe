@@ -70,25 +70,33 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
     if (!root) return;
 
     for (const figure of root.querySelectorAll<HTMLElement>('figure.md-diagram')) {
-      if (figure.querySelector('.md-diagram-open')) continue;
+      if (figure.parentElement?.classList.contains('md-diagram-frame')) continue;
 
+      /*
+       * Outside the figure, not in it: the figure is what scrolls sideways when the drawing is
+       * wider than the page, and a button inside it slid off with the drawing.
+       */
+      const frame = figure.ownerDocument.createElement('div');
       const button = figure.ownerDocument.createElement('button');
 
+      frame.className = 'md-diagram-frame';
       button.type = 'button';
       button.className = 'md-diagram-open';
       button.setAttribute('aria-label', t('diagram.open'));
       button.title = t('diagram.open');
       /* lucide's maximize-2, drawn inline: this button is not React's to render. */
-      button.innerHTML =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg>';
-      figure.append(button);
+      button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg><span>${t('diagram.expand')}</span>`;
+      figure.replaceWith(frame);
+      frame.append(figure, button);
     }
   }, [shown, t]);
 
   /* One listener for every diagram: the button, or a double click anywhere on the drawing. */
   const open = (event: React.MouseEvent<HTMLDivElement>, onDouble: boolean) => {
     const target = event.target as HTMLElement;
-    const figure = target.closest<HTMLElement>('figure.md-diagram');
+    const figure = target
+      .closest<HTMLElement>('.md-diagram-frame')
+      ?.querySelector<HTMLElement>('figure.md-diagram');
 
     if (!figure || (!onDouble && !target.closest('.md-diagram-open'))) return;
 
