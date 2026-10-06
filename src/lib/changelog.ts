@@ -113,6 +113,15 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-07',
+    title: 'The Obsidian plugin shows you where to start',
+    body:
+      'Version 1.0.3 of the plugin says what it does the first time it runs and puts a Publish '
+      + 'button in the ribbon. Publishing before you have an account no longer ends on a notice '
+      + 'pointing at the settings: it asks you to sign in, and the note is published as soon as you '
+      + 'come back from the browser, on a phone as well as a desktop.',
+  },
+  {
     date: '2026-10-05',
     title: 'Pages that show the real thing',
     body:

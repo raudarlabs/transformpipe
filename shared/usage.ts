@@ -26,8 +26,16 @@ export const BROWSER_EVENTS = [
   'nudge',
 ] as const;
 
-/** What the server counts on its own, where no browser is involved. */
-export const SERVER_EVENTS = ['mcp', 'api'] as const;
+/**
+ * What the server counts on its own, where no browser is involved.
+ *
+ * `oauth` is a connection being made, one step at a time — see `OAUTH_STEPS` — with the assistant
+ * as the source, so a funnel shows where people stop between asking to connect and connecting.
+ */
+export const SERVER_EVENTS = ['mcp', 'api', 'oauth'] as const;
+
+/** The steps of a connection, in order. `deny` is the consent page's Cancel. */
+export const OAUTH_STEPS = ['start', 'signin', 'consent', 'approve', 'deny', 'token'] as const;
 
 export type BrowserEvent = (typeof BROWSER_EVENTS)[number];
 export type ServerEvent = (typeof SERVER_EVENTS)[number];

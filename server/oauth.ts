@@ -6,6 +6,9 @@ import { clientDocument, isDocumentId } from './cimd.js';
 import { sql } from './db.js';
 import { clientAddress } from './address.js';
 import { countCall } from './limits.js';
+import { clientLabel } from './client-label.js';
+import { countServerEvent } from './usage.js';
+import type { OAUTH_STEPS } from '../shared/usage.js';
 
 /*
  * TransformPipe as an OAuth 2.1 authorization server, for one resource: the MCP endpoint.
@@ -100,6 +103,27 @@ export interface OAuthClient {
    * document. Absent for one that registered: a registration has no source to name.
    */
   from?: string;
+}
+
+/*
+ * One step of a connection, counted against the assistant making it — see OAUTH_STEPS in
+ * shared/usage.ts. A daily total per step and per assistant, nothing about who: it exists so that
+ * "thirteen people installed the plugin and nobody signed up" has an answer about where they
+ * stopped. Awaited, because a write started after the response may never leave a serverless
+ * function, and it never throws.
+ */
+type OAuthStep = (typeof OAUTH_STEPS)[number];
+
+const countStep = (client: { id: string; name: string | null }, step: OAuthStep) =>
+  countServerEvent('oauth', step, clientLabel(client.id, client.name));
+
+/** The same, for the token exchange, which has the client's id in hand and not its name. */
+async function countStepFor(clientId: string, step: OAuthStep): Promise<void> {
+  const rows = (await sql()`
+    select name from m2h_oauth_client where id = ${clientId}
+  `.catch(() => [])) as Array<{ name: string }>;
+
+  await countStep({ id: clientId, name: rows[0]?.name ?? null }, step);
 }
 
 /** The canonical name of the thing these tokens are for (RFC 8707). */
@@ -919,6 +943,11 @@ oauth.get('/authorize', async (c) => {
 
   params.scope = (granted.length > 0 ? granted : [...SCOPES]).join(' ');
 
+  /* Only the first arrival is a start; coming back from the sign-in with `p` is the same attempt. */
+  if (!parked) {
+    await countStep(client, 'start');
+  }
+
   const who = await currentUser(c);
 
   if (!who) {
@@ -935,6 +964,8 @@ oauth.get('/authorize', async (c) => {
       on conflict (id) do update set params = excluded.params, expires_at = excluded.expires_at
     `;
 
+    await countStep(client, 'signin');
+
     return c.redirect(`${origin}/?connect=${encodeURIComponent(id)}`, 302);
   }
 
@@ -948,6 +979,8 @@ oauth.get('/authorize', async (c) => {
       values (${id}, ${JSON.stringify(params)}::jsonb,
               now() + make_interval(secs => ${PENDING_TTL}), ${who.id})
     `;
+
+    await countStep(client, 'consent');
 
     return c.html(
       consentPage({ origin, client, who, params, pendingId: id }),
@@ -966,6 +999,8 @@ oauth.get('/authorize', async (c) => {
     set shown_to = ${who.id}, expires_at = now() + make_interval(secs => ${PENDING_TTL})
     where id = ${parked}
   `;
+
+  await countStep(client, 'consent');
 
   return c.html(
     consentPage({ origin, client, who, params, pendingId: parked }),
@@ -1121,6 +1156,8 @@ oauth.post('/approve', async (c) => {
       () => undefined
     );
 
+    await countStep(client, 'deny');
+
     return bounce(c, params, 'access_denied', 'You did not approve this.');
   }
 
@@ -1140,6 +1177,8 @@ oauth.post('/approve', async (c) => {
   await sql()`
     update m2h_oauth_pending set approved_at = now() where id = ${pendingId}
   `.catch(() => undefined);
+
+  await countStep(client, 'approve');
 
   const back = new URL(params.redirect_uri);
 
@@ -1281,6 +1320,8 @@ oauth.post('/token', async (c) => {
       row.scope,
       row.resource ?? resourceUri(c)
     );
+
+    await countStepFor(row.client_id, 'token');
 
     return c.json(issued, 200, { 'cache-control': 'no-store' });
   }
