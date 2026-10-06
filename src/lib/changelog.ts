@@ -119,7 +119,8 @@ const ENTRIES: ChangelogEntry[] = [
       'Version 1.0.3 of the plugin says what it does the first time it runs and puts a Publish '
       + 'button in the ribbon. Publishing before you have an account no longer ends on a notice '
       + 'pointing at the settings: it asks you to sign in, and the note is published as soon as you '
-      + 'come back from the browser, on a phone as well as a desktop.',
+      + 'come back from the browser. On an iPhone, Sign in used to open nothing at all; it now opens '
+      + 'the browser.',
   },
   {
     date: '2026-10-05',
