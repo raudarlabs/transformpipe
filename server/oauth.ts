@@ -1010,6 +1010,32 @@ oauth.get('/authorize', async (c) => {
 });
 
 /*
+ * Which app a parked request is for, so the page a signed-out person lands on can say "Connect
+ * Obsidian" instead of sending them to Google without a word — which is where ten of eleven people
+ * who pressed Sign in in the Obsidian plugin stopped.
+ *
+ * The name and nothing else: not the redirect, the scope or the challenge. It is the name the
+ * consent page shows on the next screen anyway, and the id is the unguessable one the server put in
+ * the address itself. A request that has expired or been approved answers 404, and the page falls
+ * back to plain words.
+ */
+oauth.get('/pending/:id', async (c) => {
+  const rows = (await sql()`
+    select params->>'client_id' as client_id
+    from m2h_oauth_pending
+    where id = ${c.req.param('id')} and expires_at > now() and approved_at is null
+  `.catch(() => [])) as Array<{ client_id: string | null }>;
+
+  const client = rows[0]?.client_id ? await findClient(rows[0].client_id) : null;
+
+  if (!client) {
+    return c.json({ error: 'Not found' }, 404, { 'cache-control': 'no-store' });
+  }
+
+  return c.json({ client: client.name }, 200, { 'cache-control': 'no-store' });
+});
+
+/*
  * Somebody reloaded the address the form posted to. It has no meaning as a GET, and answering with
  * nothing at all is how a person concludes the site is broken mid-connection.
  */

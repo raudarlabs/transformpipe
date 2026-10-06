@@ -59,12 +59,26 @@ interface AuthDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Which view to open on. The header's button opens sign-in; a gate can open sign-up. */
   initial?: View;
+  /**
+   * Set when an app is waiting on this sign-in to be connected — its name, or null while it is not
+   * known. The dialog then says who is asking and what happens next, which is the difference
+   * between a sign-in somebody chose and one that appeared out of a plugin. See ConnectGate.
+   */
+  connectingTo?: string | null;
+  /**
+   * Called instead of closing when the person is in. The connect gate needs it: there, closing
+   * means "not now" and gives the connection up, and a successful sign-in arrives as a close in the
+   * same tick as the session — before anything has had a chance to carry the connection on.
+   */
+  onSignedIn?: () => void;
 }
 
 export function AuthDialog({
   open,
   onOpenChange,
   initial = 'signin',
+  connectingTo,
+  onSignedIn,
 }: AuthDialogProps) {
   const t = useT();
   const {
@@ -147,7 +161,7 @@ export function AuthDialog({
       setSaid(t('auth.dialog.verify.done'));
       setDone(true);
       /* Long enough to read the line, short enough not to become a step of its own. */
-      setTimeout(() => onOpenChange(false), 1200);
+      setTimeout(() => (onSignedIn ? onSignedIn() : onOpenChange(false)), 1200);
 
       return;
     }
@@ -179,11 +193,20 @@ export function AuthDialog({
       return;
     }
 
-    onOpenChange(false);
+    if (onSignedIn) {
+      onSignedIn();
+    } else {
+      onOpenChange(false);
+    }
   };
 
+  const connecting = connectingTo !== undefined;
+  const client = connectingTo || t('auth.connect.app');
+
   const title =
-    view === 'signin'
+    connecting && (view === 'signin' || view === 'signup')
+      ? t('auth.connect.title', { client })
+      : view === 'signin'
       ? t('auth.dialog.signin.title')
       : view === 'signup'
         ? t('auth.dialog.signup.title')
@@ -227,7 +250,9 @@ export function AuthDialog({
             textColor="secondary"
             className="text-sm leading-relaxed"
           >
-            {t('auth.dialog.aside.lede')}
+            {connecting
+              ? t('auth.connect.aside', { client })
+              : t('auth.dialog.aside.lede')}
           </Typography>
 
           <ul className="flex flex-col gap-3.5">
@@ -258,6 +283,17 @@ export function AuthDialog({
           <div className="flex min-h-0 flex-col overflow-y-auto p-7">
             <ModalHeader className="mb-6">
               <ModalTitle>{title}</ModalTitle>
+              {connecting && (view === 'signin' || view === 'signup') && (
+                <Typography
+                  variant="p"
+                  textColor="secondary"
+                  className="text-sm"
+                >
+                  {connectingTo
+                    ? t('auth.connect.lede', { client })
+                    : t('auth.connect.lede.unknown')}
+                </Typography>
+              )}
               {view === 'reset' && (
                 <Typography
                   variant="p"

@@ -53,6 +53,14 @@ export const ui: Content['ui'] = {
   'header.webhooks': 'Webhooks',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
+  'auth.connect.app': 'tu aplicación',
+  'auth.connect.title': 'Conectar {client} con TransformPipe',
+  'auth.connect.lede':
+    '{client} quiere publicar en tu cuenta de TransformPipe. Crea una cuenta gratuita o inicia sesión —con Google o con tu correo— y aprueba la conexión en la siguiente pantalla.',
+  'auth.connect.lede.unknown':
+    'Una aplicación quiere publicar en tu cuenta de TransformPipe. Crea una cuenta gratuita o inicia sesión —con Google o con tu correo— y aprueba la conexión en la siguiente pantalla.',
+  'auth.connect.aside':
+    'Inicia sesión una vez y {client} publicará páginas cuyo enlace no cambia tras cada edición.',
   'auth.dialog.signin.title': 'Iniciar sesión',
   'auth.dialog.signup.title': 'Crea tu cuenta',
   'auth.dialog.reset.title': 'Restablece tu contraseña',

@@ -158,7 +158,22 @@ export const api = {
    * `failed` is the sentence to throw when there is no URL to go to, because that one is shown to
    * a person and this file has no language: everything else it throws is a developer's line.
    */
-  startGoogleSignIn: async (returnTo: string, failed: string): Promise<string> => {
+  /** The name of the app a parked connection is for, or null when the request is gone. */
+  pendingClient: async (id: string): Promise<string | null> => {
+    const response = await fetch(`/api/oauth/pending/${encodeURIComponent(id)}`, {
+      headers: { accept: 'application/json' },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const body = (await response.json().catch(() => null)) as { client?: unknown } | null;
+
+    return typeof body?.client === 'string' && body.client ? body.client : null;
+  },
+
+    startGoogleSignIn: async (returnTo: string, failed: string): Promise<string> => {
     const body = await request<{ url?: string; message?: string }>(
       '/api/auth/sign-in/social',
       {

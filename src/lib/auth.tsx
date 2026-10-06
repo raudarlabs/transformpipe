@@ -28,7 +28,17 @@ interface AuthState {
   /** Confirms the address with that code, and refreshes who is signed in. */
   verifyEmailCode: (email: string, otp: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  /**
+   * An app waiting for this person to sign in so it can be connected — Obsidian, an assistant — or
+   * null. `client` is its name once the server has said it, and null until then or if it cannot.
+   */
+  connecting: { id: string; client: string | null } | null;
+  /** Gives up on that connection: the address loses its `connect` and the page is just the page. */
+  leaveConnect: () => void;
 }
+
+/** Where a parked authorization request continues once there is a session. */
+const connectTarget = (id: string) => `/api/oauth/authorize?p=${encodeURIComponent(id)}`;
 
 const AuthContext = createContext<AuthState | null>(null);
 
@@ -112,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [connecting, setConnecting] = useState<AuthState['connecting']>(null);
   const [failure, setFailure] = useState<Failure>(() => {
     const key = takeSignInOutcome();
 
@@ -148,28 +159,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
        * An assistant sent the person here to authorise a connection. The authorization request is
        * parked on the server under this opaque id; all this page does is make sure there is a
        * session and hand them back to it — which is why the id is the only thing in the address.
+       *
+       * Signed out, it used to send them on to Google at once, before this page had shown anything:
+       * somebody who pressed Sign in in Obsidian found themselves on Google's account picker with
+       * no word of TransformPipe and no way to use an email address. Ten of the first eleven left
+       * there. Now the sign-in dialog opens, saying which app is asking — see ConnectGate — and
+       * signing in any way it offers continues the connection, through the effect below.
        */
       const connect = new URL(window.location.href).searchParams.get('connect');
 
       if (connect) {
-        const back = `/api/oauth/authorize?p=${encodeURIComponent(connect)}`;
-
         if (account) {
-          window.location.replace(back);
-        } else {
-          setUser(null);
-          setIsLoading(false);
-          void handOffToGoogle(back, t('auth.error.start')).catch(
-            (cause: Error) => setFailure({ text: cause.message })
-          );
+          window.location.replace(connectTarget(connect));
+
+          return;
         }
 
-        return;
+        setConnecting({ id: connect, client: null });
+        api
+          .pendingClient(connect)
+          .then((client) =>
+            setConnecting((now) => (now?.id === connect ? { id: connect, client } : now))
+          )
+          .catch(() => undefined);
       }
 
       setUser(account);
       setIsLoading(false);
     });
+  }, []);
+
+  /*
+   * Signed in with a connection waiting: on to the consent page. Covers every way in at once — a
+   * password, a new account confirmed with its code, and Google, whose round trip comes back to
+   * this same address and finds the session on load.
+   */
+  useEffect(() => {
+    if (user && connecting) {
+      window.location.replace(connectTarget(connecting.id));
+    }
+  }, [user, connecting]);
+
+  const leaveConnect = useCallback(() => {
+    setConnecting(null);
+
+    const url = new URL(window.location.href);
+
+    url.searchParams.delete('connect');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
   }, []);
 
   const signIn = useCallback(
@@ -335,6 +372,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sendVerificationCode,
       verifyEmailCode,
       signOut,
+      connecting,
+      leaveConnect,
     }),
     [
       user,
@@ -348,6 +387,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sendVerificationCode,
       verifyEmailCode,
       signOut,
+      connecting,
+      leaveConnect,
     ]
   );
 

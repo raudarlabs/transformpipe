@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppFooter } from './components/AppFooter';
 import { BreadcrumbSlotProvider } from './components/BreadcrumbSlot';
+import { ConnectGate } from './components/ConnectGate';
 import { CookieBanner } from './components/CookieBanner';
 import { ConnectorNudge } from './components/ConnectorNudge';
 import { AppHeader } from './components/AppHeader';
@@ -861,6 +862,7 @@ export default function App() {
                 * asking for consent inside somebody else's iframe is asking on their behalf.
                 */}
               <CookieBanner />
+              <ConnectGate />
               <Toaster />
             </TooltipProvider>
           </ConsentProvider>

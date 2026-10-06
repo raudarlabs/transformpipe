@@ -114,6 +114,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-07',
+    title: 'Connecting an app starts on our page, not Google’s',
+    body:
+      'Pressing Sign in in Obsidian, or connecting an assistant, while signed out used to send the '
+      + 'browser straight to Google’s account picker without a word of TransformPipe. It now opens '
+      + 'a sign-in that names the app asking, and offers an email address as well as Google — new '
+      + 'account included. Signing in either way goes on to approving the connection.',
+  },
+  {
+    date: '2026-10-07',
     title: 'The Obsidian plugin shows you where to start',
     body:
       'Version 1.0.3 of the plugin says what it does the first time it runs and puts a Publish '
