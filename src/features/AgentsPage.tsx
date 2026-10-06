@@ -19,7 +19,7 @@ import type { LandingWords } from '@/lib/i18n/content';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { localePath } from '@/lib/i18n/locales';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY, MCP_PATH } from '@/lib/mcp-facts';
-import { OBSIDIAN_INSTALL } from '@/lib/obsidian-facts';
+import { OBSIDIAN_DIRECTORY } from '@/lib/obsidian-facts';
 import { staticPage, type StaticPage as Page } from '@/lib/pages';
 import {
   Accordion,
@@ -884,9 +884,7 @@ function AgentsHub({ page, onGoToConverter }: { page: Page; onGoToConverter: () 
     claude: <WayButton href={CLAUDE_DIRECTORY}>{t('agents.claude.add')}</WayButton>,
     chatgpt: <WayButton href={CHATGPT_PLUGINS}>{t('agents.chatgpt.open')}</WayButton>,
     obsidian: (
-      <WayButton href={OBSIDIAN_INSTALL} external={false}>
-        {content.pages.obsidian.plugin?.add ?? 'Obsidian'}
-      </WayButton>
+      <WayButton href={OBSIDIAN_DIRECTORY}>{content.pages.obsidian.plugin?.add ?? 'Obsidian'}</WayButton>
     ),
   };
 

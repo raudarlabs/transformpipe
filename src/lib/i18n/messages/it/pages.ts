@@ -1664,7 +1664,8 @@ export const pages: Content['pages'] = {
       listed: 'Nei Plugin della community',
       add: 'Aggiungi a Obsidian',
       directory: 'Vedilo nella directory',
-      copy: 'Copia il link di installazione',
+      copy: 'Copia l’indirizzo del plugin',
+      open: 'Aprilo nell’app Obsidian',
       facts: ['Account gratuito', 'Desktop e mobile', 'Open source, MIT'],
       features: {
         heading: 'Cosa fa',

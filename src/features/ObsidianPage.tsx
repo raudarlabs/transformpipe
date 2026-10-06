@@ -52,19 +52,20 @@ const FEATURE_ASK = ['Publish note', 'Open in browser', 'Share with people…', 
 const PHONE_ART = ['/obsidian/phone-palette.webp', '/obsidian/phone-published.webp', '/obsidian/phone-page.webp'];
 
 /*
- * Obsidian itself, the way the assistants' pages offer theirs: the link that opens the app on the
- * plugin, to copy, and beside it the button that follows it. Same row, same sizes, so the three
- * pages read alike.
+ * The way in, the way the assistants' pages offer theirs: the plugin's page in Obsidian's own
+ * directory, as a button and as an address to copy.
+ *
+ * The button used to be `obsidian://show-plugin`, which works only on a computer that has Obsidian
+ * with community plugins already turned on. On a fresh install — Windows included — Restricted mode
+ * is on and the link does nothing; on a phone the browser rarely hands it over at all. The
+ * directory's page opens everywhere and carries Obsidian's own Install button and the steps. The
+ * app link stays, as a line under these, for whoever has Obsidian open right here.
  */
 function WaysIn({ words, centred = false }: { words: PluginWords; centred?: boolean }) {
   return (
     <WaysRow
-      field={<CopyField text={OBSIDIAN_INSTALL} copyLabel={words.copy} />}
-      button={
-        <WayButton href={OBSIDIAN_INSTALL} external={false}>
-          {words.add}
-        </WayButton>
-      }
+      field={<CopyField text={OBSIDIAN_DIRECTORY} breakAt={'https://community.obsidian.md'.length} copyLabel={words.copy} />}
+      button={<WayButton href={OBSIDIAN_DIRECTORY}>{words.add}</WayButton>}
       centred={centred}
     />
   );
@@ -216,12 +217,10 @@ export function ObsidianPage({ page, onGoToConverter }: { page: Page; onGoToConv
           <WaysIn words={plugin} />
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <a
-              href={OBSIDIAN_DIRECTORY}
-              target="_blank"
-              rel="noreferrer noopener"
+              href={OBSIDIAN_INSTALL}
               className="inline-flex items-center gap-1.5 text-brand-tertiary underline-offset-2 hover:underline"
             >
-              {plugin.directory}
+              {plugin.open}
               <ArrowRight className="size-3.5" />
             </a>
             <a

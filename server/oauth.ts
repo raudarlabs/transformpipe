@@ -507,6 +507,45 @@ export function noticePage(options: {
 `;
 }
 
+/** Where an app's sign-in ends: a way back into the app, tried once and offered as a button. */
+function appReturnPage(options: { name: string; href: string; origin: string }): string {
+  const name = escapeHtml(options.name);
+  const href = escapeHtml(options.href);
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="refresh" content="0;url=${href}">
+<title>Back to ${name} — TransformPipe</title>
+<style>
+  :root { color-scheme: dark; --ink: #f4f4f5; --dim: #a1a1aa; --line: #2a2a35; --card: #17171e;
+          --page: #0f0e14; --brand: #14a8af; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 1.5rem;
+         background: var(--page); color: var(--ink);
+         font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { width: 100%; max-width: 30rem; border: 1px solid var(--line); border-radius: 12px;
+         background: var(--card); padding: 1.5rem; }
+  h1 { margin: 0 0 0.5rem; font-size: 1.15rem; }
+  p { margin: 0 0 1rem; color: var(--dim); }
+  .open { display: block; text-align: center; padding: 0.85rem 1rem; border-radius: 10px;
+          background: var(--brand); color: #fff; font-weight: 600; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Approved — back to ${name}</h1>
+  <p>${name} should open on its own and finish signing in. If it does not, press the button.</p>
+  <a class="open" href="${href}">Open ${name}</a>
+</main>
+</body>
+</html>
+`;
+}
+
 const csp = (formAction: string) =>
   `default-src 'none'; style-src 'unsafe-inline'; form-action ${formAction}; script-src 'none'; frame-ancestors 'none'`;
 
@@ -1111,6 +1150,20 @@ oauth.post('/approve', async (c) => {
   }
 
   back.searchParams.set('iss', origin);
+
+  /*
+   * An app is sent back by a page, not a bare 302.
+   *
+   * A redirect from a form POST to `obsidian://` is a navigation the browser may simply drop:
+   * Chrome on Android does, silently, and Safari on a phone sometimes asks and sometimes does not.
+   * From the person's side Approve did nothing, and from Obsidian's nothing ever came back — which
+   * is how signing in from a phone failed. So the page tries on its own (a meta refresh, since this
+   * page runs no script) and holds a button that is a person's own tap, which every browser lets
+   * through to the app.
+   */
+  if (APP_REDIRECTS.has(params.redirect_uri)) {
+    return c.html(appReturnPage({ name: client.name, href: back.toString(), origin }), 200, CONSENT_HEADERS);
+  }
 
   return c.redirect(back.toString(), 302);
 });

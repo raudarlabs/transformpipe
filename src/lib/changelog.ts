@@ -123,6 +123,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-06',
+    title: 'Signing in from a phone comes back to the app',
+    body:
+      'Approving TransformPipe from Obsidian on a phone could end on a page that did nothing: the '
+      + 'browser dropped the jump back to the app. An app’s sign-in now ends on a page that opens '
+      + 'it, with a button for when the browser will not. Add to Obsidian now opens the plugin’s '
+      + 'page in Obsidian’s directory, which works on any device, with a link into the app beside it.',
+  },
+  {
+    date: '2026-10-06',
     title: 'One page for every assistant',
     body:
       '/agents was Claude’s page under another name. It is now the way in to all of them: a card '

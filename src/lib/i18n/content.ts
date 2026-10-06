@@ -138,8 +138,10 @@ export interface PluginWords {
   /** The two ways in: Obsidian itself, and the listing for a reader not on that machine. */
   add: string;
   directory: string;
-  /** The label on the button that copies the install link, read aloud and shown as its tooltip. */
+  /** The label on the button that copies the plugin's address, read aloud and shown as its tooltip. */
   copy: string;
+  /** The link that opens the plugin in Obsidian itself, for a reader who has it on this machine. */
+  open: string;
   /** Short facts under the buttons. */
   facts: string[];
   features: { heading: string; intro: string; items: (TitledWords & { result: string })[] };
