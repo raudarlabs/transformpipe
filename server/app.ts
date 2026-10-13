@@ -13,7 +13,7 @@ import {
 import { attachment } from './attachment.js';
 import { clientAddress, publicHost } from './address.js';
 import { authProxy, currentUser, selfOrigin, type SessionUser } from './auth.js';
-import { sendShareNotice, sendWelcome } from './mail.js';
+import { sendShareNotice } from './mail.js';
 import { looksLikeId, sql, type DocumentRow } from './db.js';
 import { createKey, forgetKey, listKeys, revokeKey } from './keys.js';
 import {
@@ -23,7 +23,6 @@ import {
 import {
   AI_SUMMARY,
   checkQuota,
-  claimWelcome,
   countCall,
   countShareMail,
   countSummaryCall,
@@ -31,7 +30,6 @@ import {
   PUBLISH_UNVERIFIED,
   QUOTA,
   RATE,
-  releaseWelcome,
   usageOf,
 } from './limits.js';
 import {
@@ -51,6 +49,7 @@ import {
   revokeWebhook,
 } from './webhooks.js';
 import admin from './admin.js';
+import rate from './rate.js';
 import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
@@ -416,37 +415,13 @@ api.post('/documents', async (c) => {
   const userId = c.get('user').id;
 
   /*
-   * Say hello, once, the first time somebody keeps something.
-   *
-   * Not on sign-in: Neon Auth owns registration and tells this application nothing about it, so
-   * there is no moment of creation to hook. Not on the session check either — that fires on every
-   * page load, and a write on it would be a write on every page load. Saving a document is the
-   * first thing an account is actually for, and `claimWelcome` hands the job to exactly one
-   * request — putting it back if the send fails, so a bad minute at the mail provider costs a
-   * retry rather than the only greeting that account will ever get.
-   *
-   * Awaited — a send started after the response may never leave a serverless function (see
-   * mail.ts) — but only logged on failure: a welcome that did not send is not a reason to fail a
-   * save that already happened. It costs the first save of an account a few hundred milliseconds,
-   * once.
+   * The first save is still recorded — m2h_user, which radar.first_use_daily counts — but nothing is
+   * sent from here any more. The welcome used to go out at this moment through Resend; it now comes
+   * from Brevo shortly after sign-up (server/brevo.ts), and sending both would greet people twice.
    */
-  {
-    const email = c.get('user').email;
-
-    if (email && (await claimWelcome(userId))) {
-      const sent = await sendWelcome({
-        to: email,
-        name: c.get('user').name ?? null,
-        origin: selfOrigin(c),
-      });
-
-      if (!sent.ok) {
-        console.error(`welcome to ${email} not sent: ${sent.reason}`);
-        /* Hand the claim back: an account that was not greeted is still owed one. */
-        await releaseWelcome(userId);
-      }
-    }
-  }
+  await sql()`
+    insert into m2h_user (user_id) values (${userId}) on conflict (user_id) do nothing
+  `.catch(() => undefined);
 
   type CreateBody = {
     name?: string;
@@ -1693,6 +1668,7 @@ app.get('/.well-known/openai-apps-challenge', (c) =>
 );
 
 app.route('/', admin);
+app.route('/', rate);
 app.route('/', mcp);
 app.route('/', oauth);
 app.route('/', v1);

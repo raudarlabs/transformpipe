@@ -113,6 +113,14 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-13',
+    title: 'A few emails in your first weeks',
+    body:
+      'An account now gets a welcome by email, and in the days after a couple of tips or a question '
+      + 'about how it is going — which ones depends on whether you have saved or connected anything '
+      + 'yet. Each has an unsubscribe link, and the privacy page says what the mail service is given.',
+  },
+  {
     date: '2026-10-07',
     title: 'Connecting an app starts on our page, not Google’s',
     body:

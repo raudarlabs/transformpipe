@@ -254,15 +254,16 @@ export const pages: Content['pages'] = {
       {
         heading: 'Ce que nous ne faisons pas',
         body: [
-          'Il n’y a ni publicité, ni pixel de suivi, et rien n’est vendu. Un seul script tiers se charge — Google Tag Manager — et il n’apporte Google Analytics que si vous l’avez autorisé dans la bannière cookies ; refusé ou sans réponse, les balises de Google n’écrivent rien dans votre navigateur. Rien n’est communiqué à personne en dehors de l’infrastructure qui fait tourner le service : la base de données, le stockage d’objets, le prestataire d’authentification, le prestataire d’e-mail et l’hébergeur.',
+          'Il n’y a ni publicité, ni pixel de suivi, et rien n’est vendu. Un seul script tiers se charge — Google Tag Manager — et il n’apporte Google Analytics que si vous l’avez autorisé dans la bannière cookies ; refusé ou sans réponse, les balises de Google n’écrivent rien dans votre navigateur. Rien n’est communiqué à personne en dehors de l’infrastructure qui fait tourner le service : la base de données, le stockage d’objets, le prestataire d’authentification, les deux prestataires d’e-mail et l’hébergeur.',
           'Vos documents ne sont pas lus par nous, et ils ne servent pas à entraîner quoi que ce soit.',
         ],
       },
       {
         heading: 'Les e-mails',
         body: [
-          'Un e-mail part dans quatre cas et dans aucun autre : pour confirmer votre adresse, pour réinitialiser un mot de passe, pour vous accueillir une fois après votre inscription, et pour prévenir quelqu’un qu’un document a été partagé avec lui. Les deux premiers viennent du prestataire d’authentification, les deux autres du prestataire d’e-mail. Il n’y a pas de lettre d’information, et il n’y a rien à quoi se désabonner.',
+          'Un e-mail part dans ces cas et dans aucun autre : pour confirmer votre adresse et pour réinitialiser un mot de passe, envoyés par le prestataire d’authentification ; pour prévenir quelqu’un qu’un document a été partagé avec lui, envoyé par le prestataire d’e-mail ; et, si vous avez un compte, quelques e-mails pendant les premières semaines — un message de bienvenue, quelques conseils d’utilisation et une question sur la manière dont cela se passe. Ceux-là viennent de Brevo, chacun comporte un lien de désinscription, et il n’y a pas de newsletter.',
           'Ce que reçoit le prestataire d’e-mail, c’est l’adresse du destinataire, celle de la personne qui partage lorsqu’il y en a une, et le message lui-même. Il ne reçoit jamais de document.',
+          'Brevo reçoit votre adresse et votre nom, le jour de votre inscription, et quelques chiffres qui décident lequel de ces e-mails vous est utile : combien de documents vous conservez et avez partagés, combien de fois vos liens partagés ont été ouverts, quelles applications vous avez connectées, et quand vous avez utilisé TransformPipe pour la dernière fois. Jamais un document, son nom ni son texte. Se désinscrire depuis l’un de ces e-mails les arrête tous ; supprimer votre compte vous retire aussi de Brevo.',
         ],
       },
       {

@@ -260,15 +260,16 @@ export const pages: Content['pages'] = {
       {
         heading: 'What we do not do',
         body: [
-          'There is no advertising, no tracking pixel and nothing sold. One third-party script loads at all — Google Tag Manager — and it brings Google Analytics only if you allowed it in the cookie banner; refused or unanswered, Google’s tags write nothing to your browser. Nothing is shared with anyone except the infrastructure that runs the service: the database, the blob store, the authentication provider, the email provider and the host.',
+          'There is no advertising, no tracking pixel and nothing sold. One third-party script loads at all — Google Tag Manager — and it brings Google Analytics only if you allowed it in the cookie banner; refused or unanswered, Google’s tags write nothing to your browser. Nothing is shared with anyone except the infrastructure that runs the service: the database, the blob store, the authentication provider, the two email providers and the host.',
           'Your documents are not read by us, and they are not used to train anything.',
         ],
       },
       {
         heading: 'Email',
         body: [
-          'Email is sent in four cases and no others: to confirm your address, to reset a password, to welcome you once after you register, and to tell somebody that a document has been shared with them. The first two come from the authentication provider, the other two from the email provider. There is no newsletter, and there is nothing to unsubscribe from.',
+          'Email is sent in these cases and no others: to confirm your address and to reset a password, which come from the authentication provider; to tell somebody that a document has been shared with them, which comes from the email provider; and, to an account holder, a few emails in the first weeks — a welcome, a couple of tips on using it, and a question about how it is going. Those come from Brevo, each carries an unsubscribe link, and there is no newsletter.',
           'What the email provider is given is the recipient’s address, the address of the person sharing where there is one, and the message itself. It is never given a document.',
+          'Brevo is given your address and name, the day you registered, and a few counts that decide which of those emails is useful to you: how many documents you keep and have shared, how often your shared links were opened, which apps you connected, and when you last used TransformPipe. Never a document, its name or its text. Unsubscribing from one of these emails stops them all; deleting your account removes you from Brevo too.',
         ],
       },
       {

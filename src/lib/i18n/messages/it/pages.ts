@@ -253,15 +253,16 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cosa non facciamo',
         body: [
-          'Non c’è pubblicità, non c’è nessun pixel di tracciamento e niente viene venduto. Si carica un solo script di terze parti — Google Tag Manager — e porta con sé Google Analytics soltanto se lo hai consentito nel banner dei cookie; se lo rifiuti o non rispondi, i tag di Google non scrivono nulla nel browser. Niente viene condiviso con nessuno tranne l’infrastruttura che fa funzionare il servizio: il database, l’archivio blob, il fornitore di autenticazione, il fornitore di e-mail e l’hosting.',
+          'Non c’è pubblicità, non c’è nessun pixel di tracciamento e niente viene venduto. Si carica un solo script di terze parti — Google Tag Manager — e porta con sé Google Analytics soltanto se lo hai consentito nel banner dei cookie; se lo rifiuti o non rispondi, i tag di Google non scrivono nulla nel browser. Niente viene condiviso con nessuno tranne l’infrastruttura che fa funzionare il servizio: il database, l’archivio blob, il fornitore di autenticazione, i due fornitori di e-mail e l’hosting.',
           'I tuoi documenti non vengono letti da noi, e non vengono usati per addestrare niente.',
         ],
       },
       {
         heading: 'Le e-mail',
         body: [
-          'Un’e-mail parte in quattro casi e in nessun altro: per confermare il tuo indirizzo, per reimpostare una password, per darti il benvenuto una volta dopo la registrazione e per avvisare qualcuno che un documento è stato condiviso con lui. I primi due li invia il fornitore di autenticazione, gli altri due il fornitore di e-mail. Non c’è nessuna newsletter, e non c’è niente da cui disiscriversi.',
+          'Un’e-mail parte in questi casi e in nessun altro: per confermare il tuo indirizzo e per reimpostare una password, inviate dal fornitore di autenticazione; per avvisare qualcuno che un documento è stato condiviso con lui, inviata dal fornitore di e-mail; e, se hai un account, poche e-mail nelle prime settimane: un benvenuto, un paio di consigli d’uso e una domanda su come sta andando. Queste arrivano da Brevo, ognuna contiene un link per disiscriverti, e non c’è nessuna newsletter.',
           'Al fornitore di e-mail vengono dati l’indirizzo del destinatario, quello di chi condivide quando c’è, e il messaggio stesso. Un documento non gli viene mai dato.',
+          'A Brevo vengono dati il tuo indirizzo e il tuo nome, il giorno della registrazione e pochi numeri che decidono quale di queste e-mail ti è utile: quanti documenti conservi e hai condiviso, quante volte sono stati aperti i tuoi link condivisi, quali app hai collegato e quando hai usato TransformPipe l’ultima volta. Mai un documento, il suo nome o il suo testo. Disiscriverti da una di queste e-mail le ferma tutte; eliminare l’account ti rimuove anche da Brevo.',
         ],
       },
       {

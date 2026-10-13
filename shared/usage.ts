@@ -31,8 +31,11 @@ export const BROWSER_EVENTS = [
  *
  * `oauth` is a connection being made, one step at a time — see `OAUTH_STEPS` — with the assistant
  * as the source, so a funnel shows where people stop between asking to connect and connecting.
+ *
+ * `rating` is a score from 1 to 10 clicked in an email (server/rate.ts): the score is the key, the
+ * email it came from the campaign, and nothing says who clicked it.
  */
-export const SERVER_EVENTS = ['mcp', 'api', 'oauth'] as const;
+export const SERVER_EVENTS = ['mcp', 'api', 'oauth', 'rating'] as const;
 
 /** The steps of a connection, in order. `deny` is the consent page's Cancel. */
 export const OAUTH_STEPS = ['start', 'signin', 'consent', 'approve', 'deny', 'token'] as const;

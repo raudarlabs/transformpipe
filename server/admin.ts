@@ -5,6 +5,7 @@ import { clientLabel, type ClientLabel } from './client-label.js';
 import { looksLikeId, sql } from './db.js';
 import { QUOTA } from './limits.js';
 import { deleteSources } from './source.js';
+import { brevoEnabled, forgetContact, syncToBrevo } from './brevo.js';
 import { OAUTH_STEPS } from '../shared/usage.js';
 
 /*
@@ -53,7 +54,7 @@ const doorSlot = (door: string) => {
 
 /* ------------------------------------------------------------------------------------ the gate */
 
-const admins = () =>
+export const admins = () =>
   new Set(
     (process.env.ADMIN_EMAILS ?? '')
       .split(',')
@@ -159,7 +160,7 @@ interface ProviderRow {
 }
 
 /** One account as the page shows it. */
-interface Person {
+export interface Person {
   id: string;
   name: string;
   email: string;
@@ -218,7 +219,7 @@ async function optional<T>(query: Promise<unknown>): Promise<T[]> {
   }
 }
 
-async function loadPeople(): Promise<Person[]> {
+export async function loadPeople(): Promise<Person[]> {
   const [users, sessions, providers] = await Promise.all([
     rows<UserRow>(sql()`
       with docs as (
@@ -423,7 +424,7 @@ interface SourceRow {
 }
 
 async function loadCounters(days: number) {
-  const [funnel, sources] = await Promise.all([
+  const [funnel, sources, ratings] = await Promise.all([
     rows<FunnelRow>(sql()`
       select source as client, key as step, sum(count)::int as n
       from m2h_usage_daily
@@ -437,9 +438,16 @@ async function loadCounters(days: number) {
       group by 1
       order by 2 desc
     `),
+    // All time: there are few of these, and a score is worth keeping in view.
+    rows<{ score: string; n: number }>(sql()`
+      select key as score, sum(count)::int as n
+      from m2h_usage_daily
+      where event = 'rating'
+      group by 1
+    `),
   ]);
 
-  return { funnel, sources };
+  return { funnel, sources, ratings };
 }
 
 /* ------------------------------------------------------------------------------------ the pages */
@@ -793,11 +801,31 @@ function funnelTable(rows: FunnelRow[]): string {
   return `<div class="scroll"><table><thead><tr><th>App</th>${head}<th class="n">start→token</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
+function ratingsCard(rows: Array<{ score: string; n: number }>): string {
+  const total = rows.reduce((sum, one) => sum + one.n, 0);
+
+  if (total === 0) {
+    return '<p class="mute">No scores yet. They arrive from the 1–10 scale in the day-3 email.</p>';
+  }
+
+  const at = (score: number) => rows.filter((one) => Number(one.score) === score).reduce((sum, one) => sum + one.n, 0);
+  const mean = rows.reduce((sum, one) => sum + Number(one.score) * one.n, 0) / total;
+  const promoters = [9, 10].reduce((sum, n) => sum + at(n), 0);
+  const detractors = [1, 2, 3, 4, 5, 6].reduce((sum, n) => sum + at(n), 0);
+  const nps = Math.round(((promoters - detractors) / total) * 100);
+
+  return `<dl class="facts" style="margin-bottom:12px"><dt>Scores</dt><dd>${total}</dd><dt>Average</dt><dd>${mean.toFixed(1)} / 10</dd>
+    <dt>NPS</dt><dd>${nps} <span class="mute">(${promoters} gave 9–10, ${detractors} gave 1–6)</span></dd></dl>
+    ${barList(Array.from({ length: 10 }, (_, i) => ({ label: String(10 - i), n: at(10 - i) })), total)}
+    <p class="note">Counted when somebody clicks a score, with nothing about who. Brevo's click report for that email shows which contact clicked which number.</p>`;
+}
+
 function overviewPage(
   people: Person[],
   counters: Awaited<ReturnType<typeof loadCounters>>,
   days: number,
-  deleted = false
+  deleted = false,
+  notice = ''
 ): string {
   const now = Date.now();
   const since = (d: number) => people.filter((one) => one.created > now - d * DAY_MS).length;
@@ -883,10 +911,15 @@ function overviewPage(
   const body = `<main>
   <div class="top">
     <div><h1>Users</h1><div class="mute">Generated ${dateTime(now)} UTC · counters cover the last ${days} days</div></div>
-    <div class="links"><a href="?days=7">7d</a><a href="?days=30">30d</a><a href="?days=90">90d</a><a href="/admin/users.csv">Download CSV</a></div>
+    <div class="links">${
+      brevoEnabled()
+        ? '<form method="POST" action="/admin/brevo-sync" style="display:inline"><button class="f" type="submit">Sync to Brevo now</button></form>'
+        : ''
+    }<a href="?days=7">7d</a><a href="?days=30">30d</a><a href="?days=90">90d</a><a href="/admin/users.csv">Download CSV</a></div>
   </div>
 
   ${deleted ? '<p class="notice">Account deleted, with its documents, files, connections and keys.</p>' : ''}
+  ${notice ? `<p class="notice">${escapeHtml(notice)}</p>` : ''}
   <section class="tiles">
     <div class="tile"><span>Accounts</span><b>${people.length}</b><small>+${since(7)} this week · +${since(30)} in 30 days</small></div>
     <div class="tile"><span>Confirmed address</span><b>${verified}</b><small>${people.length ? Math.round((verified / people.length) * 100) : 0}% of accounts</small></div>
@@ -936,6 +969,10 @@ function overviewPage(
       <p class="note">start: the app asked · signin: sent to sign in · consent: saw the approval page · approve / deny · token: the app
       collected its token. Daily totals from the counter, not people.</p>
     </div>
+    <div class="card"><h2>Ratings from the emails</h2>${ratingsCard(counters.ratings)}</div>
+  </section>
+
+  <section class="grid">
     <div class="card"><h2>Site visits by source, last ${days} days</h2>
       ${barList(
         counters.sources.slice(0, 12).map((one) => ({ label: escapeHtml(one.source || '—'), n: one.n })),
@@ -1238,7 +1275,13 @@ admin.get('/admin', async (c) => {
   const days = Math.max(1, Math.min(365, Number(c.req.query('days')) || 30));
   const [people, counters] = await Promise.all([loadPeople(), loadCounters(days)]);
 
-  return c.html(overviewPage(people, counters, days, c.req.query('deleted') === '1'), 200, PRIVATE_HEADERS);
+  const synced = c.req.query('synced');
+
+  return c.html(
+    overviewPage(people, counters, days, c.req.query('deleted') === '1', synced ? `Brevo: ${synced}` : ''),
+    200,
+    PRIVATE_HEADERS
+  );
 });
 
 admin.get('/admin/u/:id', async (c) => {
@@ -1314,6 +1357,11 @@ admin.post('/admin/u/:id/delete', async (c) => {
   try {
     const done = await deleteAccount(id);
 
+    // Brevo would otherwise go on writing to the address of an account that no longer exists.
+    if (target.email) {
+      await forgetContact(target.email);
+    }
+
     // The id and the counts, for the function log; no address.
     console.info(`admin: deleted account ${id} (${done.documents} documents, ${done.files} files)`);
   } catch (error) {
@@ -1326,6 +1374,70 @@ admin.post('/admin/u/:id/delete', async (c) => {
   }
 
   return c.redirect('/admin?deleted=1', 303);
+});
+
+/** Runs the Brevo sync and says what it did, in words for the notice line. */
+async function runSync(): Promise<string> {
+  const done = await syncToBrevo(await loadPeople(), admins());
+  const enrolled = Object.entries(done.enrolled)
+    .map(([flow, n]) => `${n} into ${flow}`)
+    .join(', ');
+
+  return `${done.updated} contacts written, ${done.removed} removed, ${done.skipped} unconfirmed skipped; ${
+    done.enrolling ? `enrolled ${enrolled || 'nobody new'}` : 'enrolment is off (BREVO_ENROLL_SINCE is not set)'
+  }.`;
+}
+
+admin.post('/admin/brevo-sync', async (c) => {
+  const verdict = await admitted(c);
+
+  if (typeof verdict === 'string') {
+    return refused(c, verdict);
+  }
+
+  const origin = c.req.header('origin');
+
+  if (origin && origin !== selfOrigin(c)) {
+    return c.text('Forbidden', 403, PRIVATE_HEADERS);
+  }
+
+  let said: string;
+
+  try {
+    said = await runSync();
+  } catch (error) {
+    said = `failed — ${error instanceof Error ? error.message : 'unknown error'}`;
+  }
+
+  return c.redirect(`/admin?synced=${encodeURIComponent(said)}`, 303);
+});
+
+/*
+ * The hourly run, from vercel.json's `crons`. Vercel sends `Authorization: Bearer $CRON_SECRET`;
+ * without the variable set nothing can call this, so it cannot be set off from outside.
+ */
+admin.get('/api/cron/brevo', async (c) => {
+  const secret = process.env.CRON_SECRET;
+
+  if (!secret || c.req.header('authorization') !== `Bearer ${secret}`) {
+    return c.text('Unauthorized', 401);
+  }
+
+  if (!brevoEnabled()) {
+    return c.json({ ok: true, skipped: 'BREVO_API_KEY is not set' });
+  }
+
+  try {
+    const said = await runSync();
+
+    console.info(`brevo: ${said}`);
+
+    return c.json({ ok: true, said });
+  } catch (error) {
+    console.error('brevo: sync failed', error);
+
+    return c.json({ ok: false, error: error instanceof Error ? error.message : 'unknown error' }, 500);
+  }
 });
 
 admin.get('/admin/users.csv', async (c) => {

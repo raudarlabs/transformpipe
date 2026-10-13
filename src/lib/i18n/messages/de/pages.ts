@@ -262,15 +262,16 @@ export const pages: Content['pages'] = {
       {
         heading: 'Was wir nicht tun',
         body: [
-          'Es gibt keine Werbung, kein Tracking-Pixel und nichts wird verkauft. Genau ein Skript von Dritten lädt überhaupt — der Google Tag Manager — und es bringt Google Analytics nur mit, wenn Sie im Cookie-Banner zugestimmt haben; bei Ablehnung oder ohne Antwort schreiben Googles Tags nichts in Ihren Browser. Nichts wird mit irgendjemandem geteilt außer mit der Infrastruktur, die den Dienst betreibt: der Datenbank, dem Blob-Speicher, dem Authentifizierungsanbieter, dem E-Mail-Anbieter und dem Hoster.',
+          'Es gibt keine Werbung, kein Tracking-Pixel und nichts wird verkauft. Genau ein Skript von Dritten lädt überhaupt — der Google Tag Manager — und es bringt Google Analytics nur mit, wenn Sie im Cookie-Banner zugestimmt haben; bei Ablehnung oder ohne Antwort schreiben Googles Tags nichts in Ihren Browser. Nichts wird mit irgendjemandem geteilt außer mit der Infrastruktur, die den Dienst betreibt: der Datenbank, dem Blob-Speicher, dem Authentifizierungsanbieter, den beiden E-Mail-Anbietern und dem Hoster.',
           'Ihre Dokumente werden von uns nicht gelesen, und sie werden nicht dazu benutzt, irgendetwas zu trainieren.',
         ],
       },
       {
         heading: 'E-Mail',
         body: [
-          'E-Mails gehen in vier Fällen hinaus und in keinem anderen: zur Bestätigung Ihrer Adresse, zum Zurücksetzen eines Passworts, zur einmaligen Begrüßung nach der Registrierung und um jemandem mitzuteilen, dass ein Dokument mit ihm geteilt wurde. Die ersten beiden kommen vom Authentifizierungsanbieter, die anderen beiden vom E-Mail-Anbieter. Es gibt keinen Newsletter, und es gibt nichts abzubestellen.',
+          'E-Mails gehen in diesen Fällen hinaus und in keinem anderen: zur Bestätigung Ihrer Adresse und zum Zurücksetzen eines Passworts, beides vom Authentifizierungsanbieter; um jemandem mitzuteilen, dass ein Dokument mit ihm geteilt wurde, vom E-Mail-Anbieter; und an Kontoinhaber einige wenige E-Mails in den ersten Wochen — eine Begrüßung, ein paar Tipps zur Nutzung und die Frage, wie es läuft. Diese kommen von Brevo, jede enthält einen Abmeldelink, und einen Newsletter gibt es nicht.',
           'Der E-Mail-Anbieter erhält die Adresse des Empfängers, die Adresse der teilenden Person, wo es eine gibt, und die Nachricht selbst. Ein Dokument erhält er nie.',
+          'Brevo erhält Ihre Adresse und Ihren Namen, den Tag der Registrierung und einige Zahlen, nach denen sich richtet, welche dieser E-Mails für Sie sinnvoll ist: wie viele Dokumente Sie aufbewahren und geteilt haben, wie oft Ihre geteilten Links geöffnet wurden, welche Apps Sie verbunden haben und wann Sie TransformPipe zuletzt genutzt haben. Nie ein Dokument, seinen Namen oder seinen Text. Eine Abmeldung in einer dieser E-Mails beendet sie alle; wer sein Konto löscht, wird auch bei Brevo entfernt.',
         ],
       },
       {

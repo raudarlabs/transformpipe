@@ -12,6 +12,10 @@ const SERVER_ENV_KEYS = [
   'GOOGLE_GENERATIVE_AI_API_KEY',
   // Who may open /admin — see server/admin.ts.
   'ADMIN_EMAILS',
+  // The onboarding emails — see server/brevo.ts.
+  'BREVO_API_KEY',
+  'BREVO_ENROLL_SINCE',
+  'CRON_SECRET',
 ];
 
 /**
@@ -37,7 +41,7 @@ export function apiDevServer(): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         // The same paths vercel.json sends to the function in production.
-        const served = ['/api/', '/s/', '/report/', '/.well-known/', '/admin'];
+        const served = ['/api/', '/s/', '/report/', '/.well-known/', '/admin', '/rate'];
 
         if (!served.some((path) => req.url?.startsWith(path))) {
           return next();
