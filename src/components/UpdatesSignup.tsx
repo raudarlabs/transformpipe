@@ -1,8 +1,9 @@
 import { Check, Mail } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
-import { api, type UpdatesState } from '@/lib/api';
+import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useT } from '@/lib/i18n/context';
+import { useUpdates } from '@/lib/updates';
 import { Button } from '@/ui/components/Button';
 import { Input } from '@/ui/components/Input';
 import { Typography } from '@/ui/components/Typography';
@@ -20,7 +21,7 @@ import { Typography } from '@/ui/components/Typography';
 export function UpdatesSignup() {
   const t = useT();
   const { user, isLoading } = useAuth();
-  const [state, setState] = useState<UpdatesState | null>(null);
+  const { state, set } = useUpdates();
   const [isBusy, setIsBusy] = useState(false);
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
@@ -31,30 +32,12 @@ export function UpdatesSignup() {
     setConfirmed(new URLSearchParams(location.search).get('subscribed') === '1');
   }, []);
 
-  useEffect(() => {
-    if (!user) {
-      setState(null);
-      return;
-    }
-
-    let live = true;
-
-    api
-      .updates()
-      .then((next) => live && setState(next))
-      .catch(() => live && setState(null));
-
-    return () => {
-      live = false;
-    };
-  }, [user]);
-
   const toggle = async (subscribed: boolean) => {
     setIsBusy(true);
     setError(null);
 
     try {
-      setState(await api.setUpdates(subscribed));
+      await set(subscribed);
     } catch {
       setError(t('updates.error'));
     } finally {

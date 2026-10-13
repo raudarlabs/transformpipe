@@ -10,10 +10,10 @@ import {
   User,
   Webhook,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { api, type UpdatesState } from '@/lib/api';
+import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useT } from '@/lib/i18n/context';
+import { useUpdates } from '@/lib/updates';
 import { useTheme } from '@/lib/theme';
 import { ApiKeysDialog } from './ApiKeysDialog';
 import { AuthDialog } from './AuthDialog';
@@ -74,30 +74,12 @@ export function UserMenu() {
   const [isMcpOpen, setIsMcpOpen] = useState(false);
   const [isWebhooksOpen, setIsWebhooksOpen] = useState(false);
   const [isVerifyOpen, setIsVerifyOpen] = useState(false);
-  const [updates, setUpdates] = useState<UpdatesState | null>(null);
-  const [isUpdatesBusy, setIsUpdatesBusy] = useState(false);
-
   /*
-   * The monthly product update, as a switch. Asked once per signed-in session, and the item is
-   * absent until the answer comes back — or when the deployment has no mail service for it.
+   * The monthly product update, as a switch — the same answer the changelog's box shows (see
+   * src/lib/updates.ts). The item is absent until it is known, and where there is no mail service.
    */
-  useEffect(() => {
-    if (!user) {
-      setUpdates(null);
-      return;
-    }
-
-    let live = true;
-
-    api
-      .updates()
-      .then((next) => live && setUpdates(next))
-      .catch(() => live && setUpdates(null));
-
-    return () => {
-      live = false;
-    };
-  }, [user]);
+  const { state: updates, set: setUpdates } = useUpdates();
+  const [isUpdatesBusy, setIsUpdatesBusy] = useState(false);
 
   const toggleUpdates = async () => {
     if (!updates) return;
@@ -105,7 +87,7 @@ export function UserMenu() {
     setIsUpdatesBusy(true);
 
     try {
-      setUpdates(await api.setUpdates(!updates.subscribed));
+      await setUpdates(!updates.subscribed);
     } catch {
       /* The switch keeps its old position, which is the truth. */
     } finally {
