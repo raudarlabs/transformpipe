@@ -681,7 +681,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_convert_markdown: {
     description:
-      'Convert Markdown to sanitised HTML and return it. GitHub Flavored Markdown; raw HTML in the source goes through a sanitiser, so a script tag in a file someone sent cannot survive. `standalone: true` returns a complete self-contained document with its styles inlined — the same file the app downloads. Nothing is saved to the account. For anything long, prefer tp_save_document and share the link: what this returns has to travel back through the conversation.',
+      'Convert Markdown to sanitised HTML and return it — or, with `to`, to Confluence storage format, Jira wiki markup or Slack mrkdwn, for pasting into those or sending through their APIs. GitHub Flavored Markdown; raw HTML in the source goes through a sanitiser, so a script tag in a file someone sent cannot survive. `standalone: true` returns a complete self-contained HTML document with its styles inlined — the same file the app downloads. Nothing is saved to the account. For anything long, prefer tp_save_document and share the link: what this returns has to travel back through the conversation.',
     annotations: { title: 'Markdown to HTML', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
@@ -689,6 +689,12 @@ const TOOLS: Record<McpToolName, Tool> = {
       required: ['markdown'],
       properties: {
         markdown: { type: 'string', description: 'The Markdown source.' },
+        to: {
+          type: 'string',
+          enum: ['html', 'confluence', 'jira', 'slack'],
+          description:
+            'What to convert to. `confluence` is storage format (code macros, info and warning panels, task lists), `jira` is wiki markup, `slack` is mrkdwn for a bot, a webhook or chat.postMessage. Default html.',
+        },
         standalone: {
           type: 'boolean',
           description:
@@ -717,6 +723,22 @@ const TOOLS: Record<McpToolName, Tool> = {
           `That is ${bytes(markdown.length)} of Markdown; the limit for one document is ${bytes(QUOTA.documentBytes)}.`,
           true
         );
+      }
+
+      /*
+       * Markdown going out as somebody else's markup: the same writers the app's Confluence, Jira
+       * and Slack screens use, loaded only when asked for.
+       */
+      if (args.to === 'confluence') {
+        return say(clip((await import('../shared/to-confluence.js')).markdownToConfluence(markdown)));
+      }
+
+      if (args.to === 'jira') {
+        return say(clip((await import('../shared/to-jira.js')).markdownToJira(markdown)));
+      }
+
+      if (args.to === 'slack') {
+        return say(clip((await import('../shared/to-slack.js')).markdownToSlack(markdown)));
       }
 
       const body = markdownToHtml(markdown);

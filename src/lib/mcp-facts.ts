@@ -46,7 +46,7 @@ export type McpToolName = (typeof MCP_TOOL_NAMES)[number];
 export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_help: 'Answers questions about TransformPipe from the documentation rather than from memory.',
   tp_convert_markdown:
-    'Markdown in, sanitised HTML out. Optionally the whole self-contained document.',
+    'Markdown in, sanitised HTML out — or Confluence storage format, Jira wiki markup or Slack mrkdwn. Optionally the whole self-contained HTML document.',
   tp_convert_to_markdown:
     'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
   tp_save_document:

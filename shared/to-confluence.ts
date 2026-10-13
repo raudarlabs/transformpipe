@@ -204,7 +204,7 @@ class Writer {
    */
   private rawHtml(html: string, gap = ''): string {
     return html
-      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1\s*>/gi, '')
       .split(/(<br\s*\/?>)/i)
       .map((part, index) =>
         index % 2 === 1 ? '<br />' : xml(part.replace(/<[^>]*>/g, gap).replace(/[ \t]{2,}/g, ' '))

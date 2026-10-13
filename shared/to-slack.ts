@@ -184,7 +184,7 @@ class Writer {
         return '───────────';
       case 'html': {
         const text = (token as Tokens.HTML).text
-          .replace(/<!--[\s\S]*?-->/g, '')
+          .replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1\s*>/gi, '')
           .replace(/<br\s*\/?>/gi, '\n')
           .replace(/<[^>]*>/g, ' ')
           .replace(/[ \t]{2,}/g, ' ')

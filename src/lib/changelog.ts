@@ -118,6 +118,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-14',
+    title: 'An assistant can hand you Confluence, Jira or Slack markup',
+    body:
+      'The connector’s `tp_convert_markdown` takes `to` now — `confluence`, `jira` or `slack` beside '
+      + 'the HTML it always returned — with the same writers as the new screens. Asking Claude or '
+      + 'ChatGPT for “this as a Jira description” or “this for our Slack webhook” gets the markup '
+      + 'those take, not Markdown with its asterisks.',
+  },
+  {
+    date: '2026-10-14',
     title: 'Markdown into Confluence, with Confluence’s own pieces',
     slug: 'markdown-to-confluence',
     body:
