@@ -152,7 +152,7 @@ export const docsPage = {
     'Eine geteilte Seite trägt den Inhalt eines anderen auf unserer Domain, also wird sie mit {csp} ausgeliefert und lässt sich nicht in einen Rahmen setzen, und jede von ihnen verweist auf ein Meldeformular, das kein JavaScript braucht. Nichts wird automatisch widerrufen: eine Meldung ist die Behauptung eines Fremden über das Dokument eines anderen, und beide Fehler — eine schlechte Seite stehen zu lassen, einen unschuldigen Link zu töten — verdienen erst den Blick eines Menschen.',
 
   'docs.account.signIn':
-    'Angemeldet wird mit Google, über Neon Auth. Im Kontomenü stecken das Design (dunkel als Voreinstellung, je Browser gemerkt), die API-Schlüssel und der Weg hinaus.',
+    'Angemeldet wird mit Google oder mit Ihrer geschäftlichen E-Mail-Adresse und einem Passwort — eine neue Adresse wird über einen Link in einer E-Mail bestätigt, und dieser Link meldet Sie zugleich an. Im Kontomenü stecken das Design (dunkel als Voreinstellung, je Browser gemerkt), die API-Schlüssel, der MCP-Connector, die Webhooks, der Schalter für die monatlichen Produkt-Updates und der Weg hinaus.',
   'docs.account.keys':
     'Ein Schlüssel wird einmal gezeigt und nur als Hash gespeichert. Er erreicht Dokumente und Freigaben — nie das Konto und nie die Schlüssel selbst, sodass ein abgeflossener Schlüssel weder seinen Nachfolger prägen noch jemanden aussperren kann. Ein Widerruf greift bei der nächsten Anfrage.',
 

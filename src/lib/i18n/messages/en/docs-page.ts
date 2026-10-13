@@ -149,7 +149,7 @@ export const docsPage = {
     "A shared page carries someone's content on our domain, so it is served with {csp} and cannot be framed, and every one of them links to a report form that needs no JavaScript. Nothing is revoked automatically: a report is a stranger's claim about someone else's document, and both mistakes — leaving a bad page up, killing an innocent link — deserve a person reading it first.",
 
   'docs.account.signIn':
-    'Sign-in is Google, through Neon Auth. The account menu holds the theme (dark by default, remembered per browser), the API keys, and the way out.',
+    'Sign in with Google, or with your work email and a password — a new address is confirmed by a link in an email, and opening it signs you in. The account menu holds the theme (dark by default, remembered per browser), the API keys, the MCP connector, webhooks, the monthly product updates switch, and the way out.',
   'docs.account.keys':
     'A key is shown once and stored only as a hash. It reaches documents and shares — never the account or the keys themselves, so a leaked key cannot mint its replacement or lock you out. Revoking one takes effect on the next request.',
 

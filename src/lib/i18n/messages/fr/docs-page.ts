@@ -138,7 +138,7 @@ export const docsPage = {
     'Une page partagée porte le contenu de quelqu’un sur notre domaine, elle est donc servie avec {csp} et ne peut pas être mise dans un cadre, et chacune renvoie vers un formulaire de signalement qui ne demande aucun JavaScript. Rien n’est révoqué automatiquement : un signalement est l’affirmation d’un inconnu sur le document d’un autre, et les deux erreurs — laisser une mauvaise page en ligne, tuer un lien innocent — méritent qu’une personne le lise d’abord.',
 
   'docs.account.signIn':
-    'La connexion passe par Google, via Neon Auth. Le menu du compte contient le thème (sombre par défaut, mémorisé par navigateur), les clés API, et la sortie.',
+    'La connexion se fait avec Google, ou avec votre adresse e-mail professionnelle et un mot de passe — une nouvelle adresse se confirme par un lien reçu par e-mail, qui vous connecte en même temps. Le menu du compte contient le thème (sombre par défaut, mémorisé par navigateur), les clés API, le connecteur MCP, les webhooks, l’interrupteur des nouveautés mensuelles, et la sortie.',
   'docs.account.keys':
     'Une clé est affichée une seule fois et n’est conservée que sous forme de hachage. Elle atteint les documents et les partages — jamais le compte ni les clés elles-mêmes, de sorte qu’une clé qui a fui ne peut ni frapper son propre remplacement ni vous mettre dehors. Une révocation prend effet à la requête suivante.',
 

@@ -138,7 +138,7 @@ export const docsPage = {
     'Una página compartida lleva contenido de alguien en nuestro dominio, así que se sirve con {csp} y no se puede meter en un marco, y todas ellas enlazan con un formulario de denuncia que no necesita JavaScript. Nada se revoca automáticamente: una denuncia es lo que un desconocido afirma sobre el documento de otra persona, y los dos errores —dejar en pie una página dañina, matar un enlace inocente— merecen que alguien lo lea primero.',
 
   'docs.account.signIn':
-    'La sesión se inicia con Google, a través de Neon Auth. El menú de la cuenta guarda el tema (oscuro por defecto, recordado en cada navegador), las claves API y la salida.',
+    'La sesión se inicia con Google, o con tu correo de trabajo y una contraseña: una dirección nueva se confirma con un enlace que llega por correo, y abrirlo inicia tu sesión. El menú de la cuenta guarda el tema (oscuro por defecto, recordado en cada navegador), las claves API, el conector MCP, los webhooks, el interruptor de las novedades mensuales y la salida.',
   'docs.account.keys':
     'Una clave se muestra una vez y solo se guarda como hash. Llega a los documentos y a lo compartido, nunca a la cuenta ni a las claves mismas, así que una clave filtrada no puede acuñar su reemplazo ni dejarte fuera. Revocar una surte efecto en la petición siguiente.',
 

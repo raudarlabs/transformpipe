@@ -131,7 +131,7 @@ export const docsPage = {
     'Una pagina condivisa porta il contenuto di qualcuno sul nostro dominio, quindi viene servita con {csp} e non può essere messa in un frame, e ognuna di esse rimanda a un modulo di segnalazione che non ha bisogno di JavaScript. Niente viene revocato automaticamente: una segnalazione è l’affermazione di un estraneo sul documento di un altro, ed entrambi gli errori — lasciare in piedi una pagina dannosa, uccidere un link innocente — meritano che prima una persona la legga.',
 
   'docs.account.signIn':
-    'L’accesso è con Google, tramite Neon Auth. Il menu dell’account tiene il tema (scuro per impostazione predefinita, ricordato per browser), le chiavi API e la via d’uscita.',
+    'L’accesso è con Google, oppure con la tua e-mail di lavoro e una password: un indirizzo nuovo si conferma con un link ricevuto via e-mail, che ti fa anche accedere. Il menu dell’account tiene il tema (scuro per impostazione predefinita, ricordato per browser), le chiavi API, il connettore MCP, i webhook, l’interruttore delle novità mensili e la via d’uscita.',
   'docs.account.keys':
     'Una chiave viene mostrata una volta sola e conservata solo come hash. Raggiunge i documenti e le condivisioni, mai l’account né le chiavi stesse, così una chiave sfuggita non può generarsi una sostituta né chiuderti fuori. La revoca ha effetto dalla richiesta successiva.',
 
