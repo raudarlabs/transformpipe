@@ -60,6 +60,9 @@ export const ui: Content['ui'] = {
   'dialog.mcp.command': 'From a terminal',
   'header.connector': 'MCP connector',
   'header.webhooks': 'Webhooks',
+  'header.updates': 'Monthly updates',
+  'header.updates.on': 'On',
+  'header.updates.off': 'Off',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
   'auth.connect.app': 'your app',
@@ -777,6 +780,19 @@ export const ui: Content['ui'] = {
   'changelog.entry.eyebrow': 'Release note',
   'changelog.entry.missing.title': 'No such release note',
   'changelog.entry.missing.body': 'Nothing has shipped at this address. The changelog lists everything that has.',
+
+  /* The monthly product update: src/components/UpdatesSignup.tsx and the account menu. */
+  'updates.title': 'Product updates by email',
+  'updates.lede': 'Once a month, a short email about what shipped. Nothing else, and one click to stop.',
+  'updates.subscribe': 'Subscribe',
+  'updates.subscribed': 'You are subscribed.',
+  'updates.unsubscribe': 'Unsubscribe',
+  'updates.email.label': 'Your email address',
+  'updates.email.placeholder': 'you@example.com',
+  'updates.check': 'Check your inbox and confirm. Nothing is sent until you do.',
+  'updates.confirmed': 'Subscription confirmed. Thank you!',
+  'updates.unverified': 'Confirm your email address first — the account menu has the step.',
+  'updates.error': 'That did not go through. Try again in a minute.',
   'footer.changelog': 'Changelog',
 
   /*

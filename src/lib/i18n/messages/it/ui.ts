@@ -48,6 +48,9 @@ export const ui: Content['ui'] = {
   'dialog.mcp.command': 'Da un terminale',
   'header.connector': 'Connettore MCP',
   'header.webhooks': 'Webhooks',
+  'header.updates': 'Novità mensili',
+  'header.updates.on': 'Attive',
+  'header.updates.off': 'Disattivate',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
   'auth.connect.app': 'la tua app',
@@ -758,6 +761,19 @@ export const ui: Content['ui'] = {
   'changelog.entry.eyebrow': 'Nota di rilascio',
   'changelog.entry.missing.title': 'Questa nota di rilascio non esiste',
   'changelog.entry.missing.body': 'A questo indirizzo non è stato pubblicato nulla. Il registro elenca tutto ciò che lo è stato.',
+
+  /* The monthly product update: src/components/UpdatesSignup.tsx and the account menu. */
+  'updates.title': 'Novità via e-mail',
+  'updates.lede': 'Una volta al mese, una breve e-mail con le novità. Nient’altro, e un clic per smettere.',
+  'updates.subscribe': 'Iscriviti',
+  'updates.subscribed': 'Sei iscritto.',
+  'updates.unsubscribe': 'Annulla iscrizione',
+  'updates.email.label': 'Il tuo indirizzo e-mail',
+  'updates.email.placeholder': 'tu@esempio.it',
+  'updates.check': 'Controlla la posta e conferma. Fino ad allora non viene inviato nulla.',
+  'updates.confirmed': 'Iscrizione confermata. Grazie!',
+  'updates.unverified': 'Conferma prima il tuo indirizzo e-mail: il passaggio è nel menu dell’account.',
+  'updates.error': 'Non è andato a buon fine. Riprova tra un minuto.',
   'footer.changelog': 'Registro delle modifiche',
 
   /*

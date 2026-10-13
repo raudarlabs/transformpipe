@@ -50,6 +50,7 @@ import {
 } from './webhooks.js';
 import admin from './admin.js';
 import rate from './rate.js';
+import updates from './updates.js';
 import mcp from './mcp.js';
 import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
@@ -1669,6 +1670,7 @@ app.get('/.well-known/openai-apps-challenge', (c) =>
 
 app.route('/', admin);
 app.route('/', rate);
+app.route('/', updates);
 app.route('/', mcp);
 app.route('/', oauth);
 app.route('/', v1);

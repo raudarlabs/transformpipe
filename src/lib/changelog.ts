@@ -113,6 +113,14 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-14',
+    title: 'What shipped, once a month by email — if you want it',
+    body:
+      'A short monthly email about what is new, sent only to people who ask for it. Subscribe on '
+      + 'the changelog page or from the account menu; signed out, you confirm the address from an '
+      + 'email first, and nothing is sent until you do. Every one has a link to stop.',
+  },
+  {
     date: '2026-10-13',
     title: 'A few emails in your first weeks',
     body:

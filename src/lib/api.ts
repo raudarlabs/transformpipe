@@ -136,7 +136,32 @@ export interface SharedDocument {
   watched: boolean;
 }
 
+/** Whether this account gets the monthly product update, and whether it can. */
+export interface UpdatesState {
+  /** False where the deployment has no mail service for it — the control is then not shown. */
+  available: boolean;
+  /** The address has to be confirmed before it can be subscribed. */
+  verified: boolean;
+  subscribed: boolean;
+}
+
 export const api = {
+  /** The monthly product update, for the signed-in account. See server/updates.ts. */
+  updates: (): Promise<UpdatesState> => request<UpdatesState>('/api/updates'),
+
+  setUpdates: (subscribed: boolean): Promise<UpdatesState> =>
+    request<UpdatesState>('/api/updates', {
+      method: 'PUT',
+      body: JSON.stringify({ subscribed }),
+    }),
+
+  /** Signed out: Brevo emails the address a link, and it is subscribed once that is pressed. */
+  confirmUpdates: (email: string): Promise<{ ok: true }> =>
+    request<{ ok: true }>('/api/updates/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
   /** Null when nobody is signed in — Better Auth answers null rather than erroring, and so does this. */
   me: async (): Promise<AuthUser | null> => {
     try {

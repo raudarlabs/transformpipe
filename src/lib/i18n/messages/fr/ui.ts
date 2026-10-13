@@ -49,6 +49,9 @@ export const ui: Content['ui'] = {
   'dialog.mcp.command': 'Depuis un terminal',
   'header.connector': 'Connecteur MCP',
   'header.webhooks': 'Webhooks',
+  'header.updates': 'Nouveautés mensuelles',
+  'header.updates.on': 'Activé',
+  'header.updates.off': 'Désactivé',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
   'auth.connect.app': 'votre application',
@@ -769,6 +772,19 @@ export const ui: Content['ui'] = {
   'changelog.entry.eyebrow': 'Note de version',
   'changelog.entry.missing.title': 'Cette note de version n\'existe pas',
   'changelog.entry.missing.body': 'Rien n\'a été publié à cette adresse. Le journal des modifications recense tout ce qui l\'a été.',
+
+  /* The monthly product update: src/components/UpdatesSignup.tsx and the account menu. */
+  'updates.title': 'Les nouveautés par e-mail',
+  'updates.lede': 'Une fois par mois, un court e-mail sur ce qui est sorti. Rien d’autre, et un clic pour arrêter.',
+  'updates.subscribe': 'S’abonner',
+  'updates.subscribed': 'Vous êtes abonné.',
+  'updates.unsubscribe': 'Se désabonner',
+  'updates.email.label': 'Votre adresse e-mail',
+  'updates.email.placeholder': 'vous@exemple.fr',
+  'updates.check': 'Vérifiez votre boîte de réception et confirmez. Rien n’est envoyé avant.',
+  'updates.confirmed': 'Abonnement confirmé. Merci !',
+  'updates.unverified': 'Confirmez d’abord votre adresse e-mail — l’étape se trouve dans le menu du compte.',
+  'updates.error': 'Cela n’a pas fonctionné. Réessayez dans une minute.',
   'footer.changelog': 'Journal des versions',
 
   /*

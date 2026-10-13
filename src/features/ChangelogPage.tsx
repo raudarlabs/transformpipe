@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { AppBreadcrumbs } from '@/components/AppBreadcrumbs';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { ScrollToTop } from '@/components/ScrollToTop';
+import { UpdatesSignup } from '@/components/UpdatesSignup';
 import { changelogCrumbs } from '@/lib/breadcrumbs';
 import { changelogByYear } from '@/lib/changelog';
 import { changelogEntryPath } from '@/lib/route';
@@ -87,7 +88,7 @@ export function ChangelogPage({
          * on a phone wants the newest change, not a list of years and a note about what the list
          * contains — that note reads better once the list has been read.
          */}
-        <aside className="lg:sticky lg:top-24 lg:w-60 lg:shrink-0">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:w-60 lg:shrink-0">
           <div className="flex flex-col gap-4 rounded-xl border border-stroke bg-surface-card p-5">
             {/*
              * Anchors rather than buttons: a year is an address on this page, so it should be
@@ -127,6 +128,9 @@ export function ChangelogPage({
               {t('changelog.scope')}
             </Typography>
           </div>
+
+          {/* The same news, once a month by email, for whoever asks. */}
+          <UpdatesSignup />
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col gap-10">

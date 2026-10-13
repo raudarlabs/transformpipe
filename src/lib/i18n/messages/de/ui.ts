@@ -60,6 +60,9 @@ export const ui: Content['ui'] = {
   'dialog.mcp.command': 'Im Terminal',
   'header.connector': 'MCP-Konnektor',
   'header.webhooks': 'Webhooks',
+  'header.updates': 'Monatliche Updates',
+  'header.updates.on': 'An',
+  'header.updates.off': 'Aus',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
   'auth.connect.app': 'Ihre App',
@@ -783,6 +786,19 @@ export const ui: Content['ui'] = {
   'changelog.entry.eyebrow': 'Release-Notiz',
   'changelog.entry.missing.title': 'Diese Release-Notiz gibt es nicht',
   'changelog.entry.missing.body': 'Unter dieser Adresse wurde nichts veröffentlicht. Das Changelog führt alles auf, was veröffentlicht wurde.',
+
+  /* The monthly product update: src/components/UpdatesSignup.tsx and the account menu. */
+  'updates.title': 'Produkt-Updates per E-Mail',
+  'updates.lede': 'Einmal im Monat eine kurze E-Mail mit dem, was neu ist. Sonst nichts, und mit einem Klick abbestellbar.',
+  'updates.subscribe': 'Abonnieren',
+  'updates.subscribed': 'Sie haben abonniert.',
+  'updates.unsubscribe': 'Abbestellen',
+  'updates.email.label': 'Ihre E-Mail-Adresse',
+  'updates.email.placeholder': 'sie@beispiel.de',
+  'updates.check': 'Bitte bestätigen Sie in Ihrem Posteingang. Vorher wird nichts verschickt.',
+  'updates.confirmed': 'Abonnement bestätigt. Vielen Dank!',
+  'updates.unverified': 'Bestätigen Sie zuerst Ihre E-Mail-Adresse — der Schritt ist im Kontomenü.',
+  'updates.error': 'Das hat nicht geklappt. Versuchen Sie es in einer Minute erneut.',
   'footer.changelog': 'Changelog',
 
   /*

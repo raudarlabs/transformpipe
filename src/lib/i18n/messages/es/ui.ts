@@ -51,6 +51,9 @@ export const ui: Content['ui'] = {
   'dialog.mcp.command': 'Desde un terminal',
   'header.connector': 'Conector MCP',
   'header.webhooks': 'Webhooks',
+  'header.updates': 'Novedades mensuales',
+  'header.updates.on': 'Sí',
+  'header.updates.off': 'No',
 
   /* The sign-in dialog: three views — in, up, and asking for a reset link. */
   'auth.connect.app': 'tu aplicación',
@@ -770,6 +773,19 @@ export const ui: Content['ui'] = {
   'changelog.entry.eyebrow': 'Nota de versión',
   'changelog.entry.missing.title': 'Esa nota de versión no existe',
   'changelog.entry.missing.body': 'No se ha publicado nada en esta dirección. El historial recoge todo lo que sí se ha publicado.',
+
+  /* The monthly product update: src/components/UpdatesSignup.tsx and the account menu. */
+  'updates.title': 'Novedades por correo',
+  'updates.lede': 'Una vez al mes, un correo breve con lo nuevo. Nada más, y un clic para darte de baja.',
+  'updates.subscribe': 'Suscribirme',
+  'updates.subscribed': 'Estás suscrito.',
+  'updates.unsubscribe': 'Darme de baja',
+  'updates.email.label': 'Tu dirección de correo',
+  'updates.email.placeholder': 'tu@ejemplo.com',
+  'updates.check': 'Revisa tu bandeja de entrada y confirma. No se envía nada hasta entonces.',
+  'updates.confirmed': 'Suscripción confirmada. ¡Gracias!',
+  'updates.unverified': 'Confirma primero tu dirección de correo: el paso está en el menú de la cuenta.',
+  'updates.error': 'No se ha podido. Vuelve a intentarlo en un minuto.',
   'footer.changelog': 'Registro de cambios',
 
   /*

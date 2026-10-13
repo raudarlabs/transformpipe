@@ -2,6 +2,7 @@ import {
   KeyRound,
   LogIn,
   LogOut,
+  Mail,
   Moon,
   Plug,
   ShieldAlert,
@@ -9,7 +10,8 @@ import {
   User,
   Webhook,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { api, type UpdatesState } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useT } from '@/lib/i18n/context';
 import { useTheme } from '@/lib/theme';
@@ -72,6 +74,44 @@ export function UserMenu() {
   const [isMcpOpen, setIsMcpOpen] = useState(false);
   const [isWebhooksOpen, setIsWebhooksOpen] = useState(false);
   const [isVerifyOpen, setIsVerifyOpen] = useState(false);
+  const [updates, setUpdates] = useState<UpdatesState | null>(null);
+  const [isUpdatesBusy, setIsUpdatesBusy] = useState(false);
+
+  /*
+   * The monthly product update, as a switch. Asked once per signed-in session, and the item is
+   * absent until the answer comes back — or when the deployment has no mail service for it.
+   */
+  useEffect(() => {
+    if (!user) {
+      setUpdates(null);
+      return;
+    }
+
+    let live = true;
+
+    api
+      .updates()
+      .then((next) => live && setUpdates(next))
+      .catch(() => live && setUpdates(null));
+
+    return () => {
+      live = false;
+    };
+  }, [user]);
+
+  const toggleUpdates = async () => {
+    if (!updates) return;
+
+    setIsUpdatesBusy(true);
+
+    try {
+      setUpdates(await api.setUpdates(!updates.subscribed));
+    } catch {
+      /* The switch keeps its old position, which is the truth. */
+    } finally {
+      setIsUpdatesBusy(false);
+    }
+  };
 
   if (isLoading) {
     return <Skeleton className="h-8 w-28 rounded-full" />;
@@ -226,6 +266,23 @@ export function UserMenu() {
           <Webhook />
           {t('header.webhooks')}
         </DropdownMenuItem>
+
+        {updates?.available && updates.verified && (
+          <DropdownMenuItem
+            disabled={isUpdatesBusy}
+            onSelect={(event) => {
+              // A setting, not a command: the menu stays open so the new position can be seen.
+              event.preventDefault();
+              void toggleUpdates();
+            }}
+          >
+            <Mail />
+            <span className="flex-1">{t('header.updates')}</span>
+            <span className="text-xs text-ink-secondary">
+              {updates.subscribed ? t('header.updates.on') : t('header.updates.off')}
+            </span>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem variant="danger" onSelect={() => void signOut()}>
           <LogOut />

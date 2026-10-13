@@ -30,6 +30,7 @@ export const LISTS = {
   active: 'TP · Existing, active',
   idle: 'TP · Existing, not started',
   exclude: 'TP · Exclude',
+  updates: 'TP · Product updates',
 } as const;
 
 type ListKey = keyof typeof LISTS;
@@ -251,5 +252,87 @@ export async function forgetContact(email: string): Promise<void> {
     await brevo('DELETE', `/contacts/${encodeURIComponent(email)}?identifierType=email_id`);
   } catch (error) {
     console.error('brevo: could not remove a contact', error);
+  }
+}
+
+/* ----------------------------------------------------------------------- monthly product updates */
+
+/*
+ * The monthly digest goes to one list, and only somebody who asked is on it: a signed-in account
+ * by pressing Subscribe, anybody else by confirming the address from Brevo's double opt-in email.
+ * There is no other way onto the list — the sync above never touches it.
+ */
+
+/** Brevo's template for the double opt-in email; it must carry the "optin" tag. See brevo_setup.py. */
+const CONFIRM_TEMPLATE = 'TP · U0 Confirm updates subscription';
+
+async function updatesList(): Promise<number> {
+  return (await listIds()).updates;
+}
+
+/** Whether this address gets the digest: on the list, and not unsubscribed from everything. */
+export async function isSubscribed(email: string): Promise<boolean> {
+  const { status, data } = await brevo<{ listIds?: number[]; emailBlacklisted?: boolean }>(
+    'GET',
+    `/contacts/${encodeURIComponent(email)}?identifierType=email_id`
+  );
+
+  if (status === 404) {
+    return false;
+  }
+
+  return Boolean(data.listIds?.includes(await updatesList())) && !data.emailBlacklisted;
+}
+
+/**
+ * Subscribes a signed-in account's own, confirmed address. Pressing Subscribe is a fresh, explicit
+ * yes, so it also lifts an earlier "unsubscribe from everything" — that is what the person is
+ * asking for now.
+ */
+export async function subscribe(email: string): Promise<void> {
+  const { status, data } = await brevo('POST', '/contacts', {
+    email,
+    listIds: [await updatesList()],
+    emailBlacklisted: false,
+    updateEnabled: true,
+  });
+
+  if (status >= 300) {
+    throw new Error(`Brevo refused the subscription (${status}): ${JSON.stringify(data).slice(0, 200)}`);
+  }
+}
+
+export async function unsubscribe(email: string): Promise<void> {
+  const { status, data } = await brevo('POST', `/contacts/lists/${await updatesList()}/contacts/remove`, {
+    emails: [email],
+  });
+
+  // Not on the list in the first place is the outcome asked for.
+  if (status >= 300 && status !== 400) {
+    throw new Error(`Brevo refused the unsubscription (${status}): ${JSON.stringify(data).slice(0, 200)}`);
+  }
+}
+
+/** Sends Brevo's "confirm your subscription" email to an address somebody typed. */
+export async function requestConfirmation(email: string, origin: string): Promise<void> {
+  const { data: templates } = await brevo<{ templates?: Array<{ id: number; name: string }> }>(
+    'GET',
+    '/smtp/templates?limit=100'
+  );
+  const template = templates.templates?.find((one) => one.name === CONFIRM_TEMPLATE);
+
+  if (!template) {
+    throw new Error(`Brevo has no template called "${CONFIRM_TEMPLATE}" — run brevo_setup.py`);
+  }
+
+  const { status, data } = await brevo('POST', '/contacts/doubleOptinConfirmation', {
+    email,
+    includeListIds: [await updatesList()],
+    templateId: template.id,
+    redirectionUrl: `${origin}/changelog?subscribed=1#updates`,
+  });
+
+  if (status >= 300) {
+    throw new Error(`Brevo refused the confirmation (${status}): ${JSON.stringify(data).slice(0, 200)}`);
   }
 }
