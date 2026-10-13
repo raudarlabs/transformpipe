@@ -64,6 +64,14 @@
       "destination": "/api"
     },
     {
+      "source": "/admin",
+      "destination": "/api"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/api"
+    },
+    {
       "source": "/open/(.*)",
       "destination": "/index.html"
     },

@@ -86,6 +86,7 @@ create or replace view radar.connections_daily as
       when c.name ilike '%visual studio code%' or c.name ilike '%vscode%' then 'vscode'
       when c.name ilike '%windsurf%' then 'windsurf'
       when c.name ilike '%gemini%' then 'gemini'
+      when g.client_id = 'transformpipe-obsidian' or c.name ilike '%obsidian%' then 'obsidian'
       when c.name ilike 'transformpipe for %' then 'extension'
       else 'other'
     end as client,
