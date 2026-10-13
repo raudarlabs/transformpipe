@@ -1440,7 +1440,7 @@ admin.post('/admin/brevo-sync', async (c) => {
 });
 
 /*
- * The hourly run, from vercel.json's `crons`. Vercel sends `Authorization: Bearer $CRON_SECRET`;
+ * The ten-minute run, from vercel.json's `crons`. Vercel sends `Authorization: Bearer $CRON_SECRET`;
  * without the variable set nothing can call this, so it cannot be set off from outside.
  */
 admin.get('/api/cron/brevo', async (c) => {

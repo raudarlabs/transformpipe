@@ -5,7 +5,7 @@ import type { Person } from './admin.js';
  *
  * Brevo sends the emails and decides which one from contact attributes; this file keeps those
  * attributes current and puts each account into the one list that starts its flow. It runs from
- * the hourly cron (`GET /api/cron/brevo`) and from the admin page's "Sync to Brevo now".
+ * the cron every ten minutes (`GET /api/cron/brevo`) and from the admin page's "Sync to Brevo now".
  *
  * What goes to Brevo is what the privacy page says goes: the address and name, the day of sign-up,
  * and counts — documents, shares, opens, connected apps, last use. Never a document or its name.
