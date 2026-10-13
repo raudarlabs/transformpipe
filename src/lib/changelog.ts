@@ -114,6 +114,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-14',
+    title: 'Confirm your address with one click, not a code',
+    body:
+      'Signing up with an email address now sends a link instead of a six-digit code to copy. Open '
+      + 'it and the address is confirmed, you are signed in, and you are back on the page you came '
+      + 'from — including an app you were connecting. The email comes from transformpipe.com.',
+  },
+  {
+    date: '2026-10-14',
     title: 'What shipped, once a month by email — if you want it',
     body:
       'A short monthly email about what is new, sent only to people who ask for it. Subscribe on '

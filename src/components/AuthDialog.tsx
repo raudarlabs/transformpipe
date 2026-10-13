@@ -2,7 +2,7 @@ import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/Logo';
 import { GoogleGlyph } from '@/components/GoogleGlyph';
-import { useAuth } from '@/lib/auth';
+import { NEEDS_VERIFICATION, useAuth } from '@/lib/auth';
 import { useT } from '@/lib/i18n/context';
 import { Button } from '@/ui/components/Button';
 import { Checkbox } from '@/ui/components/Checkbox';
@@ -87,8 +87,7 @@ export function AuthDialog({
     signInWithEmail,
     signUpWithEmail,
     requestPasswordReset,
-    sendVerificationCode,
-    verifyEmailCode,
+    sendVerificationLink,
     isSigningIn,
   } = useAuth();
 
@@ -96,7 +95,8 @@ export function AuthDialog({
   const [email, setEmail] = useState(user?.email ?? '');
   const [password, setPassword] = useState('');
   const [accepted, setAccepted] = useState(false);
-  const [code, setCode] = useState('');
+  /** On the confirmation view: whether a link has just gone out, or one still has to be asked for. */
+  const [sent, setSent] = useState(false);
   /** What went wrong, or what happened — one line under the form, either way. */
   const [said, setSaid] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -113,7 +113,7 @@ export function AuthDialog({
       setSaid(null);
       setDone(false);
       setPassword('');
-      setCode('');
+      setSent(false);
       /*
        * Opened on the confirmation view from the account menu, the address is not something to
        * ask for again — it is on the account, and asking would invite a different one.
@@ -150,18 +150,11 @@ export function AuthDialog({
     }
 
     if (view === 'verify') {
-      const wrong = await verifyEmailCode(email, code);
+      const failed = await sendVerificationLink(email);
 
-      if (wrong) {
-        setSaid(wrong);
-
-        return;
-      }
-
-      setSaid(t('auth.dialog.verify.done'));
-      setDone(true);
-      /* Long enough to read the line, short enough not to become a step of its own. */
-      setTimeout(() => (onSignedIn ? onSignedIn() : onOpenChange(false)), 1200);
+      setSaid(failed ?? t('auth.dialog.verify.resent'));
+      setDone(!failed);
+      setSent(sent || !failed);
 
       return;
     }
@@ -171,6 +164,19 @@ export function AuthDialog({
         ? await signInWithEmail(email, password)
         : await signUpWithEmail(email, password);
 
+    /*
+     * The account exists and the address is not confirmed. After signing up, Neon Auth has just
+     * emailed the link; after a refused sign-in, nothing has been sent yet — the view says which.
+     */
+    if (failed === NEEDS_VERIFICATION) {
+      setView('verify');
+      setSaid(null);
+      setDone(false);
+      setSent(view === 'signup');
+
+      return;
+    }
+
     if (failed) {
       setSaid(failed);
 
@@ -178,17 +184,16 @@ export function AuthDialog({
     }
 
     /*
-     * A new account goes straight to the code, and the code is sent from here.
-     *
-     * Signing up does not send one - the auth service leaves that to the application - so an
-     * account made here used to sit unverified with nothing in the inbox and nowhere in the
-     * product to confirm it. Signing in does not pass through this branch: somebody signing in has
-     * confirmed already, or is reminded by the account menu if they have not.
+     * Signed in straight after signing up means the auth service is not requiring confirmation, so
+     * nothing was emailed: ask for the link from here, and show where it went.
      */
     if (view === 'signup') {
-      await sendVerificationCode(email);
+      const unsent = await sendVerificationLink(email);
+
       setView('verify');
-      setSaid(null);
+      setSaid(unsent);
+      setDone(false);
+      setSent(!unsent);
 
       return;
     }
@@ -310,7 +315,9 @@ export function AuthDialog({
                   textColor="secondary"
                   className="text-sm"
                 >
-                  {t('auth.dialog.verify.lede', { email })}
+                  {sent
+                    ? t('auth.dialog.verify.lede', { email })
+                    : t('auth.dialog.verify.pending', { email })}
                 </Typography>
               )}
             </ModalHeader>
@@ -329,49 +336,6 @@ export function AuthDialog({
                       aria-label={t('auth.dialog.email')}
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}
-                    />
-                  </InputGroup>
-                </div>
-              )}
-
-              {view === 'verify' && (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <label className={eyebrow} htmlFor="auth-code">
-                      {t('auth.dialog.verify.code')}
-                    </label>
-                    <button
-                      type="button"
-                      className="rounded text-brand-tertiary text-xs hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand"
-                      onClick={async () => {
-                        const failed = await sendVerificationCode(email);
-
-                        setSaid(failed ?? t('auth.dialog.verify.resent'));
-                        setDone(!failed);
-                      }}
-                    >
-                      {t('auth.dialog.verify.resend')}
-                    </button>
-                  </div>
-                  <InputGroup size="xl" inputId="auth-code">
-                    <InputGroupInput
-                      required
-                      /*
-                       * `inputMode` and `one-time-code` are what make a phone offer the code from
-                       * the message instead of a keyboard, and what stop a password manager
-                       * filling the field with something else.
-                       */
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      maxLength={6}
-                      aria-label={t('auth.dialog.verify.code')}
-                      className="text-center text-base tracking-[0.5em]"
-                      value={code}
-                      onChange={(event) =>
-                        setCode(
-                          event.target.value.replace(/\D/g, '').slice(0, 6)
-                        )
-                      }
                     />
                   </InputGroup>
                 </div>
@@ -473,7 +437,9 @@ export function AuthDialog({
                   : view === 'signup'
                     ? t('auth.dialog.submit.signup')
                     : view === 'verify'
-                      ? t('auth.dialog.verify.submit')
+                      ? sent
+                        ? t('auth.dialog.verify.submit')
+                        : t('auth.dialog.verify.send')
                       : t('auth.dialog.submit.reset')}
               </Button>
             </form>
@@ -508,16 +474,16 @@ export function AuthDialog({
 
             {view === 'verify' ? (
               /*
-               * A way out that is not a dead end. The account exists and works; what is missing is
-               * a confirmed address, and trapping somebody in a modal over it is a worse product
-               * than letting them convert a file and confirm from the account menu later.
+               * A way out that is not a dead end. Signed in already (an older account, opened from
+               * the account menu), it closes; signed out, it goes back to signing in, which is
+               * where somebody ends up after opening the link on another device.
                */
               <button
                 type="button"
                 className="mt-5 self-center rounded text-ink-secondary text-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand"
-                onClick={() => onOpenChange(false)}
+                onClick={() => (user ? onOpenChange(false) : move('signin'))}
               >
-                {t('auth.dialog.verify.later')}
+                {user ? t('auth.dialog.verify.later') : t('auth.dialog.verify.back')}
               </button>
             ) : view === 'reset' ? (
               <button

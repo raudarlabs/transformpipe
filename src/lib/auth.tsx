@@ -10,6 +10,16 @@ import {
 import { api, type AuthUser } from './api';
 import { useT } from './i18n/context';
 
+/**
+ * What the email calls answer when the account exists but its address is not confirmed yet: the
+ * dialog then shows its "check your inbox" view instead of an error. Neon Auth requires the
+ * address to be confirmed before signing in, and confirms it by a link in an email.
+ */
+export const NEEDS_VERIFICATION = 'needs-verification';
+
+/** Where a confirmation link brings the person back to: here, query and all, without the hash. */
+const returnHere = () => `${location.origin}${location.pathname}${location.search}`;
+
 interface AuthState {
   user: AuthUser | null;
   isLoading: boolean;
@@ -23,10 +33,8 @@ interface AuthState {
   signInWithEmail: (email: string, password: string) => Promise<string | null>;
   signUpWithEmail: (email: string, password: string) => Promise<string | null>;
   requestPasswordReset: (email: string) => Promise<string | null>;
-  /** Asks the auth service for a fresh six-digit code. */
-  sendVerificationCode: (email: string) => Promise<string | null>;
-  /** Confirms the address with that code, and refreshes who is signed in. */
-  verifyEmailCode: (email: string, otp: string) => Promise<string | null>;
+  /** Asks the auth service to email a fresh confirmation link. */
+  sendVerificationLink: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   /**
    * An app waiting for this person to sign in so it can be connected — Obsidian, an assistant — or
@@ -245,12 +253,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   const withEmail = useCallback(
     async (
-      run: () => Promise<{ user?: AuthUser }>
+      run: () => Promise<{ user?: AuthUser; token?: string | null }>
     ): Promise<string | null> => {
       setIsSigningIn(true);
 
       try {
         const body = await run();
+
+        /*
+         * `token: null` beside a user is a sign-up the auth service will not open a session for
+         * until the address is confirmed: the account exists, nobody is signed in, and the link
+         * is already on its way.
+         */
+        if (body.user && body.token === null) {
+          setIsSigningIn(false);
+
+          return NEEDS_VERIFICATION;
+        }
 
         if (body.user) {
           setUser(body.user);
@@ -269,9 +288,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(account);
         setIsSigningIn(false);
 
-        return account ? null : t('auth.verify.sent');
+        return account ? null : NEEDS_VERIFICATION;
       } catch (cause) {
         setIsSigningIn(false);
+
+        /* Signing in before the address is confirmed is refused with a 403 that says so. */
+        if (cause instanceof Error && /not verified/i.test(cause.message)) {
+          return NEEDS_VERIFICATION;
+        }
 
         return cause instanceof Error ? cause.message : t('auth.error.start');
       }
@@ -287,7 +311,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUpWithEmail = useCallback(
     (email: string, password: string) =>
-      withEmail(() => api.signUpWithEmail(email, password)),
+      withEmail(() => api.signUpWithEmail(email, password, returnHere())),
     [withEmail]
   );
 
@@ -305,34 +329,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   /*
-   * The code, sent and checked.
+   * A fresh confirmation link, for whoever lost the first one or let it expire (fifteen minutes).
    *
-   * Signing up does not send one: the auth service leaves that to the application, which is why an
-   * account created here sat unverified with an empty inbox. So the dialog sends it.
-   *
-   * On success the session is asked again rather than trusted from the response. Confirming an
-   * address changes `emailVerified` on the user, and that flag is what the rest of the app reads —
-   * a stale copy of it in memory is how somebody comes to be told to confirm an address they just
-   * confirmed.
+   * Opening it confirms the address and signs the person in, and Neon Auth sends them back to the
+   * page they were on — where `useAuth` asks who is signed in on load, so the confirmed flag is
+   * read fresh rather than trusted from memory.
    */
-  const sendVerificationCode = useCallback(
+  const sendVerificationLink = useCallback(
     async (email: string): Promise<string | null> => {
       try {
-        await api.sendVerificationCode(email);
-
-        return null;
-      } catch (cause) {
-        return cause instanceof Error ? cause.message : t('auth.error.start');
-      }
-    },
-    [t]
-  );
-
-  const verifyEmailCode = useCallback(
-    async (email: string, otp: string): Promise<string | null> => {
-      try {
-        await api.verifyEmailCode(email, otp);
-        setUser(await api.me());
+        await api.sendVerificationLink(email, returnHere());
 
         return null;
       } catch (cause) {
@@ -369,8 +375,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithEmail,
       signUpWithEmail,
       requestPasswordReset,
-      sendVerificationCode,
-      verifyEmailCode,
+      sendVerificationLink,
       signOut,
       connecting,
       leaveConnect,
@@ -384,8 +389,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithEmail,
       signUpWithEmail,
       requestPasswordReset,
-      sendVerificationCode,
-      verifyEmailCode,
+      sendVerificationLink,
       signOut,
       connecting,
       leaveConnect,

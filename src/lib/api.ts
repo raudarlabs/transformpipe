@@ -243,13 +243,18 @@ export const api = {
    * has converted a single file, and what the name is for here is a greeting — it can be changed
    * later, and an address is what the account is actually identified by.
    */
-  signUpWithEmail: (email: string, password: string) =>
-    request<{ user?: AuthUser }>('/api/auth/sign-up/email', {
+  /**
+   * `callbackURL` is where the confirmation link in the email brings the person back to — the
+   * page they signed up on, so a connection an app was waiting on carries on from there.
+   */
+  signUpWithEmail: (email: string, password: string, callbackURL: string) =>
+    request<{ user?: AuthUser; token?: string | null }>('/api/auth/sign-up/email', {
       method: 'POST',
       body: JSON.stringify({
         email,
         password,
         name: email.split('@')[0] || email,
+        callbackURL,
       }),
     }),
 
@@ -273,32 +278,14 @@ export const api = {
     ),
 
   /**
-   * Sends a fresh six-digit code to the address.
-   *
-   * Signing up does not send one — the auth service leaves that to the application, which is why
-   * an account created here sat unverified with nothing in the inbox until this was called.
+   * Sends a fresh confirmation link. Opening it confirms the address and signs the person in, then
+   * returns them to `callbackURL`. Neon Auth sends one by itself at sign-up; this is the "again".
    */
-  sendVerificationCode: (email: string) =>
-    request<{ success?: boolean }>('/api/auth/email-otp/send-verification-otp', {
+  sendVerificationLink: (email: string, callbackURL: string) =>
+    request<{ status?: boolean }>('/api/auth/send-verification-email', {
       method: 'POST',
-      body: JSON.stringify({ email, type: 'email-verification' }),
+      body: JSON.stringify({ email, callbackURL }),
     }),
-
-  /**
-   * Confirms the address with the code from the email.
-   *
-   * A code and not a link: the message carries six digits that expire in ten minutes, so there is
-   * nothing to click and the product has to ask for them. A wrong one comes back as
-   * `INVALID_OTP`, which `request` lifts into the message shown under the field.
-   */
-  verifyEmailCode: (email: string, otp: string) =>
-    request<{ status?: boolean; user?: AuthUser }>(
-      '/api/auth/email-otp/verify-email',
-      {
-        method: 'POST',
-        body: JSON.stringify({ email, otp }),
-      }
-    ),
 
   signOut: () =>
     request<{ success?: boolean }>('/api/auth/sign-out', {
