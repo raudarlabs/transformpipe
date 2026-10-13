@@ -1,9 +1,10 @@
 import type { Context } from 'hono';
 import { Hono } from 'hono';
-import { currentUser } from './auth.js';
+import { currentUser, selfOrigin, type SessionUser } from './auth.js';
 import { clientLabel, type ClientLabel } from './client-label.js';
 import { looksLikeId, sql } from './db.js';
 import { QUOTA } from './limits.js';
+import { deleteSources } from './source.js';
 import { OAUTH_STEPS } from '../shared/usage.js';
 
 /*
@@ -15,7 +16,8 @@ import { OAUTH_STEPS } from '../shared/usage.js';
  * the owner's address and never proved is not the owner. Without the variable nobody gets in, and
  * anybody who is not on it gets the same 404 as a page that does not exist.
  *
- * Read-only: every statement below is a select.
+ * Read-only, with one exception: deleting an account, which is a POST from the account's own page
+ * that has to repeat the account's address, and cannot be aimed at the owner or another admin.
  *
  * "How they arrived" is worked out, not recorded. Neon Auth tells this application nothing at
  * registration, but an assistant's sign-in leaves a token whose first row is seconds after the
@@ -59,7 +61,7 @@ const admins = () =>
       .filter(Boolean)
   );
 
-async function admitted(c: Context): Promise<'yes' | 'sign-in' | 'no'> {
+async function admitted(c: Context): Promise<SessionUser | 'sign-in' | 'no'> {
   const allowed = admins();
 
   if (allowed.size === 0) {
@@ -80,7 +82,7 @@ async function admitted(c: Context): Promise<'yes' | 'sign-in' | 'no'> {
     select "emailVerified" as verified from neon_auth."user" where id = ${who.id}
   `);
 
-  return found[0]?.verified === true ? 'yes' : 'no';
+  return found[0]?.verified === true ? who : 'no';
 }
 
 const PRIVATE_HEADERS = {
@@ -587,6 +589,15 @@ dl.facts dt { color: var(--dim); } dl.facts dd { margin: 0; min-width: 0; overfl
 code { font: 12px ui-monospace, Menlo, Consolas, monospace; }
 #tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--page);
   font-size: 12px; padding: 6px 8px; border-radius: 6px; white-space: pre; line-height: 1.4; }
+.danger { margin-top: 12px; border-color: color-mix(in srgb, var(--s2) 45%, var(--line)); }
+.danger ul { margin: 0 0 10px; padding-left: 18px; }
+.danger label { display: block; margin: 12px 0 8px; color: var(--dim); }
+.danger input[type=text] { flex: 1 1 220px; min-width: 0; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--page); color: var(--ink); font: inherit; }
+button.destroy { padding: 7px 14px; border-radius: 8px; border: 1px solid #c2410c; background: #c2410c; color: #fff;
+  font: inherit; font-weight: 500; cursor: pointer; }
+.notice { border: 1px solid var(--line); border-left: 3px solid var(--s3); border-radius: 8px; background: var(--card);
+  padding: 10px 14px; margin: 0 0 16px; }
 @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .tile b { font-size: 20px; } }
 `;
 
@@ -782,7 +793,12 @@ function funnelTable(rows: FunnelRow[]): string {
   return `<div class="scroll"><table><thead><tr><th>App</th>${head}<th class="n">start→token</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
-function overviewPage(people: Person[], counters: Awaited<ReturnType<typeof loadCounters>>, days: number): string {
+function overviewPage(
+  people: Person[],
+  counters: Awaited<ReturnType<typeof loadCounters>>,
+  days: number,
+  deleted = false
+): string {
   const now = Date.now();
   const since = (d: number) => people.filter((one) => one.created > now - d * DAY_MS).length;
   const activeIn = (d: number) => people.filter((one) => one.lastActive !== null && one.lastActive > now - d * DAY_MS).length;
@@ -870,6 +886,7 @@ function overviewPage(people: Person[], counters: Awaited<ReturnType<typeof load
     <div class="links"><a href="?days=7">7d</a><a href="?days=30">30d</a><a href="?days=90">90d</a><a href="/admin/users.csv">Download CSV</a></div>
   </div>
 
+  ${deleted ? '<p class="notice">Account deleted, with its documents, files, connections and keys.</p>' : ''}
   <section class="tiles">
     <div class="tile"><span>Accounts</span><b>${people.length}</b><small>+${since(7)} this week · +${since(30)} in 30 days</small></div>
     <div class="tile"><span>Confirmed address</span><b>${verified}</b><small>${people.length ? Math.round((verified / people.length) * 100) : 0}% of accounts</small></div>
@@ -995,7 +1012,7 @@ interface SessionLine {
   ip: string | null;
 }
 
-async function personPage(id: string): Promise<string | null> {
+async function personPage(id: string, viewer: SessionUser): Promise<string | null> {
   const people = await loadPeople();
   const person = people.find((one) => one.id === id);
 
@@ -1112,10 +1129,99 @@ async function personPage(id: string): Promise<string | null> {
     ${table(['Started', 'Last seen', 'Device', 'IP', 'Status'], sessionRows, 'No sessions on record.')}</section>
   <section class="card"><h2>Documents${documents.length === 500 ? ' (newest 500)' : ''}</h2>
     ${table(['Name', 'Conversion', '#Size', 'Created', 'Updated', '#Revisions', 'Shared', '#Views'], docRows, 'No documents.')}</section>
+  ${dangerZone(p, viewer)}
 </main>
 <script>${SCRIPT}</script>`;
 
   return shell(p.name || p.email || 'User', body);
+}
+
+/* ------------------------------------------------------------------------- deleting an account */
+
+/** Why this account cannot be deleted from here, or null when it can. */
+function undeletable(target: { id: string; email: string | null }, viewer: SessionUser): string | null {
+  if (target.id === viewer.id) {
+    return 'This is your own account. It cannot be deleted from here.';
+  }
+
+  if (target.email && admins().has(target.email.toLowerCase())) {
+    return 'This address is on ADMIN_EMAILS. Take it off the list first.';
+  }
+
+  return null;
+}
+
+/** What has to be typed to confirm: the address, or the id for an account without one. */
+const confirmation = (target: { id: string; email: string | null }) => target.email || target.id;
+
+function dangerZone(p: Person, viewer: SessionUser): string {
+  const why = undeletable({ id: p.id, email: p.email || null }, viewer);
+  const of = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+  const shared = p.sharedLink + p.sharedPeople;
+  const what = [
+    `${of(p.documents, 'document')} and their files`,
+    p.revisions ? of(p.revisions, 'kept revision') : '',
+    shared ? `${of(shared, 'shared document')}, whose links stop working` : '',
+    p.apps.length ? `${of(p.apps.length, 'app connection')} (${[...new Set(p.apps.map((a) => doorName(a.label)))].join(', ')})` : '',
+    p.keys ? of(p.keys, 'API key') : '',
+    p.webhooks ? of(p.webhooks, 'webhook') : '',
+    'the sign-in itself, with its sessions',
+  ].filter(Boolean);
+
+  if (why) {
+    return `<section class="card danger"><h2>Delete account</h2><p class="mute">${escapeHtml(why)}</p></section>`;
+  }
+
+  return `<section class="card danger"><h2>Delete account</h2>
+    <p class="dim">Deletes, permanently and at once:</p>
+    <ul class="dim">${what.map((one) => `<li>${escapeHtml(one)}</li>`).join('')}</ul>
+    <p class="dim">There is no undo and no trash. The person is not told. They can sign up again with the same address and start empty.</p>
+    <form method="POST" action="/admin/u/${escapeHtml(p.id)}/delete" class="confirm">
+      <label for="confirm">Type <code>${escapeHtml(confirmation({ id: p.id, email: p.email || null }))}</code> to confirm</label>
+      <div class="toolbar">
+        <input type="text" id="confirm" name="confirm" autocomplete="off" spellcheck="false" required>
+        <button type="submit" class="destroy">Delete this account</button>
+      </div>
+    </form>
+  </section>`;
+}
+
+/*
+ * Everything the account owns, and the account: one transaction, so a statement that fails —
+ * Neon Auth's tables refusing this role, say — leaves the account exactly as it was. The files in
+ * the store go after the commit, from the paths the deletes returned; a file that fails to go is a
+ * file nobody can reach, which is what `npm run blob:reconcile` sweeps.
+ *
+ * What stays: documents other people shared WITH this address (theirs, not this account's), and
+ * the counter, which never knew who anybody was.
+ */
+async function deleteAccount(id: string): Promise<{ documents: number; files: number }> {
+  const db = sql();
+  const results = (await db.transaction([
+    db`delete from m2h_document_revision
+       where document_id in (select id from m2h_document where user_id = ${id})
+       returning blob_path`,
+    db`delete from m2h_document where user_id = ${id} returning blob_path`,
+    db`delete from m2h_api_key where user_id = ${id}`,
+    db`delete from m2h_webhook where user_id = ${id}`,
+    db`delete from m2h_oauth_token where user_id = ${id}`,
+    db`delete from m2h_oauth_code where user_id = ${id}`,
+    db`delete from m2h_oauth_pending where shown_to = ${id}`,
+    db`delete from m2h_user where user_id = ${id}`,
+    // Rate and budget rows are keyed by a caller string that carries the id.
+    db`delete from m2h_call where position(${id}::text in caller) > 0`,
+    db`delete from m2h_ai_summary_call where position(${id}::text in caller) > 0`,
+    db`delete from m2h_mail_call where position(${id}::text in caller) > 0`,
+    db`delete from neon_auth.session where "userId" = ${id}`,
+    db`delete from neon_auth.account where "userId" = ${id}`,
+    db`delete from neon_auth."user" where id = ${id}`,
+  ])) as unknown as Array<Array<{ blob_path?: string | null }>>;
+
+  const files = [...results[0], ...results[1]].map((row) => row.blob_path ?? null);
+
+  await deleteSources(files);
+
+  return { documents: results[1].length, files: files.filter(Boolean).length };
 }
 
 /* ---------------------------------------------------------------------------------- the routes */
@@ -1125,33 +1231,107 @@ const admin = new Hono();
 admin.get('/admin', async (c) => {
   const verdict = await admitted(c);
 
-  if (verdict !== 'yes') {
+  if (typeof verdict === 'string') {
     return refused(c, verdict);
   }
 
   const days = Math.max(1, Math.min(365, Number(c.req.query('days')) || 30));
   const [people, counters] = await Promise.all([loadPeople(), loadCounters(days)]);
 
-  return c.html(overviewPage(people, counters, days), 200, PRIVATE_HEADERS);
+  return c.html(overviewPage(people, counters, days, c.req.query('deleted') === '1'), 200, PRIVATE_HEADERS);
 });
 
 admin.get('/admin/u/:id', async (c) => {
   const verdict = await admitted(c);
 
-  if (verdict !== 'yes') {
+  if (typeof verdict === 'string') {
     return refused(c, verdict);
   }
 
   const id = c.req.param('id');
-  const page = looksLikeId(id) ? await personPage(id) : null;
+  const page = looksLikeId(id) ? await personPage(id, verdict) : null;
 
   return page ? c.html(page, 200, PRIVATE_HEADERS) : c.text('No such account', 404, PRIVATE_HEADERS);
+});
+
+admin.post('/admin/u/:id/delete', async (c) => {
+  const verdict = await admitted(c);
+
+  if (typeof verdict === 'string') {
+    return refused(c, verdict);
+  }
+
+  /*
+   * The session cookie is SameSite=Lax, so a form posted from another site arrives without it and
+   * stops above. This is the second lock: a browser that says where the post came from has to say
+   * here.
+   */
+  const origin = c.req.header('origin');
+
+  if (origin && origin !== selfOrigin(c)) {
+    return c.text('Forbidden', 403, PRIVATE_HEADERS);
+  }
+
+  const id = c.req.param('id');
+
+  if (!looksLikeId(id)) {
+    return c.text('No such account', 404, PRIVATE_HEADERS);
+  }
+
+  const found = await rows<{ id: string; email: string | null }>(sql()`
+    select id, email from neon_auth."user" where id = ${id}
+  `);
+  const target = found[0];
+
+  if (!target) {
+    return c.text('No such account', 404, PRIVATE_HEADERS);
+  }
+
+  const back = (message: string, status: 400 | 409 | 500) =>
+    c.html(
+      shell(
+        'Not deleted',
+        `<main class="narrow"><h1>Not deleted</h1><p class="dim">${escapeHtml(message)}</p>
+         <p><a href="/admin/u/${escapeHtml(id)}">← Back to the account</a></p></main>`
+      ),
+      status,
+      PRIVATE_HEADERS
+    );
+
+  const why = undeletable(target, verdict);
+
+  if (why) {
+    return back(why, 409);
+  }
+
+  const form = await c.req.parseBody();
+  const typed = String(form.confirm ?? '').trim().toLowerCase();
+
+  if (typed !== confirmation(target).toLowerCase()) {
+    return back('What was typed did not match, so nothing was deleted.', 400);
+  }
+
+  try {
+    const done = await deleteAccount(id);
+
+    // The id and the counts, for the function log; no address.
+    console.info(`admin: deleted account ${id} (${done.documents} documents, ${done.files} files)`);
+  } catch (error) {
+    console.error(`admin: deleting account ${id} failed`, error);
+
+    return back(
+      `The database refused (${error instanceof Error ? error.message : 'unknown error'}). Nothing was deleted: it all runs in one transaction.`,
+      500
+    );
+  }
+
+  return c.redirect('/admin?deleted=1', 303);
 });
 
 admin.get('/admin/users.csv', async (c) => {
   const verdict = await admitted(c);
 
-  if (verdict !== 'yes') {
+  if (typeof verdict === 'string') {
     return refused(c, verdict);
   }
 
