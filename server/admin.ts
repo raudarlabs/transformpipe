@@ -1,6 +1,6 @@
 import type { Context } from 'hono';
 import { Hono } from 'hono';
-import { currentUser, selfOrigin, type SessionUser } from './auth.js';
+import { currentUser, type SessionUser } from './auth.js';
 import { clientLabel, type ClientLabel } from './client-label.js';
 import { looksLikeId, sql } from './db.js';
 import { QUOTA } from './limits.js';
@@ -1173,6 +1173,37 @@ async function personPage(id: string, viewer: SessionUser): Promise<string | nul
   return shell(p.name || p.email || 'User', body);
 }
 
+/*
+ * Whether a POST came from this site's own page.
+ *
+ * The session cookie is SameSite=Lax, so a form posted from another site arrives without it and is
+ * refused by the gate anyway; this is the second lock. A browser says where a request came from in
+ * Sec-Fetch-Site, and failing that in Origin, which is compared by host with the Host the request
+ * arrived on — not with selfOrigin(), which behind Vercel's proxy can name a different host from
+ * the one in the browser's address bar, and refused the owner's own clicks.
+ */
+function sameSite(c: Context): boolean {
+  const site = c.req.header('sec-fetch-site');
+
+  if (site) {
+    return site === 'same-origin';
+  }
+
+  const origin = c.req.header('origin');
+
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    const host = new URL(origin).host;
+
+    return [c.req.header('host'), c.req.header('x-forwarded-host')].includes(host);
+  } catch {
+    return false;
+  }
+}
+
 /* ------------------------------------------------------------------------- deleting an account */
 
 /** Why this account cannot be deleted from here, or null when it can. */
@@ -1309,9 +1340,7 @@ admin.post('/admin/u/:id/delete', async (c) => {
    * stops above. This is the second lock: a browser that says where the post came from has to say
    * here.
    */
-  const origin = c.req.header('origin');
-
-  if (origin && origin !== selfOrigin(c)) {
+  if (!sameSite(c)) {
     return c.text('Forbidden', 403, PRIVATE_HEADERS);
   }
 
@@ -1395,9 +1424,7 @@ admin.post('/admin/brevo-sync', async (c) => {
     return refused(c, verdict);
   }
 
-  const origin = c.req.header('origin');
-
-  if (origin && origin !== selfOrigin(c)) {
+  if (!sameSite(c)) {
     return c.text('Forbidden', 403, PRIVATE_HEADERS);
   }
 
