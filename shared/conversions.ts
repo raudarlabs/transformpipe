@@ -17,7 +17,9 @@
  *
  * Every conversion normalises to Markdown or to HTML from Markdown, because Markdown is what a
  * document is stored as — the rendering, the sharing, the API and the assistant tools all stand on
- * that one shape, and a second stored form would be a second version of all of it.
+ * that one shape, and a second stored form would be a second version of all of it. The conversions
+ * going out of Markdown keep to that: what they store is the Markdown, and Confluence, Jira, Slack
+ * or the book are made from it whenever somebody asks.
  */
 
 export type ConversionId =
@@ -35,7 +37,18 @@ export type ConversionId =
   | 'epub-to-markdown'
   | 'odt-to-markdown'
   | 'rtf-to-markdown'
-  | 'evernote-to-markdown';
+  | 'evernote-to-markdown'
+  | 'markdown-to-confluence'
+  | 'markdown-to-jira'
+  | 'markdown-to-slack'
+  | 'markdown-to-epub';
+
+/**
+ * What a conversion hands over. The first two are what a document is stored as and what it renders
+ * to; the rest are made from the stored Markdown when somebody asks for them, and none of them is
+ * ever stored — see `shared/to-confluence.ts` and its neighbours.
+ */
+export type ConversionTarget = 'html' | 'markdown' | 'confluence' | 'jira' | 'slack' | 'epub';
 
 export interface Conversion {
   id: ConversionId;
@@ -46,7 +59,7 @@ export interface Conversion {
    * converting a Word file wants the Markdown, and somebody converting Markdown wants the page. It
    * decides which source tab is shown and which format the download button hands over first.
    */
-  to: 'html' | 'markdown';
+  to: ConversionTarget;
   /** Its own address, so it can be linked, reloaded and found. */
   path: string;
   /** What the dropzone accepts, lower case, with the dot. */
@@ -60,6 +73,35 @@ export const CONVERSIONS: Conversion[] = [
     path: '/',
     // .txt moved to its own conversion below: a plain-text file is not Markdown, and claiming it
     // here meant an asterisk typed as a literal asterisk came out italic.
+    extensions: ['.md', '.markdown', '.mdown', '.mkd'],
+  },
+  /*
+   * Markdown going out. Each takes the same files the first one does and hands over something
+   * other than a page, so they sit straight after it — and a dropped .md still means the first one
+   * unless it was dropped on one of these screens (see `conversionForFile`).
+   */
+  {
+    id: 'markdown-to-confluence',
+    to: 'confluence',
+    path: '/markdown-to-confluence',
+    extensions: ['.md', '.markdown', '.mdown', '.mkd'],
+  },
+  {
+    id: 'markdown-to-jira',
+    to: 'jira',
+    path: '/markdown-to-jira',
+    extensions: ['.md', '.markdown', '.mdown', '.mkd'],
+  },
+  {
+    id: 'markdown-to-slack',
+    to: 'slack',
+    path: '/markdown-to-slack',
+    extensions: ['.md', '.markdown', '.mdown', '.mkd'],
+  },
+  {
+    id: 'markdown-to-epub',
+    to: 'epub',
+    path: '/markdown-to-epub',
     extensions: ['.md', '.markdown', '.mdown', '.mkd'],
   },
   {
@@ -170,8 +212,8 @@ export const ALL_EXTENSIONS = [
 /**
  * Which conversion a dropped file belongs to, by its extension.
  *
- * `.zip` is the one extension two conversions share — a Notion export and a Confluence export are
- * both just a .zip, and nothing in a file's name says which. `preferred` is how the screen a file
+ * `.zip` is shared — a Notion export and a Confluence export are both just a .zip, and nothing in a
+ * file's name says which — and so is `.md`, which every conversion going out of Markdown takes. `preferred` is how the screen a file
  * landed on breaks that tie: dropping a .zip onto the Confluence page means the Confluence
  * conversion, even though Notion's comes first in the list below. Without a matching `preferred`,
  * or where the extension is not shared at all, the first (and normally only) match still wins.

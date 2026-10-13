@@ -10,7 +10,7 @@ import { CONVERSIONS } from './conversions.js';
 import { highlightCode } from './highlight.js';
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
 import katex from 'katex';
-import { Marked, type Tokens } from 'marked';
+import { Marked, type Token, type Tokens } from 'marked';
 import {
   mdDocPrintOverride,
   mdDocResponsiveTheme,
@@ -711,6 +711,69 @@ function footnoteSection(collected: typeof notes): string {
     .join('\n');
 
   return `<hr class="md-fnrule">\n<ol class="md-footnotes">\n${items}\n</ol>\n`;
+}
+
+/**
+ * The document as tokens, for a writer that is not HTML — Confluence, Jira, Slack.
+ *
+ * The same instance, the same extensions and the same two rewrites `renderMarkdown` makes, so a
+ * formula, a footnote or a `==highlight==` is recognised by exactly the rules the preview used, and
+ * what somebody saw on screen is what the other format says. A writer of its own with a parse of
+ * its own would agree with the preview right up to the first document where it did not.
+ *
+ * Footnotes come back beside the tokens rather than inside them: a definition is taken out of the
+ * flow where it is written, and every format puts the notes at the end in the order they were
+ * referred to — which `order` is, by the time the lexer has finished.
+ */
+export interface LexedDocument {
+  tokens: Token[];
+  footnotes: Array<{ id: string; tokens: Token[] }>;
+}
+
+export function lexMarkdown(markdown: string): LexedDocument {
+  notes = { order: [], text: new Map() };
+
+  try {
+    const tokens = marked.lexer(rewriteWikilinks(stripFrontmatter(markdown)));
+    const collected = notes;
+
+    return {
+      tokens,
+      footnotes: collected.order.map((id) => ({
+        id,
+        tokens: marked.Lexer.lexInline(collected.text.get(id) ?? '', marked.defaults),
+      })),
+    };
+  } finally {
+    notes = null;
+  }
+}
+
+/**
+ * `> [!NOTE]` and its relatives, read off a quote's tokens — the same rule the renderer applies.
+ *
+ * Null for an ordinary quote. Otherwise the kind (one of GitHub's five), the title the writer gave
+ * it or the kind's own, and the body with the marker line taken off.
+ */
+export function alertOf(
+  tokens: Token[]
+): { kind: string; title: string; tokens: Token[] } | null {
+  const first = tokens[0];
+  const opener =
+    first?.type === 'paragraph' && typeof first.raw === 'string'
+      ? /^\[!([A-Za-z]+)\][ \t]*([^\n]*)/.exec(first.raw.trim())
+      : null;
+  const alert = opener ? ALERTS[opener[1].toLowerCase()] : undefined;
+
+  if (!opener || !alert) return null;
+
+  const rest = first.raw.trim().slice(opener[0].length).replace(/^\r?\n/, '');
+
+  return {
+    kind: alert.kind,
+    title: opener[2].trim() || alert.label,
+    tokens: [...(rest ? marked.lexer(rest) : []), ...tokens.slice(1)],
+  };
 }
 
 interface StandaloneOptions {

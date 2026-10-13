@@ -3,6 +3,7 @@ import { inlineDiagrams } from './mermaid';
 import { obsidianHeadingLinks } from '@shared/to-obsidian';
 import { markdownToText } from '@shared/to-text';
 import { type DocFormat, toFileName } from './format';
+import { exportText } from './export-text';
 import type { Translate } from './i18n/context';
 
 /*
@@ -55,6 +56,29 @@ export async function downloadDoc(
       markdownToText(markdown),
       'text/plain;charset=utf-8'
     );
+    return;
+  }
+
+  if (format === 'confluence') {
+    save(toFileName(name, format), await exportText(format, markdown), 'application/xml;charset=utf-8');
+    return;
+  }
+
+  if (format === 'jira' || format === 'slack') {
+    save(toFileName(name, format), await exportText(format, markdown), 'text/plain;charset=utf-8');
+    return;
+  }
+
+  if (format === 'epub') {
+    const { markdownToEpub } = await import('./epub');
+    const bytes = await markdownToEpub({
+      name,
+      markdown,
+      // The page's own language — the reader's, and the best guess there is at the document's.
+      language: document.documentElement.lang || 'en',
+    });
+
+    saveBlob(toFileName(name, format), new Blob([new Uint8Array(bytes)], { type: 'application/epub+zip' }));
     return;
   }
 

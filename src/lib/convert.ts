@@ -234,6 +234,17 @@ export async function convertFile(
       return { markdown, name: renamed(file.name, '.md'), kind: id };
     }
 
+    case 'markdown-to-confluence':
+    case 'markdown-to-jira':
+    case 'markdown-to-slack':
+    case 'markdown-to-epub': {
+      /*
+       * Markdown going out is stored as the Markdown it came in as, under its own conversion, so
+       * the screen it reopens on is the one that hands over the Confluence, the Jira or the book.
+       */
+      return { markdown: await readText(file), name: file.name, kind: id };
+    }
+
     default: {
       // Markdown is already Markdown; the HTML is made when it is shown.
       return {

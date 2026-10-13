@@ -211,4 +211,56 @@ export const conversions: Content['conversions'] = {
         'Eine Excel-.xlsx-Arbeitsmappe in Markdown-Tabellen umwandeln, eine pro Blatt mit Inhaltsverzeichnis. Läuft im Browser; nichts wird hochgeladen.',
     },
   },
+  'markdown-to-confluence': {
+    label: 'Markdown → Confluence',
+    short: 'MD → Confluence',
+    title: 'Markdown in Confluence',
+    blurb:
+      'Eine Markdown-Datei hochladen und Confluence-Speicherformat erhalten — Codeblöcke als Code-Makro, Hinweise als Info- und Warnungsbereiche, Aufgabenlisten mit echten Kästchen und Links, die zu ihrer Überschrift springen.',
+    hint: 'Eine .md-Datei hochladen. „Für Confluence kopieren“ fügt im Cloud-Editor formatiert ein und als Speicherformat im Quelltext-Editor oder über die REST-API.',
+    seo: {
+      title: 'Markdown in Confluence-Speicherformat umwandeln — TransformPipe',
+      description:
+        'Markdown in Confluence-Speicherformat umwandeln: Code-Makros, Info- und Warnungsbereiche, Aufgabenlisten und Überschriften-Links. Direkt im Browser, ohne Upload.',
+    },
+  },
+  'markdown-to-jira': {
+    label: 'Markdown → Jira',
+    short: 'MD → Jira',
+    title: 'Markdown in Jira-Wiki-Markup',
+    blurb:
+      'Eine Markdown-Datei hochladen und Jira-Wiki-Markup erhalten — h2.-Überschriften, *fett*, {code}-Blöcke mit ihrer Sprache, ||Tabellen|| und Bereiche für Hinweise — so maskiert, dass nichts versehentlich zur Formatierung wird.',
+    hint: 'Eine .md-Datei hochladen. Das Markup gehört in den Textmodus von Jira, einen v2-REST-Aufruf oder eine Automatisierungsregel; „Für Jira kopieren“ fügt in Jira Cloud auch formatiert ein.',
+    seo: {
+      title: 'Markdown in Jira-Wiki-Markup umwandeln — TransformPipe',
+      description:
+        'Markdown in Jira-Wiki-Markup umwandeln: Überschriften, Fettdruck, Codeblöcke mit Sprache, Tabellen und Bereiche, sauber maskiert. Direkt im Browser, ohne Upload.',
+    },
+  },
+  'markdown-to-slack': {
+    label: 'Markdown → Slack',
+    short: 'MD → Slack',
+    title: 'Markdown in Slack-mrkdwn',
+    blurb:
+      'Eine Markdown-Datei hochladen und Slacks mrkdwn erhalten — Fettdruck mit einem Sternchen, <Links|mit Worten>, Aufzählungen nach Ebene und Tabellen als ausgerichtete Codeblöcke — bereit für einen Bot, einen Webhook oder einen Workflow.',
+    hint: 'Eine .md-Datei hochladen. Das mrkdwn ist, was ein API-Aufruf oder ein Webhook sendet; „Für Slack kopieren“ fügt auch formatiert in Slacks Nachrichtenfeld ein.',
+    seo: {
+      title: 'Markdown in Slack-mrkdwn umwandeln — TransformPipe',
+      description:
+        'Markdown in Slack-mrkdwn für Bots, Webhooks und Workflows umwandeln: Fettdruck, Links, Listen und Tabellen als Codeblöcke. Direkt im Browser, ohne Upload.',
+    },
+  },
+  'markdown-to-epub': {
+    label: 'Markdown → EPUB',
+    short: 'MD → EPUB',
+    title: 'Markdown in ein EPUB-Buch',
+    blurb:
+      'Eine Markdown-Datei hochladen und eine .epub erhalten, die jeder E-Reader öffnet — ein Kapitel pro oberster Überschrift, ein Inhaltsverzeichnis, und Bilder, Formeln und Diagramme im Buch.',
+    hint: 'Eine .md-Datei hochladen. Kapitel entstehen an den Überschriften, die sich wiederholen; ein im Dokument eingebettetes Bild reist im Buch mit.',
+    seo: {
+      title: 'Markdown in EPUB umwandeln — TransformPipe',
+      description:
+        'Eine Markdown-Datei in ein EPUB-3-Buch umwandeln: Kapitel aus den Überschriften, Inhaltsverzeichnis, Bilder, Formeln und Diagramme. Direkt im Browser erstellt.',
+    },
+  },
 };

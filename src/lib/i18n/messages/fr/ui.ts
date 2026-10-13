@@ -260,6 +260,7 @@ export const ui: Content['ui'] = {
   'converter.share.hint.signedout':
     'Connectez-vous pour partager — le partage suppose le document dans votre compte',
   'converter.copy': 'Copier {format}',
+  'converter.copy.for': 'Copier pour {target}',
   'converter.copy.done': '{format} copié dans le presse-papiers',
   'converter.download': 'Télécharger .{format}',
   'converter.download.more': 'Autres formats',
@@ -270,6 +271,7 @@ export const ui: Content['ui'] = {
   'converter.download.docx': 'Word (.docx)',
   'converter.download.docx.needsSave': 'Word (.docx) — enregistrez d’abord le document',
   'converter.download.docx.error': 'Impossible de générer le document Word',
+  'converter.download.error': 'Impossible de générer le fichier ({format})',
   'converter.tab.preview': 'Aperçu',
   'converter.tab.html': 'Source HTML',
   'converter.tab.markdown': 'Markdown',

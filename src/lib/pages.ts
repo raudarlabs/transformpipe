@@ -35,6 +35,8 @@ export type StaticPageId =
   | 'how-to-rtf'
   | 'how-to-enex'
   | 'how-to-zip'
+  | 'how-to-paste'
+  | 'how-to-make-epub'
   | 'how-to-assistant'
   | 'agents'
   | 'agents-claude'
@@ -233,6 +235,20 @@ export const STATIC_PAGES: StaticPage[] = [
     action: '/notion-to-markdown',
     covers: ['/confluence-to-markdown', '/obsidian-to-markdown'],
   },
+
+  /*
+   * Markdown going out, where the question somebody types is not how to open a file but how to get
+   * the one they have into the place it is going. Confluence, Jira and Slack share a page because
+   * they share the problem — a pasted .md arrives with its asterisks showing — and the answer.
+   */
+  {
+    id: 'how-to-paste',
+    path: '/how-to/paste-markdown',
+    group: 'how-to',
+    action: '/markdown-to-confluence',
+    covers: ['/markdown-to-jira', '/markdown-to-slack'],
+  },
+  { id: 'how-to-make-epub', path: '/how-to/make-epub', group: 'how-to', action: '/markdown-to-epub' },
 
   /*
    * The odd one in this group: not a file extension but the other way documents arrive here — an

@@ -32,7 +32,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'What it does',
         body: [
-          'Fifteen conversions. A Word file, a slide deck, a spreadsheet, an EPUB book, an OpenDocument or rich text file, an Evernote export, a page of saved HTML, a CSV, a JSON response, or the zip that Notion, Confluence and Obsidian hand you when you export — each of them becomes Markdown. And Markdown becomes a finished HTML page, a Word file, plain text, or something you can print.',
+          'Nineteen conversions. A Word file, a slide deck, a spreadsheet, an EPUB book, an OpenDocument or rich text file, an Evernote export, a page of saved HTML, a CSV, a JSON response, or the zip that Notion, Confluence and Obsidian hand you when you export — each of them becomes Markdown. And Markdown becomes a finished HTML page, a Word file, a Confluence page, a Jira ticket, a Slack message, an EPUB book, plain text, or something you can print.',
           'Everything normalises to Markdown, because Markdown is a format you can read without the tool that made it, diff in a pull request, and still open in twenty years.',
           'The pictures come with it. A conversion that finds an image inside the file carries it into the output rather than leaving a reference to a folder you do not have, so what you get is one file that still shows what it showed.',
         ],
@@ -95,7 +95,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'What formats does it read?',
-          answer: 'Word, PowerPoint, Excel, EPUB, OpenDocument text, rich text, Evernote exports, HTML, CSV, TSV, JSON, plain text, and the export zips from Notion, Confluence and Obsidian. Out the other side: HTML, Word, plain text and print. PDF is the notable absence — reconstructing structure from glyphs at coordinates is a different discipline from reading a container.',
+          answer: 'Word, PowerPoint, Excel, EPUB, OpenDocument text, rich text, Evernote exports, HTML, CSV, TSV, JSON, plain text, and the export zips from Notion, Confluence and Obsidian. Out the other side: HTML, Word, Confluence storage format, Jira wiki markup, Slack mrkdwn, EPUB, plain text and print. PDF is the notable absence — reconstructing structure from glyphs at coordinates is a different discipline from reading a container.',
         },
         {
           question: 'What happens to tables, images and code?',
@@ -924,6 +924,81 @@ export const pages: Content['pages'] = {
       title: 'How to open a .zip export from Notion or Confluence — TransformPipe',
       description:
         'What is inside a Notion, Confluence or Obsidian export, why the links between pages break, and how to read the whole thing as one document.',
+    },
+  },
+  'how-to-paste': {
+    label: 'Paste Markdown into Confluence, Jira or Slack',
+    title: 'How to paste Markdown into Confluence, Jira or Slack',
+    lede: 'All three have markup of their own, and none of it is Markdown — which is why a pasted .md file arrives with its asterisks showing.',
+    sections: [
+      {
+        heading: 'Why it goes wrong',
+        body: [
+          'Confluence stores a page as XHTML with macros of its own, Jira’s older markup writes bold as `*one asterisk*` and a heading as `h2.`, and Slack’s mrkdwn has no headings or tables at all. Markdown pasted as text into any of them is read as their markup, or not read at all: doubled asterisks, hash marks at the start of lines, a table drawn in pipes.',
+        ],
+      },
+      {
+        heading: 'Into an editor: paste the document, not the markup',
+        body: [
+          'Confluence Cloud, Jira Cloud and Slack’s message box are rich editors, and a rich editor keeps formatting that arrives formatted. Copy the rendered document rather than its source and the headings, lists, links, tables and code blocks survive the paste.',
+          'Copy for Confluence, Copy for Jira and Copy for Slack put both versions on the clipboard at once, so an editor takes the formatted one and a plain text field takes the markup.',
+        ],
+      },
+      {
+        heading: 'Into anything that is not an editor: the markup',
+        body: [
+          'A page written by a script, a pipeline or an API call needs the platform’s own format. For Confluence that is storage format, the `body.storage` of the REST API — where a fenced block becomes the code macro and `> [!WARNING]` the warning panel. For Jira it is wiki markup, which Data Center’s Text mode, version 2 of the REST API and automation rules read. For Slack it is mrkdwn: the `text` of a `chat.postMessage` call, an incoming webhook or a Block Kit section.',
+        ],
+      },
+      {
+        heading: 'What does not cross',
+        body: [
+          'Some of Markdown has nowhere to go. Slack has no tables, so a table becomes a code block with its columns padded. None of the three draws a Mermaid diagram or typesets a formula, so both arrive as their source in a code block. A picture embedded in the document has to be uploaded before any of them can show it, so it is written as its description; a picture with a web address stays a picture.',
+        ],
+      },
+    ],
+    action: 'Convert Markdown for Confluence',
+    seo: {
+      title: 'How to paste Markdown into Confluence, Jira or Slack — TransformPipe',
+      description:
+        'Why Markdown pasted into Confluence, Jira or Slack shows its asterisks, how to paste it formatted, and which markup an API or a webhook expects instead.',
+    },
+  },
+  'how-to-make-epub': {
+    label: 'Make an EPUB from Markdown',
+    title: 'How to make an EPUB from a Markdown file',
+    lede: 'An EPUB is a zip of web pages with a table of contents, and a Markdown file is most of the way there already.',
+    sections: [
+      {
+        heading: 'What a book needs that a file does not have',
+        body: [
+          'A reader builds its contents and its next-chapter button from separate files, not from headings, so one long page is a book with no chapters however well it is headed. A book also wants its pictures inside it — most readers will not fetch one from the web — a manifest naming every file, and a title and a language, which the reader uses to hyphenate and to read aloud.',
+        ],
+      },
+      {
+        heading: 'Where the chapters come from',
+        body: [
+          'From the headings that repeat. Two or more top-level `#` headings make a chapter each; one `#` title over several `##` sections makes a chapter per section, with the title opening the first. A document with neither is one chapter, which is what it was.',
+        ],
+      },
+      {
+        heading: 'What reads one',
+        body: [
+          'Apple Books, Google Play Books, Kobo, Calibre and Thorium open an EPUB directly, and Send to Kindle has taken them since 2022. To check a book before it goes anywhere, open it in Calibre or run it through EPUBCheck, the validator the stores use themselves.',
+        ],
+      },
+      {
+        heading: 'What to check',
+        body: [
+          'The contents first: every chapter should carry the name of its heading. Then any page with a formula or a diagram — they travel as MathML and SVG, which every current reader draws and some older e-ink models do not.',
+        ],
+      },
+    ],
+    action: 'Convert Markdown to EPUB',
+    seo: {
+      title: 'How to make an EPUB from Markdown — TransformPipe',
+      description:
+        'How a Markdown file becomes an EPUB book: chapters from its headings, pictures inside, which readers open it, and how to check the result before you send it.',
     },
   },
   'how-to-assistant': {

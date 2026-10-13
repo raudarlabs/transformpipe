@@ -20,7 +20,7 @@ export const docs: Content['docs'] = {
   converting: {
     title: 'Converting',
     summary:
-      'The fifteen conversions — Markdown to HTML, and HTML, Word, PowerPoint, Excel, OpenDocument, rich text, EPUB, CSV, JSON, plain text and Evernote, Notion, Confluence or Obsidian exports to Markdown — what each accepts, chaining several files into one document, the source tab, and the formats a download can hand over: Markdown, HTML, plain text or a printed PDF.',
+      'The nineteen conversions — Markdown to HTML, Confluence, Jira, Slack or EPUB, and HTML, Word, PowerPoint, Excel, OpenDocument, rich text, EPUB, CSV, JSON, plain text and Evernote, Notion, Confluence or Obsidian exports to Markdown — what each accepts, chaining several files into one document, the source tab, and the formats a download can hand over: Markdown, HTML, plain text, Confluence, Jira, Slack, EPUB or a printed PDF.',
   },
   extension: {
     title: 'Browser extension',

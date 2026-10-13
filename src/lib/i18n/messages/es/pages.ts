@@ -30,7 +30,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Qué hace',
         body: [
-          'Quince conversiones. Un archivo de Word, una presentación, una hoja de cálculo, un libro EPUB, un archivo OpenDocument o RTF, una exportación de Evernote, una página HTML guardada, un CSV, una respuesta JSON, o el zip que Notion, Confluence y Obsidian te entregan al exportar — cada uno se convierte en Markdown. Y el Markdown se convierte en una página HTML terminada, un archivo de Word, texto plano, o algo que puedes imprimir.',
+          'Diecinueve conversiones. Un archivo de Word, una presentación, una hoja de cálculo, un libro EPUB, un archivo OpenDocument o RTF, una exportación de Evernote, una página HTML guardada, un CSV, una respuesta JSON, o el zip que Notion, Confluence y Obsidian te entregan al exportar — cada uno se convierte en Markdown. Y el Markdown se convierte en una página HTML terminada, un archivo de Word, una página de Confluence, un ticket de Jira, un mensaje de Slack, un libro EPUB, texto plano, o algo que puedes imprimir.',
           'Todo se normaliza a Markdown, porque Markdown es un formato que puedes leer sin la herramienta que lo hizo, comparar en una pull request y seguir abriendo dentro de veinte años.',
           'Las imágenes vienen con él. Una conversión que encuentra una imagen dentro del archivo la lleva al resultado en vez de dejar una referencia a una carpeta que no tienes, así que lo que obtienes es un solo archivo que sigue mostrando lo que mostraba.',
         ],
@@ -93,7 +93,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: '¿Qué formatos lee?',
-          answer: 'Word, PowerPoint, Excel, EPUB, texto OpenDocument, RTF, exportaciones de Evernote, HTML, CSV, TSV, JSON, texto plano, y los zips de exportación de Notion, Confluence y Obsidian. Por el otro lado: HTML, Word, texto plano e impresión. El PDF es la ausencia notable — reconstruir estructura a partir de glifos en coordenadas es una disciplina distinta de leer un contenedor.',
+          answer: 'Word, PowerPoint, Excel, EPUB, texto OpenDocument, RTF, exportaciones de Evernote, HTML, CSV, TSV, JSON, texto plano, y los zips de exportación de Notion, Confluence y Obsidian. Por el otro lado: HTML, Word, formato de almacenamiento de Confluence, marcado wiki de Jira, mrkdwn de Slack, EPUB, texto plano e impresión. El PDF es la ausencia notable — reconstruir estructura a partir de glifos en coordenadas es una disciplina distinta de leer un contenedor.',
         },
         {
           question: '¿Qué pasa con tablas, imágenes y código?',
@@ -922,6 +922,81 @@ export const pages: Content['pages'] = {
       title: 'Cómo abrir un .zip exportado de Notion o Confluence — TransformPipe',
       description:
         'Qué hay dentro de una exportación de Notion, Confluence u Obsidian, por qué se rompen los enlaces entre páginas y cómo leerlo todo como un solo documento.',
+    },
+  },
+  'how-to-paste': {
+    label: 'Pegar Markdown en Confluence, Jira o Slack',
+    title: 'Cómo pegar Markdown en Confluence, Jira o Slack',
+    lede: 'Los tres tienen su propio marcado y ninguno es Markdown; por eso un archivo .md pegado llega con los asteriscos a la vista.',
+    sections: [
+      {
+        heading: 'Por qué sale mal',
+        body: [
+          'Confluence guarda una página como XHTML con macros propias, el marcado antiguo de Jira escribe la negrita `*con un asterisco*` y un encabezado como `h2.`, y el mrkdwn de Slack no tiene encabezados ni tablas. El Markdown pegado como texto en cualquiera de ellos se lee como su marcado, o no se lee: asteriscos dobles, almohadillas al principio de las líneas, una tabla dibujada con barras.',
+        ],
+      },
+      {
+        heading: 'En un editor: pega el documento, no el marcado',
+        body: [
+          'Confluence Cloud, Jira Cloud y el cuadro de mensajes de Slack son editores enriquecidos, y un editor enriquecido conserva el formato que llega con formato. Copia el documento renderizado en lugar de su fuente y los encabezados, listas, enlaces, tablas y bloques de código sobreviven al pegado.',
+          '«Copiar para Confluence», «Copiar para Jira» y «Copiar para Slack» ponen las dos versiones en el portapapeles a la vez: un editor toma la que tiene formato y un campo de texto simple toma el marcado.',
+        ],
+      },
+      {
+        heading: 'En todo lo que no es un editor: el marcado',
+        body: [
+          'Una página que escribe un script, un pipeline o una llamada a una API necesita el formato propio de la plataforma. En Confluence es el formato de almacenamiento, el `body.storage` de la API REST, donde un bloque delimitado se convierte en la macro de código y `> [!WARNING]` en el panel de advertencia. En Jira es el marcado wiki, que leen el modo Texto de Data Center, la versión 2 de la API REST y las reglas de automatización. En Slack es mrkdwn: el `text` de una llamada `chat.postMessage`, de un webhook entrante o de una sección de Block Kit.',
+        ],
+      },
+      {
+        heading: 'Lo que no pasa',
+        body: [
+          'Parte del Markdown no tiene adónde ir. Slack no tiene tablas, así que una tabla se convierte en un bloque de código con las columnas rellenadas. Ninguno de los tres dibuja un diagrama Mermaid ni compone una fórmula, así que ambos llegan como su código fuente en un bloque de código. Una imagen incrustada en el documento tendría que subirse antes de que la muestren, así que se escribe su descripción; una imagen con dirección web sigue siendo una imagen.',
+        ],
+      },
+    ],
+    action: 'Convertir Markdown para Confluence',
+    seo: {
+      title: 'Cómo pegar Markdown en Confluence, Jira o Slack — TransformPipe',
+      description:
+        'Por qué el Markdown pegado en Confluence, Jira o Slack muestra sus asteriscos, cómo pegarlo con formato y qué marcado espera una API o un webhook.',
+    },
+  },
+  'how-to-make-epub': {
+    label: 'Crear un EPUB desde Markdown',
+    title: 'Cómo crear un EPUB a partir de un archivo Markdown',
+    lede: 'Un EPUB es un zip de páginas web con un índice, y un archivo Markdown ya ha recorrido la mayor parte del camino.',
+    sections: [
+      {
+        heading: 'Lo que un libro necesita y un archivo no tiene',
+        body: [
+          'Un lector construye su índice y su botón de «capítulo siguiente» a partir de archivos separados, no de encabezados, así que una sola página larga es un libro sin capítulos por bien titulada que esté. Un libro también quiere sus imágenes dentro —la mayoría de los lectores no las descargan de la web—, un manifiesto que nombre cada archivo, y un título y un idioma, que el lector usa para separar sílabas y leer en voz alta.',
+        ],
+      },
+      {
+        heading: 'De dónde salen los capítulos',
+        body: [
+          'De los encabezados que se repiten. Dos o más encabezados `#` de primer nivel dan un capítulo cada uno; un título `#` sobre varias secciones `##` da un capítulo por sección, y el título abre el primero. Un documento sin ninguna de las dos cosas es un solo capítulo, que es lo que era.',
+        ],
+      },
+      {
+        heading: 'Qué lo abre',
+        body: [
+          'Apple Books, Google Play Books, Kobo, Calibre y Thorium abren un EPUB directamente, y Send to Kindle lo acepta desde 2022. Para revisar un libro antes de enviarlo a ningún sitio, ábrelo en Calibre o pásalo por EPUBCheck, el validador que usan las propias tiendas.',
+        ],
+      },
+      {
+        heading: 'Qué revisar',
+        body: [
+          'Primero el índice: cada capítulo debe llevar el nombre de su encabezado. Luego cualquier página con una fórmula o un diagrama: viajan como MathML y SVG, que todos los lectores actuales muestran y algunos modelos de tinta electrónica antiguos no.',
+        ],
+      },
+    ],
+    action: 'Convertir Markdown a EPUB',
+    seo: {
+      title: 'Cómo crear un EPUB desde Markdown — TransformPipe',
+      description:
+        'Cómo un archivo Markdown se convierte en un libro EPUB: capítulos a partir de los encabezados, imágenes dentro, qué lectores lo abren y cómo revisar el resultado.',
     },
   },
   'how-to-assistant': {

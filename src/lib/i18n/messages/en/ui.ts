@@ -269,6 +269,7 @@ export const ui: Content['ui'] = {
   'converter.share.hint.signedout':
     'Sign in to share — sharing needs the document in your account',
   'converter.copy': 'Copy {format}',
+  'converter.copy.for': 'Copy for {target}',
   'converter.copy.done': '{format} copied to clipboard',
   'converter.download': 'Download .{format}',
   'converter.download.more': 'Other formats',
@@ -279,6 +280,7 @@ export const ui: Content['ui'] = {
   'converter.download.docx': 'Word (.docx)',
   'converter.download.docx.needsSave': 'Word (.docx) — save the document first',
   'converter.download.docx.error': 'Could not build the Word document',
+  'converter.download.error': 'Could not build the {format} file',
   'converter.tab.preview': 'Preview',
   'converter.tab.html': 'HTML source',
   'converter.tab.markdown': 'Markdown',

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 5 October 2026.** Next up: **Markdown → Confluence storage format**.
+**Updated 14 October 2026.** Next up: **Markdown → Word, properly**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,22 +14,15 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **Markdown → Confluence storage format**
-      · XHTML with Confluence's own macro elements. A renderer, not a filter
+- [ ] **Markdown → Word, properly** — styles a Word user can edit
+      · the `.docx` export exists; this is the week it stops looking like converted HTML
 
 ## Next, in order
 
 ### Formats, going out
 
 The half nobody does well: fourteen conversions read *into* Markdown and almost nothing writes back out
-of it. "I have the Markdown, I need it in Confluence" still has no good answer on the internet.
-
-- [ ] **Markdown → Jira wiki markup**, and **→ Slack mrkdwn**
-      · line-level transforms of the token stream; they share a week
-- [ ] **Markdown → EPUB**
-      · zip, XHTML, a manifest — the inverse of EPUB in
-- [ ] **Markdown → Word, properly** — styles a Word user can edit
-      · the `.docx` export exists; this is the week it stops looking like converted HTML
+of it. Confluence, Jira, Slack and EPUB went out on 14 October; Word, done properly, is what is left.
 
 ### Comparing
 
@@ -104,6 +97,22 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 14 October
+
+- [x] **Markdown → Confluence storage format** — a renderer, not a filter: the code macro with its
+      language, alerts as Confluence's four panels, its own task list, and links to headings as
+      anchors. Checked to be well-formed XML, since Confluence refuses a whole page over one tag
+- [x] **Markdown → Jira wiki markup**, and **→ Slack mrkdwn** — two writers over the same token
+      stream as the preview (`lexMarkdown` in `shared/markdown.ts`), so a formula or a footnote is
+      recognised by the same rules. Jira's escaping touches only what Jira would act on; Slack's
+      tables are padded code blocks. Each screen's copy button puts the markup and the formatted
+      document on the clipboard at once, and the editor pasted into picks
+- [x] **Markdown → EPUB** — the inverse of EPUB in: chapters cut at the heading level that repeats,
+      embedded pictures as files, MathML and SVG declared in the manifest, both tables of contents.
+      Split and serialised by the browser's own parser; packed by `shared/to-epub.ts`
+- [x] **Two how-to pages** — pasting Markdown into Confluence, Jira or Slack, and making an EPUB,
+      five languages each
 
 ### 5 October
 

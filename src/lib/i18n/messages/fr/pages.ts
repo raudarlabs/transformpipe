@@ -26,7 +26,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Ce qu’il fait',
         body: [
-          'Quinze conversions. Un fichier Word, une présentation, un tableur, un livre EPUB, un fichier OpenDocument ou RTF, un export Evernote, une page HTML enregistrée, un CSV, une réponse JSON, ou le zip que Notion, Confluence et Obsidian vous remettent à l\'export — chacun devient du Markdown. Et le Markdown devient une page HTML finie, un fichier Word, du texte brut, ou quelque chose d\'imprimable.',
+          'Dix-neuf conversions. Un fichier Word, une présentation, un tableur, un livre EPUB, un fichier OpenDocument ou RTF, un export Evernote, une page HTML enregistrée, un CSV, une réponse JSON, ou le zip que Notion, Confluence et Obsidian vous remettent à l\'export — chacun devient du Markdown. Et le Markdown devient une page HTML finie, un fichier Word, une page Confluence, un ticket Jira, un message Slack, un livre EPUB, du texte brut, ou quelque chose d\'imprimable.',
           'Tout se normalise vers Markdown, parce que Markdown est un format qui se lit sans l\'outil qui l\'a produit, se compare dans une pull request, et s\'ouvre encore dans vingt ans.',
           'Les images suivent. Une conversion qui trouve une image dans le fichier la porte dans le résultat au lieu de laisser une référence vers un dossier que vous n\'avez pas : vous obtenez un fichier unique qui montre encore ce qu\'il montrait.',
         ],
@@ -89,7 +89,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'Quels formats lit-il ?',
-          answer: 'Word, PowerPoint, Excel, EPUB, texte OpenDocument, RTF, exports Evernote, HTML, CSV, TSV, JSON, texte brut, et les zips d\'export de Notion, Confluence et Obsidian. De l\'autre côté : HTML, Word, texte brut et impression. Le PDF est l\'absence notable — reconstruire une structure à partir de glyphes placés à des coordonnées est une autre discipline que lire un conteneur.',
+          answer: 'Word, PowerPoint, Excel, EPUB, texte OpenDocument, RTF, exports Evernote, HTML, CSV, TSV, JSON, texte brut, et les zips d\'export de Notion, Confluence et Obsidian. De l\'autre côté : HTML, Word, format de stockage Confluence, balisage wiki Jira, mrkdwn Slack, EPUB, texte brut et impression. Le PDF est l\'absence notable — reconstruire une structure à partir de glyphes placés à des coordonnées est une autre discipline que lire un conteneur.',
         },
         {
           question: 'Qu’advient-il des tableaux, des images et du code ?',
@@ -918,6 +918,81 @@ export const pages: Content['pages'] = {
       title: 'Comment ouvrir un export .zip de Notion ou Confluence — TransformPipe',
       description:
         'Ce que contient un export Notion, Confluence ou Obsidian, pourquoi les liens entre les pages se cassent, et comment lire l’ensemble comme un seul document.',
+    },
+  },
+  'how-to-paste': {
+    label: 'Coller du Markdown dans Confluence, Jira ou Slack',
+    title: 'Comment coller du Markdown dans Confluence, Jira ou Slack',
+    lede: 'Tous trois ont leur propre balisage, et aucun n’est du Markdown — voilà pourquoi un fichier .md collé arrive avec ses astérisques bien visibles.',
+    sections: [
+      {
+        heading: 'Pourquoi ça se passe mal',
+        body: [
+          'Confluence enregistre une page en XHTML avec ses propres macros, l’ancien balisage de Jira écrit le gras `*avec un astérisque*` et un titre `h2.`, et le mrkdwn de Slack n’a ni titres ni tableaux. Du Markdown collé comme texte dans l’un d’eux est lu comme leur balisage, ou pas lu du tout : astérisques doublés, dièses en début de ligne, tableau dessiné en barres verticales.',
+        ],
+      },
+      {
+        heading: 'Dans un éditeur : collez le document, pas le balisage',
+        body: [
+          'Confluence Cloud, Jira Cloud et le champ de message de Slack sont des éditeurs riches, et un éditeur riche garde la mise en forme qui arrive mise en forme. Copiez le document rendu plutôt que sa source, et titres, listes, liens, tableaux et blocs de code survivent au collage.',
+          '« Copier pour Confluence », « Copier pour Jira » et « Copier pour Slack » placent les deux versions dans le presse-papiers à la fois : un éditeur prend la version mise en forme, un simple champ de texte prend le balisage.',
+        ],
+      },
+      {
+        heading: 'Dans tout ce qui n’est pas un éditeur : le balisage',
+        body: [
+          'Une page écrite par un script, un pipeline ou un appel d’API a besoin du format propre à la plateforme. Pour Confluence, c’est le format de stockage, le `body.storage` de l’API REST — où un bloc délimité devient la macro de code et `> [!WARNING]` le panneau d’avertissement. Pour Jira, c’est le balisage wiki, que lisent le mode Texte de Data Center, la version 2 de l’API REST et les règles d’automatisation. Pour Slack, c’est le mrkdwn : le `text` d’un appel `chat.postMessage`, d’un webhook entrant ou d’une section Block Kit.',
+        ],
+      },
+      {
+        heading: 'Ce qui ne passe pas',
+        body: [
+          'Une partie du Markdown n’a nulle part où aller. Slack n’a pas de tableaux, donc un tableau devient un bloc de code aux colonnes alignées. Aucun des trois ne dessine un diagramme Mermaid ni ne compose une formule : les deux arrivent comme leur source dans un bloc de code. Une image incorporée au document devrait d’abord être téléversée pour qu’ils l’affichent, elle est donc écrite comme sa description ; une image avec une adresse web reste une image.',
+        ],
+      },
+    ],
+    action: 'Convertir du Markdown pour Confluence',
+    seo: {
+      title: 'Coller du Markdown dans Confluence, Jira ou Slack — TransformPipe',
+      description:
+        'Pourquoi le Markdown collé dans Confluence, Jira ou Slack montre ses astérisques, comment le coller mis en forme, et quel balisage attend une API ou un webhook.',
+    },
+  },
+  'how-to-make-epub': {
+    label: 'Créer un EPUB depuis du Markdown',
+    title: 'Comment créer un EPUB à partir d’un fichier Markdown',
+    lede: 'Un EPUB est un zip de pages web avec une table des matières, et un fichier Markdown en a déjà fait l’essentiel du chemin.',
+    sections: [
+      {
+        heading: 'Ce qu’un livre exige et qu’un fichier n’a pas',
+        body: [
+          'Une liseuse construit sa table des matières et son bouton « chapitre suivant » à partir de fichiers séparés, pas de titres : une seule longue page est un livre sans chapitres, aussi bien titrée soit-elle. Un livre veut aussi ses images à l’intérieur — la plupart des liseuses n’en chargent pas depuis le web —, un manifeste qui nomme chaque fichier, ainsi qu’un titre et une langue, qui servent à la césure et à la lecture à voix haute.',
+        ],
+      },
+      {
+        heading: 'D’où viennent les chapitres',
+        body: [
+          'Des titres qui se répètent. Deux titres `#` de premier niveau ou plus donnent chacun un chapitre ; un titre `#` au-dessus de plusieurs sections `##` donne un chapitre par section, le titre ouvrant le premier. Un document sans l’un ni l’autre est un seul chapitre — ce qu’il était déjà.',
+        ],
+      },
+      {
+        heading: 'Ce qui l’ouvre',
+        body: [
+          'Apple Books, Google Play Books, Kobo, Calibre et Thorium ouvrent un EPUB directement, et Send to Kindle l’accepte depuis 2022. Pour vérifier un livre avant de l’envoyer où que ce soit, ouvrez-le dans Calibre ou passez-le dans EPUBCheck, le validateur qu’utilisent les librairies elles-mêmes.',
+        ],
+      },
+      {
+        heading: 'Ce qu’il faut vérifier',
+        body: [
+          'La table des matières d’abord : chaque chapitre doit porter le nom de son titre. Puis toute page contenant une formule ou un diagramme — ils voyagent en MathML et en SVG, que toutes les liseuses actuelles affichent et certains anciens modèles à encre électronique non.',
+        ],
+      },
+    ],
+    action: 'Convertir du Markdown en EPUB',
+    seo: {
+      title: 'Créer un EPUB à partir de Markdown — TransformPipe',
+      description:
+        'Comment un fichier Markdown devient un livre EPUB : chapitres tirés des titres, images incluses, liseuses compatibles, et comment vérifier le résultat avant envoi.',
     },
   },
   'how-to-assistant': {

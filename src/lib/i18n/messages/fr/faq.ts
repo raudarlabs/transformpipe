@@ -15,7 +15,7 @@ export const faq: Content['faq'] = [
   {
     question: 'Que peut-il convertir ?',
     answer:
-      'Quinze choses, chacune avec sa page sous Convertisseur dans l’en-tête : Markdown vers HTML, et HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), OpenDocument (.odt), texte enrichi (.rtf), EPUB, CSV ou TSV, JSON, texte brut, et un export Evernote, Notion, Confluence ou Obsidian vers Markdown. Le PDF n’est jamais qu’une sortie — la boîte de dialogue d’impression en produit un —, jamais une entrée. Tout sauf la première finit en Markdown, qui est la forme sous laquelle un document est ici conservé, prévisualisé et partagé — un fichier Word, un tableur et une réponse d’API deviennent donc la même sorte de chose une fois entrés.',
+      'Dix-neuf choses, chacune avec sa page sous Convertisseur dans l’en-tête : Markdown vers HTML, Confluence, Jira, Slack ou un livre EPUB, et HTML, Word (.docx), PowerPoint (.pptx), Excel (.xlsx), OpenDocument (.odt), texte enrichi (.rtf), EPUB, CSV ou TSV, JSON, texte brut, et un export Evernote, Notion, Confluence ou Obsidian vers Markdown. Le PDF n’est jamais qu’une sortie — la boîte de dialogue d’impression en produit un —, jamais une entrée. Tout ce qui entre finit en Markdown, qui est la forme sous laquelle un document est ici conservé, prévisualisé et partagé — un fichier Word, un tableur et une réponse d’API deviennent donc la même sorte de chose une fois entrés.',
   },
   {
     question: 'Mon fichier est-il téléversé quelque part ?',

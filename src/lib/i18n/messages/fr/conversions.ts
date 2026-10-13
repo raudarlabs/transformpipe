@@ -207,4 +207,56 @@ export const conversions: Content['conversions'] = {
         'Convertir un classeur Excel .xlsx en tableaux Markdown, un par feuille avec sommaire. Conversion locale, rien n’est téléversé.',
     },
   },
+  'markdown-to-confluence': {
+    label: 'Markdown → Confluence',
+    short: 'MD → Confluence',
+    title: 'Markdown vers Confluence',
+    blurb:
+      'Importez un fichier Markdown et obtenez le format de stockage Confluence — les blocs de code en macro de code, les alertes en panneaux d’information et d’avertissement, des listes de tâches à vraies cases et des liens qui mènent à leur titre.',
+    hint: 'Importez un fichier .md. « Copier pour Confluence » colle une mise en forme dans l’éditeur Cloud et le format de stockage dans un éditeur de source ou l’API REST.',
+    seo: {
+      title: 'Convertir Markdown en format de stockage Confluence — TransformPipe',
+      description:
+        'Convertissez du Markdown au format de stockage Confluence : macros de code, panneaux info et avertissement, tâches, liens vers les titres. Dans le navigateur.',
+    },
+  },
+  'markdown-to-jira': {
+    label: 'Markdown → Jira',
+    short: 'MD → Jira',
+    title: 'Markdown vers le balisage wiki Jira',
+    blurb:
+      'Importez un fichier Markdown et obtenez le balisage wiki de Jira — titres h2., *gras*, blocs {code} avec leur langage, ||tableaux|| et panneaux pour les alertes — échappé pour que rien ne devienne une mise en forme par accident.',
+    hint: 'Importez un fichier .md. Le balisage va dans le mode texte de Jira, un appel REST v2 ou une règle d’automatisation ; « Copier pour Jira » colle aussi une mise en forme dans Jira Cloud.',
+    seo: {
+      title: 'Convertir Markdown en balisage wiki Jira — TransformPipe',
+      description:
+        'Convertissez du Markdown en balisage wiki Jira : titres, gras, blocs de code avec langage, tableaux et panneaux, bien échappés. Dans le navigateur, sans envoi.',
+    },
+  },
+  'markdown-to-slack': {
+    label: 'Markdown → Slack',
+    short: 'MD → Slack',
+    title: 'Markdown vers le mrkdwn de Slack',
+    blurb:
+      'Importez un fichier Markdown et obtenez le mrkdwn de Slack — gras à un astérisque, <liens|avec des mots>, listes à puces par niveau et tableaux en blocs de code alignés — prêt pour un bot, un webhook ou un workflow.',
+    hint: 'Importez un fichier .md. Le mrkdwn est ce qu’envoie un appel d’API ou un webhook ; « Copier pour Slack » colle aussi une mise en forme dans le champ de message de Slack.',
+    seo: {
+      title: 'Convertir Markdown en mrkdwn Slack — TransformPipe',
+      description:
+        'Convertissez du Markdown en mrkdwn Slack pour bots, webhooks et workflows : gras, liens, listes et tableaux en blocs de code alignés. Dans le navigateur, sans envoi.',
+    },
+  },
+  'markdown-to-epub': {
+    label: 'Markdown → EPUB',
+    short: 'MD → EPUB',
+    title: 'Markdown vers un livre EPUB',
+    blurb:
+      'Importez un fichier Markdown et obtenez un .epub que toute liseuse ouvre — un chapitre par titre principal, une table des matières, et les images, formules et diagrammes à l’intérieur du livre.',
+    hint: 'Importez un fichier .md. Les chapitres sont coupés aux titres qui se répètent ; une image incorporée au document voyage dans le livre.',
+    seo: {
+      title: 'Convertir Markdown en EPUB — TransformPipe',
+      description:
+        'Transformez un fichier Markdown en livre EPUB 3 : chapitres tirés des titres, table des matières, images, formules et diagrammes inclus. Fabriqué dans le navigateur.',
+    },
+  },
 };

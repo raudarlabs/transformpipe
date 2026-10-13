@@ -38,7 +38,7 @@ import {
   localePath,
   splitLocale,
 } from './lib/i18n/locales';
-import { type DocFormat, formatBytes, toFileName } from './lib/format';
+import { type DocFormat, FORMAT_LABELS, formatBytes, toFileName } from './lib/format';
 import { downloadDoc } from './lib/download';
 import type { HistoryEntry } from './lib/history';
 import { getDocStats, markdownToHtml } from './lib/markdown';
@@ -489,7 +489,7 @@ function Shell() {
         return;
       }
 
-      downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+      await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
       count('download', format);
       toast.success(t('history.download.done'), {
         description: toFileName(entry.name, format),
@@ -582,7 +582,7 @@ function Shell() {
           continue;
         }
 
-        downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+        await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
         count('download', format);
         saved += 1;
 
@@ -595,7 +595,7 @@ function Shell() {
         return;
       }
 
-      const label = format === 'html' ? 'HTML' : format === 'obsidian' ? 'Markdown for Obsidian' : 'Markdown';
+      const label = FORMAT_LABELS[format];
 
       toast.success(
         saved === 1

@@ -56,10 +56,13 @@ import { count } from '@/lib/usage';
 import {
   type DocFormat,
   FORMAT_LABELS,
+  FORMAT_EXTENSIONS,
   formatBytes,
   formatDateTime,
+  formatForTarget,
   toFileName,
 } from '@/lib/format';
+import { exportText, isTextExport } from '@/lib/export-text';
 import { Badge } from '@/ui/components/Badge';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
@@ -94,6 +97,9 @@ const BINARY_CONVERSIONS = new Set<ConversionId>([
   'odt-to-markdown',
   'rtf-to-markdown',
 ]);
+
+/** What the three text formats going out are called — product names, the same in every language. */
+const TARGET_NAMES = { confluence: 'Confluence', jira: 'Jira', slack: 'Slack' } as const;
 
 interface ConverterPageProps {
   /** Which conversion this screen is: what it accepts and where it lives. Its words come from the catalogue. */
@@ -251,10 +257,36 @@ export function ConverterPage({
    * one obvious button makes them go looking for the thing they actually asked for. So the primary
    * format follows the conversion, and the rest stay one click away.
    */
-  const primary: DocFormat = conversion.to === 'html' ? 'html' : 'md';
-  const secondary: DocFormat[] = (['md', 'obsidian', 'html', 'txt'] as DocFormat[]).filter(
-    (one) => one !== primary
-  );
+  const primary: DocFormat = formatForTarget(conversion.to);
+  const secondary: DocFormat[] = (
+    ['md', 'obsidian', 'html', 'txt', 'confluence', 'jira', 'slack', 'epub'] as DocFormat[]
+  ).filter((one) => one !== primary);
+
+  /*
+   * What the source tab shows and the copy button takes, for Markdown going out as text: the
+   * Confluence, Jira or Slack version of this document. Made when the document changes rather than
+   * on every render — it is a parse and a walk of the whole thing — and the writer is fetched the
+   * first time, so it arrives a moment after the preview does.
+   */
+  const [exported, setExported] = useState<string | null>(null);
+
+  useEffect(() => {
+    setExported(null);
+
+    if (!doc || !isTextExport(primary)) {
+      return;
+    }
+
+    let current = true;
+
+    exportText(primary, doc.markdown)
+      .then((text) => current && setExported(text))
+      .catch(() => current && setExported(null));
+
+    return () => {
+      current = false;
+    };
+  }, [doc, primary]);
 
   /*
    * The front page's shorter list of questions: the doubts, without the details.
@@ -441,10 +473,19 @@ export function ConverterPage({
     );
   }
 
-  const source = primary === 'html' ? standalone : doc.markdown;
+  const source =
+    primary === 'html' ? standalone : isTextExport(primary) ? (exported ?? '') : doc.markdown;
+  /* A book is not text: its screen copies and shows the Markdown it is made from. */
+  const copyFormat: DocFormat = primary === 'epub' ? 'md' : primary;
 
-  const handleDownload = (format: DocFormat) => {
-    downloadDoc(doc.name, doc.markdown, doc.createdAt, theme, format);
+  const handleDownload = async (format: DocFormat) => {
+    try {
+      await downloadDoc(doc.name, doc.markdown, doc.createdAt, theme, format);
+    } catch {
+      toast.error(t('converter.download.error', { format: FORMAT_LABELS[format] }));
+      return;
+    }
+
     count('download', format);
 
     toast.success(t('converter.download.done', { format: FORMAT_LABELS[format] }), {
@@ -485,16 +526,43 @@ export function ConverterPage({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(source);
+      if (isTextExport(primary)) {
+        /*
+         * Two versions at once, and the place it is pasted into picks. A plain field — Data
+         * Center's source editor, Jira's text mode, an API client, a bot's config — takes the
+         * markup. A rich editor — Confluence Cloud, Jira Cloud, Slack's message box — takes the
+         * rendered document instead, and keeps its headings, lists, links and code; pasted as
+         * markup there, it would arrive as the asterisks.
+         */
+        const text = exported ?? (await exportText(primary, doc.markdown));
+
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+            'text/html': new Blob([doc.html], { type: 'text/html' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(source);
+      }
+
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
       toast.success(
-        t('converter.copy.done', { format: FORMAT_LABELS[primary] })
+        t('converter.copy.done', { format: FORMAT_LABELS[copyFormat] })
       );
     } catch {
       toast.error(t('common.clipboard.error'));
     }
   };
+
+  /* The tab beside Preview is named for what is in it. */
+  const sourceTab =
+    primary === 'html'
+      ? t('converter.tab.html')
+      : isTextExport(primary)
+        ? TARGET_NAMES[primary]
+        : t('converter.tab.markdown');
 
   return (
     <div className="flex flex-col gap-4">
@@ -605,7 +673,9 @@ export function ConverterPage({
           >
             {isCopied
               ? t('common.copied')
-              : t('converter.copy', { format: FORMAT_LABELS[primary] })}
+              : isTextExport(primary)
+                ? t('converter.copy.for', { target: TARGET_NAMES[primary] })
+                : t('converter.copy', { format: FORMAT_LABELS[copyFormat] })}
           </Button>
 
           {/* A split button: the conversion's own format under the thumb, the others in the menu. */}
@@ -615,9 +685,9 @@ export function ConverterPage({
               size="sm"
               leftSlot={<Download />}
               className="rounded-r-none"
-              onClick={() => handleDownload(primary)}
+              onClick={() => void handleDownload(primary)}
             >
-              {t('converter.download', { format: primary })}
+              {t('converter.download', { format: FORMAT_EXTENSIONS[primary] })}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -634,7 +704,7 @@ export function ConverterPage({
                 {secondary.map((one) => (
                   <DropdownMenuItem
                     key={one}
-                    onSelect={() => handleDownload(one)}
+                    onSelect={() => void handleDownload(one)}
                   >
                     <Download className="size-4" />
                     {FORMAT_LABELS[one]}
@@ -684,9 +754,7 @@ export function ConverterPage({
             </TabsTrigger>
             <TabsTrigger value="source">
               <FileCode2 className="size-4" />
-              {primary === 'html'
-                ? t('converter.tab.html')
-                : t('converter.tab.markdown')}
+              {sourceTab}
             </TabsTrigger>
             <TabsTrigger value="summary">
               <Sparkles className="size-4" />
@@ -777,12 +845,28 @@ export function ConverterPage({
         </TabsContent>
 
         <TabsContent value="source" className="outline-none">
-          <CodeBlock
-            language={primary === 'html' ? 'html' : 'markdown'}
-            className="max-h-[70vh] rounded-xl bg-surface-page"
-          >
-            {source}
-          </CodeBlock>
+          {isTextExport(primary) && exported === null ? (
+            <div className="flex flex-col gap-3 rounded-xl border border-stroke bg-surface-page p-6" role="status">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-11/12" />
+              <Skeleton className="h-3 w-4/5" />
+            </div>
+          ) : (
+            <CodeBlock
+              language={
+                primary === 'html' || primary === 'confluence'
+                  ? primary === 'html'
+                    ? 'html'
+                    : 'xml'
+                  : isTextExport(primary)
+                    ? primary
+                    : 'markdown'
+              }
+              className="max-h-[70vh] rounded-xl bg-surface-page"
+            >
+              {source}
+            </CodeBlock>
+          )}
         </TabsContent>
 
         <TabsContent value="check" className="outline-none">

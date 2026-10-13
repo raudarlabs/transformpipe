@@ -209,4 +209,56 @@ export const conversions: Content['conversions'] = {
         'Turn an Excel .xlsx workbook into Markdown tables, one per sheet with a table of contents. Converts in your browser; nothing is uploaded.',
     },
   },
+  'markdown-to-confluence': {
+    label: 'Markdown → Confluence',
+    short: 'MD → Confluence',
+    title: 'Markdown to Confluence',
+    blurb:
+      'Upload a Markdown file and get Confluence storage format — code blocks as the code macro, alerts as info and warning panels, task lists with real boxes, and links that jump to their heading.',
+    hint: 'Upload an .md file. Copy for Confluence pastes formatted into the Cloud editor and as storage format into a source editor or the REST API.',
+    seo: {
+      title: 'Markdown to Confluence storage format converter — TransformPipe',
+      description:
+        'Turn Markdown into Confluence storage format: code macros, info and warning panels, task lists and heading links. Converts in your browser; nothing is uploaded.',
+    },
+  },
+  'markdown-to-jira': {
+    label: 'Markdown → Jira',
+    short: 'MD → Jira',
+    title: 'Markdown to Jira wiki markup',
+    blurb:
+      'Upload a Markdown file and get Jira wiki markup — h2. headings, *bold*, {code} blocks with their language, ||tables||, and panels for alerts — escaped so nothing turns into a mark by accident.',
+    hint: 'Upload an .md file. The markup goes into Jira’s text mode, a v2 REST call or an automation rule; Copy for Jira also pastes formatted into Jira Cloud’s editor.',
+    seo: {
+      title: 'Markdown to Jira wiki markup converter — TransformPipe',
+      description:
+        'Turn Markdown into Jira wiki markup: headings, bold, code blocks with languages, tables and panels, escaped properly. Converts in your browser; nothing is uploaded.',
+    },
+  },
+  'markdown-to-slack': {
+    label: 'Markdown → Slack',
+    short: 'MD → Slack',
+    title: 'Markdown to Slack mrkdwn',
+    blurb:
+      'Upload a Markdown file and get Slack’s mrkdwn — single-asterisk bold, <links|with words>, bulleted lists by depth, and tables as aligned code blocks — ready for a bot, a webhook or a workflow.',
+    hint: 'Upload an .md file. The mrkdwn is what an API call or a webhook posts; Copy for Slack also pastes formatted into Slack’s own message box.',
+    seo: {
+      title: 'Markdown to Slack mrkdwn converter — TransformPipe',
+      description:
+        'Turn Markdown into Slack mrkdwn for bots, webhooks and workflows: bold, links, lists, and tables as aligned code blocks. Converts in your browser.',
+    },
+  },
+  'markdown-to-epub': {
+    label: 'Markdown → EPUB',
+    short: 'MD → EPUB',
+    title: 'Markdown to an EPUB book',
+    blurb:
+      'Upload a Markdown file and get an .epub that any e-reader opens — a chapter per top heading, a table of contents, and the pictures, formulas and diagrams inside the book.',
+    hint: 'Upload an .md file. Chapters are cut at the headings that repeat; a picture embedded in the document travels inside the book.',
+    seo: {
+      title: 'Markdown to EPUB converter — TransformPipe',
+      description:
+        'Turn a Markdown file into an EPUB 3 book: chapters from its headings, a table of contents, pictures, formulas and diagrams inside. Made in your browser.',
+    },
+  },
 };

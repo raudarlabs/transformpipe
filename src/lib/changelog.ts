@@ -70,6 +70,10 @@ export const CONVERSION_ENTRIES = new Set([
   'epub-to-markdown',
   'odt-and-rtf-to-markdown',
   'evernote-to-markdown',
+  'markdown-to-confluence',
+  'markdown-to-jira',
+  'markdown-to-slack',
+  'markdown-to-epub',
 ]);
 
 /** One entry's page, in English and in whatever else somebody has written. */
@@ -112,6 +116,154 @@ export interface ChangelogDetailText {
 export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
+  {
+    date: '2026-10-14',
+    title: 'Markdown into Confluence, with Confluence’s own pieces',
+    slug: 'markdown-to-confluence',
+    body:
+      'A Markdown file now converts to Confluence storage format — the XHTML a page is saved as. '
+      + 'A fenced block becomes the code macro with its language, `> [!WARNING]` the warning '
+      + 'panel, a task list Confluence’s own with boxes that tick, and a link to a heading still '
+      + 'jumps to it. Copy for Confluence also pastes it formatted into the Cloud editor.',
+    detail: {
+      en: {
+        description:
+          'Markdown converts to Confluence storage format: code macros, info and warning panels, task lists and heading links, made in the browser.',
+        keywords:
+          'markdown to confluence, confluence storage format, convert markdown to confluence, paste markdown into confluence, confluence rest api markdown',
+        body: `The first conversion going *out* of Markdown, and the one the roadmap has led with since September: "I have the Markdown, I need it in Confluence" had no good answer anywhere.
+
+## Why not paste the HTML
+
+Pasting rendered HTML into Confluence gets you a page that looks about right and is made of the wrong things. A code block becomes a styled paragraph rather than the code macro, so it loses its language and its copy button. An alert becomes a quote. A checklist becomes a list of characters. Storage format is the one form in which a page arrives with Confluence's own pieces.
+
+## What becomes what
+
+- A fenced block is the **code macro**, with its language where Confluence knows it and none where it does not, because Data Center shows an error box for a language outside its list.
+- \`> [!NOTE]\` and the other GitHub alerts become the **info, tip, note and warning panels**, matched by colour rather than by name.
+- A task list is **Confluence's task list**, with boxes somebody can tick on the page.
+- A link to one of the document's own headings becomes a link to an **anchor** placed in front of that heading, so a table of contents works.
+- Tables keep their column alignment; footnotes are numbered and collected at the end.
+
+What Confluence has no equivalent for is kept as words: a formula is its TeX, a Mermaid diagram is its source in a code block titled as one, and a picture embedded in the document is its description, since a page cannot hold one without an upload.
+
+## Getting it in
+
+**Copy for Confluence** puts two versions on the clipboard. The Cloud editor takes the formatted one; a source editor, a script or the REST API's \`body.storage\` takes the storage format. The download is the same storage format as a file.
+
+The result is checked to be well-formed XML, which is the thing Confluence refuses a whole page over. It runs in the browser; nothing is uploaded.`,
+      },
+    },
+  },
+  {
+    date: '2026-10-14',
+    title: 'Markdown into Jira wiki markup, escaped properly',
+    slug: 'markdown-to-jira',
+    body:
+      'Markdown now converts to Jira wiki markup: `h2.` headings, `*bold*`, `{code}` blocks with '
+      + 'their language, `||tables||` and panels for alerts. The care is in the escaping — a '
+      + 'bracket, an emoticon like `(i)` or a hyphen at the edge of a word is made to mean only '
+      + 'itself, and nothing else is backslashed.',
+    detail: {
+      en: {
+        description:
+          'Markdown converts to Jira wiki markup with headings, bold, code blocks with languages, tables and panels, escaped where Jira would misread it.',
+        keywords:
+          'markdown to jira, jira wiki markup, convert markdown to jira markup, jira text mode markdown, jira rest api v2 description',
+        body: `Jira's wiki markup looks like a cousin of Markdown and is not one. One asterisk is bold rather than italic, a hyphen strikes through, a list is \`*\` or \`#\` repeated rather than indented, and a newline inside a paragraph is a line break. Markdown pasted into Jira's text mode comes out with the wrong words emphasised and every wrapped line broken.
+
+## What it is for
+
+Data Center's Text mode, version 2 of the REST API, and automation rules that write a description or a comment all read wiki markup. **Copy for Jira** also puts the formatted document on the clipboard, which is what Jira Cloud's editor takes.
+
+## What becomes what
+
+- Headings are \`h1.\` to \`h6.\`; bold, italic, strikethrough, subscript and superscript use Jira's marks.
+- A fenced block is \`{code:language}\` where Jira knows the language, and \`{noformat}\` where it does not — \`{code}\` with no language highlights as Java.
+- Tables are \`||head||\` and \`|cell|\`; alerts are \`{panel}\` in Atlassian's own colours.
+- Lists nest by repeating the marker, \`**\` and \`#*\`; an item's second paragraph stays in the item.
+- A link to a heading points at an \`{anchor}\` written before it.
+
+## The escaping
+
+Jira reads a mark only at the edge of a word, so most hyphens and asterisks in prose are safe. Escaping every one would fill the text with backslashes. What is escaped is what Jira would act on: brackets and braces always, a mark touching a word on one side only, an emoticon such as \`(i)\` or \`:)\`, and a line that would start a list. Where Markdown puts emphasis inside a word, the braced form \`{*}\` is used, because the plain one would not be read there.
+
+It runs in the browser; nothing is uploaded.`,
+      },
+    },
+  },
+  {
+    date: '2026-10-14',
+    title: 'Markdown into Slack’s mrkdwn, for bots and webhooks',
+    slug: 'markdown-to-slack',
+    body:
+      'Markdown now converts to Slack’s mrkdwn — the text a bot, a webhook or an API call posts. '
+      + 'Bold is one asterisk, a link is `<address|words>`, a heading is a bold line, a list is '
+      + 'bullets by depth, and a table is a code block with its columns padded, since a message '
+      + 'has no tables. Copy for Slack pastes it formatted into the message box too.',
+    detail: {
+      en: {
+        description:
+          'Markdown converts to Slack mrkdwn for bots, webhooks and API calls: bold, links, lists by depth, and tables as aligned code blocks.',
+        keywords:
+          'markdown to slack, slack mrkdwn, convert markdown to slack format, slack webhook markdown, slack bot message formatting',
+        body: `Slack calls its format markdown and it is not Markdown. A Markdown message posted through the API arrives with doubled asterisks, hash marks at the start of lines and a table drawn in pipes.
+
+## What becomes what
+
+- **Bold** is one asterisk, *italic* an underscore, strikethrough one tilde.
+- A link is \`<address|words>\`, and a picture with a web address is a link to it, which Slack unfurls into the picture.
+- A heading is a bold line of its own, since a message has no headings.
+- A list is bullets drawn as characters, a different one at each depth, indented under its parent; a task is a box.
+- A table is a code block with its columns padded to their widest cell — monospace is the only alignment a message has.
+- An alert is a quote led by the emoji Slack would use for it: \`:warning:\` for a warning, \`:bulb:\` for a tip.
+- A formula and a Mermaid diagram are their source in code type.
+
+\`&\`, \`<\` and \`>\` are written as entities, which is what Slack's API asks for: those three are its own control characters, and a bare \`<\` starts a link nobody meant.
+
+## Two ways in
+
+The mrkdwn is for anything that posts: the \`text\` of \`chat.postMessage\`, an incoming webhook, a Block Kit section. **Copy for Slack** also puts the formatted document on the clipboard, so pasting into Slack's own message box keeps the formatting without any markup at all.
+
+It runs in the browser; nothing is uploaded.`,
+      },
+    },
+  },
+  {
+    date: '2026-10-14',
+    title: 'Markdown into an EPUB book',
+    slug: 'markdown-to-epub',
+    body:
+      'A Markdown file now becomes an .epub that any e-reader opens — a chapter per top heading, '
+      + 'a table of contents, and the pictures, formulas and diagrams inside the book. The '
+      + 'inverse of EPUB in, and made in the browser like everything else here.',
+    detail: {
+      en: {
+        description:
+          'A Markdown file converts to an EPUB 3 book: chapters from its headings, a table of contents, and its pictures, formulas and diagrams inside.',
+        keywords:
+          'markdown to epub, convert markdown to ebook, make an epub from markdown, markdown ebook, epub 3 converter',
+        body: `EPUB came in on 21 September. This is the other direction: a Markdown document out as a book.
+
+## Chapters
+
+A reader builds its contents and its next-chapter button from separate files, not from headings, so one long page is a book with no chapters however well it is headed. The cut is made at the first heading level that repeats. Two \`#\` headings make two chapters; one \`#\` title over several \`##\` sections makes a chapter per section, with the title on the first page of the first. A link from one chapter to a heading in another is rewritten to point into the right file, footnotes included.
+
+## What is inside
+
+- **Pictures** embedded in the document become files in the book, because most readers will not fetch one from the web.
+- **Formulas** travel as MathML, and **Mermaid diagrams** are drawn and travel as SVG, each declared in the manifest so a strict reader does not drop the page.
+- A **table of contents** two levels deep, in the EPUB 3 form and in the older one that early Kindles and Kobos still look for.
+- A stylesheet that sets only what Markdown means — code in monospace, tables with rules, alerts as boxes — and leaves the font, the size and night mode to the reader, where they belong.
+
+Every chapter is written by the browser's own XML serialiser, because a book with one unclosed tag in it is a book a reader refuses to open.
+
+## Where it opens
+
+Apple Books, Google Play Books, Kobo, Calibre and Thorium, and Send to Kindle takes EPUB too. Nothing is uploaded to make it.`,
+      },
+    },
+  },
   {
     date: '2026-10-14',
     title: 'Confirm your address with one click, not a code',

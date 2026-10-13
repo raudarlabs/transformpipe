@@ -64,7 +64,7 @@ import { Typography } from '@/ui/components/Typography';
 import { cn } from '@/ui/lib/utils';
 
 /** The order they are offered in: the document, the page it makes, then the words alone. */
-const FORMATS: DocFormat[] = ['md', 'obsidian', 'html', 'txt'];
+const FORMATS: DocFormat[] = ['md', 'obsidian', 'html', 'txt', 'confluence', 'jira', 'slack', 'epub'];
 
 interface RowPartProps {
   entry: HistoryEntry;

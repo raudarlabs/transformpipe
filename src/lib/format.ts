@@ -1,3 +1,5 @@
+import type { ConversionTarget } from '@shared/conversions';
+
 /*
  * Numbers, sizes and times, said the way the reader's language says them.
  *
@@ -220,15 +222,53 @@ export function toHtmlFileName(markdownName: string): string {
 /**
  * `obsidian` is Markdown too — the same file, with its links to its own headings written the way
  * Obsidian reads them (see shared/to-obsidian.ts), for somebody moving it into a vault.
+ *
+ * `confluence`, `jira`, `slack` and `epub` are Markdown going out (see shared/to-confluence.ts and
+ * its neighbours): made from the stored Markdown when they are asked for, like the HTML is.
  */
-export type DocFormat = 'md' | 'html' | 'txt' | 'obsidian';
+export type DocFormat =
+  | 'md'
+  | 'html'
+  | 'txt'
+  | 'obsidian'
+  | 'confluence'
+  | 'jira'
+  | 'slack'
+  | 'epub';
 
 export const FORMAT_LABELS: Record<DocFormat, string> = {
   html: 'HTML',
   md: 'Markdown',
   txt: 'Plain text',
   obsidian: 'Markdown for Obsidian',
+  confluence: 'Confluence storage format',
+  jira: 'Jira wiki markup',
+  slack: 'Slack mrkdwn',
+  epub: 'EPUB',
 };
+
+/**
+ * What each format's file ends in, after the document's own name.
+ *
+ * Jira's and Slack's are text files, and so is the plain-text download — so each says which it is
+ * before the `.txt`, or three downloads of one document would land as `notes.txt`, `notes (1).txt`
+ * and `notes (2).txt` with nothing to tell them apart.
+ */
+export const FORMAT_EXTENSIONS: Record<DocFormat, string> = {
+  html: 'html',
+  md: 'md',
+  obsidian: 'md',
+  txt: 'txt',
+  confluence: 'confluence.xml',
+  jira: 'jira.txt',
+  slack: 'slack.txt',
+  epub: 'epub',
+};
+
+/** The format a conversion hands over first: what its screen's main button downloads. */
+export function formatForTarget(to: ConversionTarget): DocFormat {
+  return to === 'markdown' ? 'md' : to;
+}
 
 export function toMarkdownFileName(name: string): string {
   return /\.(md|markdown|mdown|mkd|txt)$/i.test(name) ? name : `${name}.md`;
@@ -243,5 +283,13 @@ export function toFileName(name: string, format: DocFormat): string {
     return toHtmlFileName(name);
   }
 
-  return format === 'txt' ? toTextFileName(name) : toMarkdownFileName(name);
+  if (format === 'md' || format === 'obsidian') {
+    return toMarkdownFileName(name);
+  }
+
+  if (format === 'txt') {
+    return toTextFileName(name);
+  }
+
+  return `${name.replace(/\.(md|markdown|mdown|mkd|txt)$/i, '')}.${FORMAT_EXTENSIONS[format]}`;
 }

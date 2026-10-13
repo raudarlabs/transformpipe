@@ -28,15 +28,16 @@ forty pages in a zip. A spec your assistant wrote, gone once the chat scrolls aw
 into an email, landing as a wall of asterisks.
 
 TransformPipe turns all of them into one thing: a clean Markdown document. See it as a finished
-page, take it away as Markdown, HTML, Word or PDF, or keep it and send a link instead of an
+page, take it away as Markdown, HTML, Word, PDF, Confluence, Jira, Slack or EPUB, or keep it and send a link instead of an
 attachment. Open [transformpipe.com](https://transformpipe.com) and drop a file. No account is
 needed to convert.
 
-## Fifteen conversions, in your browser
+## Nineteen conversions, in your browser
 
 Word, PowerPoint, Excel, EPUB, OpenDocument, rich text, HTML, CSV, JSON, plain text, Evernote, or a
 whole Notion, Confluence or Obsidian export. Each comes back as Markdown with its headings, lists,
-links and tables intact, and Markdown goes the other way, into a finished page.
+links and tables intact, and Markdown goes the other way: into a finished page, a Confluence page,
+a Jira ticket, a Slack message or an EPUB book.
 
 The conversion runs on your machine. Signed out, nothing is uploaded and nothing needs a network.
 Drop several files and they become one document, in the order you picked them.
@@ -123,12 +124,16 @@ the CLI and the Action name the new domain. Nothing in `server/` carries a domai
 come from the request through `selfOrigin`, which is what made the move a matter of one trusted
 origin and a rebuild.
 
-Upload a file, see exactly what it became, and download it. Fifteen conversions, each with its own
+Upload a file, see exactly what it became, and download it. Nineteen conversions, each with its own
 page and address:
 
 | Conversion | Takes | Produces |
 | --- | --- | --- |
 | [Markdown → HTML](https://transformpipe.com/) | `.md` `.markdown` `.mdown` `.mkd` | a self-contained `.html` |
+| [Markdown → Confluence](https://transformpipe.com/markdown-to-confluence) | `.md` | Confluence storage format (code macros, panels, task lists) |
+| [Markdown → Jira](https://transformpipe.com/markdown-to-jira) | `.md` | Jira wiki markup |
+| [Markdown → Slack](https://transformpipe.com/markdown-to-slack) | `.md` | Slack mrkdwn (tables as aligned code blocks) |
+| [Markdown → EPUB](https://transformpipe.com/markdown-to-epub) | `.md` | an `.epub` book, a chapter per top heading |
 | [HTML → Markdown](https://transformpipe.com/html-to-markdown) | `.html` `.htm` `.xhtml` | `.md` |
 | [Raw text → Markdown](https://transformpipe.com/text-to-markdown) | `.txt` | `.md` |
 | [CSV → Markdown table](https://transformpipe.com/csv-to-markdown) | `.csv` `.tsv` | `.md` |
@@ -146,7 +151,7 @@ page and address:
 
 They all normalise to Markdown, which is what a document is stored, previewed, shared and reached
 by a script as — one shape rather than fourteen. Any document can then be handed over as Markdown,
-HTML, plain text, Word, or printed to PDF. `shared/conversions.ts` is the single list; the header menu, the
+HTML, plain text, Word, Confluence, Jira, Slack, EPUB, or printed to PDF. `shared/conversions.ts` is the single list; the header menu, the
 screens, the history chips, the badges and the prerendered pages all read it, so a new conversion is
 an entry there plus a converter.
 
