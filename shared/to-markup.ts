@@ -147,3 +147,38 @@ export function tableCells(
     rows: table.rows.map((row) => row.map((one) => cell(one.tokens))),
   };
 }
+
+/**
+ * Character references written into the Markdown — `&amp;`, `&copy;`, `&#8212;` — as the characters.
+ *
+ * marked leaves them in a text token as they were typed, because HTML reads them the same way. The
+ * other formats do not: escaped again for Confluence, `AT&amp;T` would be shown as exactly that.
+ * The names here are the ones people type; anything else stays as written.
+ */
+const NAMED: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0', copy: '©', reg: '®',
+  trade: '™', hellip: '…', mdash: '—', ndash: '–', laquo: '«', raquo: '»', ldquo: '“',
+  rdquo: '”', lsquo: '‘', rsquo: '’', times: '×', divide: '÷', euro: '€', pound: '£', yen: '¥',
+  cent: '¢', deg: '°', middot: '·', bull: '•', sect: '§', para: '¶', plusmn: '±', larr: '←',
+  rarr: '→', uarr: '↑', darr: '↓', harr: '↔', check: '✓', shy: '\u00ad', zwj: '\u200d',
+};
+
+export function decodeEntities(text: string): string {
+  return text.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z]+);/gi, (whole, name: string) => {
+    if (name[0] === '#') {
+      const code = name[1] === 'x' || name[1] === 'X' ? parseInt(name.slice(2), 16) : Number(name.slice(1));
+
+      return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
+    }
+
+    return NAMED[name.toLowerCase()] ?? whole;
+  });
+}
+
+/**
+ * The characters XML has no way to write — C0 controls other than tab and newline, and two
+ * non-characters. Word's soft line break is one of them (U+000B), and pasted text carries it; a
+ * single one makes Confluence refuse the whole page and a reader refuse the whole book.
+ */
+export const withoutControls = (text: string) =>
+  text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]/g, (char) => (char === '\x0B' ? '\n' : ''));

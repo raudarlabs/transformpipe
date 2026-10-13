@@ -735,13 +735,50 @@ export function lexMarkdown(markdown: string): LexedDocument {
 
   try {
     const tokens = marked.lexer(rewriteWikilinks(stripFrontmatter(markdown)));
+    const links = tokens.links;
+    /*
+     * Anything lexed a second time — an alert's first paragraph, a footnote's text — is lexed
+     * with the document's reference links and while its footnotes are still known, or `[docs][1]`
+     * and `[^1]` inside it would come out as the brackets.
+     */
+    const lexer = () => {
+      const one = new marked.Lexer(marked.defaults);
+
+      Object.assign(one.tokens.links, links);
+
+      return one;
+    };
+
+    const walk = (list: Token[]) => {
+      for (const token of list) {
+        if (token.type === 'blockquote') {
+          const alert = readAlert(token.tokens ?? [], (source) => lexer().lex(source));
+
+          if (alert) {
+            (token as AlertQuote).alert = alert;
+            walk(alert.tokens);
+          }
+        }
+
+        const nested = (token as { tokens?: Token[] }).tokens;
+
+        if (nested) walk(nested);
+
+        if (token.type === 'list') {
+          (token as Tokens.List).items.forEach((item) => walk(item.tokens));
+        }
+      }
+    };
+
+    walk(tokens);
+
     const collected = notes;
 
     return {
       tokens,
       footnotes: collected.order.map((id) => ({
         id,
-        tokens: marked.Lexer.lexInline(collected.text.get(id) ?? '', marked.defaults),
+        tokens: lexer().inlineTokens(collected.text.get(id) ?? ''),
       })),
     };
   } finally {
@@ -749,15 +786,10 @@ export function lexMarkdown(markdown: string): LexedDocument {
   }
 }
 
-/**
- * `> [!NOTE]` and its relatives, read off a quote's tokens — the same rule the renderer applies.
- *
- * Null for an ordinary quote. Otherwise the kind (one of GitHub's five), the title the writer gave
- * it or the kind's own, and the body with the marker line taken off.
- */
-export function alertOf(
-  tokens: Token[]
-): { kind: string; title: string; tokens: Token[] } | null {
+type Alert = { kind: string; title: string; tokens: Token[] };
+type AlertQuote = Tokens.Blockquote & { alert?: Alert };
+
+function readAlert(tokens: Token[], lex: (source: string) => Token[]): Alert | null {
   const first = tokens[0];
   const opener =
     first?.type === 'paragraph' && typeof first.raw === 'string'
@@ -772,8 +804,18 @@ export function alertOf(
   return {
     kind: alert.kind,
     title: opener[2].trim() || alert.label,
-    tokens: [...(rest ? marked.lexer(rest) : []), ...tokens.slice(1)],
+    tokens: [...(rest ? lex(rest) : []), ...tokens.slice(1)],
   };
+}
+
+/**
+ * `> [!NOTE]` and its relatives, as `lexMarkdown` read them — the same rule the renderer applies.
+ *
+ * Null for an ordinary quote. Otherwise the kind (one of GitHub's five), the title the writer gave
+ * it or the kind's own, and the body with the marker line taken off.
+ */
+export function alertOf(quote: Tokens.Blockquote): Alert | null {
+  return (quote as AlertQuote).alert ?? null;
 }
 
 interface StandaloneOptions {

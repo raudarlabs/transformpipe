@@ -1,6 +1,6 @@
 import type { Token, Tokens } from 'marked';
 import { alertOf, lexMarkdown } from './markdown.js';
-import { collectHeadings, isWebAddress, unwrap, type Headings } from './to-markup.js';
+import { collectHeadings, decodeEntities, isWebAddress, unwrap, type Headings } from './to-markup.js';
 
 /*
  * Markdown as Jira wiki markup — `h2.`, `*bold*`, `{code:java}`, `||head||`.
@@ -71,13 +71,18 @@ const WORD = /[\p{L}\p{N}]/u;
  * it: touching a word on one side and not the other, which is the shape of the start or end of
  * emphasis. `e-mail` and `a - b` stay as they are.
  */
-function escapeText(text: string): string {
+function escapeText(raw: string): string {
+  const text = decodeEntities(raw);
   let out = '';
 
   for (let index = 0; index < text.length; index += 1) {
     const char = text[index];
 
-    if ('{}[]|!\\'.includes(char)) {
+    /*
+     * Not the backslash itself: Jira has no way to write a literal one, and `\\\\` — the only
+     * candidate — is its forced line break. A lone backslash in prose shows as itself.
+     */
+    if ('{}[]|!'.includes(char)) {
       // `!` only matters where it could open a picture: followed by something that is not a space.
       if (char === '!' && !/\S/.test(text[index + 1] ?? '')) {
         out += char;
@@ -112,6 +117,7 @@ const wordy = (char: string | undefined) => Boolean(char && WORD.test(char));
 class Writer {
   private footnoteNumbers = new Map<string, number>();
   private headingIndex = 0;
+  private inQuote = false;
 
   constructor(private headings: Headings, footnotes: Array<{ id: string }>) {
     footnotes.forEach((note, index) => this.footnoteNumbers.set(note.id, index + 1));
@@ -159,8 +165,15 @@ class Writer {
 
         return text.tokens ? this.inline(text.tokens) : escapeText(unwrap(text.text));
       }
-      case 'escape':
-        return escapeText((token as Tokens.Escape).text);
+      case 'escape': {
+        /*
+         * Markdown's `\\*` means a literal asterisk, and here it has to stay one: an escaped
+         * character is always backslashed, whatever stands beside it.
+         */
+        const char = decodeEntities((token as Tokens.Escape).text);
+
+        return `${MARKS}{}[]|!#`.includes(char) ? `\\${char}` : escapeText(char);
+      }
       case 'strong':
         return this.mark('*', this.inline((token as Tokens.Strong).tokens), before, after);
       case 'em':
@@ -179,7 +192,8 @@ class Writer {
       case 'mathParen':
       case 'mathBracket':
       case 'mathEnv': {
-        const code = String((token as Tokens.Codespan).text).replace(/([{}])/g, '\\$1');
+        // Jira goes on reading marks inside `{{ }}`, so `--verbose` and `arr[0]` need escaping too.
+        const code = String((token as Tokens.Codespan).text).replace(/([{}[\]*_\-+^~?!|])/g, '\\$1');
 
         return code ? `{{${code}}}` : '';
       }
@@ -206,7 +220,7 @@ class Writer {
   }
 
   private link(link: Tokens.Link): string {
-    const label = this.inline(link.tokens).replace(/\|/g, '\\|');
+    const label = this.inline(link.tokens);
     let href = link.href;
 
     if (href.startsWith('#')) {
@@ -306,10 +320,22 @@ class Writer {
   }
 
   private quote(quote: Tokens.Blockquote): string {
-    const alert = alertOf(quote.tokens);
+    const alert = alertOf(quote);
 
     if (!alert) {
-      return `{quote}\n${this.blocks(quote.tokens)}\n{quote}`;
+      /*
+       * `{quote}` does not nest: a second one inside closes the first. A quote within a quote is
+       * written as part of the outer one, which is how it reads anyway.
+       */
+      if (this.inQuote) return this.blocks(quote.tokens);
+
+      this.inQuote = true;
+
+      try {
+        return `{quote}\n${this.blocks(quote.tokens)}\n{quote}`;
+      } finally {
+        this.inQuote = false;
+      }
     }
 
     const title = alert.title.replace(/[|}=]/g, ' ').trim();
@@ -355,7 +381,7 @@ class Writer {
 
   private table(table: Tokens.Table): string {
     const cell = (tokens: Token[]) =>
-      this.inline(tokens).replace(/\n/g, ' ').replace(/(?<!\\)\|/g, '\\|') || ' ';
+      this.inline(tokens).replace(/\n/g, ' ') || ' ';
     const head = `||${table.header.map((one) => cell(one.tokens)).join('||')}||`;
     const rows = table.rows.map((row) => `|${row.map((one) => cell(one.tokens)).join('|')}|`);
 

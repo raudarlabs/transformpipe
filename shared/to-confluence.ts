@@ -1,6 +1,13 @@
 import type { Token, Tokens } from 'marked';
 import { alertOf, lexMarkdown } from './markdown.js';
-import { collectHeadings, isWebAddress, plainText, unwrap, type Headings } from './to-markup.js';
+import {
+  collectHeadings,
+  decodeEntities,
+  isWebAddress,
+  unwrap,
+  withoutControls,
+  type Headings,
+} from './to-markup.js';
 
 /*
  * Markdown as Confluence storage format — the XHTML a Confluence page is saved as.
@@ -23,10 +30,12 @@ import { collectHeadings, isWebAddress, plainText, unwrap, type Headings } from 
 
 /** Text, made safe to stand in XML: the three characters that end text, and the quote for attributes. */
 const xml = (text: string) =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  withoutControls(text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** A CDATA section, split where the text itself contains the sequence that would end one. */
-const cdata = (text: string) => `<![CDATA[${text.replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
+const cdata = (text: string) =>
+  `<![CDATA[${withoutControls(text).replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
 
 /**
  * The code macro's own names for languages, from the names a fence is written with.
@@ -124,10 +133,10 @@ class Writer {
       case 'text': {
         const text = token as Tokens.Text;
 
-        return text.tokens ? this.inline(text.tokens) : xml(unwrap(text.text));
+        return text.tokens ? this.inline(text.tokens) : xml(decodeEntities(unwrap(text.text)));
       }
       case 'escape':
-        return xml((token as Tokens.Escape).text);
+        return xml(decodeEntities((token as Tokens.Escape).text));
       case 'strong':
         return `<strong>${this.inline((token as Tokens.Strong).tokens)}</strong>`;
       case 'em':
@@ -207,7 +216,9 @@ class Writer {
       .replace(/<!--[\s\S]*?-->|<(script|style)\b[\s\S]*?<\/\1\s*>/gi, '')
       .split(/(<br\s*\/?>)/i)
       .map((part, index) =>
-        index % 2 === 1 ? '<br />' : xml(part.replace(/<[^>]*>/g, gap).replace(/[ \t]{2,}/g, ' '))
+        index % 2 === 1
+          ? '<br />'
+          : xml(decodeEntities(part.replace(/<[^>]*>/g, gap).replace(/[ \t]{2,}/g, ' ')))
       )
       .join('');
   }
@@ -228,7 +239,7 @@ class Writer {
       case 'text': {
         const text = token as Tokens.Text;
 
-        return `<p>${text.tokens ? this.inline(text.tokens) : xml(unwrap(text.text))}</p>`;
+        return `<p>${text.tokens ? this.inline(text.tokens) : xml(decodeEntities(unwrap(text.text)))}</p>`;
       }
       case 'code': {
         const code = token as Tokens.Code;
@@ -274,7 +285,7 @@ class Writer {
   }
 
   private quote(quote: Tokens.Blockquote): string {
-    const alert = alertOf(quote.tokens);
+    const alert = alertOf(quote);
 
     if (!alert) {
       return `<blockquote>${this.blocks(quote.tokens)}</blockquote>`;
@@ -304,7 +315,7 @@ class Writer {
         token.type === 'text'
           ? (token as Tokens.Text).tokens
             ? this.inline((token as Tokens.Text).tokens)
-            : xml(unwrap((token as Tokens.Text).text))
+            : xml(decodeEntities(unwrap((token as Tokens.Text).text)))
           : this.block(token)
       )
       .join('');

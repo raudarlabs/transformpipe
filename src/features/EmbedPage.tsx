@@ -4,6 +4,8 @@ import { DocumentPreview } from '@/components/DocumentPreview';
 import { Dropzone } from '@/components/Dropzone';
 import { conversionForFiles, convertFile } from '@/lib/convert';
 import { downloadDoc } from '@/lib/download';
+import { exportText, isTextExport } from '@/lib/export-text';
+import { FORMAT_EXTENSIONS, FORMAT_LABELS, formatForTarget } from '@/lib/format';
 import { count } from '@/lib/usage';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { buildStandaloneHtml, getDocStats, markdownToHtml } from '@/lib/markdown';
@@ -189,8 +191,14 @@ export function EmbedPage() {
     }
 
     try {
+      const format = formatForTarget(one.to);
+
       await navigator.clipboard.writeText(
-        one.to === 'html' ? standalone : doc.markdown
+        one.to === 'html'
+          ? standalone
+          : isTextExport(format)
+            ? await exportText(format, doc.markdown)
+            : doc.markdown
       );
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
@@ -219,7 +227,7 @@ export function EmbedPage() {
     );
   }
 
-  const format = one.to === 'html' ? 'html' : 'md';
+  const format = formatForTarget(one.to);
 
   return (
     <div className="flex min-h-screen flex-col gap-3 bg-surface-page p-4">
@@ -237,11 +245,12 @@ export function EmbedPage() {
           size="sm"
           leftSlot={<Download />}
           onClick={() => {
-            downloadDoc(doc.name, doc.markdown, Date.now(), theme, format);
-            count('download', format);
+            void downloadDoc(doc.name, doc.markdown, Date.now(), theme, format)
+              .then(() => count('download', format))
+              .catch(() => setFailed(t('converter.download.error', { format: FORMAT_LABELS[format] })));
           }}
         >
-          {t('converter.download', { format })}
+          {t('converter.download', { format: FORMAT_EXTENSIONS[format] })}
         </Button>
 
         <Button

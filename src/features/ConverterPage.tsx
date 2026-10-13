@@ -269,9 +269,12 @@ export function ConverterPage({
    * first time, so it arrives a moment after the preview does.
    */
   const [exported, setExported] = useState<string | null>(null);
+  /* The writer would not load — offline, or a deploy that replaced the chunk. Said, not spun on. */
+  const [exportFailed, setExportFailed] = useState(false);
 
   useEffect(() => {
     setExported(null);
+    setExportFailed(false);
 
     if (!doc || !isTextExport(primary)) {
       return;
@@ -281,7 +284,7 @@ export function ConverterPage({
 
     exportText(primary, doc.markdown)
       .then((text) => current && setExported(text))
-      .catch(() => current && setExported(null));
+      .catch(() => current && setExportFailed(true));
 
     return () => {
       current = false;
@@ -845,7 +848,13 @@ export function ConverterPage({
         </TabsContent>
 
         <TabsContent value="source" className="outline-none">
-          {isTextExport(primary) && exported === null ? (
+          {isTextExport(primary) && exportFailed ? (
+            <div className="rounded-xl border border-stroke bg-surface-page p-6" role="alert">
+              <Typography variant="p" textColor="secondary">
+                {t('converter.download.error', { format: FORMAT_LABELS[primary] })}
+              </Typography>
+            </div>
+          ) : isTextExport(primary) && exported === null ? (
             <div className="flex flex-col gap-3 rounded-xl border border-stroke bg-surface-page p-6" role="status">
               <Skeleton className="h-3 w-full" />
               <Skeleton className="h-3 w-11/12" />

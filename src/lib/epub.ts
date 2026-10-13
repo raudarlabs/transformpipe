@@ -1,6 +1,7 @@
 import { inlineDiagrams } from './mermaid';
 import { markdownToHtml } from './markdown';
 import type { EpubChapter, EpubPicture, EpubTocEntry } from '@shared/to-epub';
+import { withoutControls } from '@shared/to-markup';
 
 /*
  * A document as an EPUB book — the half that needs a browser.
@@ -89,7 +90,7 @@ export async function markdownToEpub({ name, markdown, language }: EpubOptions):
   const [{ packEpub }] = await Promise.all([import('@shared/to-epub')]);
 
   /* Light diagrams: a reader's page is white unless its reader says otherwise. */
-  const html = await inlineDiagrams(markdownToHtml(markdown), 'light');
+  const html = await inlineDiagrams(markdownToHtml(withoutControls(markdown)), 'light');
   const parsed = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html');
   const body = parsed.body;
 
@@ -111,9 +112,10 @@ export async function markdownToEpub({ name, markdown, language }: EpubOptions):
   };
   const words = (img: Element, href?: string) => {
     const alt = img.getAttribute('alt') || 'picture';
-    const element = parsed.createElement(href ? 'a' : 'em');
+    // A link inside a link is not XHTML — a badge is a picture inside one — so there it is words.
+    const element = parsed.createElement(href && !img.closest('a') ? 'a' : 'em');
 
-    if (href) element.setAttribute('href', href);
+    if (href && element.tagName === 'A') element.setAttribute('href', href);
     element.textContent = `[${alt}]`;
     img.replaceWith(element);
   };
@@ -147,6 +149,38 @@ export async function markdownToEpub({ name, markdown, language }: EpubOptions):
    */
   body.querySelectorAll('input[type="checkbox"]').forEach((box) => {
     box.replaceWith(parsed.createTextNode((box as HTMLInputElement).hasAttribute('checked') ? '☑' : '☐'));
+  });
+
+  /*
+   * What the sanitiser leaves at the top level without an element around it — the words of a
+   * `<details>` it took apart — would be skipped by a walk over elements, so it gets a paragraph.
+   */
+  for (const node of [...body.childNodes]) {
+    if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+      const paragraph = parsed.createElement('p');
+
+      node.replaceWith(paragraph);
+      paragraph.append(node);
+    }
+  }
+
+  /* `align` is not XHTML 5; the same thing as a style is. */
+  body.querySelectorAll('[align]').forEach((element) => {
+    const value = element.getAttribute('align');
+
+    element.removeAttribute('align');
+
+    if (value && /^(left|center|right|justify)$/i.test(value)) {
+      element.setAttribute('style', `text-align: ${value.toLowerCase()}`);
+    }
+  });
+
+  /* An id twice — a footnote referred to from two places — is an error in a book. The first keeps it. */
+  const seen = new Set<string>();
+
+  body.querySelectorAll('[id]').forEach((element) => {
+    if (seen.has(element.id)) element.removeAttribute('id');
+    else seen.add(element.id);
   });
 
   /* A new window is meaningless in a book. */
@@ -188,6 +222,19 @@ export async function markdownToEpub({ name, markdown, language }: EpubOptions):
       if (node.id) fileOf.set(node.id, file);
       node.querySelectorAll('[id]').forEach((one) => fileOf.set(one.id, file));
     }
+  });
+
+  /*
+   * A link the book cannot follow — to another file that stayed on somebody's disk, or to a part
+   * of the document that does not exist — keeps its words and loses the link.
+   */
+  body.querySelectorAll('a[href]').forEach((link) => {
+    const href = link.getAttribute('href') ?? '';
+    const followable = href.startsWith('#')
+      ? fileOf.has(href.slice(1))
+      : /^(https?:|mailto:)/i.test(href);
+
+    if (!followable) link.replaceWith(...link.childNodes);
   });
 
   /* A link to a part of the document now has to say which file that part ended up in. */

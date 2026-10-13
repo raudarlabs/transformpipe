@@ -1,6 +1,6 @@
 import type { Token, Tokens } from 'marked';
 import { alertOf, lexMarkdown } from './markdown.js';
-import { isWebAddress, plainText, unwrap } from './to-markup.js';
+import { decodeEntities, isWebAddress, plainText, unwrap } from './to-markup.js';
 
 /*
  * Markdown as Slack's mrkdwn — what a bot, a webhook, a workflow step or an API call posts.
@@ -20,7 +20,8 @@ import { isWebAddress, plainText, unwrap } from './to-markup.js';
  */
 
 const escape = (text: string) =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /** What Slack's own alerts would lead with. */
 const ALERT_EMOJI: Record<string, string> = {
@@ -30,6 +31,9 @@ const ALERT_EMOJI: Record<string, string> = {
   warning: ':warning:',
   caution: ':rotating_light:',
 };
+
+/** Prose, as opposed to code: character references typed into it are the characters they name. */
+const words = (text: string) => escape(decodeEntities(text));
 
 const BULLETS = ['•', '◦', '▪'];
 const WORD = /[\p{L}\p{N}]/u;
@@ -83,10 +87,17 @@ class Writer {
       case 'text': {
         const text = token as Tokens.Text;
 
-        return text.tokens ? this.inline(text.tokens) : escape(unwrap(text.text));
+        return text.tokens ? this.inline(text.tokens) : words(unwrap(text.text));
       }
-      case 'escape':
-        return escape((token as Tokens.Escape).text);
+      case 'escape': {
+        /*
+         * Markdown's `\\*` is a literal asterisk, and Slack has no escape to say so. A zero-width
+         * space after the mark keeps it from pairing with the next one.
+         */
+        const char = (token as Tokens.Escape).text;
+
+        return '*_~`'.includes(char) ? `${char}${JOIN}` : words(char);
+      }
       case 'strong':
         return this.mark('*', this.inline((token as Tokens.Strong).tokens), before, after);
       case 'em':
@@ -94,11 +105,11 @@ class Writer {
       case 'del':
         return this.mark('~', this.inline((token as Tokens.Del).tokens), before, after);
       case 'markHighlight':
-        return this.mark('*', escape(String((token as Tokens.Generic).text)), before, after);
+        return this.mark('*', words(String((token as Tokens.Generic).text)), before, after);
       case 'subscript':
       case 'superscript':
         // No raised or lowered text in a message: H2O reads as H2O.
-        return escape(String((token as Tokens.Generic).text));
+        return words(String((token as Tokens.Generic).text));
       case 'codespan':
       case 'mathInline':
       case 'mathParen':
@@ -139,17 +150,17 @@ class Writer {
     }
 
     // Formatting inside a link's words is not read; the words are.
-    const label = escape(plainText(link.tokens)).replace(/\|/g, '¦');
+    const label = words(plainText(link.tokens)).replace(/\|/g, '¦');
     const href = link.href.replace(/[<>|]/g, encodeURIComponent);
 
     return !label || label === escape(link.href) ? `<${href}>` : `<${href}|${label}>`;
   }
 
   private image(image: Tokens.Image): string {
-    const words = escape(image.text || 'picture').replace(/\|/g, '¦');
+    const alt = words(image.text || 'picture').replace(/\|/g, '¦');
 
     // Slack unfurls a picture's address into the picture, so a link to one is as good as showing it.
-    return isWebAddress(image.href) ? `<${image.href}|${words}>` : `_[${words}]_`;
+    return isWebAddress(image.href) ? `<${image.href}|${alt}>` : `_[${alt}]_`;
   }
 
   blocks(tokens: Token[], depth = 0): string {
@@ -162,13 +173,13 @@ class Writer {
   private block(token: Token, depth: number): string {
     switch (token.type) {
       case 'heading':
-        return `*${escape(plainText((token as Tokens.Heading).tokens).trim().replace(/\*/g, '∗'))}*`;
+        return `*${words(plainText((token as Tokens.Heading).tokens).trim().replace(/\*/g, '∗'))}*`;
       case 'paragraph':
         return this.inline((token as Tokens.Paragraph).tokens);
       case 'text': {
         const text = token as Tokens.Text;
 
-        return text.tokens ? this.inline(text.tokens) : escape(unwrap(text.text));
+        return text.tokens ? this.inline(text.tokens) : words(unwrap(text.text));
       }
       case 'code':
         return this.fence((token as Tokens.Code).text);
@@ -190,7 +201,7 @@ class Writer {
           .replace(/[ \t]{2,}/g, ' ')
           .trim();
 
-        return escape(text);
+        return words(text);
       }
       case 'space':
       case 'def':
@@ -207,9 +218,9 @@ class Writer {
   }
 
   private quote(quote: Tokens.Blockquote): string {
-    const alert = alertOf(quote.tokens);
+    const alert = alertOf(quote);
     const body = alert
-      ? `${ALERT_EMOJI[alert.kind] ?? ''} *${escape(alert.title)}*\n${this.blocks(alert.tokens)}`
+      ? `${ALERT_EMOJI[alert.kind] ?? ''} *${words(alert.title)}*\n${this.blocks(alert.tokens)}`
       : this.blocks(quote.tokens);
 
     // Every line, blank ones included, or the quote ends at the first gap between paragraphs.
@@ -260,8 +271,8 @@ class Writer {
    * would be shown as the asterisks rather than read.
    */
   private table(table: Tokens.Table): string {
-    const head = table.header.map((cell) => plainText(cell.tokens).trim());
-    const rows = table.rows.map((row) => row.map((cell) => plainText(cell.tokens).trim()));
+    const head = table.header.map((cell) => decodeEntities(plainText(cell.tokens)).trim());
+    const rows = table.rows.map((row) => row.map((cell) => decodeEntities(plainText(cell.tokens)).trim()));
     const width = (text: string) => [...text].length;
     const widths = head.map((_, column) =>
       Math.max(width(head[column]), ...rows.map((row) => width(row[column] ?? '')))

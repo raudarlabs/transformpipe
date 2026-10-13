@@ -489,7 +489,13 @@ function Shell() {
         return;
       }
 
-      await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+      try {
+        await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+      } catch {
+        toast.error(t('converter.download.error', { format: FORMAT_LABELS[format] }));
+        return;
+      }
+
       count('download', format);
       toast.success(t('history.download.done'), {
         description: toFileName(entry.name, format),
@@ -582,7 +588,13 @@ function Shell() {
           continue;
         }
 
-        await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+        try {
+          await downloadDoc(entry.name, markdown, entry.createdAt, theme, format);
+        } catch {
+          // One that cannot be built is skipped; the count at the end says how many were.
+          continue;
+        }
+
         count('download', format);
         saved += 1;
 
