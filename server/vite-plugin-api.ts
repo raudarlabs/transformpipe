@@ -10,6 +10,8 @@ const SERVER_ENV_KEYS = [
   'VERCEL_OIDC_TOKEN',
   // The Summary tab — see server/summarize.ts.
   'GOOGLE_GENERATIVE_AI_API_KEY',
+  // Who may open /admin — see server/admin.ts.
+  'ADMIN_EMAILS',
 ];
 
 /**
@@ -35,7 +37,7 @@ export function apiDevServer(): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         // The same paths vercel.json sends to the function in production.
-        const served = ['/api/', '/s/', '/report/', '/.well-known/'];
+        const served = ['/api/', '/s/', '/report/', '/.well-known/', '/admin'];
 
         if (!served.some((path) => req.url?.startsWith(path))) {
           return next();
