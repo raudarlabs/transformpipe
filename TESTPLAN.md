@@ -77,6 +77,10 @@ Chrome на Mac (основное) · Safari на iPhone · Chrome на Android,
 | CONV-13 | `/notion-to-markdown` | `.zip` | всё в одном документе с оглавлением, внутренние ссылки работают, id из имён убраны |
 | CONV-14 | `/confluence-to-markdown` | `.zip` | то же |
 | CONV-15 | `/obsidian-to-markdown` | `.zip` | wikilinks, вложенные папки, картинки |
+| CONV-16 | `/markdown-to-confluence` | `.md` | «Copy for Confluence» → вставить в Confluence Cloud: заголовки, списки, таблица, код. Скачанный `.confluence.xml` → через REST API (`body.storage`) или source editor: код-макрос с языком, панели из `> [!WARNING]`, task list с галочками, ссылка на заголовок прыгает |
+| CONV-17 | `/markdown-to-jira` | `.md` | «Copy for Jira» → вставить в описание задачи Jira Cloud. Текст из вкладки Jira → в Text mode / через API v2: `h2.`, `*bold*`, `{code:…}`, таблица, панель; дефисы и `(i)` в тексте не превратились в форматирование |
+| CONV-18 | `/markdown-to-slack` | `.md` | «Copy for Slack» → вставить в поле сообщения: жирный, ссылки, списки. Текст из вкладки Slack → через webhook / Block Kit Builder: таблица — выровненный блок кода, `&` `<` `>` не ломают сообщение |
+| CONV-19 | `/markdown-to-epub` | `.md` с картинкой, формулой и Mermaid | `.epub` открывается в Apple Books и Calibre; главы по заголовкам, оглавление, картинка, формула и диаграмма на месте; EPUBCheck без ошибок |
 
 **Общие для всех конвертаций:**
 
@@ -88,6 +92,7 @@ Chrome на Mac (основное) · Safari на iPhone · Chrome на Android,
 | CONV-23 | Файл 11 МБ | отказ с цифрой лимита (10 МБ) |
 | CONV-24 | Неподходящий формат на странице (`.pdf` на Word) | отказ, а не молчание |
 | CONV-25 | Скачать `.html`, `.md`, Word, PDF | файлы открываются; в `.html` стили внутри файла, Mermaid и формулы видны |
+| CONV-35 | Меню «Other formats» на любой конвертации и в истории | есть Confluence, Jira, Slack, EPUB; каждый скачивается со своим именем (`.confluence.xml`, `.jira.txt`, `.slack.txt`, `.epub`) |
 | CONV-26 | Вкладка проверки документа | счётчик; мёртвые якоря, пустые заголовки, картинки без alt — с номером строки |
 | CONV-27 | Тёмная и светлая тема | превью и Mermaid перерисовываются |
 | CONV-28 | Полноэкранный режим | открывается и закрывается |
@@ -233,6 +238,7 @@ Chrome на Mac (основное) · Safari на iPhone · Chrome на Android,
 | --- | --- | --- | --- |
 | MCP-20 | `tp_help` | «What can TransformPipe do?» и с вопросом про лимиты | отвечает по документации, лимиты верные |
 | MCP-21 | `tp_convert_markdown` | «Convert this Markdown to HTML», и standalone | HTML, ничего не сохранено |
+| MCP-21a | `tp_convert_markdown` с `to` | «Make this a Jira description», «…for our Slack webhook», «…as Confluence storage format» | разметка Jira / mrkdwn / storage format, не Markdown |
 | MCP-22 | `tp_convert_to_markdown` | вставить HTML, CSV, JSON, RTF, ENEX | Markdown + карточка без кнопок; `.docx` — объясняет, что только через сайт или API |
 | MCP-23 | `tp_save_document` | «Save this as zz-…» | приватный документ, карточка с «Open in TransformPipe» |
 | MCP-24 | `tp_save_document` + ссылка | «Save and publish it» | без подтверждения — превью и вопрос; после «да» — ссылка |
