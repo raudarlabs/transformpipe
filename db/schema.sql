@@ -446,3 +446,20 @@ create table if not exists m2h_document_revision (
 
 create index if not exists m2h_document_revision_document
   on m2h_document_revision (document_id, replaced_at desc);
+
+-- A score from the 1-to-10 scale in the onboarding emails, with whose it is.
+--
+-- The daily counter (`m2h_usage_daily`, event 'rating') says how many of each score and nothing
+-- about who, and stays that way. This is the other half, written only when the link carried a
+-- signed `u=` naming an account (see `server/rate-token.ts`): one row per account and email, the
+-- latest click winning, so somebody who changes their mind from a 7 to a 9 is a 9 once. Deleted
+-- with the account.
+
+create table if not exists m2h_rating (
+  user_id    text        not null,
+  campaign   text        not null default '',
+  score      smallint    not null check (score between 1 and 10),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, campaign)
+);

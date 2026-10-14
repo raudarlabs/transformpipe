@@ -1,4 +1,5 @@
 import type { Person } from './admin.js';
+import { rateToken } from './rate-token.js';
 
 /*
  * Accounts, mirrored into Brevo for the onboarding emails.
@@ -139,6 +140,8 @@ export function attributesOf(person: Person): Record<string, string | number | b
   return {
     FIRSTNAME: firstName(person),
     TP_USER_ID: person.id,
+    // The signed `u=` the 1-to-10 links carry, so a score can say whose it is: see rate-token.ts.
+    TP_RATE: rateToken(person.id),
     SIGNUP_AT: day(person.created),
     DOOR: person.door,
     VERIFIED: person.verified,

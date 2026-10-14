@@ -328,5 +328,43 @@ export async function sendWelcome(options: {
   });
 }
 
+/**
+ * A score from the 1-to-10 scale, to the people who run the product — one message per account and
+ * email, sent when the score is new or changed, so a reader who clicks twice is not two messages.
+ */
+export async function sendRatingNotice(options: {
+  to: string;
+  score: number;
+  /** The account, as the admin page would name it. */
+  who: { email: string; name: string };
+  /** Which email the scale was in — `onb-a1` and the like. */
+  campaign: string;
+  previous: number | null;
+  origin: string;
+  userId: string;
+}): Promise<Sent> {
+  const { to, score, who, campaign, previous, origin, userId } = options;
+  const label = who.name && who.name.toLowerCase() !== who.email.split('@')[0]?.toLowerCase()
+    ? `${who.name} (${who.email})`
+    : who.email;
+
+  return send({
+    to,
+    subject: `${score}/10 from ${label}`,
+    markdown: [
+      `**${label}** gave TransformPipe **${score} out of 10**${previous === null ? '' : ` (it was ${previous})`}, from the scale in the \`${campaign || 'unknown'}\` email.`,
+      '',
+      score >= 9
+        ? 'A promoter.'
+        : score >= 7
+          ? 'Passive: the page asked them what would make it a 10.'
+          : 'A detractor: the page asked them what got in the way. A reply from you may get the answer.',
+      '',
+      `[Their account on the admin page](${origin}/admin/u/${encodeURIComponent(userId)})`,
+    ].join('\n'),
+    replyTo: who.email,
+  });
+}
+
 /** Whether this deployment can send at all, for a caller that wants to say so in its response. */
 export const canSendMail = () => Boolean(process.env.RESEND_API_KEY);

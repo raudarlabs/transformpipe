@@ -1,4 +1,8 @@
 import { Hono } from 'hono';
+import { admins } from './admin.js';
+import { sql } from './db.js';
+import { sendRatingNotice } from './mail.js';
+import { userOfToken } from './rate-token.js';
 import { addToTally } from './usage.js';
 import { CAMPAIGN } from '../shared/usage.js';
 
@@ -11,8 +15,10 @@ import { CAMPAIGN } from '../shared/usage.js';
  * a person does, and a GET that counted would record all ten scores for every email they scan.
  *
  * What is counted is the score and which email it came from, as a daily total like everything
- * else in m2h_usage_daily: nothing says who. Brevo's own click statistics are where a score can
- * be matched to a person, for the owner of the Brevo account and nobody else.
+ * else in m2h_usage_daily: nothing says who. When the link also carries `u=` — the signed account
+ * id every contact has in Brevo, see `rate-token.ts` — the score is kept against that account in
+ * m2h_rating as well, and the people in ADMIN_EMAILS get a message saying who gave what. The privacy
+ * page says so.
  */
 
 const rate = new Hono();
@@ -32,7 +38,7 @@ const fromOf = (value: unknown) => {
 const escapeHtml = (value: string) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function page(score: number | null, from: string): string {
+function page(score: number | null, from: string, who: string): string {
   const said =
     score === null
       ? 'That link did not carry a score, so nothing was recorded.'
@@ -76,7 +82,7 @@ ${
     ? ''
     : `<script>
   fetch('/rate', { method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ score: ${score}, from: ${JSON.stringify(from)} }), keepalive: true }).catch(function () {});
+    body: JSON.stringify({ score: ${score}, from: ${JSON.stringify(from)}, u: ${JSON.stringify(who).replace(/</g, '\\u003c')} }), keepalive: true }).catch(function () {});
 </script>`
 }
 </body>
@@ -85,8 +91,19 @@ ${
 
 const HEADERS = { 'cache-control': 'no-store', 'x-robots-tag': 'noindex' };
 
+/* Only a well-formed token is handed on to the page's script; anything else is dropped here. */
+const tokenOf = (value: unknown) => {
+  const text = String(value ?? '');
+
+  return /^[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{1,100}$/.test(text) ? text : '';
+};
+
 rate.get('/rate', (c) =>
-  c.html(page(scoreOf(c.req.query('score')), fromOf(c.req.query('from'))), 200, HEADERS)
+  c.html(
+    page(scoreOf(c.req.query('score')), fromOf(c.req.query('from')), tokenOf(c.req.query('u'))),
+    200,
+    HEADERS
+  )
 );
 
 rate.post('/rate', async (c) => {
@@ -94,10 +111,54 @@ rate.post('/rate', async (c) => {
   const score = scoreOf(body?.score);
 
   if (score !== null) {
-    await addToTally({ event: 'rating', key: String(score), lang: '', source: 'email', campaign: fromOf(body?.from) });
+    const campaign = fromOf(body?.from);
+
+    await addToTally({ event: 'rating', key: String(score), lang: '', source: 'email', campaign });
+
+    const userId = userOfToken(tokenOf((body as { u?: unknown } | null)?.u));
+
+    if (userId) {
+      await keep(userId, campaign, score, new URL(c.req.url).origin).catch((cause) => {
+        // A score that could not be kept against its account is still counted above.
+        console.error('rating not kept', cause instanceof Error ? cause.message : cause);
+      });
+    }
   }
 
   return c.body(null, 204);
 });
+
+/**
+ * The score against its account, and a message to the owners when it is new or different.
+ *
+ * The account has to exist: a token for one deleted since the email went out names nobody.
+ */
+async function keep(userId: string, campaign: string, score: number, origin: string) {
+  const db = sql();
+  const people = (await db`
+    select email, coalesce(name, '') as name from neon_auth."user" where id::text = ${userId}
+  `) as Array<{ email: string; name: string }>;
+
+  if (people.length === 0) return;
+
+  const before = (await db`
+    select score from m2h_rating where user_id = ${userId} and campaign = ${campaign}
+  `) as Array<{ score: number }>;
+  const previous = before[0]?.score ?? null;
+
+  await db`
+    insert into m2h_rating (user_id, campaign, score)
+    values (${userId}, ${campaign}, ${score})
+    on conflict (user_id, campaign) do update set score = excluded.score, updated_at = now()
+  `;
+
+  if (previous === score) return;
+
+  await Promise.all(
+    [...admins()].map((to) =>
+      sendRatingNotice({ to, score, who: people[0], campaign, previous, origin, userId })
+    )
+  );
+}
 
 export default rate;

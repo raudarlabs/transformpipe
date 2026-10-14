@@ -418,13 +418,22 @@ interface FunnelRow {
   n: number;
 }
 
+interface NamedRating {
+  user_id: string;
+  score: number;
+  campaign: string;
+  at: number;
+  email: string;
+  name: string;
+}
+
 interface SourceRow {
   source: string;
   n: number;
 }
 
 async function loadCounters(days: number) {
-  const [funnel, sources, ratings] = await Promise.all([
+  const [funnel, sources, ratings, named] = await Promise.all([
     rows<FunnelRow>(sql()`
       select source as client, key as step, sum(count)::int as n
       from m2h_usage_daily
@@ -445,9 +454,21 @@ async function loadCounters(days: number) {
       where event = 'rating'
       group by 1
     `),
+    /*
+     * The scores whose link named the account (`rate-token.ts`). Caught rather than allowed to
+     * fail the page: a deployment whose database predates the table still has everything else.
+     */
+    rows<NamedRating>(sql()`
+      select r.user_id, r.score, r.campaign, extract(epoch from r.updated_at) * 1000 as at,
+             coalesce(u.email, '') as email, coalesce(u.name, '') as name
+      from m2h_rating r
+      left join neon_auth."user" u on u.id::text = r.user_id
+      order by r.updated_at desc
+      limit 100
+    `).catch(() => [] as NamedRating[]),
   ]);
 
-  return { funnel, sources, ratings };
+  return { funnel, sources, ratings, named };
 }
 
 /* ------------------------------------------------------------------------------------ the pages */
@@ -801,6 +822,24 @@ function funnelTable(rows: FunnelRow[]): string {
   return `<div class="scroll"><table><thead><tr><th>App</th>${head}<th class="n">start→token</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
+/** Who gave what, newest first — the scores whose link named the account. */
+function namedRatings(named: NamedRating[], now: number): string {
+  if (named.length === 0) {
+    return '<p class="note">No score has said whose it is yet. Links carry that from the sync after this change.</p>';
+  }
+
+  const body = named
+    .map(
+      (one) =>
+        `<tr><td><a href="/admin/u/${encodeURIComponent(one.user_id)}">${escapeHtml(one.email || one.user_id)}</a>${
+          one.name ? ` <span class="mute">${escapeHtml(one.name)}</span>` : ''
+        }</td><td class="n"><b>${one.score}</b></td><td class="mute">${escapeHtml(one.campaign)}</td><td class="mute">${ago(Number(one.at), now)}</td></tr>`
+    )
+    .join('');
+
+  return `<div class="scroll" style="margin-top:12px"><table><thead><tr><th>Who</th><th class="n">Score</th><th>Email</th><th>When</th></tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
 function ratingsCard(rows: Array<{ score: string; n: number }>): string {
   const total = rows.reduce((sum, one) => sum + one.n, 0);
 
@@ -817,7 +856,7 @@ function ratingsCard(rows: Array<{ score: string; n: number }>): string {
   return `<dl class="facts" style="margin-bottom:12px"><dt>Scores</dt><dd>${total}</dd><dt>Average</dt><dd>${mean.toFixed(1)} / 10</dd>
     <dt>NPS</dt><dd>${nps} <span class="mute">(${promoters} gave 9–10, ${detractors} gave 1–6)</span></dd></dl>
     ${barList(Array.from({ length: 10 }, (_, i) => ({ label: String(10 - i), n: at(10 - i) })), total)}
-    <p class="note">Counted when somebody clicks a score, with nothing about who. Brevo's click report for that email shows which contact clicked which number.</p>`;
+    <p class="note">Counted when somebody clicks a score. Below, the ones whose link said whose they are — each also arrives as an email to ADMIN_EMAILS.</p>`;
 }
 
 function overviewPage(
@@ -969,7 +1008,7 @@ function overviewPage(
       <p class="note">start: the app asked · signin: sent to sign in · consent: saw the approval page · approve / deny · token: the app
       collected its token. Daily totals from the counter, not people.</p>
     </div>
-    <div class="card"><h2>Ratings from the emails</h2>${ratingsCard(counters.ratings)}</div>
+    <div class="card"><h2>Ratings from the emails</h2>${ratingsCard(counters.ratings)}${namedRatings(counters.named, now)}</div>
   </section>
 
   <section class="grid">
@@ -1276,6 +1315,7 @@ async function deleteAccount(id: string): Promise<{ documents: number; files: nu
     db`delete from m2h_oauth_code where user_id = ${id}`,
     db`delete from m2h_oauth_pending where shown_to = ${id}`,
     db`delete from m2h_user where user_id = ${id}`,
+    db`delete from m2h_rating where user_id = ${id}`,
     // Rate and budget rows are keyed by a caller string that carries the id.
     db`delete from m2h_call where position(${id}::text in caller) > 0`,
     db`delete from m2h_ai_summary_call where position(${id}::text in caller) > 0`,
