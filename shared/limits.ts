@@ -16,6 +16,37 @@
 export const DOCUMENT_BYTES = 10 * 1024 * 1024;
 
 /**
+ * What the converter accepts when the file is a package rather than text — Word, PowerPoint,
+ * Excel, EPUB, OpenDocument, an Evernote export.
+ *
+ * The 10 MB above is a measure of words, and these are mostly not words: a deck or a report
+ * weighs what its photographs weigh. Most of that never reaches the document — the pictures are
+ * carried within `PICTURES_BYTES` and the rest stay behind — so the file can be far larger than
+ * the Markdown that comes out of it.
+ */
+export const PACKAGE_BYTES = 50 * 1024 * 1024;
+
+/**
+ * What the converter accepts for an export `.zip` — Notion, Confluence, Obsidian.
+ *
+ * Larger again, because an export is a whole space with every attachment anybody ever uploaded:
+ * a Confluence section of a few dozen pages came to 60 MB in testing, nearly all of it pictures.
+ * Only the pages are unpacked to read (`zip-import.ts`), so the size of the archive is mostly a
+ * question of whether the browser can hold the file, and 250 MB it can.
+ */
+export const ARCHIVE_BYTES = 250 * 1024 * 1024;
+
+const PACKAGES = ['.docx', '.pptx', '.xlsx', '.epub', '.odt', '.enex'];
+
+/** How large a file a conversion taking these extensions accepts. */
+export function uploadLimit(extensions: readonly string[]): number {
+  if (extensions.includes('.zip')) return ARCHIVE_BYTES;
+  if (extensions.some((one) => PACKAGES.includes(one))) return PACKAGE_BYTES;
+
+  return DOCUMENT_BYTES;
+}
+
+/**
  * What can be kept in an account, and it is not our choice.
  *
  * A Vercel Function refuses a request or a response body over 4.5 MB with a bare 413 that our code

@@ -245,14 +245,14 @@ export const ui: Content['ui'] = {
   'converter.dropzone.title': '{extension}-Dateien hier ablegen',
   'converter.dropzone.choose': 'Dateien auswählen',
   'converter.dropzone.limits':
-    '{extensions} · bis 10 MB · im Browser verarbeitet',
+    '{extensions} · bis {limit} · im Browser verarbeitet',
   /*
    * Dieselbe Tatsache wie `converter.dropzone.limits`, als Satz statt als Reihe von Gliedern:
    * dieser gehört der vorgerenderten Seite, gelesen von einem Crawler und von allen, deren Bundle
    * noch nicht da ist, und dort ist eine Zeile aus Mittelpunkten keine Prosa. `scripts/prerender.ts`
    * füllt sie aus.
    */
-  'converter.accepts': 'Nimmt {extensions}, bis 10 MB, umgewandelt im Browser.',
+  'converter.accepts': 'Nimmt {extensions}, bis {limit}, umgewandelt im Browser.',
   'converter.picker.label': 'Oder etwas anderes umwandeln',
   'converter.picker.soon': 'Bald',
   'converter.picker.soon.title': 'Noch nicht da — steht auf der Roadmap',

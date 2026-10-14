@@ -5,7 +5,7 @@ import { ConnectGate } from './components/ConnectGate';
 import { CookieBanner } from './components/CookieBanner';
 import { ConnectorNudge } from './components/ConnectorNudge';
 import { AppHeader } from './components/AppHeader';
-import { MAX_FILE_SIZE } from './components/Dropzone';
+import { uploadLimit } from '@shared/limits';
 import { KEEP_BYTES } from '@shared/limits';
 import {
   conversion,
@@ -267,8 +267,10 @@ function Shell() {
        * save that then refused the 12 MB they made.
        */
       const dropped = files.reduce((total, file) => total + file.size, 0);
+      /* What this conversion takes: an export .zip is mostly attachments, a text file is all words. */
+      const limit = uploadLimit(conversion(id).extensions);
 
-      if (dropped > MAX_FILE_SIZE) {
+      if (dropped > limit) {
         toast.error(
           t(
             files.length > 1
@@ -278,7 +280,7 @@ function Shell() {
           {
             description: t('converter.toolarge.detail', {
               size: formatBytes(dropped, sizes),
-              limit: formatBytes(MAX_FILE_SIZE, sizes),
+              limit: formatBytes(limit, sizes),
             }),
           }
         );

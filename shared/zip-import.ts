@@ -32,6 +32,16 @@ export interface ZipPage {
 const MAX_UNPACKED = 64 * 1024 * 1024;
 
 /**
+ * What the entries an importer actually asks for may weigh unpacked, in a browser.
+ *
+ * Counted over the wanted entries only: the filter decompresses nothing else, so an export's
+ * hundred megabytes of attachments cost nothing here, and counting them refused a 60 MB Confluence
+ * section whose pages were a few megabytes of HTML. A server keeps the stricter whole-archive
+ * figure above, because a function has far less memory to spare than a person's laptop.
+ */
+const MAX_WANTED = typeof window === 'undefined' ? MAX_UNPACKED : 512 * 1024 * 1024;
+
+/**
  * Refuses an archive that unpacks to more than `MAX_UNPACKED`, without unpacking any of it.
  *
  * For the archives this app does not open itself: a `.docx` is read by `mammoth` and an `.xlsx` by
@@ -80,13 +90,17 @@ export async function readZipEntries(
   try {
     files = unzipSync(bytes, {
       filter: (file) => {
+        if (file.size === 0 || !wanted(file.name)) {
+          return false;
+        }
+
         unpacked += file.originalSize ?? 0;
 
-        if (unpacked > MAX_UNPACKED) {
+        if (unpacked > MAX_WANTED) {
           throw new Error('it unpacks to more than this app will read at once');
         }
 
-        return file.size > 0 && wanted(file.name);
+        return true;
       },
     });
   } catch (cause) {

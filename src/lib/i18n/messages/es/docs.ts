@@ -74,7 +74,7 @@ export const docs: Content['docs'] = {
   limits: {
     title: 'Límites',
     summary:
-      '10 MB por archivo para convertir y 4 MB para guardarlo en una cuenta, 100 MB y 500 documentos por cuenta, 60 peticiones por minuto. Llegar a uno rechaza la escritura en vez de eliminar nada. Una llamada a una herramienta desde un conector cuenta como una sola petición.',
+      '10 MB por archivo de texto para convertir (50 MB por archivo de oficina o libro, 250 MB por .zip de exportación) y 4 MB para guardarlo en una cuenta, 100 MB y 500 documentos por cuenta, 60 peticiones por minuto. Llegar a uno rechaza la escritura en vez de eliminar nada. Una llamada a una herramienta desde un conector cuenta como una sola petición.',
   },
   faq: {
     title: 'Preguntas',

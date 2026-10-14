@@ -52,7 +52,7 @@ export const docsPage = {
   'docs.converting.menu': 'Converter',
   /** `{docx}` is the extension itself. */
   'docs.converting.sizes':
-    'Up to 10 MB a file. Drop several Markdown files at once and they are chained into a single document, in the order they arrive, separated by a rule. Drop a file the page does not take — a {docx} on the Markdown page, say — and it goes to the conversion that does take it rather than being refused; a mixture of kinds is refused, because chaining a spreadsheet onto a Word document is not something anybody meant.',
+    'Up to 10 MB a text file, 50 MB a Word, PowerPoint, Excel, EPUB or OpenDocument file, 250 MB an export .zip. Drop several Markdown files at once and they are chained into a single document, in the order they arrive, separated by a rule. Drop a file the page does not take — a {docx} on the Markdown page, say — and it goes to the conversion that does take it rather than being refused; a mixture of kinds is refused, because chaining a spreadsheet onto a Word document is not something anybody meant.',
   'docs.converting.oneShape':
     'Everything ends as Markdown, and that is deliberate: it is what a document is stored, previewed, shared and reached by a script as, so the whole of the app stands on one shape rather than four.',
   'docs.converting.shot.converter.alt':
@@ -234,7 +234,7 @@ export const docsPage = {
   'docs.limits.account.text': '100 MB of Markdown, 500 documents',
   'docs.limits.convert.term': 'Per conversion',
   'docs.limits.convert.text':
-    '10 MB — roughly 1.5 million words. Several files dropped together count as the one document they become',
+    '10 MB of text — roughly 1.5 million words; 50 MB for an office file or a book, 250 MB for an export .zip. Several files dropped together count as the one document they become',
   'docs.limits.document.term': 'Per kept document',
   'docs.limits.document.text':
     '4 MB, and not by our choice: a Vercel Function refuses a request or a response body over 4.5 MB before any of this code runs, so a larger document could be neither saved nor read back. It still converts, previews and downloads — it stays out of the history, and the app says so rather than reporting a save that did not happen',

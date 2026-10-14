@@ -120,6 +120,16 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-14',
+    title: 'An export .zip can be 250 MB, and a Word or PowerPoint file 50 MB',
+    body:
+      'Every file used to stop at 10 MB, which is a fair size for words and a small one for a '
+      + 'Confluence space with its attachments — a section of a few dozen pages came to 60 MB. '
+      + 'Text files keep their 10 MB; Word, PowerPoint, Excel, EPUB, OpenDocument and Evernote files '
+      + 'take 50 MB, and Notion, Confluence and Obsidian exports 250 MB. Only the pages and their '
+      + 'pictures are unpacked, so a video or a PDF attached to a page costs nothing.',
+  },
+  {
+    date: '2026-10-14',
     title: 'Word documents made of Word’s own styles',
     slug: 'markdown-to-word-styles',
     body:

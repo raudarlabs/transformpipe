@@ -1,13 +1,13 @@
 import { CloudUpload, FileText } from 'lucide-react';
-import { DOCUMENT_BYTES } from '@shared/limits';
+import { uploadLimit } from '@shared/limits';
+import { formatBytes } from '@/lib/format';
+import { useI18n } from '@/lib/i18n/context';
+import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { type DragEvent, type ChangeEvent, useRef, useState } from 'react';
 import { useT } from '@/lib/i18n/context';
 import { Button } from '@/ui/components/Button';
 import { Typography } from '@/ui/components/Typography';
 import { cn } from '@/ui/lib/utils';
-
-/** What the account will accept too, so a file that converts here can also be kept. */
-export const MAX_FILE_SIZE = DOCUMENT_BYTES;
 
 interface DropzoneProps {
   isBusy?: boolean;
@@ -27,6 +27,7 @@ export function Dropzone({
   onFiles,
 }: DropzoneProps) {
   const t = useT();
+  const { locale } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -91,7 +92,10 @@ export function Dropzone({
 
       <Typography variant="span" textColor="light" className="text-xs">
         {/* One sentence with the extensions dropped into it, so a translator can move them. */}
-        {t('converter.dropzone.limits', { extensions: extensions.join(', ') })}
+        {t('converter.dropzone.limits', {
+          extensions: extensions.join(', '),
+          limit: formatBytes(uploadLimit(extensions), INTL_LOCALES[locale]),
+        })}
       </Typography>
 
       <input

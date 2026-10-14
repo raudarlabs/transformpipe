@@ -34,7 +34,7 @@ export const docsPage = {
   'docs.converting.menu': 'Convertitore',
   /** `{docx}` is the extension itself. */
   'docs.converting.sizes':
-    'Fino a 10 MB per file. Trascinando più file Markdown insieme, vengono concatenati in un unico documento, nell’ordine in cui arrivano, separati da una riga. Un file che la pagina non accetta — un {docx} sulla pagina del Markdown, per esempio — viene passato alla conversione che lo accetta invece di essere rifiutato; un misto di tipi diversi viene rifiutato, perché attaccare un foglio di calcolo a un documento Word non è quello che qualcuno intendeva fare.',
+    'Fino a 10 MB per file di testo, 50 MB per un file Word, PowerPoint, Excel, EPUB o OpenDocument, 250 MB per uno .zip di esportazione. Trascinando più file Markdown insieme, vengono concatenati in un unico documento, nell’ordine in cui arrivano, separati da una riga. Un file che la pagina non accetta — un {docx} sulla pagina del Markdown, per esempio — viene passato alla conversione che lo accetta invece di essere rifiutato; un misto di tipi diversi viene rifiutato, perché attaccare un foglio di calcolo a un documento Word non è quello che qualcuno intendeva fare.',
   'docs.converting.oneShape':
     'Tutto finisce come Markdown, e non per caso: è la forma in cui un documento viene conservato, mostrato in anteprima, condiviso e raggiunto da uno script, così l’intera app si regge su una forma sola invece che su quattro.',
   'docs.converting.shot.converter.alt':
@@ -216,7 +216,7 @@ export const docsPage = {
   'docs.limits.account.text': '100 MB di Markdown, 500 documenti',
   'docs.limits.convert.term': 'Per conversione',
   'docs.limits.convert.text':
-    '10 MB — circa un milione e mezzo di parole. Più file trascinati insieme contano per l’unico documento che diventano',
+    '10 MB di testo — circa un milione e mezzo di parole; 50 MB per un file d’ufficio o un libro, 250 MB per uno .zip di esportazione. Più file trascinati insieme contano per l’unico documento che diventano',
   'docs.limits.document.term': 'Per documento conservato',
   'docs.limits.document.text':
     '4 MB, e non per nostra scelta: una Vercel Function rifiuta una richiesta o un corpo di risposta oltre i 4,5 MB prima che una riga di questo codice venga eseguita, quindi un documento più grande non potrebbe essere né salvato né riletto. Si converte, si vede in anteprima e si scarica comunque: resta fuori dalla cronologia, e l’app lo dice invece di annunciare un salvataggio che non è avvenuto',

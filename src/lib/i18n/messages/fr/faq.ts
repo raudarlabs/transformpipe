@@ -40,7 +40,7 @@ export const faq: Content['faq'] = [
   {
     question: 'Y a-t-il une limite de taille ?',
     answer:
-      '10 MB par fichier à convertir — environ 1,5 million de mots — parce que la conversion se fait sur votre propre machine. En conserver un dans un compte est plafonné à 4 MB, et ce n’est pas notre chiffre : la plateforme refuse d’emblée une requête plus grosse. Un fichier plus gros se convertit, s’affiche et se télécharge quand même ; il reste simplement hors de l’historique, et l’application le dit au lieu de faire croire qu’elle a enregistré. Un compte contient 500 documents ou 100 MB, selon ce qui arrive en premier. Atteindre une limite refuse l’écriture et le dit ; rien de ce que vous avez enregistré n’est jamais supprimé en silence pour faire de la place.',
+      '10 MB par fichier texte à convertir — environ 1,5 million de mots —, 50 MB pour un fichier Word, PowerPoint, Excel, EPUB ou OpenDocument, et 250 MB pour un .zip d’export, surtout fait de pièces jointes ; tout cela parce que la conversion se fait sur votre propre machine. En conserver un dans un compte est plafonné à 4 MB, et ce n’est pas notre chiffre : la plateforme refuse d’emblée une requête plus grosse. Un fichier plus gros se convertit, s’affiche et se télécharge quand même ; il reste simplement hors de l’historique, et l’application le dit au lieu de faire croire qu’elle a enregistré. Un compte contient 500 documents ou 100 MB, selon ce qui arrive en premier. Atteindre une limite refuse l’écriture et le dit ; rien de ce que vous avez enregistré n’est jamais supprimé en silence pour faire de la place.',
   },
   {
     question: 'Puis-je convertir des fichiers depuis un script ?',

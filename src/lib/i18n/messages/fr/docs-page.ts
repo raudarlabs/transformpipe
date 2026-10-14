@@ -40,7 +40,7 @@ export const docsPage = {
   'docs.converting.menu': 'Convertisseur',
   /** `{docx}` est l’extension elle-même. */
   'docs.converting.sizes':
-    'Jusqu’à 10 MB par fichier. Déposez plusieurs fichiers Markdown à la fois et ils sont enchaînés en un seul document, dans l’ordre où ils arrivent, séparés par un filet. Déposez un fichier que la page ne prend pas — un {docx} sur la page Markdown, par exemple — et il part vers la conversion qui le prend au lieu d’être refusé ; un mélange de genres est refusé, parce qu’enchaîner un tableur à la suite d’un document Word n’est l’intention de personne.',
+    'Jusqu’à 10 MB par fichier texte, 50 MB pour un fichier Word, PowerPoint, Excel, EPUB ou OpenDocument, 250 MB pour un .zip d’export. Déposez plusieurs fichiers Markdown à la fois et ils sont enchaînés en un seul document, dans l’ordre où ils arrivent, séparés par un filet. Déposez un fichier que la page ne prend pas — un {docx} sur la page Markdown, par exemple — et il part vers la conversion qui le prend au lieu d’être refusé ; un mélange de genres est refusé, parce qu’enchaîner un tableur à la suite d’un document Word n’est l’intention de personne.',
   'docs.converting.oneShape':
     'Tout finit en Markdown, et c’est délibéré : c’est la forme sous laquelle un document est conservé, prévisualisé, partagé et atteint par un script, si bien que toute l’application tient sur une seule forme au lieu de quatre.',
   'docs.converting.shot.converter.alt':
@@ -224,7 +224,7 @@ export const docsPage = {
   'docs.limits.account.text': '100 MB de Markdown, 500 documents',
   'docs.limits.convert.term': 'Par conversion',
   'docs.limits.convert.text':
-    '10 MB — environ 1,5 million de mots. Plusieurs fichiers déposés ensemble comptent pour le seul document qu’ils deviennent',
+    '10 MB de texte — environ 1,5 million de mots ; 50 MB pour un fichier bureautique ou un livre, 250 MB pour un .zip d’export. Plusieurs fichiers déposés ensemble comptent pour le seul document qu’ils deviennent',
   'docs.limits.document.term': 'Par document conservé',
   'docs.limits.document.text':
     '4 MB, et pas de notre fait : une Vercel Function refuse une requête ou un corps de réponse de plus de 4,5 MB avant que rien de ce code ne tourne, de sorte qu’un document plus gros ne pourrait être ni enregistré ni relu. Il se convertit, s’affiche et se télécharge quand même — il reste hors de l’historique, et l’application le dit au lieu d’annoncer un enregistrement qui n’a pas eu lieu',

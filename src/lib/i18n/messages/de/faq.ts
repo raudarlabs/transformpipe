@@ -39,7 +39,7 @@ export const faq: Content['faq'] = [
   {
     question: 'Gibt es eine Größengrenze?',
     answer:
-      'Zum Umwandeln 10 MB je Datei — rund 1.5 Millionen Wörter —, weil die Umwandlung auf dem eigenen Rechner geschieht. Eines im Konto zu behalten ist auf 4 MB begrenzt, und das ist nicht unsere Zahl: die Plattform weist eine größere Anfrage von vornherein ab. Eine größere Datei wandelt trotzdem um, zeigt eine Vorschau und lädt herunter; sie bleibt nur aus dem Verlauf heraus, und die App sagt das, statt eine Speicherung vorzutäuschen. Ein Konto hält 500 Dokumente oder 100 MB, je nachdem, was zuerst kommt. Eine erreichte Grenze weist den Schreibvorgang ab und sagt es; nichts Gespeichertes wird je still gelöscht, um Platz zu machen.',
+      'Zum Umwandeln 10 MB je Textdatei — rund 1.5 Millionen Wörter —, 50 MB je Word-, PowerPoint-, Excel-, EPUB- oder OpenDocument-Datei und 250 MB je Export-.zip, das meiste davon Anhänge; alles, weil die Umwandlung auf dem eigenen Rechner geschieht. Eines im Konto zu behalten ist auf 4 MB begrenzt, und das ist nicht unsere Zahl: die Plattform weist eine größere Anfrage von vornherein ab. Eine größere Datei wandelt trotzdem um, zeigt eine Vorschau und lädt herunter; sie bleibt nur aus dem Verlauf heraus, und die App sagt das, statt eine Speicherung vorzutäuschen. Ein Konto hält 500 Dokumente oder 100 MB, je nachdem, was zuerst kommt. Eine erreichte Grenze weist den Schreibvorgang ab und sagt es; nichts Gespeichertes wird je still gelöscht, um Platz zu machen.',
   },
   {
     question: 'Kann ich Dateien aus einem Skript umwandeln?',

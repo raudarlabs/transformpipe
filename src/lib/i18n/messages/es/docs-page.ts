@@ -41,7 +41,7 @@ export const docsPage = {
   'docs.converting.menu': 'Conversor',
   /** `{docx}` es la extensión misma. */
   'docs.converting.sizes':
-    'Hasta 10 MB por archivo. Suelta varios archivos Markdown a la vez y se enlazan en un único documento, en el orden en que llegan y separados por una línea. Suelta un archivo que la página no acepte —un {docx} en la página de Markdown, por ejemplo— y va a la conversión que sí lo acepta en lugar de rechazarse; una mezcla de tipos sí se rechaza, porque enlazar una hoja de cálculo con un documento de Word no es algo que nadie pretendiera.',
+    'Hasta 10 MB por archivo de texto, 50 MB por archivo de Word, PowerPoint, Excel, EPUB u OpenDocument, 250 MB por .zip de exportación. Suelta varios archivos Markdown a la vez y se enlazan en un único documento, en el orden en que llegan y separados por una línea. Suelta un archivo que la página no acepte —un {docx} en la página de Markdown, por ejemplo— y va a la conversión que sí lo acepta en lugar de rechazarse; una mezcla de tipos sí se rechaza, porque enlazar una hoja de cálculo con un documento de Word no es algo que nadie pretendiera.',
   'docs.converting.oneShape':
     'Todo acaba siendo Markdown, y es deliberado: es la forma en que un documento se guarda, se previsualiza, se comparte y se alcanza desde un script, así que toda la aplicación se sostiene sobre una sola forma en vez de cuatro.',
   'docs.converting.shot.converter.alt':
@@ -223,7 +223,7 @@ export const docsPage = {
   'docs.limits.account.text': '100 MB de Markdown, 500 documentos',
   'docs.limits.convert.term': 'Por conversión',
   'docs.limits.convert.text':
-    '10 MB — alrededor de 1,5 millones de palabras. Varios archivos soltados juntos cuentan como el único documento en que se convierten',
+    '10 MB de texto — alrededor de 1,5 millones de palabras; 50 MB para un archivo de oficina o un libro, 250 MB para un .zip de exportación. Varios archivos soltados juntos cuentan como el único documento en que se convierten',
   'docs.limits.document.term': 'Por documento guardado',
   'docs.limits.document.text':
     '4 MB, y no por decisión nuestra: una Vercel Function rechaza una petición o un cuerpo de respuesta de más de 4,5 MB antes de que se ejecute nada de este código, así que un documento mayor no podría ni guardarse ni volver a leerse. Se convierte, se previsualiza y se descarga igual — solo se queda fuera del historial, y la aplicación lo dice en vez de informar de un guardado que no ha ocurrido',

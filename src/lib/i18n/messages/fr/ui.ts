@@ -231,14 +231,14 @@ export const ui: Content['ui'] = {
   'converter.dropzone.title': 'Déposer les fichiers {extension} ici',
   'converter.dropzone.choose': 'Choisir des fichiers',
   'converter.dropzone.limits':
-    '{extensions} · jusqu’à 10 MB · traité dans le navigateur',
+    '{extensions} · jusqu’à {limit} · traité dans le navigateur',
   /*
    * Le même fait que `converter.dropzone.limits`, en phrase plutôt qu’en série de fragments :
    * celle-ci est destinée à la page pré-rendue, lue par un robot et par qui n’a pas encore reçu
    * le bundle, là où une file de points médians n’est pas de la prose.
    */
   'converter.accepts':
-    'Accepte {extensions}, jusqu’à 10 MB, converti dans votre navigateur.',
+    'Accepte {extensions}, jusqu’à {limit}, converti dans votre navigateur.',
   'converter.picker.label': 'Ou convertir autre chose',
   'converter.picker.soon': 'Bientôt',
   'converter.picker.soon.title': 'Pas encore là — c’est prévu',

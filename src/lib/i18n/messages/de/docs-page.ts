@@ -54,7 +54,7 @@ export const docsPage = {
   'docs.converting.menu': 'Konverter',
   /** `{docx}` ist die Endung selbst. */
   'docs.converting.sizes':
-    'Bis 10 MB je Datei. Mehrere Markdown-Dateien zugleich ablegen, und sie werden in der Reihenfolge ihres Eintreffens zu einem einzigen Dokument verkettet, getrennt durch eine Linie. Eine Datei, die die Seite nicht nimmt — etwa ein {docx} auf der Markdown-Seite —, wandert zu der Umwandlung, die sie nimmt, statt abgewiesen zu werden; eine Mischung verschiedener Arten wird abgewiesen, denn eine Tabelle an ein Word-Dokument zu ketten hat niemand gemeint.',
+    'Bis 10 MB je Textdatei, 50 MB je Word-, PowerPoint-, Excel-, EPUB- oder OpenDocument-Datei, 250 MB je Export-.zip. Mehrere Markdown-Dateien zugleich ablegen, und sie werden in der Reihenfolge ihres Eintreffens zu einem einzigen Dokument verkettet, getrennt durch eine Linie. Eine Datei, die die Seite nicht nimmt — etwa ein {docx} auf der Markdown-Seite —, wandert zu der Umwandlung, die sie nimmt, statt abgewiesen zu werden; eine Mischung verschiedener Arten wird abgewiesen, denn eine Tabelle an ein Word-Dokument zu ketten hat niemand gemeint.',
   'docs.converting.oneShape':
     'Alles endet als Markdown, und das mit Absicht: als Markdown wird ein Dokument gespeichert, in der Vorschau gezeigt, geteilt und von einem Skript erreicht, sodass die ganze App auf einer Form statt auf vier steht.',
   'docs.converting.shot.converter.alt':
@@ -240,7 +240,7 @@ export const docsPage = {
   'docs.limits.account.text': '100 MB Markdown, 500 Dokumente',
   'docs.limits.convert.term': 'Je Umwandlung',
   'docs.limits.convert.text':
-    '10 MB — etwa 1.5 Millionen Wörter. Mehrere zusammen abgelegte Dateien zählen als das eine Dokument, das sie werden',
+    '10 MB Text — etwa 1.5 Millionen Wörter; 50 MB für eine Office-Datei oder ein Buch, 250 MB für ein Export-.zip. Mehrere zusammen abgelegte Dateien zählen als das eine Dokument, das sie werden',
   'docs.limits.document.term': 'Je behaltenes Dokument',
   'docs.limits.document.text':
     '4 MB, und nicht aus eigener Wahl: eine Vercel Function weist eine Anfrage oder einen Antwort-Body über 4.5 MB ab, bevor irgendetwas von diesem Code läuft, ein größeres Dokument könnte also weder gespeichert noch zurückgelesen werden. Es wandelt trotzdem um, zeigt eine Vorschau und lädt herunter — es bleibt nur aus dem Verlauf heraus, und die App sagt das, statt eine Speicherung zu melden, die nicht geschehen ist',

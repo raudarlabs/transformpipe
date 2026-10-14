@@ -241,13 +241,13 @@ export const ui: Content['ui'] = {
   'converter.dropzone.title': 'Drop {extension} files here',
   'converter.dropzone.choose': 'Choose files',
   'converter.dropzone.limits':
-    '{extensions} · up to 10 MB · processed in your browser',
+    '{extensions} · up to {limit} · processed in your browser',
   /*
    * The same fact as `converter.dropzone.limits`, as a sentence rather than a row of clauses:
    * this one is the prerendered page's, read by a crawler and by anybody whose bundle has not
    * arrived yet, where a line of middle dots is not prose. `scripts/prerender.ts` fills it in.
    */
-  'converter.accepts': 'Takes {extensions}, up to 10 MB, converted in your browser.',
+  'converter.accepts': 'Takes {extensions}, up to {limit}, converted in your browser.',
   'converter.picker.label': 'Or convert something else',
   'converter.picker.soon': 'Soon',
   'converter.picker.soon.title': 'Not here yet — it is on the roadmap',

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 14 October 2026.** Next up: **Code compare**.
+**Updated 14 October 2026.** Next up: **Projects**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,9 +14,12 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **Code compare** — two versions of code side by side, in the browser, with no account
-      · `diff` and the highlighter are already dependencies; `VersionDiff` moves onto the shared
-      core rather than a second copy of it
+- [ ] **Projects** — documents grouped into a project: a filter in the history beside the
+      conversion chips, `project` on the API, `tp push --project`, the connector ("save it to Q4
+      docs"), a vault folder in the Obsidian plugin, and one read-only link for the whole project
+      · step one of two, decided 14 October. Members by email, read-only first, come only if this
+      is used — five accounts with two projects or more a month after it ships. Access stays in the
+      one share gate; a member's documents count against their owner, not the project
 
 ## Next, in order
 
@@ -31,6 +34,9 @@ The first thing here that is not a conversion, and the reason it gets a heading 
 than a line in the list below: everything above turns one file into another file, and this turns
 two files into an answer. Hiding the one strategic bet in a list about storage is how it gets lost.
 
+- [ ] **Code compare** — two versions of code side by side, in the browser, with no account
+      · `diff` and the highlighter are already dependencies; `VersionDiff` moves onto the shared
+      core rather than a second copy of it
 - [ ] **A comparison with an address** — the diff saved as a document, and `tp_compare` handing it
       to an assistant
       · sharing, versions and the Word export already exist, and so does the MCP server — which is

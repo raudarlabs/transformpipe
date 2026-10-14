@@ -236,14 +236,14 @@ export const ui: Content['ui'] = {
   'converter.dropzone.title': 'Suelta aquí archivos {extension}',
   'converter.dropzone.choose': 'Elegir archivos',
   'converter.dropzone.limits':
-    '{extensions} · hasta 10 MB · procesado en tu navegador',
+    '{extensions} · hasta {limit} · procesado en tu navegador',
   /*
    * El mismo dato que `converter.dropzone.limits`, en forma de frase y no de fila de cláusulas:
    * esta es la de la página prerrenderizada, la que lee un rastreador y quien todavía no ha
    * recibido el bundle, donde una línea de puntos medios no es prosa. La rellena
    * `scripts/prerender.ts`.
    */
-  'converter.accepts': 'Acepta {extensions}, hasta 10 MB, convertidos en tu navegador.',
+  'converter.accepts': 'Acepta {extensions}, hasta {limit}, convertidos en tu navegador.',
   'converter.picker.label': 'O convertir otra cosa',
   'converter.picker.soon': 'Pronto',
   'converter.picker.soon.title': 'Todavía no está — está planificado',

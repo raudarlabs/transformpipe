@@ -75,7 +75,7 @@ export const docs: Content['docs'] = {
   limits: {
     title: 'Grenzen',
     summary:
-      'Zum Umwandeln 10 MB je Datei und zum Behalten im Konto 4 MB, 100 MB und 500 Dokumente je Konto, 60 Anfragen je Minute. Eine erreichte Grenze weist den Schreibvorgang ab, statt etwas zu löschen. Ein Werkzeugaufruf eines Connectors zählt als eine Anfrage.',
+      'Zum Umwandeln 10 MB je Textdatei (50 MB je Office-Datei oder Buch, 250 MB je Export-.zip) und zum Behalten im Konto 4 MB, 100 MB und 500 Dokumente je Konto, 60 Anfragen je Minute. Eine erreichte Grenze weist den Schreibvorgang ab, statt etwas zu löschen. Ein Werkzeugaufruf eines Connectors zählt als eine Anfrage.',
   },
   faq: {
     title: 'Fragen',

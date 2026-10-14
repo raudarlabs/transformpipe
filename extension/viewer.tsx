@@ -13,7 +13,8 @@ import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { pageToMarkdown } from '@shared/from-page';
 import { getDocStats } from '@shared/markdown';
-import { Dropzone, MAX_FILE_SIZE } from '@/components/Dropzone';
+import { Dropzone } from '@/components/Dropzone';
+import { uploadLimit } from '@shared/limits';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { Logo } from '@/components/Logo';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '@shared/conversions';
@@ -136,12 +137,13 @@ function Viewer() {
       }
 
       const total = files.reduce((sum, file) => sum + file.size, 0);
+      const limit = uploadLimit(CONVERSIONS.find((one) => one.id === id)?.extensions ?? []);
 
-      if (total > MAX_FILE_SIZE) {
+      if (total > limit) {
         setError(
           t('converter.toolarge.detail', {
             size: formatBytes(total, INTL_LOCALES[locale]),
-            limit: formatBytes(MAX_FILE_SIZE, INTL_LOCALES[locale]),
+            limit: formatBytes(limit, INTL_LOCALES[locale]),
           })
         );
         return;
