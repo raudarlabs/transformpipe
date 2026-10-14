@@ -259,7 +259,7 @@ export function ConverterPage({
    */
   const primary: DocFormat = formatForTarget(conversion.to);
   const secondary: DocFormat[] = (
-    ['md', 'obsidian', 'html', 'txt', 'confluence', 'jira', 'slack', 'epub'] as DocFormat[]
+    ['md', 'obsidian', 'html', 'txt', 'docx', 'confluence', 'jira', 'slack', 'epub'] as DocFormat[]
   ).filter((one) => one !== primary);
 
   /*
@@ -478,8 +478,8 @@ export function ConverterPage({
 
   const source =
     primary === 'html' ? standalone : isTextExport(primary) ? (exported ?? '') : doc.markdown;
-  /* A book is not text: its screen copies and shows the Markdown it is made from. */
-  const copyFormat: DocFormat = primary === 'epub' ? 'md' : primary;
+  /* A book or a Word file is not text: its screen copies and shows the Markdown it is made from. */
+  const copyFormat: DocFormat = primary === 'epub' || primary === 'docx' ? 'md' : primary;
 
   const handleDownload = async (format: DocFormat) => {
     try {
@@ -494,24 +494,6 @@ export function ConverterPage({
     toast.success(t('converter.download.done', { format: FORMAT_LABELS[format] }), {
       description: toFileName(doc.name, format),
     });
-  };
-
-  const handleDownloadDocx = async () => {
-    if (!doc.remoteId) {
-      return;
-    }
-
-    try {
-      const blob = await api.downloadDocx(doc.remoteId);
-
-      saveBlob(`${doc.name.replace(/\.[^.]+$/, '')}.docx`, blob);
-      count('download', 'docx');
-      toast.success(t('converter.download.done', { format: 'Word' }));
-    } catch (cause) {
-      toast.error(
-        cause instanceof Error ? cause.message : t('converter.download.docx.error')
-      );
-    }
   };
 
   const handlePrint = async () => {
@@ -716,15 +698,6 @@ export function ConverterPage({
                 <DropdownMenuItem onSelect={() => void handlePrint()}>
                   <Printer className="size-4" />
                   {t('converter.print')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  disabled={!doc.remoteId}
-                  onSelect={() => void handleDownloadDocx()}
-                >
-                  <FileText className="size-4" />
-                  {doc.remoteId
-                    ? t('converter.download.docx')
-                    : t('converter.download.docx.needsSave')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

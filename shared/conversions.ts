@@ -41,14 +41,22 @@ export type ConversionId =
   | 'markdown-to-confluence'
   | 'markdown-to-jira'
   | 'markdown-to-slack'
-  | 'markdown-to-epub';
+  | 'markdown-to-epub'
+  | 'markdown-to-word';
 
 /**
  * What a conversion hands over. The first two are what a document is stored as and what it renders
  * to; the rest are made from the stored Markdown when somebody asks for them, and none of them is
  * ever stored — see `shared/to-confluence.ts` and its neighbours.
  */
-export type ConversionTarget = 'html' | 'markdown' | 'confluence' | 'jira' | 'slack' | 'epub';
+export type ConversionTarget =
+  | 'html'
+  | 'markdown'
+  | 'confluence'
+  | 'jira'
+  | 'slack'
+  | 'epub'
+  | 'docx';
 
 export interface Conversion {
   id: ConversionId;
@@ -102,6 +110,12 @@ export const CONVERSIONS: Conversion[] = [
     id: 'markdown-to-epub',
     to: 'epub',
     path: '/markdown-to-epub',
+    extensions: ['.md', '.markdown', '.mdown', '.mkd'],
+  },
+  {
+    id: 'markdown-to-word',
+    to: 'docx',
+    path: '/markdown-to-word',
     extensions: ['.md', '.markdown', '.mdown', '.mkd'],
   },
   {

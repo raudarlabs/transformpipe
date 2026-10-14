@@ -34,7 +34,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Was es tut',
         body: [
-          'Neunzehn Umwandlungen. Eine Word-Datei, eine Präsentation, eine Tabelle, ein EPUB-Buch, eine OpenDocument- oder Rich-Text-Datei, ein Evernote-Export, eine gespeicherte HTML-Seite, eine CSV, eine JSON-Antwort oder das Zip, das Notion, Confluence und Obsidian beim Export ausgeben — jedes davon wird Markdown. Und Markdown wird eine fertige HTML-Seite, eine Word-Datei, eine Confluence-Seite, ein Jira-Ticket, eine Slack-Nachricht, ein EPUB-Buch, reiner Text oder etwas zum Ausdrucken.',
+          'Zwanzig Umwandlungen. Eine Word-Datei, eine Präsentation, eine Tabelle, ein EPUB-Buch, eine OpenDocument- oder Rich-Text-Datei, ein Evernote-Export, eine gespeicherte HTML-Seite, eine CSV, eine JSON-Antwort oder das Zip, das Notion, Confluence und Obsidian beim Export ausgeben — jedes davon wird Markdown. Und Markdown wird eine fertige HTML-Seite, eine Word-Datei, eine Confluence-Seite, ein Jira-Ticket, eine Slack-Nachricht, ein EPUB-Buch, reiner Text oder etwas zum Ausdrucken.',
           'Alles wird auf Markdown normalisiert, weil Markdown ein Format ist, das man ohne das erzeugende Werkzeug lesen, in einem Pull Request vergleichen und in zwanzig Jahren noch öffnen kann.',
           'Die Bilder kommen mit. Eine Umwandlung, die in der Datei ein Bild findet, trägt es in das Ergebnis hinein, statt einen Verweis auf einen Ordner zu hinterlassen, den Sie nicht haben — heraus kommt eine Datei, die weiterhin zeigt, was sie gezeigt hat.',
         ],

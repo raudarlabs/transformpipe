@@ -74,6 +74,8 @@ export const CONVERSION_ENTRIES = new Set([
   'markdown-to-jira',
   'markdown-to-slack',
   'markdown-to-epub',
+  'markdown-to-word',
+  'markdown-to-word-styles',
 ]);
 
 /** One entry's page, in English and in whatever else somebody has written. */
@@ -116,6 +118,41 @@ export interface ChangelogDetailText {
 export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
+  {
+    date: '2026-10-14',
+    title: 'Word documents made of Word’s own styles',
+    slug: 'markdown-to-word-styles',
+    body:
+      'Markdown → Word has a page of its own, and the .docx it makes is a different file. Headings '
+      + 'are Heading 1 to 6, so the navigation pane and a table of contents find them; lists are '
+      + 'Word’s lists; footnotes sit at the foot of the page; links to headings jump. It is made in '
+      + 'the browser, so a document no longer has to be saved first.',
+    detail: {
+      en: {
+        description:
+          'Markdown converts to a Word .docx built from Word’s own styles: Heading 1 to 6, real lists, footnotes, bookmarks and tables, made in the browser.',
+        keywords:
+          'markdown to word, markdown to docx with styles, convert md to docx, markdown heading styles word, markdown footnotes to word',
+        body: `The Word download existed since September, and the roadmap said what was wrong with it: it looked like converted HTML, because it was. Markdown went to HTML and a library turned the HTML into a .docx, and what came out was direct formatting all the way down. A heading was Normal text, larger and bold. The navigation pane was empty, Insert → Table of Contents found nothing, and changing the headings' font meant changing each one.
+
+## What it is made of now
+
+- **Heading 1 to 6**, by Word's built-in names, so they show in the Styles pane as Word's own and a house template applied later restyles the whole document at once.
+- **Lists** as Word's numbering, nested by level, each numbered list starting where the Markdown says.
+- **Footnotes** at the foot of the page, numbered by Word, not a list at the end.
+- **Links to headings** as bookmarks, so a table of contents written in Markdown still jumps.
+- **Tables** in Table Grid, with the header row repeating on every page.
+- **Code** in a style called Code, **alerts** in styles named Note, Tip, Important, Warning and Caution, **inline code** in Inline Code — named so somebody can find them and change them.
+- **Pictures** inside the file, at their own proportions and never wider than the page.
+
+## Made in the browser
+
+The file is written from the same token stream the preview renders, with no HTML in between and no server. A document that was never saved can be downloaded as Word now; the menu used to say "save the document first". A picture at a web address is fetched by the browser and put in the file where its server allows that; the API, which makes the same file, never fetches one and writes a link instead.
+
+It has its own page at /markdown-to-word, and every other conversion's menu offers it too.`,
+      },
+    },
+  },
   {
     date: '2026-10-14',
     title: 'An assistant can hand you Confluence, Jira or Slack markup',

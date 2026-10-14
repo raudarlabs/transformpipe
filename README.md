@@ -32,11 +32,11 @@ page, take it away as Markdown, HTML, Word, PDF, Confluence, Jira, Slack or EPUB
 attachment. Open [transformpipe.com](https://transformpipe.com) and drop a file. No account is
 needed to convert.
 
-## Nineteen conversions, in your browser
+## Twenty conversions, in your browser
 
 Word, PowerPoint, Excel, EPUB, OpenDocument, rich text, HTML, CSV, JSON, plain text, Evernote, or a
 whole Notion, Confluence or Obsidian export. Each comes back as Markdown with its headings, lists,
-links and tables intact, and Markdown goes the other way: into a finished page, a Confluence page,
+links and tables intact, and Markdown goes the other way: into a finished page, a Word document, a Confluence page,
 a Jira ticket, a Slack message or an EPUB book.
 
 The conversion runs on your machine. Signed out, nothing is uploaded and nothing needs a network.
@@ -124,7 +124,7 @@ the CLI and the Action name the new domain. Nothing in `server/` carries a domai
 come from the request through `selfOrigin`, which is what made the move a matter of one trusted
 origin and a rebuild.
 
-Upload a file, see exactly what it became, and download it. Nineteen conversions, each with its own
+Upload a file, see exactly what it became, and download it. Twenty conversions, each with its own
 page and address:
 
 | Conversion | Takes | Produces |
@@ -134,6 +134,7 @@ page and address:
 | [Markdown → Jira](https://transformpipe.com/markdown-to-jira) | `.md` | Jira wiki markup |
 | [Markdown → Slack](https://transformpipe.com/markdown-to-slack) | `.md` | Slack mrkdwn (tables as aligned code blocks) |
 | [Markdown → EPUB](https://transformpipe.com/markdown-to-epub) | `.md` | an `.epub` book, a chapter per top heading |
+| [Markdown → Word](https://transformpipe.com/markdown-to-word) | `.md` | a `.docx` in Word's own styles (Heading 1–6, lists, footnotes) |
 | [HTML → Markdown](https://transformpipe.com/html-to-markdown) | `.html` `.htm` `.xhtml` | `.md` |
 | [Raw text → Markdown](https://transformpipe.com/text-to-markdown) | `.txt` | `.md` |
 | [CSV → Markdown table](https://transformpipe.com/csv-to-markdown) | `.csv` `.tsv` | `.md` |

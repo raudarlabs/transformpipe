@@ -19,7 +19,7 @@ export const docs: Content['docs'] = {
   converting: {
     title: 'Convertir',
     summary:
-      'Las diecinueve conversiones —Markdown a HTML, Confluence, Jira, Slack o EPUB, y HTML, Word, PowerPoint, Excel, OpenDocument, texto enriquecido, EPUB, CSV, JSON, texto plano y las exportaciones de Evernote, Notion, Confluence u Obsidian a Markdown—: qué acepta cada una, cómo enlazar varios archivos en un solo documento, la pestaña de código y los formatos que puede entregar una descarga: Markdown, HTML, texto plano, Confluence, Jira, Slack, EPUB o un PDF impreso.',
+      'Las veinte conversiones —Markdown a HTML, Word, Confluence, Jira, Slack o EPUB, y HTML, Word, PowerPoint, Excel, OpenDocument, texto enriquecido, EPUB, CSV, JSON, texto plano y las exportaciones de Evernote, Notion, Confluence u Obsidian a Markdown—: qué acepta cada una, cómo enlazar varios archivos en un solo documento, la pestaña de código y los formatos que puede entregar una descarga: Markdown, HTML, texto plano, Word, Confluence, Jira, Slack, EPUB o un PDF impreso.',
   },
   extension: {
     title: 'Extensión del navegador',

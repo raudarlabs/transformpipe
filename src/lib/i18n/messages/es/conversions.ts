@@ -261,4 +261,17 @@ export const conversions: Content['conversions'] = {
         'Convierte un archivo Markdown en un libro EPUB 3: capítulos a partir de los encabezados, índice, imágenes, fórmulas y diagramas incluidos. Hecho en tu navegador.',
     },
   },
+  'markdown-to-word': {
+    label: 'Markdown → Word',
+    short: 'MD → Word',
+    title: 'Markdown a un documento de Word',
+    blurb:
+      'Sube un archivo Markdown y obtén un .docx hecho con las piezas de Word: estilos de título que lista el panel de navegación, listas numeradas y con viñetas de verdad, notas al pie de página y tablas que un usuario de Word puede seguir editando.',
+    hint: 'Sube un archivo .md. Los encabezados pasan a ser Título 1 a 6, así que un índice y una plantilla de la casa funcionan sobre él de inmediato.',
+    seo: {
+      title: 'Convertir Markdown a Word (.docx) — TransformPipe',
+      description:
+        'Convierte Markdown en un .docx de Word con estilos de título reales, listas numeradas, notas al pie, tablas e imágenes: editable, no HTML convertido.',
+    },
+  },
 };

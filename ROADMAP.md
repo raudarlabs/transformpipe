@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 14 October 2026.** Next up: **Markdown → Word, properly**.
+**Updated 14 October 2026.** Next up: **Code compare**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,15 +14,16 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **Markdown → Word, properly** — styles a Word user can edit
-      · the `.docx` export exists; this is the week it stops looking like converted HTML
+- [ ] **Code compare** — two versions of code side by side, in the browser, with no account
+      · `diff` and the highlighter are already dependencies; `VersionDiff` moves onto the shared
+      core rather than a second copy of it
 
 ## Next, in order
 
 ### Formats, going out
 
 The half nobody does well: fourteen conversions read *into* Markdown and almost nothing writes back out
-of it. Confluence, Jira, Slack and EPUB went out on 14 October; Word, done properly, is what is left.
+of it. Confluence, Jira, Slack, EPUB and Word, done properly, all went out on 14 October.
 
 ### Comparing
 
@@ -30,9 +31,6 @@ The first thing here that is not a conversion, and the reason it gets a heading 
 than a line in the list below: everything above turns one file into another file, and this turns
 two files into an answer. Hiding the one strategic bet in a list about storage is how it gets lost.
 
-- [ ] **Code compare** — two versions of code side by side, in the browser, with no account
-      · `diff` and the highlighter are already dependencies; `VersionDiff` moves onto the shared
-      core rather than a second copy of it
 - [ ] **A comparison with an address** — the diff saved as a document, and `tp_compare` handing it
       to an assistant
       · sharing, versions and the Word export already exist, and so does the MCP server — which is
@@ -100,6 +98,11 @@ says otherwise.
 
 ### 14 October
 
+- [x] **Markdown → Word, properly** — a writer of its own (`shared/to-docx.ts`) from the token
+      stream, not HTML through a library: Heading 1 to 6 by Word's built-in names, real numbering,
+      footnotes, bookmarks for heading links, Table Grid, named styles for code and alerts. Made in
+      the browser, so no save first; the server uses the same writer and `@turbodocx/html-to-docx`
+      is gone
 - [x] **Markdown → Confluence storage format** — a renderer, not a filter: the code macro with its
       language, alerts as Confluence's four panels, its own task list, and links to headings as
       anchors. Checked to be well-formed XML, since Confluence refuses a whole page over one tag

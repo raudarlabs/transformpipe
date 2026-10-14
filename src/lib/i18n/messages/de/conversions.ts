@@ -263,4 +263,17 @@ export const conversions: Content['conversions'] = {
         'Eine Markdown-Datei in ein EPUB-3-Buch umwandeln: Kapitel aus den Überschriften, Inhaltsverzeichnis, Bilder, Formeln und Diagramme. Direkt im Browser erstellt.',
     },
   },
+  'markdown-to-word': {
+    label: 'Markdown → Word',
+    short: 'MD → Word',
+    title: 'Markdown in ein Word-Dokument',
+    blurb:
+      'Eine Markdown-Datei hochladen und eine .docx aus Words eigenen Bausteinen erhalten — Überschriftenformatvorlagen, die der Navigationsbereich auflistet, echte nummerierte Listen und Aufzählungen, Fußnoten am Seitenende und Tabellen, die ein Word-Nutzer weiterbearbeiten kann.',
+    hint: 'Eine .md-Datei hochladen. Überschriften werden zu „Überschrift 1“ bis 6, sodass ein Inhaltsverzeichnis und eine Hausvorlage sofort darauf greifen.',
+    seo: {
+      title: 'Markdown in Word (.docx) umwandeln — TransformPipe',
+      description:
+        'Markdown in eine Word-.docx umwandeln: echte Überschriftenformate, nummerierte Listen, Fußnoten, Tabellen und Bilder — bearbeitbar statt umgewandeltes HTML.',
+    },
+  },
 };

@@ -234,7 +234,8 @@ export type DocFormat =
   | 'confluence'
   | 'jira'
   | 'slack'
-  | 'epub';
+  | 'epub'
+  | 'docx';
 
 export const FORMAT_LABELS: Record<DocFormat, string> = {
   html: 'HTML',
@@ -245,6 +246,7 @@ export const FORMAT_LABELS: Record<DocFormat, string> = {
   jira: 'Jira wiki markup',
   slack: 'Slack mrkdwn',
   epub: 'EPUB',
+  docx: 'Word',
 };
 
 /**
@@ -263,6 +265,7 @@ export const FORMAT_EXTENSIONS: Record<DocFormat, string> = {
   jira: 'jira.txt',
   slack: 'slack.txt',
   epub: 'epub',
+  docx: 'docx',
 };
 
 /** The format a conversion hands over first: what its screen's main button downloads. */
