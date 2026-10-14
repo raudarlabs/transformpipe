@@ -29,6 +29,9 @@ export interface ZipPage {
  * gigabytes, and `unzipSync` builds all of it in memory at once. Sixty-four megabytes is far above
  * any real export of a wiki and far below what takes a function down.
  */
+/** How far an importer has got, for a screen that wants to say so: pages done, out of how many. */
+export type Progress = (done: number, total: number) => void;
+
 const MAX_UNPACKED = 64 * 1024 * 1024;
 
 /**

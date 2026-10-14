@@ -1,6 +1,7 @@
 import { delimitedToMarkdown } from './from-table.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
+  type Progress,
   buildTocDocument,
   readZipPictures,
   readZipTextFiles,
@@ -48,7 +49,10 @@ function dropInternalLinks(markdown: string): string {
   );
 }
 
-export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
+export async function notionZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
   const [pages, tables, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipTextFiles(bytes, '.csv'),
@@ -69,7 +73,8 @@ export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
   const budget = pictureBudget();
 
   const tocPages: TocPage[] = [
-    ...pages.map((page) => {
+    ...pages.map((page, index) => {
+      onProgress?.(index + 1, pages.length);
       const title = titleFromFileName(page.path);
       const folder = page.path.split('/').slice(0, -1).join('/');
       const body = embedPictures(

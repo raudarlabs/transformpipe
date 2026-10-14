@@ -1,6 +1,7 @@
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
+  type Progress,
   buildTocDocument,
   readZipPictures,
   readZipTextFiles,
@@ -25,7 +26,10 @@ function titleFromFileName(path: string): string {
   return path.split('/').pop()!.replace(/\.md$/i, '').trim() || 'Untitled';
 }
 
-export async function obsidianZipToMarkdown(bytes: Uint8Array): Promise<string> {
+export async function obsidianZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
   const [pages, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipPictures(bytes),
@@ -43,7 +47,8 @@ export async function obsidianZipToMarkdown(bytes: Uint8Array): Promise<string> 
   const names = new Set([...pictures.keys()].map((path) => path.split('/').pop()!.toLowerCase()));
   const budget = pictureBudget();
 
-  const tocPages: TocPage[] = pages.map((page) => {
+  const tocPages: TocPage[] = pages.map((page, index) => {
+    onProgress?.(index + 1, pages.length);
     const title = titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
     const body = embedPictures(

@@ -1,6 +1,7 @@
 import { htmlToMarkdown } from './from-html.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
+  type Progress,
   buildTocDocument,
   readZipPictures,
   readZipTextFiles,
@@ -43,7 +44,10 @@ function titleFromFileName(path: string): string {
   return base.replace(/[_-]\d+$/, '').replace(/[_-]+/g, ' ').trim() || 'Untitled';
 }
 
-export async function confluenceZipToMarkdown(bytes: Uint8Array): Promise<string> {
+export async function confluenceZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
   const [pages, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.html'),
     readZipPictures(bytes),
@@ -57,7 +61,8 @@ export async function confluenceZipToMarkdown(bytes: Uint8Array): Promise<string
 
   const budget = pictureBudget();
 
-  const tocPages: TocPage[] = pages.map((page) => {
+  const tocPages: TocPage[] = pages.map((page, index) => {
+    onProgress?.(index + 1, pages.length);
     const title = titleFromHtml(page.text) ?? titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
     const markdown = embedPictures(
