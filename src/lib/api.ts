@@ -492,22 +492,6 @@ export const api = {
     return { summary: written.trim(), summarized_at: new Date().toISOString() };
   },
 
-  /** A .docx of a saved document, built on request — see server/docx.ts. */
-  downloadDocx: async (id: string): Promise<Blob> => {
-    const response = await fetch(`/api/documents/${id}/docx`, {
-      credentials: 'same-origin',
-    });
-
-    if (!response.ok) {
-      const detail = (await response.json().catch(() => null)) as {
-        error?: string;
-      } | null;
-
-      throw new Error(detail?.error ?? `Request failed (${response.status})`);
-    }
-
-    return response.blob();
-  },
 
   listWebhooks: async () =>
     (await request<{ webhooks: WebhookRow[] }>('/api/webhooks')).webhooks,

@@ -52,7 +52,6 @@
     "@radix-ui/react-toggle": "^1.1.12",
     "@radix-ui/react-toggle-group": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@turbodocx/html-to-docx": "^1.23.0",
     "@vercel/blob": "^2.8.0",
     "ai": "^7.0.97",
     "class-variance-authority": "^0.7.1",

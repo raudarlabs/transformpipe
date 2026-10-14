@@ -69,6 +69,25 @@ export async function downloadDoc(
     return;
   }
 
+  if (format === 'docx') {
+    const [{ markdownToDocx }, { fetchPicture }] = await Promise.all([
+      import('@shared/to-docx'),
+      import('./fetch-picture'),
+    ]);
+    const bytes = await markdownToDocx(markdown, {
+      title: name.replace(/\.[^.]+$/, ''),
+      fetchPicture: async (url) => (await fetchPicture(url))?.bytes ?? null,
+    });
+
+    saveBlob(
+      toFileName(name, format),
+      new Blob([new Uint8Array(bytes)], {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      })
+    );
+    return;
+  }
+
   if (format === 'epub') {
     const { markdownToEpub } = await import('./epub');
     const bytes = await markdownToEpub({

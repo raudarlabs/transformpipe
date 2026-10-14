@@ -237,7 +237,8 @@ export async function convertFile(
     case 'markdown-to-confluence':
     case 'markdown-to-jira':
     case 'markdown-to-slack':
-    case 'markdown-to-epub': {
+    case 'markdown-to-epub':
+    case 'markdown-to-word': {
       /*
        * Markdown going out is stored as the Markdown it came in as, under its own conversion, so
        * the screen it reopens on is the one that hands over the Confluence, the Jira or the book.

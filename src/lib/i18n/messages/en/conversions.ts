@@ -261,4 +261,17 @@ export const conversions: Content['conversions'] = {
         'Turn a Markdown file into an EPUB 3 book: chapters from its headings, a table of contents, pictures, formulas and diagrams inside. Made in your browser.',
     },
   },
+  'markdown-to-word': {
+    label: 'Markdown → Word',
+    short: 'MD → Word',
+    title: 'Markdown to a Word document',
+    blurb:
+      'Upload a Markdown file and get a .docx made of Word’s own pieces — Heading styles the navigation pane lists, real numbered and bulleted lists, footnotes at the foot of the page, and tables a Word user can go on editing.',
+    hint: 'Upload an .md file. Headings become Heading 1 to 6, so a table of contents and a house template both work on it straight away.',
+    seo: {
+      title: 'Markdown to Word (.docx) converter — TransformPipe',
+      description:
+        'Turn Markdown into a Word .docx with real Heading styles, numbered lists, footnotes, tables and pictures — editable, not converted HTML. Made in your browser.',
+    },
+  },
 };

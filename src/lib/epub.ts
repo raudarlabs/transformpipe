@@ -2,6 +2,7 @@ import { inlineDiagrams } from './mermaid';
 import { markdownToHtml } from './markdown';
 import type { EpubChapter, EpubPicture, EpubTocEntry } from '@shared/to-epub';
 import { withoutControls } from '@shared/to-markup';
+import { fetchPicture as fetchAny } from './fetch-picture';
 
 /*
  * A document as an EPUB book — the half that needs a browser.
@@ -51,22 +52,11 @@ function decodeDataUrl(url: string): { mediaType: string; bytes: Uint8Array } | 
   }
 }
 
-/**
- * A picture from the web, as bytes — or null when its server does not let a page read it, which
- * is most of them that are not a CDN. Ten seconds each at most: a book that never arrives because
- * one server is slow is worse than a book with a link in it.
- */
-async function fetchPicture(url: string): Promise<{ mediaType: string; bytes: Uint8Array } | null> {
-  try {
-    const response = await fetch(url, { mode: 'cors', signal: AbortSignal.timeout(10_000) });
-    const mediaType = (response.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase();
+/** A picture from the web, in a format a reader shows. */
+async function fetchPicture(url: string) {
+  const got = await fetchAny(url);
 
-    if (!response.ok || !MEDIA_TYPES[mediaType]) return null;
-
-    return { mediaType, bytes: new Uint8Array(await response.arrayBuffer()) };
-  } catch {
-    return null;
-  }
+  return got && MEDIA_TYPES[got.mediaType] ? got : null;
 }
 
 /** Which heading level the book is cut at, or 0 for one chapter. */

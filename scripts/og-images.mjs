@@ -612,6 +612,7 @@ const PAGES = [
   ['markdown-to-jira', 'Markdown to Jira wiki markup', 'Convert', ACCENTS.Code],
   ['markdown-to-slack', 'Markdown to Slack', 'Convert', ACCENTS.Automation],
   ['markdown-to-epub', 'Markdown to an EPUB book', 'Convert', ACCENTS.Publishing],
+  ['markdown-to-word', 'Markdown to a Word document', 'Convert', ACCENTS.Publishing],
   ['how-to/open-md', 'How to open an .md file', 'How to', ACCENTS.Converting],
   ['how-to/open-html', 'How to open an .html file', 'How to', ACCENTS.Converting],
   ['how-to/open-docx', 'How to open a .docx file', 'How to', ACCENTS.Publishing],

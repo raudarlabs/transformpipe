@@ -208,7 +208,14 @@ export const STATIC_PAGES: StaticPage[] = [
    */
   { id: 'how-to-md', path: '/how-to/open-md', group: 'how-to', action: '/' },
   { id: 'how-to-html', path: '/how-to/open-html', group: 'how-to', action: '/html-to-markdown' },
-  { id: 'how-to-docx', path: '/how-to/open-docx', group: 'how-to', action: '/word-to-markdown' },
+  /* Both directions of Word: the page about the file answers the one going out as well. */
+  {
+    id: 'how-to-docx',
+    path: '/how-to/open-docx',
+    group: 'how-to',
+    action: '/word-to-markdown',
+    covers: ['/markdown-to-word'],
+  },
   { id: 'how-to-csv', path: '/how-to/open-csv', group: 'how-to', action: '/csv-to-markdown' },
   { id: 'how-to-json', path: '/how-to/open-json', group: 'how-to', action: '/json-to-markdown' },
   { id: 'how-to-txt', path: '/how-to/open-txt', group: 'how-to', action: '/text-to-markdown' },
