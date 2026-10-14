@@ -15,6 +15,7 @@
  * Exits non-zero when something is wrong, so it can sit in front of a deploy.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { sharedSubjects } from './og-subjects.mjs';
 
 const ROOT = 'content/blog';
 const KEYS = ['title', 'description', 'date', 'tag', 'keywords'];
@@ -399,6 +400,21 @@ for (const file of filesIn(DEFAULT_LOCALE)) {
       problems.push(`${slug}: no ${kind} — run \`npm run og\``);
     }
   }
+}
+
+/*
+ * No two articles share a cover's object.
+ *
+ * They did: twenty-odd objects across seventy articles, matched by words in the slug, and the index
+ * showed three magnifying glasses and five spreadsheets — usually side by side, since the articles
+ * one bucket catches are written in the same week. A new article that lands on an object another
+ * already has needs a subject of its own in `scripts/og-subjects.mjs`, and then `node
+ * scripts/og-art.mjs --stale` to draw it.
+ */
+for (const group of sharedSubjects(filesIn(DEFAULT_LOCALE).map((file) => file.replace(/\.md$/, '')))) {
+  problems.push(
+    `${group.join(', ')}: the same cover object — give all but one a subject of their own in scripts/og-subjects.mjs`
+  );
 }
 
 console.table(rows);

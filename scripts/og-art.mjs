@@ -2,6 +2,7 @@
  *
  *   node scripts/og-art.mjs                 # everything missing
  *   node scripts/og-art.mjs some-slug ...   # just these, redrawn
+ *   node scripts/og-art.mjs --stale         # whatever og-subjects.mjs now describes differently
  *
  * Separate from `npm run og` on purpose. That script is deterministic: the same slug produces the
  * same picture on any machine, for free, forever. This one costs money and cannot be reproduced —
@@ -17,6 +18,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import puppeteer from 'puppeteer-core';
+import { COLOURS, DEFAULT_COLOUR, PAGES, subjectFor } from './og-subjects.mjs';
 
 const ROOT = resolve('.');
 /*
@@ -76,125 +78,6 @@ const STYLE = [
   'Absolutely no text, no letters, no numbers, no symbols, no logos, no watermarks, no user interface labels of any kind.',
 ].join(' ');
 
-/** The same stable hash `og-images.mjs` uses, so a slug always lands on the same variant. */
-function seedOf(slug) {
-  let h = 2166136261;
-
-  for (let i = 0; i < slug.length; i++) {
-    h ^= slug.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-
-  return h >>> 0;
-}
-
-/*
- * What each article is a picture of.
- *
- * The same topic mapping `og-images.mjs` uses for its drawn fallback, so the two never disagree
- * about what an article is about — written here as the sentence a model needs rather than as
- * boxes and cylinders.
- */
-const BY_TOPIC = [
-  /*
-   * Broad buckets carry several subjects rather than one.
-   *
-   * Twenty subjects across sixty-three articles is fine until you notice where the repeats fall:
-   * every "best X converter" matched one rule and the index showed three magnifying glasses in a
-   * row, next to three near-identical titles. So the widest buckets — comparisons, and the plain
-   * "one format into another" pieces that are most of this blog — spread across a few subjects
-   * picked by the slug's own hash.
-   */
-  [/obsidian|vault|wikilink/, 'a cluster of glossy spheres of two sizes joined by slender rods into a knowledge graph, one larger sphere at its centre'],
-  [/confluence|wiki|documentation-that-lives|static-site/, 'an open book with softly curved pages and a ribbon bookmark, a few loose pages lifting from it'],
-  [/notion|zip|archive|export/, 'a sturdy storage box with its lid lifted off and floating just above it, several document pages rising out of the open box'],
-  [/summar|assistant|chatgpt|mcp|ai-output/, 'a rounded cube with a large four-pointed sparkle hovering above it and two smaller sparkles beside it'],
-  [/excel|csv|tsv|spreadsheet|table/, 'a spreadsheet slab built from a neat grid of raised square cells, a few cells standing taller than the rest like a small bar chart'],
-  [/json|database/, 'three stacked cylindrical discs forming a database, with a small ring of cables looping out of one side'],
-  [/command-line|\bcli\b|terminal|pandoc/, 'a chunky monitor on a small stand, its screen showing a few simple raised bars and a single blinking caret block'],
-  [/github-actions|automat|batch|publish-markdown-from/, 'two interlocking cog wheels of different sizes, the larger one lying at an angle'],
-  [/\bapi\b|connector/, 'a rounded plug sliding into a socket block, a short looping cable trailing from it'],
-  [/safe|saniti|xss|secure/, 'a rounded shield standing upright with a raised check mark on its face and a row of small studs along its rim'],
-  [/share|link|shareable/, 'two thick interlocking rings, one passing through the other, with a small sphere resting where they meet'],
-  [/merg|combine|many-markdown/, 'three flat document plates funnelling into one larger plate below them, arrows implied by their angle'],
-  [/escap|syntax|footnote|flavour|commonmark|line-breaks|code-blocks|front-matter/, [
-    'two facing curly brace shapes carved as thick solid blocks, with a small cube floating between them',
-    'a row of small tiles standing on edge, one of them flipped over to face the other way',
-    'a short chain of linked cubes with one cube lifted slightly out of line',
-  ]],
-  [/editor|vs-code|typora|dillinger|stackedit|live-preview|in-javascript|in-python/, [
-    'a wide monitor on a stand, its screen carrying a few raised bars and a small floating panel drifting off one corner',
-    'a laptop standing half open, a few raised bars on its screen',
-    'a floating rectangular window panel with a thick cursor arrow resting on it',
-  ]],
-  [/best-|compare|alternative|choosing|converters|what-not-to-keep/, [
-    'a magnifying glass with a thick rim hovering over a flat slab, a few raised bars visible through its lens',
-    'a balance scale with a small cube resting on each of its two pans',
-    'a three-step podium with a small rounded cube standing on the tallest step',
-    'two flat panels standing side by side with a thin gap between them, the left one raised slightly higher',
-  ]],
-  [/release-notes|changelog|schedule/, 'a round clock lying at an angle with simple raised hands, a small stack of pages beside it'],
-  [/repo|folder|docs-in|how-to-open|open-md/, 'an open folder with three documents rising out of it in a fan'],
-  [/google-docs|cloud|web-page|save-a-web|online-document/, 'a rounded cloud with a document page descending from it on a small arrow'],
-  [/workflow|toolbox|mammoth|turndown|libraries/, [
-    'an open toolbox with a thick handle, a few simple tools standing up inside it',
-    'a short segment of conveyor belt with a small box riding on it',
-    'three thick tubes joined into a pipeline, a small cube travelling through the middle one',
-  ]],
-  [/pdf|word|docx|plain-text|html|markdown-to/, [
-    'a stack of three flat document pages offset from each other, the top one lifting away',
-    'a single document page curling and folding into a different shape in mid-air',
-    'two document pages facing each other with a small thick arrow block between them',
-    'a document page sliding out of a narrow slot in a solid block',
-  ]],
-];
-
-const FALLBACK = 'a stack of three flat document pages offset from each other, the top one lifting away';
-
-/* The accent per tag, named rather than given as a hex: a model reads a word, not a number. */
-const COLOURS = {
-  Converting: 'teal cyan',
-  Syntax: 'periwinkle blue',
-  Publishing: 'warm amber',
-  Automation: 'mint green',
-  Safety: 'coral red',
-  Workflow: 'violet purple',
-  Code: 'sky blue',
-};
-
-const DEFAULT_COLOUR = COLOURS.Converting;
-
-/*
- * The pages that are not articles.
- *
- * They have no frontmatter to read a topic from, so a hash was picking their subject — which put a
- * knowledge graph on the front page, a picture that belongs to an article about Obsidian and says
- * nothing about a converter. Named here instead, with the same accent `og-images.mjs` gives each
- * one, so the whole site shares one set rather than the blog having a set and everything else
- * having whatever came up.
- */
-const PAGES = {
-  home: ['a flat document page on the left and a structured slab of stacked bars on the right, with a thick chevron arrow block between them pointing right', 'teal cyan'],
-  blog: ['a small stack of closed books lying flat with one open book resting on top of them', 'periwinkle blue'],
-  docs: ['a thick manual standing upright with a ribbon bookmark trailing from it', 'sky blue'],
-  about: ['three rounded cubes of different sizes grouped closely together', 'violet purple'],
-  contact: ['a paper envelope lying at an angle with its flap slightly open', 'violet purple'],
-  privacy: ['a chunky padlock with a rounded body and a thick shackle, closed', 'coral red'],
-  terms: ['a folded document with a round seal disc pressed onto its corner', 'coral red'],
-  cookies: ['a round cookie-shaped disc with a few raised round chips on its top face', 'coral red'],
-
-  /* The how-to pages: the file itself, as an object somebody is about to open. */
-  'how-to/open-md': ['a single document page standing upright with a few raised lines of text on it and one corner turned over', 'teal cyan'],
-  'how-to/open-html': ['a browser window panel floating at an angle with a few raised bars inside it', 'teal cyan'],
-  'how-to/open-docx': ['a thick bound document lying at an angle with a few raised lines on its cover', 'warm amber'],
-  'how-to/open-csv': ['a narrow slab of two columns of small raised cells, like a comma-separated file', 'mint green'],
-  'how-to/open-json': ['two facing curly brace blocks with a small stack of tiles between them', 'sky blue'],
-  'how-to/open-txt': ['a plain flat page with evenly spaced raised lines and nothing else on it', 'periwinkle blue'],
-  'how-to/open-xlsx': ['a workbook of three stacked sheets, the top one a grid of raised cells', 'mint green'],
-  'how-to/open-zip': ['a closed archive box with a zip seam running across its lid', 'violet purple'],
-  'how-to/assistant': ['a rounded plug sliding into a socket block with a small four-pointed sparkle floating above the join', 'mint green'],
-};
-
 function frontmatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   const data = {};
@@ -214,21 +97,6 @@ function frontmatter(raw) {
   return data;
 }
 
-function subjectFor(slug) {
-  if (PAGES[slug]) {
-    return PAGES[slug][0];
-  }
-
-  for (const [pattern, subject] of BY_TOPIC) {
-    if (pattern.test(slug)) {
-      return Array.isArray(subject)
-        ? subject[seedOf(slug) % subject.length]
-        : subject;
-    }
-  }
-
-  return FALLBACK;
-}
 
 async function draw(slug, colour) {
   const prompt = `${subjectFor(slug)}. ${STYLE.replace('{COLOUR}', colour)}`;
@@ -319,10 +187,37 @@ const articles = readdirSync(join(ROOT, 'content', 'blog'))
   .filter((name) => name.endsWith('.md'))
   .map((name) => name.replace(/\.md$/, ''));
 
-const asked = process.argv.slice(2);
+/*
+ * Which subject drew each picture, so a changed subject can be found without redrawing the rest.
+ *
+ * `--stale` draws exactly those — a picture whose subject in `og-subjects.mjs` is no longer the
+ * one it was drawn from, and any that is missing. The record is written after every picture, so a
+ * run that stops halfway leaves an honest list behind it.
+ */
+const RECORD = join(OUT, 'subjects.json');
+const record = existsSync(RECORD) ? JSON.parse(readFileSync(RECORD, 'utf8')) : {};
+const remember = (slug) => {
+  record[slug] = subjectFor(slug);
+  writeFileSync(
+    RECORD,
+    `${JSON.stringify(Object.fromEntries(Object.entries(record).sort(([a], [b]) => a.localeCompare(b))), null, 2)}\n`
+  );
+};
+
+const stale = process.argv.includes('--stale');
+const asked = process.argv.slice(2).filter((one) => !one.startsWith('--'));
 const pages = Object.keys(PAGES);
-const wanted =
-  asked.length > 0 ? asked : [...articles, ...pages];
+const wanted = stale
+  ? [...articles, ...pages].filter(
+      (slug) => !existsSync(join(OUT, `${slug}.webp`)) || record[slug] !== subjectFor(slug)
+    )
+  : asked.length > 0
+    ? asked
+    : [...articles, ...pages];
+
+if (stale) {
+  console.log(`${wanted.length} to draw: ${wanted.join(', ')}`);
+}
 
 mkdirSync(OUT, { recursive: true });
 
@@ -336,7 +231,7 @@ for (const slug of wanted) {
   const file = join(OUT, `${slug}.webp`);
 
   // Never redraw by accident: these cost money and cannot be reproduced.
-  if (asked.length === 0 && existsSync(file)) {
+  if (asked.length === 0 && !stale && existsSync(file)) {
     skipped += 1;
     continue;
   }
@@ -356,6 +251,7 @@ for (const slug of wanted) {
     // A page id can carry a slash — `how-to/open-md` — so the folder may not exist yet.
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, await shrink(page, await draw(slug, colour)));
+    remember(slug);
     drawn += 1;
     console.log(`drew ${slug} (${colour})`);
   } catch (cause) {
