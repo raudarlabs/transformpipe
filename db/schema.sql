@@ -474,7 +474,7 @@ create table if not exists m2h_rating (
 
 create table if not exists m2h_folder (
   id         uuid        primary key default gen_random_uuid(),
-  user_id    text        not null,
+  user_id    uuid        not null,
   parent_id  uuid        references m2h_folder (id) on delete cascade,
   name       text        not null check (char_length(name) between 1 and 200),
   -- Where it came from: 'confluence', 'notion', 'obsidian', 'epub', or null when made by hand.

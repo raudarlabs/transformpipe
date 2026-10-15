@@ -236,6 +236,8 @@ function Shell() {
   const [progress, setProgress] = useState<ConversionProgress | null>(null);
   /* An export read as its pages, waiting to be kept — and the file, to read it as one document instead. */
   const [imported, setImported] = useState<{ split: SplitResult; kind: ConversionId; file: File } | null>(null);
+  /* The folder the history should open on: the one an import was just saved into. */
+  const [historyFolder, setHistoryFolder] = useState<string | null>(null);
   const [importMode, setImportModeState] = useState<'pages' | 'one'>(() => {
     try {
       return localStorage.getItem('tp.importMode') === 'one' ? 'one' : 'pages';
@@ -792,8 +794,10 @@ function Shell() {
             imported={imported}
             importMode={importMode}
             onImportModeChange={setImportMode}
-            onImportSaved={() => {
+            onImportSaved={(folderId) => {
               setImported(null);
+              setHistoryFolder(folderId);
+              void history.refresh();
               setView('history');
             }}
             onImportAsOne={() => {
@@ -835,6 +839,8 @@ function Shell() {
             onRemoveMany={(ids) => void handleRemoveMany(ids)}
             onClear={() => void handleClear()}
             onGoToConverter={() => setView('converter')}
+            onRefresh={() => void history.refresh()}
+            initialFolder={historyFolder}
           />
         )}
       </main>
