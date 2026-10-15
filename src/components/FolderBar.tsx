@@ -309,7 +309,10 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
                 <button
                   type="button"
                   aria-label={isOpen ? t('move.collapse') : t('move.expand')}
-                  className={cn('shrink-0 text-ink-secondary', !hasChildren && 'invisible')}
+                  className={cn(
+                    'shrink-0 rounded text-ink-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-tertiary',
+                    !hasChildren && 'invisible'
+                  )}
                   onClick={() => toggle(one.id)}
                 >
                   {isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
@@ -343,7 +346,7 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
   return (
     <nav
       aria-label={t('folders.trail')}
-      className="flex flex-col rounded-xl border border-stroke bg-surface-card lg:sticky lg:top-16 lg:max-h-[calc(100vh-5rem)]"
+      className="flex flex-col rounded-xl border border-stroke bg-surface-card lg:sticky lg:top-16 lg:max-h-[min(32rem,calc(100vh-5rem))]"
     >
       <div className="flex items-center gap-1 border-stroke border-b px-2 py-1.5">
         <button
@@ -368,7 +371,10 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
         </IconButton>
       </div>
 
-      {/* One height whatever it holds: 5 folders or 500, the list below stays where it is. */}
+      {/*
+        * Never taller than 32rem, nor than the screen: past that it scrolls inside, so 5 folders
+        * or 500 leave the page the same length.
+        */}
       <div
         role="tree"
         className={cn('min-h-0 flex-1 overflow-auto p-1.5 max-lg:max-h-72', !shown && 'max-lg:hidden')}

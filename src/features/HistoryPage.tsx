@@ -708,7 +708,7 @@ export function HistoryPage({
         * An account's folders are a tree beside the list, the way a file browser has them; on a
         * phone the tree folds into one line above it.
         */}
-      <div className={cn(isSynced && 'flex flex-col gap-4 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start')}>
+      <div className={cn(isSynced && 'flex flex-col gap-4 lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start')}>
       {isSynced && (
         <FolderTree
           folders={folders}
