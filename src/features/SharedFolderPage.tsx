@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth';
 import { useT } from '@/lib/i18n/context';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
+import { ProgressBar } from '@/ui/components/ProgressBar';
 import { Spinner } from '@/ui/components/Spinner';
 import { StatusView } from '@/ui/components/StatusView';
 import { toast } from '@/ui/components/Toast';
@@ -28,6 +29,8 @@ export function SharedFolderPage({ token }: { token: string }) {
   const [error, setError] = useState<{ message: string; needsSignIn: boolean } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  /* Where a copy has got to: pages read from the owner's folder, then pages written into yours. */
+  const [progress, setProgress] = useState<{ stage: 'reading' | 'writing'; done: number; total: number } | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const link = `/f/${encodeURIComponent(token)}`;
 
@@ -56,13 +59,14 @@ export function SharedFolderPage({ token }: { token: string }) {
     setIsSaving(true);
 
     try {
-      const copy = await api.saveSharedFolder(token);
+      const copy = await api.saveSharedFolder(token, setProgress);
 
       toast.success(t('sharedFolder.saved', { count: copy.documents, name: view.folder.name }));
       window.location.href = `/history?folder=${encodeURIComponent(copy.folderId)}`;
     } catch (cause) {
       toast.error(t('sharedFolder.save.error'), { description: cause instanceof Error ? cause.message : undefined });
       setIsSaving(false);
+      setProgress(null);
     }
   };
 
@@ -197,9 +201,30 @@ export function SharedFolderPage({ token }: { token: string }) {
               </div>
             </Card>
 
-            <Typography variant="p" textColor="secondary" className="text-sm">
-              {view.mine ? t('sharedFolder.mine') : t('sharedFolder.save.note')}
-            </Typography>
+            {isSaving ? (
+              /* Reading counts for the first half of the bar and writing for the second. */
+              <div className="flex flex-col gap-2 rounded-xl border border-stroke bg-surface-card p-4" role="status" aria-live="polite">
+                <Typography variant="span" textColor="secondary" className="text-sm">
+                  {progress
+                    ? t(progress.stage === 'reading' ? 'sharedFolder.progress.reading' : 'sharedFolder.progress.writing', {
+                        done: progress.done,
+                        total: progress.total,
+                      })
+                    : t('sharedFolder.saving', { count: view.documents.length })}
+                </Typography>
+                <ProgressBar
+                  value={
+                    progress
+                      ? ((progress.stage === 'writing' ? 50 : 0) + (progress.done / Math.max(1, progress.total)) * 50)
+                      : 0
+                  }
+                />
+              </div>
+            ) : (
+              <Typography variant="p" textColor="secondary" className="text-sm">
+                {view.mine ? t('sharedFolder.mine') : t('sharedFolder.save.note')}
+              </Typography>
+            )}
 
             <nav aria-label={view.folder.name} className="rounded-xl border border-stroke bg-surface-card p-3">
               {tree}

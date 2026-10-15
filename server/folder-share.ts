@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { Context, Hono } from 'hono';
+import { stream } from 'hono/streaming';
 import { getCookie } from 'hono/cookie';
 import { CONVERSIONS } from '../shared/conversions.js';
 import { currentUser, selfOrigin } from './auth.js';
@@ -220,9 +221,25 @@ async function pooled<T, R>(items: T[], limit: number, work: (item: T, index: nu
  * the pages in their order, and the links between pages pointed at the copies. All or nothing —
  * a copy that fails half way is taken back out, so the reader is not left with half a space.
  */
-async function copyFolder(userId: string, source: SharedFolder): Promise<{ folderId: string; documents: number }> {
+export type CopyProgress = { stage: 'reading' | 'writing'; done: number; total: number };
+
+async function copyFolder(
+  userId: string,
+  source: SharedFolder,
+  onProgress: (progress: CopyProgress) => void = () => undefined
+): Promise<{ folderId: string; documents: number }> {
   const tree = await treeOf(source.id, source.user_id, true);
-  const texts = await pooled(tree.documents, 8, (one) => readSource(one));
+  let read = 0;
+
+  onProgress({ stage: 'reading', done: 0, total: tree.documents.length });
+
+  const texts = await pooled(tree.documents, 8, async (one) => {
+    const text = await readSource(one);
+
+    onProgress({ stage: 'reading', done: ++read, total: tree.documents.length });
+
+    return text;
+  });
   const pages = tree.documents
     .map((one, index) => ({ ...one, text: texts[index] }))
     .filter((one): one is typeof one & { text: string } => one.text !== null);
@@ -234,6 +251,7 @@ async function copyFolder(userId: string, source: SharedFolder): Promise<{ folde
   const folderIds = new Map(tree.folders.map((one) => [one.id, randomUUID()]));
   const documentIds = new Map(pages.map((one) => [one.id, randomUUID()]));
   const stored: Array<string | null> = [];
+  let written = 0;
 
   await sql()`insert into m2h_user (user_id) values (${userId}) on conflict (user_id) do nothing`.catch(() => undefined);
 
@@ -244,6 +262,8 @@ async function copyFolder(userId: string, source: SharedFolder): Promise<{ folde
 
       return one?.parent_id && one.id !== source.id ? 1 + depth(one.parent_id) : 0;
     };
+
+    onProgress({ stage: 'writing', done: 0, total: pages.length });
 
     for (const one of [...tree.folders].sort((a, b) => depth(a.id) - depth(b.id))) {
       await sql()`
@@ -269,6 +289,7 @@ async function copyFolder(userId: string, source: SharedFolder): Promise<{ folde
 
       stored.push(kept.blobPath);
       await sql()`update m2h_document set blob_path = ${kept.blobPath}, markdown = ${kept.markdown} where id = ${id}`;
+      onProgress({ stage: 'writing', done: ++written, total: pages.length });
     });
   } catch (cause) {
     const made = [...documentIds.values()];
@@ -282,6 +303,18 @@ async function copyFolder(userId: string, source: SharedFolder): Promise<{ folde
 
   return { folderId: folderIds.get(source.id)!, documents: pages.length };
 }
+
+/** What a reader is told when a copy fails: the room it needed, or that nothing was kept. */
+const copyError = (cause: unknown) => {
+  console.error('folder copy', cause instanceof Error ? cause.message : cause);
+
+  return (cause as { status?: number }).status === 403
+    ? (cause as Error).message
+    : 'The copy could not be made. Nothing was kept; try again.';
+};
+
+const copyFailed = (c: Context, cause: unknown) =>
+  c.json({ error: copyError(cause) }, (cause as { status?: number }).status === 403 ? 403 : 500);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Api = Hono<any>;
@@ -341,15 +374,43 @@ export function registerSharedFolders(api: Api) {
       return c.json({ error: 'This folder is already yours' }, 409);
     }
 
-    try {
-      return c.json(await copyFolder(user.id, verdict.folder), 201);
-    } catch (cause) {
-      const status = (cause as { status?: number }).status === 403 ? 403 : 500;
-
-      console.error('folder copy', cause instanceof Error ? cause.message : cause);
-
-      return c.json({ error: status === 403 ? (cause as Error).message : 'The copy could not be made. Nothing was kept; try again.' }, status);
+    /*
+     * A space of a few hundred pages takes a while to copy, so the answer is a stream of where it
+     * has got to — one JSON object a line, `{stage, done, total}` — ending with the copy's id or
+     * what went wrong. A caller that wants one answer asks without `?progress` and waits for it.
+     */
+    if (c.req.query('progress') === undefined) {
+      try {
+        return c.json(await copyFolder(user.id, verdict.folder), 201);
+      } catch (cause) {
+        return copyFailed(c, cause);
+      }
     }
+
+    c.header('content-type', 'application/x-ndjson; charset=utf-8');
+    c.header('cache-control', 'no-store');
+    c.header('x-accel-buffering', 'no');
+
+    return stream(c, async (out) => {
+      let last = 0;
+      const line = (value: unknown) => out.write(`${JSON.stringify(value)}\n`);
+
+      try {
+        const copy = await copyFolder(user.id, verdict.folder, (progress) => {
+          // A line a page is plenty; more than ten a second is noise for a progress bar.
+          const now = Date.now();
+
+          if (now - last > 100 || progress.done === progress.total || progress.done === 0) {
+            last = now;
+            void line(progress);
+          }
+        });
+
+        await line({ done: true, ...copy });
+      } catch (cause) {
+        await line({ error: copyError(cause) });
+      }
+    });
   });
 
   /* Folders other people shared with this address by name — a link is not addressed to anyone. */

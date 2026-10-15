@@ -685,6 +685,8 @@ export const ui: Content['ui'] = {
   'sharedFolder.open': 'Ouvrir',
   'sharedFolder.save': 'Enregistrer dans mon compte',
   'sharedFolder.saving': 'Copie de {count} documents…',
+  'sharedFolder.progress.reading': 'Lecture des pages : {done} sur {total}',
+  'sharedFolder.progress.writing': 'Copie dans votre compte : {done} sur {total}',
   'sharedFolder.saved': 'Enregistré dans votre compte : {count} documents dans « {name} »',
   'sharedFolder.save.error': 'Le dossier n’a pas pu être enregistré',
   'sharedFolder.save.note': 'L’enregistrement copie chaque dossier et chaque page dans votre compte, en gardant les liens entre les pages. Les modifications ultérieures du propriétaire n’atteignent pas votre copie.',

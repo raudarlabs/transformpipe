@@ -697,6 +697,8 @@ export const ui: Content['ui'] = {
   'sharedFolder.open': 'Öffnen',
   'sharedFolder.save': 'In meinem Konto speichern',
   'sharedFolder.saving': '{count} Dokumente werden kopiert…',
+  'sharedFolder.progress.reading': 'Seiten werden gelesen: {done} von {total}',
+  'sharedFolder.progress.writing': 'Kopieren in Ihr Konto: {done} von {total}',
   'sharedFolder.saved': 'In Ihrem Konto gespeichert: {count} Dokumente in „{name}“',
   'sharedFolder.save.error': 'Der Ordner konnte nicht gespeichert werden',
   'sharedFolder.save.note': 'Beim Speichern werden alle Ordner und Seiten in Ihr Konto kopiert, die Links zwischen den Seiten bleiben erhalten. Spätere Änderungen des Eigentümers erreichen Ihre Kopie nicht.',

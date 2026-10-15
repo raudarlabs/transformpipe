@@ -387,11 +387,53 @@ export const api = {
 
   getSharedFolder: (token: string) => request<SharedFolderView>(`/api/shared-folders/${encodeURIComponent(token)}`),
 
-  /** The whole folder, copied into this account; answers with the copy's id. */
-  saveSharedFolder: (token: string) =>
-    request<{ folderId: string; documents: number }>(`/api/shared-folders/${encodeURIComponent(token)}/save`, {
+  /**
+   * The whole folder, copied into this account; answers with the copy's id. The server streams
+   * where it has got to, a JSON object a line, and `onProgress` hears each of them.
+   */
+  saveSharedFolder: async (
+    token: string,
+    onProgress: (progress: { stage: 'reading' | 'writing'; done: number; total: number }) => void = () => undefined
+  ): Promise<{ folderId: string; documents: number }> => {
+    const response = await fetch(`/api/shared-folders/${encodeURIComponent(token)}/save?progress`, {
       method: 'POST',
-    }),
+      credentials: 'same-origin',
+    });
+
+    if (!response.ok || !response.body) {
+      const detail = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      throw new Error(detail?.error ?? `Request failed (${response.status})`);
+    }
+
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = '';
+
+    for (;;) {
+      const { value, done } = await reader.read();
+
+      buffer += value ?? '';
+
+      const lines = buffer.split('\n');
+
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines.filter(Boolean)) {
+        const event = JSON.parse(line) as
+          | { stage: 'reading' | 'writing'; done: number; total: number }
+          | { done: true; folderId: string; documents: number }
+          | { error: string };
+
+        if ('error' in event) throw new Error(event.error);
+        if (event.done === true) return { folderId: event.folderId, documents: event.documents };
+        onProgress(event);
+      }
+
+      if (done) break;
+    }
+
+    throw new Error('The copy stopped before it finished. Nothing was kept; try again.');
+  },
 
   listSharedFolders: async () => (await request<{ folders: SharedFolderEntry[] }>('/api/shared-folders')).folders,
 

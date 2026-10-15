@@ -675,6 +675,8 @@ export const ui: Content['ui'] = {
   'sharedFolder.open': 'Apri',
   'sharedFolder.save': 'Salva nel mio account',
   'sharedFolder.saving': 'Copia di {count} documenti…',
+  'sharedFolder.progress.reading': 'Lettura delle pagine: {done} di {total}',
+  'sharedFolder.progress.writing': 'Copia nel tuo account: {done} di {total}',
   'sharedFolder.saved': 'Salvata nel tuo account: {count} documenti in «{name}»',
   'sharedFolder.save.error': 'Impossibile salvare la cartella',
   'sharedFolder.save.note': 'Il salvataggio copia ogni cartella e pagina nel tuo account, mantenendo i collegamenti tra le pagine. Le modifiche successive del proprietario non raggiungono la tua copia.',

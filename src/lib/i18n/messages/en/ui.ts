@@ -693,6 +693,8 @@ export const ui: Content['ui'] = {
   'sharedFolder.open': 'Open',
   'sharedFolder.save': 'Save to my account',
   'sharedFolder.saving': 'Copying {count} documents…',
+  'sharedFolder.progress.reading': 'Reading pages: {done} of {total}',
+  'sharedFolder.progress.writing': 'Copying into your account: {done} of {total}',
   'sharedFolder.saved': 'Saved to your account: {count} documents in “{name}”',
   'sharedFolder.save.error': 'The folder could not be saved',
   'sharedFolder.save.note': 'Saving copies every folder and page into your account, with the links between pages kept. Changes the owner makes later do not reach your copy.',
