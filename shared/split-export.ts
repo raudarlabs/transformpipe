@@ -149,3 +149,33 @@ export function linkPages(pages: Array<{ markdown: string; file?: string }>): vo
     );
   }
 }
+
+/**
+ * Links into the export that no page can follow, made into words.
+ *
+ * An export links its attachments — a .zip, a PDF, a screenshot too large for the page's share of
+ * pictures — and Confluence's own screens, `/pages/diffpagesbyversion.action`, by paths that meant
+ * something inside Confluence and lead to a 404 anywhere else. A page of ours keeps their words: a
+ * link becomes its text, and a picture that did not come across becomes its description, in
+ * brackets, where a broken image icon would have been. Web addresses, links to other pages of the
+ * export and links within the page are left as they are.
+ */
+export function unlinkLocal(markdown: string): string {
+  const local = (href: string) => !/^(https?:|mailto:|tel:|#|data:)/i.test(href.trim());
+  // Up to the first `)`, spaces included: Confluence's own links carry them unencoded.
+  const target = '\\(<?([^)>]+?)>?(?:\\s+"[^"]*")?\\)';
+
+  return markdown
+    .replace(new RegExp(`!\\[([^\\]]*)\\]${target}`, 'g'), (whole, alt: string, href: string) => {
+      if (!local(href)) return whole;
+
+      const name = alt.trim() || decodeURIComponent(href.split('/').pop() ?? '').trim();
+
+      // Confluence's file-type icons beside an attachment's name say nothing on their own.
+      // The words go in italics without brackets, so a link around the picture still parses.
+      return !name || /^placeholder-/i.test(name) ? '' : `*${name}*`;
+    })
+    .replace(new RegExp(`(?<!!)\\[([^\\]]*)\\]${target}`, 'g'), (whole, text: string, href: string) =>
+      local(href) ? text : whole
+    );
+}

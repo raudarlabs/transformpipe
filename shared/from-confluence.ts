@@ -1,6 +1,6 @@
 import { htmlToMarkdown } from './from-html.js';
 import { githubSlug } from './markdown.js';
-import { arrange, linkPages, type SplitExport } from './split-export.js';
+import { arrange, linkPages, unlinkLocal, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
@@ -68,15 +68,17 @@ function withLocalAnchors(html: string): string {
   const used = new Map<string, number>();
   const anchors = new Map<string, string>();
 
-  for (const match of html.matchAll(/<h([1-6])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/gi)) {
-    const words = decodeEntities(match[3].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+  // Either quote: Confluence writes its own headings with double quotes and its contents macro
+  // with single ones, and a pattern for one of them missed every entry of every contents list.
+  for (const match of html.matchAll(/<h([1-6])\b[^>]*\bid=(["'])([^"']+)\2[^>]*>([\s\S]*?)<\/h\1>/gi)) {
+    const words = decodeEntities(match[4].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
 
-    if (words) anchors.set(decodeEntities(match[2]), githubSlug(words, used));
+    if (words) anchors.set(decodeEntities(match[3]), githubSlug(words, used));
   }
 
   if (anchors.size === 0) return html;
 
-  return html.replace(/href="#([^"]+)"/g, (whole, raw: string) => {
+  return html.replace(/href=(["'])#([^"']+)\1/g, (whole, _quote: string, raw: string) => {
     let id = decodeEntities(raw);
 
     try {
@@ -93,7 +95,7 @@ function withLocalAnchors(html: string): string {
 
 /** A page's breadcrumbs, the space first: where Confluence filed it. */
 function breadcrumbs(html: string): string[] {
-  const list = html.match(/<ol[^>]*id="breadcrumbs"[^>]*>([\s\S]*?)<\/ol>/i)?.[1] ?? '';
+  const list = html.match(/<ol[^>]*id=["']breadcrumbs["'][^>]*>([\s\S]*?)<\/ol>/i)?.[1] ?? '';
 
   return [...list.matchAll(/<a[^>]*>([\s\S]*?)<\/a>/gi)].map((match) =>
     match[1]
@@ -139,7 +141,7 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
       // The breadcrumbs are where the page is filed, which the folders now say; as text they are noise.
       withoutDuplicateTitle(
         htmlToMarkdown(
-          withLocalAnchors(page.text.replace(/<div[^>]*id="breadcrumb-section"[^>]*>[\s\S]*?<\/ol>\s*<\/div>/i, ''))
+          withLocalAnchors(page.text.replace(/<div[^>]*id=["']breadcrumb-section["'][^>]*>[\s\S]*?<\/ol>\s*<\/div>/i, ''))
         ),
         title
       ),
@@ -172,6 +174,8 @@ export async function confluenceZipToPages(bytes: Uint8Array, onProgress?: Progr
   const pages = await confluencePages(bytes, onProgress, true);
 
   linkPages(pages);
+
+  for (const page of pages) page.markdown = unlinkLocal(page.markdown);
 
   const space = pages.find((page) => page.space)?.space ?? 'Confluence export';
 
