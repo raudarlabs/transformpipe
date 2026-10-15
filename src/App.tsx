@@ -33,6 +33,7 @@ import { ChangelogPage } from './features/ChangelogPage';
 import { LivePreviewPage } from './features/LivePreviewPage';
 import { NotFoundPage } from './features/NotFoundPage';
 import { SharedDocumentPage } from './features/SharedDocumentPage';
+import { SharedFolderPage } from './features/SharedFolderPage';
 import { StaticPage } from './features/StaticPage';
 import { AgentsPage } from './features/AgentsPage';
 import { ObsidianPage } from './features/ObsidianPage';
@@ -237,7 +238,10 @@ function Shell() {
   /* An export read as its pages, waiting to be kept — and the file, to read it as one document instead. */
   const [imported, setImported] = useState<{ split: SplitResult; kind: ConversionId; file: File } | null>(null);
   /* The folder the history should open on: the one an import was just saved into. */
-  const [historyFolder, setHistoryFolder] = useState<string | null>(null);
+  // `?folder=` opens the history on that folder — where a copy of somebody's folder lands.
+  const [historyFolder, setHistoryFolder] = useState<string | null>(() =>
+    new URLSearchParams(window.location.search).get('folder')
+  );
   const [importMode, setImportModeState] = useState<'pages' | 'one'>(() => {
     try {
       return localStorage.getItem('tp.importMode') === 'one' ? 'one' : 'pages';
@@ -870,6 +874,7 @@ function Shell() {
 export default function App() {
   const [locale, setLocale] = useState<Locale>(() => readRoute().locale);
   const token = readRoute().sharedToken;
+  const folderToken = readRoute().sharedFolderToken;
 
   useEffect(() => {
     const sync = () => setLocale(readRoute().locale);
@@ -953,7 +958,13 @@ export default function App() {
         <AuthProvider>
           <ConsentProvider>
             <TooltipProvider delayDuration={200}>
-              {token ? <SharedDocumentPage token={token} /> : <Shell />}
+              {token ? (
+                <SharedDocumentPage token={token} />
+              ) : folderToken ? (
+                <SharedFolderPage token={folderToken} />
+              ) : (
+                <Shell />
+              )}
               {/*
                 * Outside the page and inside the consent provider: the banner belongs to the app,
                 * not to whichever view is on screen, and the embed never reaches this branch —

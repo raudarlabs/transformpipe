@@ -12,6 +12,7 @@ import {
   Upload,
   X,
   FolderInput,
+  FolderOpen,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hint } from '@/components/Hint';
@@ -43,7 +44,7 @@ import {
   formatRelative,
   toFileName,
 } from '@/lib/format';
-import { api, type Folder, type Usage } from '@/lib/api';
+import { api, type Folder, type SharedFolderEntry, type Usage } from '@/lib/api';
 import { toast } from '@/ui/components/Toast';
 import { readRoute, replaceFilter } from '@/lib/route';
 import type { HistoryEntry } from '@/lib/history';
@@ -289,6 +290,8 @@ export function HistoryPage({
       : 'all';
   });
   const [shared, setShared] = useState<HistoryEntry[]>([]);
+  /* Folders shared with this address by name — listed above the shared documents. */
+  const [sharedFolders, setSharedFolders] = useState<SharedFolderEntry[]>([]);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [isLoadingShared, setIsLoadingShared] = useState(false);
 
@@ -325,11 +328,10 @@ export function HistoryPage({
   const loadShared = useCallback(() => {
     setIsLoadingShared(true);
 
-    api
-      .listSharedWithMe()
-      .then(setShared)
-      .catch(() => setShared([]))
-      .finally(() => setIsLoadingShared(false));
+    Promise.all([
+      api.listSharedWithMe().then(setShared).catch(() => setShared([])),
+      api.listSharedFolders().then(setSharedFolders).catch(() => setSharedFolders([])),
+    ]).finally(() => setIsLoadingShared(false));
   }, []);
 
   /*
@@ -342,6 +344,7 @@ export function HistoryPage({
       loadShared();
     } else {
       setShared([]);
+      setSharedFolders([]);
     }
   }, [isSynced, loadShared]);
 
@@ -600,7 +603,7 @@ export function HistoryPage({
         : [...current, id]
     );
 
-  if (entries.length === 0 && shared.length === 0) {
+  if (entries.length === 0 && shared.length === 0 && sharedFolders.length === 0) {
     return (
       <StatusView
         tone="muted"
@@ -782,7 +785,7 @@ export function HistoryPage({
                 {
                   value: 'shared',
                   label: t('history.chip.shared'),
-                  count: shared.length,
+                  count: shared.length + sharedFolders.length,
                 },
               ]
             : []),
@@ -793,6 +796,33 @@ export function HistoryPage({
           replaceFilter(value);
         }}
       />
+
+      {/* A whole folder shared with you opens in the app, where it can be read or kept. */}
+      {isShared && sharedFolders.length > 0 && (
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {sharedFolders.map((one) => (
+            <li key={one.id}>
+              <a
+                href={`/open-folder/${encodeURIComponent(one.share_token)}`}
+                className="flex items-center gap-3 rounded-xl border border-stroke bg-surface-card p-3 hover:border-brand-tertiary"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-tertiary">
+                  <FolderOpen className="size-4" />
+                </span>
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium text-ink-primary text-sm">{one.name}</span>
+                  <span className="truncate text-ink-secondary text-xs">
+                    {t(one.documents === 1 ? 'history.shared.folder.one' : 'history.shared.folder.many', {
+                      count: one.documents,
+                      owner: one.owner_email,
+                    })}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {isShared ? (
         <Typography

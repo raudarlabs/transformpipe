@@ -358,6 +358,13 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             alt={t('docs.history.shot.selection.alt')}
             caption={t('docs.history.shot.selection.caption')}
           />
+          <p>
+            <Rich text={t('docs.history.folders')} parts={{ all: <em>{t('folders.all')}</em> }} />
+          </p>
+          <p>
+            <Rich text={t('docs.history.folders.moving')} parts={{ moveto: <strong>{t('folders.moveto')}</strong> }} />
+          </p>
+          <p>{t('docs.history.folders.imports')}</p>
         </Section>
 
         <Section id="sharing" title={titles.sharing.title}>
@@ -399,6 +406,17 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             <Rich
               text={t('docs.sharing.incoming')}
               parts={{ shared: <strong>{t('docs.chip.shared')}</strong> }}
+            />
+          </p>
+          <p>
+            <Rich
+              text={t('docs.sharing.folders')}
+              parts={{
+                share: <strong>{t('folders.share.dialog')}</strong>,
+                path: <InlineCode>/f/&lt;token&gt;</InlineCode>,
+                save: <strong>{t('sharedFolder.save')}</strong>,
+                shared: <strong>{t('docs.chip.shared')}</strong>,
+              }}
             />
           </p>
           <p>

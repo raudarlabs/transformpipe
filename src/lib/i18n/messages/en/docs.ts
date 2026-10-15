@@ -30,12 +30,12 @@ export const docs: Content['docs'] = {
   history: {
     title: 'History',
     summary:
-      'Search, sortable columns, and a chip per conversion so a mixed list can be narrowed to one kind. Rows can be merged, downloaded in any format, or deleted in bulk.',
+      'Folders in a tree beside the list, with drag and drop and a right-click menu; search, sortable columns, and a chip per conversion. Rows can be merged, moved, downloaded in any format, or deleted in bulk.',
   },
   sharing: {
     title: 'Sharing',
     summary:
-      'A link anyone can open, or named addresses that ask the reader to sign in. Revoking drops the token, so a link already sent stops working. A link can end on a date or ask for a password, and the Views tab lists every open — and, for named people, which of them it was.',
+      'A link anyone can open, or named addresses that ask the reader to sign in — for a document or a whole folder, which its reader can save to their own account. Revoking drops the token, so a link already sent stops working. A link can end on a date or ask for a password, and the Views tab lists every open.',
   },
   account: {
     title: 'Account',

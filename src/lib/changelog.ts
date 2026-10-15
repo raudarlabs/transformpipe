@@ -140,6 +140,41 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'Share a whole folder, and keep one shared with you',
+    slug: 'share-folders',
+    body:
+      'A folder is shared the way a document is: a link anyone can open, with an end date and a '
+      + 'password if you want them, or named addresses that sign in and are emailed the link. The '
+      + 'reader gets the whole tree with working links between pages, and signed in can save all of '
+      + 'it to their own account in one press. Folders shared with you appear under Shared with me.',
+    detail: {
+      en: {
+        description:
+          'Share a folder of Markdown pages by link or with named people, with an expiry and a password, and let the reader save the whole folder to their account.',
+        keywords:
+          'share a folder of documents, share markdown folder, share confluence export, password protected folder link, copy shared folder',
+        body: `A Confluence space, a Notion workspace or an Obsidian vault arrives in TransformPipe as a folder of pages. Until now it could be handed on only as one read-only link that anybody holding it could open. Now a folder is shared exactly the way a single document is.
+
+## Three modes, the same as a document
+
+Open a folder's menu — the **Share** button over the list, or a right click on the folder in the tree — and pick:
+
+- **Private.** Only you. Going back to private ends the link for good, so an address already sent stops working.
+- **Anyone with the link.** A read-only page at \`/f/<token>\` with the whole tree and every page in it. It can stop on a date you choose and ask for a password; the password is kept only as a hash, and a reader who gives it is remembered for a day.
+- **Specific people.** Add addresses one at a time; each is emailed the link, and opening it means signing in as that address. Nobody else gets in, and you can see which of them have opened it.
+
+Links between pages keep working inside the shared folder: a page that linked to another page of the same export opens that page under the same link, not something private in your account.
+
+## Keeping a copy
+
+A reader who is signed in can press **Save to my account**. Every folder and every page is copied into their own account, nested as it was, in the export's order, with the links between pages pointed at their copies. It is a copy: what the owner changes afterwards does not reach it, and the reader can rename, move and share their copy like anything else of theirs.
+
+Folders addressed to you by name appear under **Shared with me** in the history, above the documents, with who shared each one.`,
+      },
+    },
+  },
+  {
+    date: '2026-10-15',
     title: 'An export arrives as its pages, in folders',
     slug: 'folders-and-exports-as-pages',
     body:

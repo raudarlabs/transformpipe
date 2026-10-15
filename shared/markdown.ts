@@ -1665,7 +1665,15 @@ ${formPageStyle()}
  * policy. It posts back to the link itself, which checks the password, remembers it for a day and
  * sends the reader on to the document.
  */
-export function buildPasswordPage(token: string, problem?: string): string {
+export function buildPasswordPage(
+  token: string,
+  problem?: string,
+  /** A folder's link posts to its own address, and is a folder in the words. */
+  options: { action?: string; noun?: 'document' | 'folder' } = {}
+): string {
+  const action = options.action ?? `/s/${token}`;
+  const noun = options.noun ?? 'document';
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1681,13 +1689,13 @@ ${formPageStyle()}
 </style>
 </head>
 <body>
-<form method="post" action="/s/${escapeHtml(token)}">
+<form method="post" action="${escapeHtml(action)}">
   <h1>This link has a password</h1>
-  <p>The person who shared this document set one. Enter it to read the document.</p>
+  <p>The person who shared this ${noun} set one. Enter it to read the ${noun}.</p>
   ${problem ? `<p class="problem">${escapeHtml(problem)}</p>` : ''}
   <label for="password">Password</label>
   <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
-  <button type="submit">Open the document</button>
+  <button type="submit">Open the ${noun}</button>
 </form>
 </body>
 </html>

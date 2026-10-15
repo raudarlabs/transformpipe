@@ -29,12 +29,12 @@ export const docs: Content['docs'] = {
   history: {
     title: 'Historique',
     summary:
-      'Recherche, colonnes triables, et un filtre par conversion pour réduire une liste mêlée à un seul type. Les lignes se fusionnent, se téléchargent dans n’importe quel format, ou se suppriment en lot.',
+      'Des dossiers en arborescence à côté de la liste, avec glisser-déposer et un menu contextuel ; recherche, colonnes triables et une puce par conversion. Les lignes peuvent être fusionnées, déplacées, téléchargées dans n’importe quel format ou supprimées en lot.',
   },
   sharing: {
     title: 'Partage',
     summary:
-      'Un lien que tout le monde peut ouvrir, ou des adresses nommées qui demandent au lecteur de se connecter. La révocation abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner. Un lien peut prendre fin à une date ou demander un mot de passe, et l’onglet Vues liste chaque ouverture — et, pour des personnes nommées, laquelle c’était.',
+      'Un lien que tout le monde peut ouvrir, ou des adresses nommées qui demandent au lecteur de se connecter — pour un document ou un dossier entier, que le lecteur peut enregistrer dans son compte. Révoquer supprime le jeton, donc un lien déjà envoyé cesse de fonctionner. Un lien peut prendre fin à une date ou demander un mot de passe, et l’onglet Vues liste chaque ouverture.',
   },
   account: {
     title: 'Compte',

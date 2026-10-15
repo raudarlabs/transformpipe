@@ -100,6 +100,12 @@ export const docsPage = {
     'Le téléchargement est un menu plutôt qu’un filtre : seul le Markdown est conservé, et le HTML et le texte brut sont construits sur le moment, de sorte qu’une même ligne peut livrer l’un des trois sans en garder trois copies.',
   'docs.history.selection':
     'Cochez des lignes et la barre de sélection apparaît : les fusionner en un seul document, les télécharger, ou les supprimer. La fusion garde l’ordre de la liste.',
+  'docs.history.folders':
+    'Une fois connecté, vos documents peuvent être rangés dans des dossiers. L’arborescence se trouve à côté de la liste : {all} regroupe tout, un dossier montre ce qu’il contient ainsi que tous les dossiers en dessous, et le nombre à côté indique combien il en contient. Le + au-dessus de l’arborescence crée un dossier dans celui que vous consultez, nommé à l’endroit où il ira. Un clic droit sur un dossier permet d’y créer un sous-dossier, de le renommer, le déplacer, le partager ou le supprimer. La suppression demande ce que vous voulez : le dossier seul, dont le contenu remonte d’un niveau, ou le dossier avec tout son contenu.',
+  'docs.history.folders.moving':
+    'On déplace des documents en faisant glisser des lignes sur un dossier de l’arborescence ou du chemin au-dessus de la liste ; toutes les lignes cochées suivent. {moveto} dans la barre de sélection fait la même chose depuis un menu : les derniers dossiers utilisés en un clic, et une fenêtre qui cherche dans tous les dossiers par nom et indique où se trouve chacun. Un dossier se glisse de la même façon sur un autre, mais jamais dans lui-même.',
+  'docs.history.folders.imports':
+    'Un export Confluence, Notion ou Obsidian arrive dans son propre dossier : chaque page devient un document, chaque section un dossier, l’ordre de l’export est conservé, et les liens entre pages pointent vers les pages enregistrées.',
   'docs.history.shot.selection.alt':
     'Deux lignes sélectionnées, avec la barre d’actions groupées',
   'docs.history.shot.selection.caption':
@@ -133,6 +139,8 @@ export const docsPage = {
   /** `{shared}` est le filtre nommé dans `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Les documents que d’autres vous ont adressés apparaissent sous le filtre {shared}, avec le nom de qui a partagé chacun. Ils sont en lecture seule : ouvrir et télécharger, pas de suppression, pas de repartage. Un partage par lien appartient à qui détient le lien, il n’apparaît donc sur la liste de personne.',
+  'docs.sharing.folders':
+    'Un dossier se partage de la même manière, via {share} dans son menu : les trois mêmes modes, la date de fin et le mot de passe, à l’adresse {path}. Le lecteur voit toute l’arborescence, chaque page s’ouvre à l’intérieur, et les liens entre pages restent dans le dossier partagé. Un lecteur connecté peut tout garder : {save} copie chaque dossier et chaque page dans son propre compte, liens compris, sous forme de copie, donc les modifications ultérieures du propriétaire ne l’atteignent pas. Les dossiers qui vous sont adressés apparaissent sous la puce {shared}, au-dessus des documents.',
   /** `{csp}` est la directive Content-Security-Policy elle-même. */
   'docs.sharing.safety':
     'Une page partagée porte le contenu de quelqu’un sur notre domaine, elle est donc servie avec {csp} et ne peut pas être mise dans un cadre, et chacune renvoie vers un formulaire de signalement qui ne demande aucun JavaScript. Rien n’est révoqué automatiquement : un signalement est l’affirmation d’un inconnu sur le document d’un autre, et les deux erreurs — laisser une mauvaise page en ligne, tuer un lien innocent — méritent qu’une personne le lise d’abord.',

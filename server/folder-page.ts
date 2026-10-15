@@ -1,9 +1,17 @@
+import { createHash } from 'node:crypto';
 import type { Context, Hono } from 'hono';
+import { setCookie } from 'hono/cookie';
 import { CONVERSIONS } from '../shared/conversions.js';
-import { buildNoticePage, buildSharedPage, buildStandaloneHtml } from '../shared/markdown.js';
+import { buildNoticePage, buildPasswordPage, buildSharedPage, buildStandaloneHtml } from '../shared/markdown.js';
 import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { attachment } from './attachment.js';
+import { clientAddress } from './address.js';
+import { selfOrigin } from './auth.js';
 import { looksLikeId, sql, type DocumentRow } from './db.js';
+import { folderGate, type FolderVerdict, type SharedFolder } from './folder-share.js';
+import { countCall } from './limits.js';
+import { edgeSeconds, writtenUtc } from './share-gate.js';
+import { UNLOCK_SECONDS, passwordMatches, unlockCookie, unlockValue } from './share-password.js';
 import { readSource } from './source.js';
 
 /*
@@ -18,32 +26,17 @@ import { readSource } from './source.js';
  * `src/lib/imports.ts`). Inside a shared folder they are pointed at the folder's own pages, so a
  * reader without an account moves through a space the way its owner does.
  *
- * Kept by the CDN for a minute like a shared document, so turning the link off takes about that.
+ * Who may open it is decided as for a document — a link, with an expiry and a password if the
+ * owner set them, or named addresses that sign in (`folderGate` in server/folder-share.ts) — and
+ * a link anyone can open is kept by the CDN for a minute, so turning it off takes about that.
  */
 
 const html = (text: string) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-interface SharedFolder {
-  id: string;
-  name: string;
-  created_at: string;
-  user_id: string;
-}
-
 interface Tree {
   folders: Array<{ id: string; parent_id: string | null; name: string }>;
   documents: Array<Pick<DocumentRow, 'id' | 'name' | 'created_at' | 'size'> & { folder_id: string; position: number | null }>;
-}
-
-async function folderOf(token: string): Promise<SharedFolder | null> {
-  if (!/^[A-Za-z0-9_-]{10,60}$/.test(token)) return null;
-
-  const rows = (await sql()`
-    select id::text, name, created_at, user_id::text from m2h_folder where share_token = ${token}
-  `) as SharedFolder[];
-
-  return rows[0] ?? null;
 }
 
 async function treeOf(folder: SharedFolder): Promise<Tree> {
@@ -106,10 +99,18 @@ function withFolderLinks(body: string, token: string, inside: Set<string>): stri
   );
 }
 
+/** A transparent 1×1 GIF, as the document's page counts its opens. */
+const PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+
+const NOT_A_READER =
+  /bot\b|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|discord|skype|embedly|preview/i;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Ctx = Context<any>;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function registerFolderPages(app: Hono<any>, headers: Record<string, string>) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const missing = (c: Context<any>) => {
+  const missing = (c: Ctx) => {
     c.header('cache-control', 'no-store');
     c.status(404);
 
@@ -121,25 +122,142 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
     );
   };
 
+  /** Every answer that is not the folder: gone, ended, behind a password, or for named readers. */
+  const refused = (c: Ctx, token: string, verdict: Exclude<FolderVerdict, { ok: true }>, next?: string) => {
+    switch (verdict.why) {
+      case 'missing':
+        return missing(c);
+      case 'expired':
+        c.header('cache-control', 'no-store');
+        c.status(410);
+
+        return c.html(
+          buildNoticePage(
+            'This link has expired',
+            `The person who shared this folder set it to stop working on ${writtenUtc(verdict.expiredAt)}. Ask them for a new one.`
+          )
+        );
+      case 'password':
+        c.header('cache-control', 'private, no-store');
+        c.status(401);
+
+        return c.html(
+          buildPasswordPage(token, undefined, {
+            action: `/f/${encodeURIComponent(token)}${next ? `?next=${next}` : ''}`,
+            noun: 'folder',
+          })
+        );
+      default:
+        // Shared with named people: the app asks who you are, then sends you back here.
+        c.header('cache-control', 'no-store');
+
+        return c.redirect(`/open-folder/${encodeURIComponent(token)}`, 302);
+    }
+  };
+
+  /* A link anyone can open is the same for everybody, so the CDN may keep it for its minute. */
+  const cache = (c: Ctx, verdict: Extract<FolderVerdict, { ok: true }>) => {
+    const keep = edgeSeconds(verdict.expiresAt);
+
+    c.header(
+      'cache-control',
+      verdict.folder.share_mode === 'people' || verdict.locked || keep === 0
+        ? 'private, no-store'
+        : `public, max-age=0, s-maxage=${keep}`
+    );
+  };
+
   app.get('/f/:token', async (c) => {
     for (const [header, value] of Object.entries(headers)) c.header(header, value);
 
     const token = c.req.param('token');
-    const folder = await folderOf(token);
+    const verdict = await folderGate(c, token);
 
-    if (!folder) return missing(c);
+    if (!verdict.ok) return refused(c, token, verdict);
 
+    const { folder } = verdict;
     const tree = await treeOf(folder);
 
-    c.header('cache-control', 'public, max-age=0, s-maxage=60');
+    cache(c, verdict);
 
     return c.html(
       buildSharedPage({
         title: folder.name,
         body: `<p>${tree.documents.length} ${tree.documents.length === 1 ? 'document' : 'documents'}</p>${listOf(token, tree, folder.id)}`,
         createdAt: new Date(folder.created_at).getTime(),
+        /* The whole folder into the reader's own account — the app asks them to sign in first. */
+        openHref: `/open-folder/${encodeURIComponent(token)}`,
+        seenHref: `/f/${encodeURIComponent(token)}/seen`,
+        watched: verdict.reader !== null && !verdict.reader.isOwner,
       })
     );
+  });
+
+  /* The password form's answer, paced as a document's is, and remembered for a day. */
+  app.post('/f/:token', async (c) => {
+    for (const [header, value] of Object.entries(headers)) c.header(header, value);
+
+    c.header('cache-control', 'private, no-store');
+
+    const token = c.req.param('token');
+    const next = c.req.query('next');
+    const back = `/f/${encodeURIComponent(token)}${next && looksLikeId(next) ? `/${next}` : ''}`;
+    const verdict = await folderGate(c, token);
+
+    if (verdict.ok || verdict.why !== 'password') return c.redirect(back, 303);
+
+    const machine = createHash('sha256').update(`${clientAddress(c)}|${token}`).digest('base64url').slice(0, 22);
+    const link = createHash('sha256').update(token).digest('base64url').slice(0, 22);
+    const mine = await countCall(`unlock:${machine}`).catch(() => null);
+    const all = await countCall(`unlock-link:${link}`).catch(() => null);
+    const page = (problem: string) =>
+      buildPasswordPage(token, problem, { action: `/f/${encodeURIComponent(token)}${next && looksLikeId(next) ? `?next=${next}` : ''}`, noun: 'folder' });
+
+    if (!mine || !all || mine.calls > 10 || all.calls > 30) {
+      c.status(429);
+
+      return c.html(page('Too many tries. Wait a minute and try again.'));
+    }
+
+    const form = await c.req.parseBody().catch(() => ({}) as Record<string, unknown>);
+    const password = String(form.password ?? '').slice(0, 200);
+
+    if (!password || !(await passwordMatches(password, verdict.hash))) {
+      c.status(401);
+
+      return c.html(page('That is not the password.'));
+    }
+
+    setCookie(c, unlockCookie(token), unlockValue(token, verdict.hash), {
+      path: '/',
+      httpOnly: true,
+      secure: selfOrigin(c).startsWith('https:'),
+      sameSite: 'Lax',
+      maxAge: UNLOCK_SECONDS,
+    });
+
+    return c.redirect(back, 303);
+  });
+
+  /* One open, counted by the page's own picture — the page may come from the CDN, this never does. */
+  app.get('/f/:token/seen', async (c) => {
+    c.header('cache-control', 'no-store');
+    c.header('content-type', 'image/gif');
+
+    if (!NOT_A_READER.test(c.req.header('user-agent') ?? '')) {
+      const token = c.req.param('token');
+      const verdict = await folderGate(c, token).catch(() => null);
+      const machine = createHash('sha256').update(`${clientAddress(c)}|f|${token}`).digest('base64url').slice(0, 22);
+      const paced = await countCall(`seen:${machine}`).catch(() => null);
+
+      if (verdict?.ok && paced && paced.calls <= 10) {
+        await sql()`
+          update m2h_folder set share_views = share_views + 1, share_viewed_at = now() where id = ${verdict.folder.id}
+        `.catch(() => undefined);
+      }
+    }
+
+    return c.body(PIXEL);
   });
 
   app.get('/f/:token/:id', async (c) => {
@@ -147,10 +265,14 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
 
     const token = c.req.param('token');
     const id = c.req.param('id');
-    const folder = await folderOf(token);
 
-    if (!folder || !looksLikeId(id)) return missing(c);
+    if (!looksLikeId(id)) return missing(c);
 
+    const verdict = await folderGate(c, token);
+
+    if (!verdict.ok) return refused(c, token, verdict, id);
+
+    const { folder } = verdict;
     const tree = await treeOf(folder);
     const entry = tree.documents.find((one) => one.id === id);
 
@@ -167,8 +289,9 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
     const base = titleOf(document.name);
     const download = c.req.query('download');
 
+    cache(c, verdict);
+
     if (download === 'md' || download === 'obsidian') {
-      c.header('cache-control', 'public, max-age=0, s-maxage=60');
       c.header('content-type', 'text/markdown; charset=utf-8');
       c.header('content-disposition', attachment(`${base}.md`));
 
@@ -180,8 +303,6 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
     const body = withFolderLinks(markdownToHtml(source), token, inside);
     const createdAt = new Date(document.created_at).getTime();
     const here = `/f/${encodeURIComponent(token)}/${id}`;
-
-    c.header('cache-control', 'public, max-age=0, s-maxage=60');
 
     if (download === '' || download === 'html') {
       c.header('content-disposition', attachment(`${base}.html`));
@@ -202,6 +323,7 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
           process.env.VERCEL || process.env.NODE_ENV === 'production'
             ? '/share/diagrams.js'
             : '/src/share-diagrams.ts',
+        watched: verdict.reader !== null && !verdict.reader.isOwner,
         size: document.size,
         stats: document.stats ?? undefined,
       })

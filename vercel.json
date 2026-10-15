@@ -90,6 +90,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/open-folder/(.*)",
+      "destination": "/index.html"
+    },
+    {
       "source": "/history",
       "destination": "/index.html"
     },

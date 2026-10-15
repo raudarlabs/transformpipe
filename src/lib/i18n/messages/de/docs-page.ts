@@ -114,6 +114,12 @@ export const docsPage = {
     'Das Herunterladen ist ein Menü und kein Chip: gespeichert wird immer nur das Markdown, HTML und reiner Text entstehen an der Stelle, sodass eine Zeile alle drei herausgeben kann, ohne drei Kopien zu halten.',
   'docs.history.selection':
     'Zeilen anhaken, und die Auswahlleiste erscheint: sie zu einem Dokument zusammenfügen, herunterladen oder löschen. Das Zusammenfügen behält die Reihenfolge der Liste.',
+  'docs.history.folders':
+    'Angemeldet lassen sich Dokumente in Ordnern ablegen. Der Baum steht neben der Liste: {all} ist alles, ein Ordner zeigt, was in ihm und in allen Ordnern darunter liegt, und die Zahl daneben sagt, wie viel er enthält. Das + über dem Baum legt einen Ordner in dem an, den Sie gerade ansehen – benannt wird er dort, wo er hinkommt. Ein Rechtsklick auf einen Ordner legt darin einen neuen an, benennt ihn um, verschiebt, teilt oder löscht ihn. Beim Löschen wird gefragt, was gemeint ist: nur der Ordner, dessen Inhalt eine Ebene nach oben rückt, oder der Ordner mit allem darin.',
+  'docs.history.folders.moving':
+    'Dokumente verschieben Sie, indem Sie Zeilen auf einen Ordner im Baum oder im Pfad über der Liste ziehen; alle markierten Zeilen gehen mit. {moveto} in der Auswahlleiste erledigt dasselbe über ein Menü: die zuletzt genutzten Ordner mit einem Klick und ein Fenster, das alle Ordner nach Namen durchsucht und zeigt, wo jeder liegt. Ein Ordner lässt sich ebenso auf einen anderen ziehen, nur nie in sich selbst.',
+  'docs.history.folders.imports':
+    'Ein Export aus Confluence, Notion oder Obsidian kommt als eigener Ordner an: jede Seite ein Dokument, jeder Abschnitt ein Ordner, die Reihenfolge des Exports bleibt, und Links zwischen den Seiten zeigen auf die gespeicherten Seiten.',
   'docs.history.shot.selection.alt':
     'Zwei ausgewählte Zeilen, mit der Leiste für Mehrfachaktionen',
   'docs.history.shot.selection.caption':
@@ -147,6 +153,8 @@ export const docsPage = {
   /** `{shared}` ist der Chip, den `docs.chip.shared` benennt. */
   'docs.sharing.incoming':
     'Dokumente, die andere an eine Adresse gerichtet haben, erscheinen unter dem Chip {shared}, samt der Angabe, wer sie geteilt hat. Sie sind nur zum Lesen: öffnen und herunterladen, kein Löschen, kein Weiterteilen. Eine Link-Freigabe gehört dem, der den Link hat, und erscheint darum auf niemandes Liste.',
+  'docs.sharing.folders':
+    'Ein Ordner wird genauso geteilt, über {share} in seinem Menü: dieselben drei Modi, Enddatum und Passwort, unter {path}. Wer ihn öffnet, sieht den ganzen Baum, jede Seite öffnet sich darin, und Links zwischen Seiten bleiben im geteilten Ordner. Angemeldet lässt sich alles behalten: {save} kopiert jeden Ordner und jede Seite samt Links ins eigene Konto – als Kopie, spätere Änderungen des Eigentümers erreichen sie nicht. Ordner, die an Sie adressiert sind, erscheinen unter dem Chip {shared} über den Dokumenten.',
   /** `{csp}` ist die Content-Security-Policy-Direktive selbst. */
   'docs.sharing.safety':
     'Eine geteilte Seite trägt den Inhalt eines anderen auf unserer Domain, also wird sie mit {csp} ausgeliefert und lässt sich nicht in einen Rahmen setzen, und jede von ihnen verweist auf ein Meldeformular, das kein JavaScript braucht. Nichts wird automatisch widerrufen: eine Meldung ist die Behauptung eines Fremden über das Dokument eines anderen, und beide Fehler — eine schlechte Seite stehen zu lassen, einen unschuldigen Link zu töten — verdienen erst den Blick eines Menschen.',

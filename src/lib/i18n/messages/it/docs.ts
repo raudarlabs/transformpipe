@@ -27,12 +27,12 @@ export const docs: Content['docs'] = {
   history: {
     title: 'Cronologia',
     summary:
-      'Ricerca, colonne ordinabili e un filtro per ogni conversione, così un elenco misto si può ridurre a un tipo solo. Le righe si possono unire, scaricare in qualsiasi formato o eliminare in blocco.',
+      'Cartelle ad albero accanto all’elenco, con trascinamento e menu contestuale; ricerca, colonne ordinabili e un chip per conversione. Le righe si possono unire, spostare, scaricare in qualsiasi formato o eliminare in blocco.',
   },
   sharing: {
     title: 'Condivisione',
     summary:
-      'Un link che chiunque può aprire, oppure indirizzi indicati per nome che chiedono al lettore di accedere. La revoca elimina il token, così un link già inviato smette di funzionare. Un link può finire a una data o chiedere una password, e la scheda Visualizzazioni elenca ogni apertura — e, per persone indicate, chi era.',
+      'Un link che chiunque può aprire, oppure indirizzi specifici che chiedono al lettore di accedere, per un documento o un’intera cartella che il lettore può salvare nel proprio account. La revoca elimina il token, quindi un link già inviato smette di funzionare. Un link può scadere in una data o chiedere una password, e la scheda Visualizzazioni elenca ogni apertura.',
   },
   account: {
     title: 'Account',

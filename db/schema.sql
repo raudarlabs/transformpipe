@@ -496,3 +496,36 @@ create index if not exists m2h_document_folder on m2h_document (folder_id) where
 -- opens each document. Null is not shared; a new token is a new link, and the old one stops.
 alter table m2h_folder
   add column if not exists share_token text unique;
+
+-- A folder is shared the way a document is.
+--
+-- The one link it had (`share_token` above) becomes one of three modes, with the same settings a
+-- document's link has: who may open it, until when, behind which password — see server/folder-share.ts,
+-- which asks the questions server/share-gate.ts asks for a document, in the same order. A folder
+-- shared before this existed was a link, so it stays one.
+
+alter table m2h_folder
+  add column if not exists share_mode text not null default 'private';
+
+alter table m2h_folder
+  add column if not exists share_expires_at timestamptz;
+
+alter table m2h_folder
+  add column if not exists share_password_hash text;
+
+alter table m2h_folder
+  add column if not exists share_views integer not null default 0;
+
+alter table m2h_folder
+  add column if not exists share_viewed_at timestamptz;
+
+update m2h_folder set share_mode = 'link' where share_token is not null and share_mode = 'private';
+
+create table if not exists m2h_folder_share (
+  folder_id  uuid not null references m2h_folder (id) on delete cascade,
+  email      text not null,
+  created_at timestamptz not null default now(),
+  primary key (folder_id, email)
+);
+
+create index if not exists m2h_folder_share_email on m2h_folder_share (email);

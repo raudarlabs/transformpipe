@@ -30,12 +30,12 @@ export const docs: Content['docs'] = {
   history: {
     title: 'Verlauf',
     summary:
-      'Suche, sortierbare Spalten und ein Chip je Umwandlung, damit eine gemischte Liste auf eine Art eingeengt werden kann. Zeilen lassen sich zusammenfügen, in jedem Format herunterladen oder in einem Zug löschen.',
+      'Ordner als Baum neben der Liste, mit Ziehen und Ablegen und einem Kontextmenü; Suche, sortierbare Spalten und ein Chip je Umwandlung. Zeilen lassen sich zusammenfügen, verschieben, in jedem Format herunterladen oder in einem Zug löschen.',
   },
   sharing: {
     title: 'Teilen',
     summary:
-      'Ein Link, den jeder öffnen kann, oder benannte Adressen, die vom Leser eine Anmeldung verlangen. Ein Widerruf verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren. Ein Link kann an einem Datum enden oder nach einem Passwort fragen, und der Tab Aufrufe listet jeden Aufruf — bei benannten Personen auch, wer es war.',
+      'Ein Link, den jeder öffnen kann, oder benannte Adressen, die sich anmelden müssen – für ein Dokument oder einen ganzen Ordner, den der Empfänger ins eigene Konto speichern kann. Widerrufen verwirft das Token, ein bereits verschickter Link funktioniert dann nicht mehr. Ein Link kann an einem Datum enden oder ein Passwort verlangen, und der Tab „Aufrufe“ listet jedes Öffnen.',
   },
   account: {
     title: 'Konto',

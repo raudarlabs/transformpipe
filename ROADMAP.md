@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 14 October 2026.** Next up: **A folder shared like a document — people, password, expiry, saved to the reader's account**.
+**Updated 15 October 2026.** Next up: **Folders in the API, the CLI and the MCP connector**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -24,8 +24,11 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
          export; one read-only link for a whole folder~~ **Shipped 15 October**, and every
          picture of an export kept the same day (shrunk on the way in). Left: folders in the API,
          the CLI and the connector
-      3. Members by email, read-only first — only if folders are used: five accounts with two
-         folders or more a month after step 1
+      3. ~~Members by email, read-only first~~ **Shipped 15 October** as sharing: a folder is
+         shared the way a document is — a link with an end date and a password, or named
+         addresses that sign in — and its reader can save all of it to their own account, links
+         between pages kept. "Shared with me" lists folders too. Left, for all three steps:
+         folders in the API, the CLI and the MCP connector
       · this is the Projects item of 14 October, grown: a project is a folder. The account limits
       (500 documents, 100 MB) do not survive one Confluence space and are decided before step 1
       ships. `big-files-wip` holds the worker

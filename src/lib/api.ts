@@ -38,8 +38,29 @@ export interface Folder {
   source: string | null;
   created_at: string;
   documents: number;
-  /** Set while the folder is shared as one read-only link, `/f/<token>`. */
+  /** Set while the folder is shared, `/f/<token>`; who may open it is `share_mode`. */
   share_token?: string | null;
+  share_mode?: ShareMode;
+}
+
+/** A folder somebody shared, as its reader sees it — see `GET /api/shared-folders/:token`. */
+export interface SharedFolderView {
+  folder: { name: string; created_at: string; owner: string };
+  folders: Array<{ id: string; parent_id: string | null; name: string }>;
+  documents: Array<{ id: string; name: string; size: number; folder_id: string; position: number | null }>;
+  root: string;
+  /** The reader is its owner: there is nothing to copy. */
+  mine: boolean;
+}
+
+/** A folder shared with this address by name, for the "Shared with me" list. */
+export interface SharedFolderEntry {
+  id: string;
+  name: string;
+  share_token: string;
+  shared_at: string;
+  owner_email: string;
+  documents: number;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -352,6 +373,28 @@ export const api = {
     ).ids,
 
   /** One read-only link for the folder and everything in it; the token, or null once it is off. */
+  /* A folder's sharing has the calls a document's has — see server/folder-share.ts. */
+  getFolderShare: (id: string) => request<ShareState>(`/api/folders/${id}/share`),
+
+  setFolderShare: (id: string, change: { mode: ShareMode; expiresAt?: string | null; password?: string | null }) =>
+    request<ShareState>(`/api/folders/${id}/share`, { method: 'PUT', body: JSON.stringify(change) }),
+
+  addFolderRecipient: (id: string, email: string) =>
+    request<ShareState>(`/api/folders/${id}/share/people`, { method: 'POST', body: JSON.stringify({ email }) }),
+
+  removeFolderRecipient: (id: string, email: string) =>
+    request<ShareState>(`/api/folders/${id}/share/people?email=${encodeURIComponent(email)}`, { method: 'DELETE' }),
+
+  getSharedFolder: (token: string) => request<SharedFolderView>(`/api/shared-folders/${encodeURIComponent(token)}`),
+
+  /** The whole folder, copied into this account; answers with the copy's id. */
+  saveSharedFolder: (token: string) =>
+    request<{ folderId: string; documents: number }>(`/api/shared-folders/${encodeURIComponent(token)}/save`, {
+      method: 'POST',
+    }),
+
+  listSharedFolders: async () => (await request<{ folders: SharedFolderEntry[] }>('/api/shared-folders')).folders,
+
   shareFolder: async (id: string, shared: boolean) =>
     (
       await request<{ token: string | null }>(`/api/folders/${id}/share`, {

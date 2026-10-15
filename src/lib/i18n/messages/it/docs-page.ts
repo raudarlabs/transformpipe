@@ -94,6 +94,12 @@ export const docsPage = {
     'Scaricare è un menu e non un pulsante secco: viene conservato solo il Markdown, mentre l’HTML e il testo semplice si costruiscono sul momento, così una riga può consegnare uno qualsiasi dei tre senza tenere tre copie.',
   'docs.history.selection':
     'Spuntando delle righe compare la barra della selezione: unirle in un solo documento, scaricarle o eliminarle. L’unione rispetta l’ordine dell’elenco.',
+  'docs.history.folders':
+    'Dopo l’accesso, i documenti possono stare in cartelle. L’albero è accanto all’elenco: {all} è tutto, una cartella mostra ciò che contiene e ciò che c’è in tutte le cartelle sotto di essa, e il numero accanto dice quanto contiene. Il + sopra l’albero crea una cartella dentro quella che stai guardando, e il nome si scrive lì dove andrà. Con il clic destro su una cartella puoi crearne una dentro, rinominarla, spostarla, condividerla o eliminarla. Quando elimini, ti viene chiesto cosa intendi: solo la cartella, il cui contenuto sale di un livello, oppure la cartella con tutto ciò che contiene.',
+  'docs.history.folders.moving':
+    'I documenti si spostano trascinando le righe su una cartella dell’albero o del percorso sopra l’elenco, e tutte le righe selezionate vanno insieme. {moveto} nella barra di selezione fa lo stesso da un menu: le ultime cartelle usate, con un clic, e una finestra che cerca in tutte le cartelle per nome e mostra dove si trova ciascuna. Una cartella si trascina allo stesso modo su un’altra, ma mai dentro sé stessa.',
+  'docs.history.folders.imports':
+    'Un’esportazione di Confluence, Notion o Obsidian arriva in una cartella tutta sua: ogni pagina diventa un documento, ogni sezione una cartella, l’ordine dell’esportazione resta, e i collegamenti tra le pagine puntano alle pagine salvate.',
   'docs.history.shot.selection.alt':
     'Due righe selezionate, con la barra delle azioni di gruppo',
   'docs.history.shot.selection.caption': 'Unione, download ed eliminazione di gruppo.',
@@ -126,6 +132,8 @@ export const docsPage = {
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     'I documenti che altre persone hanno indirizzato a te compaiono sotto il filtro {shared}, con il nome di chi li ha condivisi. Sono in sola lettura: si aprono e si scaricano, non si eliminano e non si ricondividono. Una condivisione per link appartiene a chi ha il link, quindi non compare nell’elenco di nessuno.',
+  'docs.sharing.folders':
+    'Una cartella si condivide allo stesso modo, da {share} nel suo menu: le stesse tre modalità, data di scadenza e password, all’indirizzo {path}. Chi la apre vede tutto l’albero, ogni pagina si apre al suo interno e i collegamenti tra le pagine restano nella cartella condivisa. Un lettore che ha effettuato l’accesso può tenerla tutta: {save} copia ogni cartella e ogni pagina nel suo account, collegamenti compresi; è una copia, quindi le modifiche successive del proprietario non la raggiungono. Le cartelle indirizzate a te compaiono sotto il chip {shared}, sopra i documenti.',
   /** `{csp}` is the Content-Security-Policy directive itself. */
   'docs.sharing.safety':
     'Una pagina condivisa porta il contenuto di qualcuno sul nostro dominio, quindi viene servita con {csp} e non può essere messa in un frame, e ognuna di esse rimanda a un modulo di segnalazione che non ha bisogno di JavaScript. Niente viene revocato automaticamente: una segnalazione è l’affermazione di un estraneo sul documento di un altro, ed entrambi gli errori — lasciare in piedi una pagina dannosa, uccidere un link innocente — meritano che prima una persona la legga.',

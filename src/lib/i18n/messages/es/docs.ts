@@ -29,12 +29,12 @@ export const docs: Content['docs'] = {
   history: {
     title: 'Historial',
     summary:
-      'Búsqueda, columnas ordenables y un filtro por conversión para reducir una lista mezclada a un solo tipo. Las filas se pueden unir, descargar en cualquier formato o eliminar en bloque.',
+      'Carpetas en un árbol junto a la lista, con arrastrar y soltar y un menú contextual; búsqueda, columnas ordenables y un chip por conversión. Las filas se pueden combinar, mover, descargar en cualquier formato o eliminar en bloque.',
   },
   sharing: {
     title: 'Compartir',
     summary:
-      'Un enlace que cualquiera puede abrir, o direcciones concretas que piden al lector iniciar sesión. Revocar descarta el token, así que un enlace ya enviado deja de funcionar. Un enlace puede terminar en una fecha o pedir una contraseña, y la pestaña Vistas lista cada apertura — y, para personas concretas, cuál fue.',
+      'Un enlace que cualquiera puede abrir, o direcciones concretas que piden al lector iniciar sesión, para un documento o una carpeta entera que el lector puede guardar en su cuenta. Revocar elimina el token, así que un enlace ya enviado deja de funcionar. Un enlace puede caducar en una fecha o pedir contraseña, y la pestaña Vistas lista cada apertura.',
   },
   account: {
     title: 'Cuenta',

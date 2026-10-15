@@ -10,10 +10,10 @@ import {
   FolderOpen,
   FolderPlus,
   Link2,
-  Link2Off,
   MoreHorizontal,
   Pencil,
   Trash2,
+  Users,
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react';
@@ -29,6 +29,7 @@ import {
 } from '@/ui/components/DropdownMenu';
 import { IconButton } from '@/ui/components/IconButton';
 import { MoveDialog } from '@/components/MoveDialog';
+import { ShareDialog, type ShareClient } from '@/components/ShareDialog';
 import { cn } from '@/ui/lib/utils';
 import { toast } from '@/ui/components/Toast';
 
@@ -73,6 +74,20 @@ const DRAG_FOLDER = 'application/x-tp-folder';
 const OPEN_KEY = 'tp.openFolders';
 const byName = (a: Folder, b: Folder) => a.name.localeCompare(b.name, undefined, { numeric: true });
 const linkOf = (token: string) => `${location.origin}/f/${token}`;
+
+/** The share dialog, pointed at a folder's endpoints instead of a document's. */
+const folderShareClient: ShareClient = {
+  get: (id) => api.getFolderShare(id),
+  setMode: (id, mode) => api.setFolderShare(id, { mode }),
+  setExpiry: (id, mode, expiresAt) => api.setFolderShare(id, { mode, expiresAt }),
+  setPassword: (id, mode, password) => api.setFolderShare(id, { mode, password }),
+  add: (id, email) => api.addFolderRecipient(id, email),
+  remove: (id, email) => api.removeFolderRecipient(id, email),
+  url: linkOf,
+  notes: { private: 'dialog.share.private.note.folder' },
+};
+
+const isShared = (folder: Folder) => Boolean(folder.share_token) && folder.share_mode !== 'private';
 
 function ancestorsOf(folders: Folder[], id: string | null): string[] {
   const ids: string[] = [];
@@ -150,15 +165,7 @@ function useFolderActions({ folders, current, counts, onOpen, onChanged }: Share
     }, t('folders.deleted', { name: folder.name }));
   };
 
-  const share = (folder: Folder, on: boolean) =>
-    void run(async () => {
-      const token = await api.shareFolder(folder.id, on);
-
-      if (token) {
-        await navigator.clipboard.writeText(linkOf(token)).catch(() => undefined);
-        toast.success(t('folders.share.on'), { description: linkOf(token) });
-      }
-    }, on ? undefined : t('folders.share.off.done'));
+  const [sharing, setSharing] = useState<Folder | null>(null);
 
   const copy = (folder: Folder) => {
     if (!folder.share_token) return;
@@ -168,6 +175,22 @@ function useFolderActions({ folders, current, counts, onOpen, onChanged }: Share
       .then(() => toast.success(t('folders.share.copied')))
       .catch(() => undefined);
   };
+
+  /* Closing the share dialog reloads the folders: the tree marks which ones are shared. */
+  const shareDialog = (
+    <ShareDialog
+      documentId={sharing?.id ?? null}
+      name={sharing?.name ?? ''}
+      open={sharing !== null}
+      onOpenChange={(open) => {
+        if (!open) {
+          setSharing(null);
+          onChanged();
+        }
+      }}
+      client={folderShareClient}
+    />
+  );
 
   const dialog = moving && (
     <MoveDialog
@@ -188,7 +211,7 @@ function useFolderActions({ folders, current, counts, onOpen, onChanged }: Share
     />
   );
 
-  return { run, rename, remove, share, copy, move: setMoving, dialog };
+  return { run, rename, remove, copy, share: setSharing, move: setMoving, dialog: <>{dialog}{shareDialog}</> };
 }
 
 /** A menu's items for one folder. `onRename` and `onNewInside` are where the name gets typed. */
@@ -225,7 +248,11 @@ function FolderMenuItems({
       </DropdownMenuItem>
 
       <DropdownMenuSeparator />
-      {folder.share_token ? (
+      <DropdownMenuItem onSelect={() => actions.share(folder)}>
+        {folder.share_mode === 'people' ? <Users className="size-4" /> : <Link2 className="size-4" />}
+        {t('folders.share.dialog')}
+      </DropdownMenuItem>
+      {isShared(folder) && (
         <>
           <DropdownMenuItem onSelect={() => actions.copy(folder)}>
             <Copy className="size-4" />
@@ -235,16 +262,7 @@ function FolderMenuItems({
             <ExternalLink className="size-4" />
             {t('folders.share.open')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => actions.share(folder, false)}>
-            <Link2Off className="size-4" />
-            {t('folders.share.off')}
-          </DropdownMenuItem>
         </>
-      ) : (
-        <DropdownMenuItem onSelect={() => actions.share(folder, true)}>
-          <Link2 className="size-4" />
-          {t('folders.share.on.action')}
-        </DropdownMenuItem>
       )}
 
       <DropdownMenuSeparator />
@@ -524,7 +542,12 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
                   >
                     <Icon className="size-4 shrink-0 text-brand-tertiary" />
                     <span className="truncate">{one.name}</span>
-                    {one.share_token && <Link2 className="size-3.5 shrink-0 text-brand-tertiary" aria-label={t('folders.share.shared')} />}
+                    {isShared(one) &&
+                      (one.share_mode === 'people' ? (
+                        <Users className="size-3.5 shrink-0 text-brand-tertiary" aria-label={t('folders.share.people')} />
+                      ) : (
+                        <Link2 className="size-3.5 shrink-0 text-brand-tertiary" aria-label={t('folders.share.shared')} />
+                      ))}
                     <span className="ml-auto pl-1 text-ink-secondary text-xs">{counts.get(one.id) ?? 0}</span>
                   </button>
                 )}
@@ -684,37 +707,17 @@ export function FolderHeader(props: Shared) {
 
       {here && (
         <div className="flex items-center gap-1">
-          {/* The link is the one thing worth a button of its own: whether it exists is news. */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="tertiary" size="xs" leftSlot={<Link2 />}>
-                {here.share_token ? t('folders.share.shared') : t('folders.share')}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {here.share_token ? (
-                <>
-                  <DropdownMenuItem onSelect={() => actions.copy(here)}>
-                    <Copy className="size-4" />
-                    {t('folders.share.copy')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => window.open(linkOf(here.share_token!), '_blank', 'noopener')}>
-                    <ExternalLink className="size-4" />
-                    {t('folders.share.open')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => actions.share(here, false)}>
-                    <Link2Off className="size-4" />
-                    {t('folders.share.off')}
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem onSelect={() => actions.share(here, true)}>
-                  <Link2 className="size-4" />
-                  {t('folders.share.on.action')}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Sharing is the one thing worth a button of its own: whether it is shared is news. */}
+          <Button
+            variant="tertiary"
+            size="xs"
+            leftSlot={here.share_mode === 'people' && isShared(here) ? <Users /> : <Link2 />}
+            onClick={() => actions.share(here)}
+          >
+            {isShared(here)
+              ? t(here.share_mode === 'people' ? 'folders.share.people' : 'folders.share.shared')
+              : t('folders.share')}
+          </Button>
 
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>

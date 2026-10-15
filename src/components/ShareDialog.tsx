@@ -57,6 +57,8 @@ export interface ShareClient {
   remove: (id: string, email: string) => Promise<ShareState>;
   /** The page a share token opens. The app is on the site; the extension is not. */
   url: (token: string) => string;
+  /** A mode's line under the link, where the default speaks of a document — a folder says folder. */
+  notes?: Partial<Record<ShareMode, string>>;
 }
 
 /** The site's own: session cookie, same origin, links built from the address bar. */
@@ -442,6 +444,7 @@ const MODES: Record<ShareMode, { icon: LucideIcon; note: string }> = {
  */
 function SharePanel({
   state,
+  note: noteOverride,
   isBusy,
   isCopied,
   url,
@@ -452,6 +455,8 @@ function SharePanel({
   onRemove,
 }: {
   state: ShareState;
+  /** The line for this mode, when the caller has its own. */
+  note?: string;
   isBusy: boolean;
   isCopied: boolean;
   /** The address the token opens, or null while there is none. */
@@ -465,7 +470,8 @@ function SharePanel({
   const t = useT();
   const { locale } = useI18n();
   const isPrivate = state.mode === 'private' || !url;
-  const { icon: Icon, note } = MODES[state.mode];
+  const { icon: Icon, note: defaultNote } = MODES[state.mode];
+  const note = noteOverride ?? defaultNote;
 
   return (
     <div className="flex flex-col gap-3">
@@ -721,6 +727,7 @@ export function ShareDialog({
             <div ref={panel}>
               <SharePanel
                 state={state}
+                note={client.notes?.[state.mode]}
                 isBusy={isBusy}
                 isCopied={isCopied}
                 url={state.mode !== 'private' && state.token ? client.url(state.token) : null}

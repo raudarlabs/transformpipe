@@ -69,6 +69,8 @@ export interface Route {
   docId: string | null;
   /** Set when the address is a shared document. */
   sharedToken: string | null;
+  /** Set when the address is a shared folder's page in the app, /open-folder/<token>. */
+  sharedFolderToken: string | null;
   /** Set when the address is one article rather than the blog's index. */
   articleSlug: string | null;
   /** Set when the address is one changelog entry's own page rather than the list. */
@@ -87,17 +89,19 @@ export function readRoute(): Route {
    */
   const { locale, rest: path } = splitLocale(window.location.pathname);
   const shared = path.match(/^\/(?:open|s)\/([^/]+)\/?$/);
+  const sharedFolder = path.match(/^\/open-folder\/([^/]+)\/?$/);
   const article = path.match(/^\/blog\/([^/]+)\/?$/);
   const release = path.match(/^\/changelog\/([^/]+)\/?$/);
   const page = staticPageForPath(path);
 
   return {
     locale,
-    view: viewFor(path, Boolean(page), Boolean(shared)),
+    view: viewFor(path, Boolean(page), Boolean(shared || sharedFolder)),
     conversionId: (conversionForPath(path)?.id ?? DEFAULT_CONVERSION),
     filter: new URLSearchParams(window.location.search).get('filter'),
     docId: new URLSearchParams(window.location.search).get('doc'),
     sharedToken: shared ? decodeURIComponent(shared[1]) : null,
+    sharedFolderToken: sharedFolder ? decodeURIComponent(sharedFolder[1]) : null,
     articleSlug: article ? decodeURIComponent(article[1]) : null,
     changelogSlug: release ? decodeURIComponent(release[1]) : null,
     pageId: page?.id ?? null,
@@ -188,7 +192,7 @@ const PATHS: Record<Exclude<Destination, 'converter' | 'page'>, string> = {
  * A shared document has one address and it is always English: /s/<token> is rendered by the server
  * for a reader it knows nothing about, at an address with no language in it.
  */
-const ONE_ADDRESS = /^\/(open|s)(\/|$)/;
+const ONE_ADDRESS = /^\/(open|open-folder|s|f)(\/|$)/;
 
 /*
  * The blog is translated one article at a time, so it is not one of the pages that exists in all
@@ -200,7 +204,7 @@ const ONE_ADDRESS = /^\/(open|s)(\/|$)/;
  * bounced into another language part-way down an article you are already reading is worse than
  * being left where you landed, and a reader who wants the other language has the switcher.
  */
-const UNTRANSLATED = /^\/(blog|open|s)(\/|$)/;
+const UNTRANSLATED = /^\/(blog|open|open-folder|s|f)(\/|$)/;
 
 /** Whether a path — locale already stripped — is one of the pages that exists in every language. */
 export function hasTranslation(path: string): boolean {

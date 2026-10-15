@@ -57,6 +57,7 @@ import { authorizationServer, protectedResource } from './wellknown.js';
 import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
 import { registerFolders } from './folders.js';
+import { registerFolderSharing, registerSharedFolders } from './folder-share.js';
 import { registerFolderPages } from './folder-page.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
@@ -137,6 +138,9 @@ api.get('/shared/:token', async (c) => {
     watched: verdict.reader !== null && !verdict.reader.isOwner,
   });
 });
+
+/* A folder shared with you, and keeping a copy of it — see server/folder-share.ts. */
+registerSharedFolders(api);
 
 // Sign-in, sign-out and the session read all live at the auth service; this app only forwards
 // them so its cookie is first-party. See server/auth.ts.
@@ -357,6 +361,7 @@ api.use('/folders', throttle);
 api.use('/folders/*', throttle);
 
 registerFolders(api);
+registerFolderSharing(api);
 
 /**
  * Documents other people shared with this address.

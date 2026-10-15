@@ -224,8 +224,10 @@ export async function sendShareNotice(options: {
   url: string;
   /** When the link stops working, if the sharer set a date. Said, so nobody saves it for later. */
   expiresAt?: string | Date | null;
+  /** A folder is shared the same way, and the email says which it is. */
+  kind?: 'document' | 'folder';
 }): Promise<Sent> {
-  const { to, from, documentName, url, expiresAt } = options;
+  const { to, from, documentName, url, expiresAt, kind = 'document' } = options;
   const safeName = asCode(documentName.slice(0, 200));
   const safeFrom = asCode(from.slice(0, 200));
 
@@ -241,7 +243,7 @@ export async function sendShareNotice(options: {
      */
     subject: `${documentName.replace(/[\r\n]+/g, ' ').slice(0, 120)} was shared with you`,
     markdown: [
-      `${safeFrom} shared a document with you on TransformPipe.`,
+      `${safeFrom} shared a ${kind} with you on TransformPipe.`,
       '',
       `**${safeName}** — [open it](${url})`,
       '',

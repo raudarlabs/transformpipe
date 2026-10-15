@@ -101,6 +101,12 @@ export const docsPage = {
     'Descargar es un menú y no un filtro: solo se guarda el Markdown, y el HTML y el texto plano se construyen al momento, así que una misma fila puede entregar cualquiera de los tres sin guardar tres copias.',
   'docs.history.selection':
     'Marca filas y aparece la barra de selección: unirlas en un solo documento, descargarlas o eliminarlas. Al unirlas se respeta el orden de la lista.',
+  'docs.history.folders':
+    'Con la sesión iniciada, los documentos pueden ir en carpetas. El árbol está junto a la lista: {all} es todo, una carpeta muestra lo que contiene y lo que hay en todas las carpetas por debajo, y el número al lado indica cuánto guarda. El + sobre el árbol crea una carpeta dentro de la que estás viendo, y se nombra allí donde irá. Con clic derecho en una carpeta puedes crear otra dentro, cambiarle el nombre, moverla, compartirla o eliminarla. Al eliminar se pregunta qué quieres: solo la carpeta, cuyo contenido sube un nivel, o la carpeta con todo lo que contiene.',
+  'docs.history.folders.moving':
+    'Los documentos se mueven arrastrando filas sobre una carpeta del árbol o de la ruta sobre la lista, y todas las filas marcadas van juntas. {moveto} en la barra de selección hace lo mismo desde un menú: las carpetas usadas por última vez, con un clic, y una ventana que busca en todas las carpetas por nombre y muestra dónde está cada una. Una carpeta se arrastra igual sobre otra, pero nunca dentro de sí misma.',
+  'docs.history.folders.imports':
+    'Una exportación de Confluence, Notion u Obsidian llega en su propia carpeta: cada página es un documento, cada sección una carpeta, se mantiene el orden de la exportación y los enlaces entre páginas apuntan a las páginas guardadas.',
   'docs.history.shot.selection.alt':
     'Dos filas seleccionadas, con la barra de acciones en bloque',
   'docs.history.shot.selection.caption': 'Unir, descargar y eliminar en bloque.',
@@ -133,6 +139,8 @@ export const docsPage = {
   /** `{shared}` es el filtro que nombra `docs.chip.shared`. */
   'docs.sharing.incoming':
     'Los documentos que otras personas te han dirigido aparecen bajo el filtro {shared}, con quién ha compartido cada uno. Son de solo lectura: abrir y descargar, sin eliminar y sin volver a compartir. Un enlace compartido pertenece a quien lo tenga, así que no aparece en la lista de nadie.',
+  'docs.sharing.folders':
+    'Una carpeta se comparte igual, desde {share} en su menú: los mismos tres modos, fecha de fin y contraseña, en {path}. Quien la abre ve todo el árbol, cada página se abre dentro y los enlaces entre páginas se quedan en la carpeta compartida. Un lector con sesión iniciada puede quedarse con todo: {save} copia cada carpeta y cada página en su propia cuenta, enlaces incluidos; es una copia, así que los cambios posteriores del propietario no le llegan. Las carpetas dirigidas a ti aparecen bajo el chip {shared}, encima de los documentos.',
   /** `{csp}` es la propia directiva Content-Security-Policy. */
   'docs.sharing.safety':
     'Una página compartida lleva contenido de alguien en nuestro dominio, así que se sirve con {csp} y no se puede meter en un marco, y todas ellas enlazan con un formulario de denuncia que no necesita JavaScript. Nada se revoca automáticamente: una denuncia es lo que un desconocido afirma sobre el documento de otra persona, y los dos errores —dejar en pie una página dañina, matar un enlace inocente— merecen que alguien lo lea primero.',

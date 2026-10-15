@@ -112,6 +112,12 @@ export const docsPage = {
     'Downloading is a menu rather than a chip: only the Markdown is ever stored, and the HTML and the plain text are built on the spot, so one row can hand over any of the three without keeping three copies.',
   'docs.history.selection':
     'Tick rows and the selection bar appears: merge them into one document, download them, or delete them. Merging keeps the order of the list.',
+  'docs.history.folders':
+    'Signed in, documents can live in folders. The tree sits beside the list: {all} is everything, a folder shows what is in it and in every folder below it, and the number beside each says how much it holds. The + over the tree makes a folder inside the one you are looking at, typed where it will go. Right-click a folder to make one inside it, rename it, move it, share it or delete it. Deleting asks which kind you mean: the folder alone, whose contents move up a level, or the folder with everything in it.',
+  'docs.history.folders.moving':
+    'Documents move by dragging rows onto a folder in the tree or in the trail over the list, and every ticked row goes along. {moveto} in the selection bar does the same from a menu: the folders used last, one click each, and a window that searches every folder by name and shows where each one sits. A folder drags onto another the same way, but never into itself.',
+  'docs.history.folders.imports':
+    'A Confluence, Notion or Obsidian export comes in as a folder of its own: every page a document, every section a folder, the export’s order kept, and links between pages pointing at the saved pages.',
   'docs.history.shot.selection.alt':
     'Two rows selected, with the bulk action bar',
   'docs.history.shot.selection.caption': 'Bulk merge, download and delete.',
@@ -144,6 +150,8 @@ export const docsPage = {
   /** `{shared}` is the chip named in `docs.chip.shared`. */
   'docs.sharing.incoming':
     "Documents other people addressed to you appear under the {shared} chip, with who shared each one. They are read-only: open and download, no delete, no re-share. A link share belongs to whoever holds the link, so it appears on no one's list.",
+  'docs.sharing.folders':
+    'A folder is shared the same way, from {share} in its menu: the same three modes, end date and password, at {path}. The reader gets the whole tree, every page opens inside it, and links between pages stay inside the shared folder. A reader who is signed in can keep all of it: {save} copies every folder and page into their own account with the links between them, as a copy, so changes the owner makes later do not reach it. Folders addressed to you appear under the {shared} chip, above the documents.',
   /** `{csp}` is the Content-Security-Policy directive itself. */
   'docs.sharing.safety':
     "A shared page carries someone's content on our domain, so it is served with {csp} and cannot be framed, and every one of them links to a report form that needs no JavaScript. Nothing is revoked automatically: a report is a stranger's claim about someone else's document, and both mistakes — leaving a bad page up, killing an innocent link — deserve a person reading it first.",
