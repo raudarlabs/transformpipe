@@ -12,7 +12,16 @@ import {
   type ConversionId,
   DEFAULT_CONVERSION,
 } from '@shared/conversions';
-import { convertFile, conversionForFiles } from './lib/convert';
+import { conversionForFiles } from './lib/convert';
+import {
+  canSplit,
+  runConversion,
+  runSplit,
+  type ConversionProgress,
+  type Prepared,
+  type SplitResult,
+} from './lib/conversion';
+import { SPLITTABLE } from './lib/split';
 import { ConverterPage } from './features/ConverterPage';
 import { ArticlePage } from './features/ArticlePage';
 import { BlogPage } from './features/BlogPage';
@@ -68,9 +77,11 @@ function convert(
   size: number,
   markdown: string,
   createdAt = Date.now(),
-  sources?: string[]
+  sources?: string[],
+  /** The preview's HTML and the numbers, when the worker already made them. */
+  prepared?: Prepared
 ): ConvertedDoc {
-  const html = markdownToHtml(markdown);
+  const html = prepared?.html ?? markdownToHtml(markdown);
 
   return {
     id: `${createdAt.toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
@@ -81,7 +92,7 @@ function convert(
     markdown,
     html,
     sources,
-    stats: getDocStats(markdown, html),
+    stats: prepared?.stats ?? getDocStats(markdown, html),
   };
 }
 
@@ -221,6 +232,26 @@ function Shell() {
   }, []);
   const [doc, setDoc] = useState<ConvertedDoc | null>(null);
   const [isBusy, setIsBusy] = useState(false);
+  /* How far a conversion has got, for the screen to say while it runs. */
+  const [progress, setProgress] = useState<ConversionProgress | null>(null);
+  /* An export read as its pages, waiting to be kept — and the file, to read it as one document instead. */
+  const [imported, setImported] = useState<{ split: SplitResult; kind: ConversionId; file: File } | null>(null);
+  const [importMode, setImportModeState] = useState<'pages' | 'one'>(() => {
+    try {
+      return localStorage.getItem('tp.importMode') === 'one' ? 'one' : 'pages';
+    } catch {
+      return 'pages';
+    }
+  });
+  const setImportMode = useCallback((mode: 'pages' | 'one') => {
+    setImportModeState(mode);
+
+    try {
+      localStorage.setItem('tp.importMode', mode);
+    } catch {
+      // A remembered choice, not a needed one.
+    }
+  }, []);
   /*
    * What the live preview is showing, kept here rather than inside the page.
    *
@@ -253,7 +284,7 @@ function Shell() {
    * plainly knows how to read is a refusal nobody would thank us for.
    */
   const handleFiles = useCallback(
-    async (files: File[]) => {
+    async (files: File[], forceMode?: 'pages' | 'one') => {
       const { id, rejected } = conversionForFiles(conversionId, files, t);
 
       if (rejected) {
@@ -287,15 +318,47 @@ function Shell() {
         return;
       }
 
+      /*
+       * An export of many pages is kept as those pages, in a folder — unless somebody asked for the
+       * one document it used to be. Read in the worker, with the page counting as it goes.
+       */
+      if (
+        SPLITTABLE.has(id) &&
+        files.length === 1 &&
+        canSplit() &&
+        (forceMode ?? importMode) === 'pages'
+      ) {
+        setIsBusy(true);
+
+        try {
+          const split = await runSplit(id, files[0], t, setProgress);
+
+          setDoc(null);
+          setImported({ split, kind: id, file: files[0] });
+          setConversionId(id);
+          setViewState('converter');
+          goToConversion(id);
+          count('convert', id);
+        } catch (cause) {
+          toast.error(t('converter.failed', { conversion: content.conversions[id].label }), {
+            description: cause instanceof Error ? cause.message : t('converter.failed.detail'),
+          });
+        } finally {
+          setIsBusy(false);
+          setProgress(null);
+        }
+
+        return;
+      }
+
       setIsBusy(true);
+      setImported(null);
 
       try {
         const parts = await Promise.all(
-          files.map(async (file) => {
-            const done = await convertFile(id, file, t);
-
-            return { name: done.name, markdown: done.markdown };
-          })
+          files.map(async (file) =>
+            runConversion(id, file, t, files.length === 1 ? setProgress : () => undefined)
+          )
         );
 
         const markdown = mergeMarkdown(parts);
@@ -306,7 +369,9 @@ function Shell() {
           dropped,
           markdown,
           Date.now(),
-          files.length > 1 ? names : undefined
+          files.length > 1 ? names : undefined,
+          // One file: the worker already made its preview. Several are one new document.
+          files.length === 1 ? parts[0].prepared : undefined
         );
 
         setDoc(converted);
@@ -367,9 +432,10 @@ function Shell() {
         );
       } finally {
         setIsBusy(false);
+        setProgress(null);
       }
     },
-    [content, conversionId, history, sizes, t, user]
+    [content, conversionId, history, importMode, sizes, t, user]
   );
 
   /*
@@ -508,6 +574,7 @@ function Shell() {
 
   const startOver = useCallback(() => {
     setDoc(null);
+    setImported(null);
     setView('converter');
   }, [setView]);
 
@@ -721,8 +788,19 @@ function Shell() {
             conversion={conversion(conversionId)}
             doc={doc}
             isBusy={isBusy}
+            progress={progress}
+            imported={imported}
+            importMode={importMode}
+            onImportModeChange={setImportMode}
+            onImportSaved={() => {
+              setImported(null);
+              setView('history');
+            }}
+            onImportAsOne={() => {
+              if (imported) void handleFiles([imported.file], 'one');
+            }}
             onConversionChange={chooseConversion}
-            onFiles={handleFiles}
+            onFiles={(files) => void handleFiles(files)}
             onReset={startOver}
             canSave={Boolean(user)}
             onSave={() => void saveDoc()}

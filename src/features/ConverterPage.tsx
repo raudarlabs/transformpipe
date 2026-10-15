@@ -33,6 +33,9 @@ import { crumbsForConversion } from '@/lib/breadcrumbs';
 import { STATIC_PAGES } from '@/lib/pages';
 import { articleCardImage } from '@/lib/covers';
 import { Dropzone } from '@/components/Dropzone';
+import { ImportView } from '@/components/ImportView';
+import type { ConversionProgress, SplitResult } from '@/lib/conversion';
+import { SPLITTABLE } from '@/lib/split';
 import { PasteBox } from '@/components/PasteBox';
 import {
   type Conversion,
@@ -106,6 +109,15 @@ interface ConverterPageProps {
   conversion: Conversion;
   doc: ConvertedDoc | null;
   isBusy: boolean;
+  /** How far the conversion running now has got. */
+  progress: ConversionProgress | null;
+  /** An export read as its pages, waiting to be kept. */
+  imported: { split: SplitResult; kind: ConversionId } | null;
+  /** Whether an export of many pages is read as a folder of them or as one document. */
+  importMode: 'pages' | 'one';
+  onImportModeChange: (mode: 'pages' | 'one') => void;
+  onImportSaved: (folderId: string) => void;
+  onImportAsOne: () => void;
   onConversionChange: (id: ConversionId) => void;
   onFiles: (files: File[]) => void;
   onReset: () => void;
@@ -121,6 +133,12 @@ export function ConverterPage({
   conversion,
   doc,
   isBusy,
+  progress,
+  imported,
+  importMode,
+  onImportModeChange,
+  onImportSaved,
+  onImportAsOne,
   onConversionChange,
   onFiles,
   onReset,
@@ -319,6 +337,27 @@ export function ConverterPage({
     [doc, theme]
   );
 
+  /* An export kept as its pages has a screen of its own until it is saved or set aside. */
+  if (imported && !doc) {
+    return (
+      <ImportView
+        split={imported.split}
+        kind={imported.kind}
+        canSave={canSave}
+        onSaved={onImportSaved}
+        onOneDocument={onImportAsOne}
+        onReset={onReset}
+      />
+    );
+  }
+
+  /* What the dropzone says while it works, so a long conversion is visibly a long conversion. */
+  const progressText = !progress
+    ? undefined
+    : progress.stage === 'pages'
+      ? t('convert.progress.pages', { done: progress.done, total: progress.total })
+      : t(progress.stage === 'rendering' ? 'convert.progress.rendering' : 'convert.progress.reading');
+
   if (!doc) {
     return (
       <div className="flex flex-col gap-6">
@@ -345,6 +384,7 @@ export function ConverterPage({
 
         <Dropzone
           isBusy={isBusy}
+          progress={progressText}
           extensions={conversion.extensions}
           title={t('converter.dropzone.title', {
             extension: conversion.extensions[0],
@@ -352,6 +392,29 @@ export function ConverterPage({
           hint={words.hint}
           onFiles={onFiles}
         />
+
+        {SPLITTABLE.has(conversion.id) && (
+          <div role="radiogroup" aria-label={t('import.mode.label')} className="flex flex-wrap items-center justify-center gap-2 text-sm">
+            <span className="text-ink-secondary">{t('import.mode.label')}</span>
+            {(['pages', 'one'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                role="radio"
+                aria-checked={importMode === mode}
+                onClick={() => onImportModeChange(mode)}
+                className={cn(
+                  'rounded-full border px-3 py-1',
+                  importMode === mode
+                    ? 'border-brand-tertiary bg-surface-accent text-ink-primary'
+                    : 'border-stroke text-ink-secondary hover:border-brand-tertiary'
+                )}
+              >
+                {t(mode === 'pages' ? 'import.mode.pages' : 'import.mode.one')}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/*
          * Word, Notion, Confluence, Obsidian and Excel are the exceptions: each takes a binary or

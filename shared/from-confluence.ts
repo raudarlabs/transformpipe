@@ -78,14 +78,23 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
   }
 
   const shared = pictureBudget();
+  /* The space's home page is its index.html, and it comes first, the way the space opens on it. */
+  const ordered = [
+    ...pages.filter((page) => /(^|\/)index\.html$/i.test(page.path)),
+    ...pages.filter((page) => !/(^|\/)index\.html$/i.test(page.path)),
+  ];
 
-  return pages.map((page, index) => {
-    onProgress?.(index + 1, pages.length);
+  return ordered.map((page, index) => {
+    onProgress?.(index + 1, ordered.length);
 
     const title = titleFromHtml(page.text) ?? titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
     const markdown = embedPictures(
-      withoutDuplicateTitle(htmlToMarkdown(page.text), title),
+      // The breadcrumbs are where the page is filed, which the folders now say; as text they are noise.
+      withoutDuplicateTitle(
+        htmlToMarkdown(page.text.replace(/<div[^>]*id="breadcrumb-section"[^>]*>[\s\S]*?<\/ol>\s*<\/div>/i, '')),
+        title
+      ),
       pictureFinder(pictures, folder),
       perPage ? pictureBudget() : shared
     );
