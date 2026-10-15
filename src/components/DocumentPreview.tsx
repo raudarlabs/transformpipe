@@ -4,25 +4,77 @@ import {
   MD_DOC_STYLE,
   MD_PREVIEW_STYLE,
 } from '@shared/md-doc-css';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { DiagramViewer } from './DiagramViewer';
 import { TableViewer } from './TableViewer';
 import { inlineDiagrams } from '@/lib/mermaid';
 import { useT } from '@/lib/i18n/context';
 import { useTheme } from '@/lib/theme';
+import { IconButton } from '@/ui/components/IconButton';
 import { cn } from '@/ui/lib/utils';
 
 interface DocumentPreviewProps {
   html: string;
   className?: string;
+  /**
+   * Laid out as a book: two pages side by side, turned rather than scrolled. One page on a screen
+   * too narrow for two.
+   */
+  book?: boolean;
 }
+
+/** Between the two pages of a spread, and between one spread and the next. */
+const GUTTER = 64;
+/** Narrower than this, a spread is one page: two columns of a dozen words each read worse than one. */
+const TWO_PAGES_FROM = 720;
+
+/*
+ * The book's own rules, on top of the document's. The text flows into columns of the sheet's
+ * height and on to the right; the sheet shows one spread of them and moves by a spread at a time.
+ * A heading stays with what follows it, and a picture, a table, a diagram or a code block is not
+ * cut across two pages — one taller than a page is scaled to fit rather than lost off the bottom.
+ */
+const BOOK_STYLE = `
+.md-book { position: relative; overflow: hidden; }
+.md-book .md-doc {
+  column-fill: auto;
+  overflow: visible;
+  font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, Cambria, serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-align: justify;
+  hyphens: auto;
+  orphans: 2;
+  widows: 2;
+}
+.md-book .md-doc :is(h1, h2, h3, h4, h5, h6) { text-align: left; hyphens: manual; break-after: avoid-column; }
+/* Text runs on from one page to the next, as in a book; what cannot be read in halves does not. */
+.md-book .md-doc :is(pre, table, figure, img, svg, .md-table, .md-diagram-frame, .md-table-frame, .md-callout) { break-inside: avoid-column; }
+.md-book .md-doc :is(img, svg, video) { max-width: 100%; max-height: var(--md-book-height); object-fit: contain; }
+.md-book .md-doc :is(pre, table, figure, .md-table, .md-diagram-frame, .md-table-frame) { max-height: var(--md-book-height); overflow: auto; text-align: left; }
+.md-book .md-doc :is(pre, code) { font-family: var(--md-mono, ui-monospace, monospace); }
+.md-book-nav { opacity: 0.55; transition: opacity 160ms ease; }
+.md-book-nav:hover, .md-book-nav:focus-within { opacity: 1; }
+/*
+ * Full screen is the reading room: no card around the pages, the spread as wide as the screen
+ * allows and as tall, the way a reader app lays a book open.
+ */
+.md-preview-frame:fullscreen .md-sheet:has(.md-book) {
+  max-width: 96rem;
+  padding: 2.5rem 4rem 1.5rem;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+`;
 
 /**
  * Renders the converted fragment with exactly the stylesheet that ships inside the exported file,
  * so "preview" and "downloaded .html" always match — right down to the sheet's own background,
  * which follows the app theme in both places.
  */
-export function DocumentPreview({ html, className }: DocumentPreviewProps) {
+export function DocumentPreview({ html, className, book: wantsBook = false }: DocumentPreviewProps) {
   const { theme } = useTheme();
   const t = useT();
   const doc = useRef<HTMLDivElement>(null);
@@ -108,6 +160,121 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
     }
   });
 
+  /*
+   * The book: where it is, how many spreads there are, and how wide one is. Measured from the
+   * laid-out columns, never guessed: a spread is the sheet's width plus one gutter, and the number
+   * of them is how far the last column reaches.
+   */
+  const sheet = useRef<HTMLDivElement>(null);
+  const [spread, setSpread] = useState(0);
+  const [book, setBook] = useState<{ spreads: number; width: number; columns: 1 | 2; height: number } | null>(null);
+
+  const measure = useCallback(() => {
+    const frame = sheet.current;
+    const content = doc.current;
+
+    if (!wantsBook || !frame || !content) return;
+
+    const width = frame.clientWidth;
+    const columns = width >= TWO_PAGES_FROM ? 2 : 1;
+    // A page is as tall as the screen allows once the header, the sheet's padding and the page
+    // controls are taken off — the same height wherever the sheet happens to be scrolled to.
+    const height = Math.max(360, Math.round(window.innerHeight - (document.fullscreenElement ? 150 : 250)));
+
+    content.style.height = `${height}px`;
+    content.style.columnCount = String(columns);
+    content.style.columnGap = `${GUTTER}px`;
+    content.style.setProperty('--md-book-height', `${height - 8}px`);
+
+    const spreads = Math.max(1, Math.round((content.scrollWidth + GUTTER) / (width + GUTTER)));
+
+    setBook((was) => {
+      // Keep the reader on the same part of the text when the window changes size.
+      if (was && was.spreads !== spreads) {
+        setSpread((at) => Math.min(spreads - 1, Math.round((at / Math.max(1, was.spreads - 1)) * (spreads - 1))));
+      }
+
+      return { spreads, width, columns, height };
+    });
+  }, [wantsBook]);
+
+  /* null before the first render, so a book that was on when the page loaded does not scroll it. */
+  const wasBook = useRef<boolean | null>(null);
+
+  useLayoutEffect(() => {
+    const content = doc.current;
+
+    if (!wantsBook) {
+      wasBook.current = false;
+      setBook(null);
+      setSpread(0);
+
+      if (content) {
+        content.style.height = '';
+        content.style.columnCount = '';
+        content.style.columnGap = '';
+      }
+
+      return;
+    }
+
+    measure();
+
+    // Turning the book on brings it to the top of the screen, where a whole spread fits — only
+    // when it was just turned on, not every time a page that remembers it loads.
+    if (wasBook.current === false) {
+      sheet.current?.closest('.md-sheet')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    wasBook.current = true;
+
+    const watch = new ResizeObserver(() => measure());
+
+    if (sheet.current) watch.observe(sheet.current);
+    window.addEventListener('resize', measure);
+
+    return () => {
+      watch.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [wantsBook, shown, measure]);
+
+  /* A new document opens on its first spread. */
+  useEffect(() => setSpread(0), [html]);
+
+  const turn = useCallback(
+    (by: number) => setSpread((at) => Math.max(0, Math.min((book?.spreads ?? 1) - 1, at + by))),
+    [book]
+  );
+
+  /* The keys a reader expects of a book, unless they are typing somewhere. */
+  useEffect(() => {
+    if (!wantsBook) return;
+
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target instanceof Element ? event.target : null;
+
+      if (target?.closest('input, textarea, select, [contenteditable="true"], [role="dialog"]') || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        event.preventDefault();
+        turn(1);
+      } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        turn(-1);
+      } else if (event.key === 'Home') {
+        setSpread(0);
+      } else if (event.key === 'End') {
+        setSpread((book?.spreads ?? 1) - 1);
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+
+    return () => window.removeEventListener('keydown', onKey);
+  }, [wantsBook, turn, book]);
+
+  /* A swipe across the page turns it, the way a phone's reader does. */
+  const touch = useRef<number | null>(null);
+
   /* The same object for the same markup, so a render for any other reason leaves the DOM alone. */
   const markup = useMemo(() => ({ __html: shown }), [shown]);
 
@@ -139,16 +306,78 @@ export function DocumentPreview({ html, className }: DocumentPreviewProps) {
       {/* The frame around the sheet paints the page background, so it needs the palette too. */}
       <style>{`${mdDocTheme(theme, '.md-doc, .md-sheet, .md-preview-frame')}\n${MD_DOC_STYLE}\n${MD_PREVIEW_STYLE}\n${mdArticleSurface(theme)}`}</style>
 
+      {wantsBook && <style>{BOOK_STYLE}</style>}
+
       <div className={cn('md-sheet', className)}>
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: the clicks are on the buttons inside it; this only listens for them */}
         <div
-          ref={doc}
-          className="md-doc"
-          onClick={(event) => open(event, false)}
-          onDoubleClick={(event) => open(event, true)}
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitised in markdownToHtml, and the diagrams again in inlineDiagrams
-          dangerouslySetInnerHTML={markup}
-        />
+          ref={sheet}
+          className={cn(wantsBook && 'md-book')}
+          onClick={(event) => {
+            /*
+             * A click on the outer edge of a page turns it, as in a reader app — not on a link, a
+             * button or a selection, which are what the reader was reaching for.
+             */
+            if (!book || (event.target as Element).closest('a, button, input, summary, .md-expand')) return;
+            if (window.getSelection()?.toString()) return;
+
+            const box = event.currentTarget.getBoundingClientRect();
+            const x = (event.clientX - box.left) / box.width;
+
+            if (x < 0.15) turn(-1);
+            else if (x > 0.85) turn(1);
+          }}
+          onTouchStart={(event) => {
+            if (wantsBook) touch.current = event.touches[0]?.clientX ?? null;
+          }}
+          onTouchEnd={(event) => {
+            const from = touch.current;
+            const to = event.changedTouches[0]?.clientX;
+
+            touch.current = null;
+            if (from !== null && to !== undefined && Math.abs(to - from) > 50) turn(to < from ? 1 : -1);
+          }}
+        >
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: the clicks are on the buttons inside it; this only listens for them */}
+          <div
+            ref={doc}
+            className="md-doc"
+            style={
+              book
+                ? { transform: `translateX(-${spread * (book.width + GUTTER)}px)`, transition: 'transform 260ms ease' }
+                : undefined
+            }
+            onClick={(event) => open(event, false)}
+            onDoubleClick={(event) => open(event, true)}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: sanitised in markdownToHtml, and the diagrams again in inlineDiagrams
+            dangerouslySetInnerHTML={markup}
+          />
+        </div>
+
+        {book && (
+          <nav aria-label={t('book.nav')} className="md-book-nav mt-3 flex items-center justify-center gap-3 text-ink-secondary text-xs">
+            <IconButton variant="tertiary" size="sm" aria-label={t('book.previous')} disabled={spread === 0} onClick={() => turn(-1)}>
+              <ChevronLeft />
+            </IconButton>
+            <span aria-live="polite" className="min-w-36 text-center tabular-nums">
+              {book.columns === 2
+                ? t('book.pages', {
+                    from: spread * 2 + 1,
+                    to: Math.min(spread * 2 + 2, book.spreads * 2),
+                    total: book.spreads * 2,
+                  })
+                : t('book.page', { at: spread + 1, total: book.spreads })}
+            </span>
+            <IconButton
+              variant="tertiary"
+              size="sm"
+              aria-label={t('book.next')}
+              disabled={spread >= book.spreads - 1}
+              onClick={() => turn(1)}
+            >
+              <ChevronRight />
+            </IconButton>
+          </nav>
+        )}
       </div>
 
       {opened?.kind === 'diagram' && (

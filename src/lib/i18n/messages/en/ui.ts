@@ -363,6 +363,13 @@ export const ui: Content['ui'] = {
   'check.empty-href': 'A link that goes nowhere',
   'converter.tab.summary': 'AI Summary',
   'converter.fullscreen.enter': 'Read fullscreen',
+  'book.on': 'Read as a book: two pages',
+  'book.off': 'Read as one page',
+  'book.nav': 'Turn the pages',
+  'book.previous': 'Previous pages',
+  'book.next': 'Next pages',
+  'book.pages': 'Pages {from}–{to} of {total}',
+  'book.page': 'Page {at} of {total}',
   'converter.fullscreen.exit': 'Exit fullscreen',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Open the diagram full screen',

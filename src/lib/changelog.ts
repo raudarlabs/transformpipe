@@ -140,6 +140,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'Read a document as a book',
+    body:
+      'The book button beside Full screen lays a document out as two pages side by side, in a serif '
+      + 'face, turned with the arrows, the keyboard, a swipe or a click at the edge of a page. Text runs '
+      + 'on from one page to the next; a table, a picture or a block of code is never cut in half. On a '
+      + 'narrow screen it is one page at a time, and full screen opens the book across the whole screen.',
+  },
+  {
+    date: '2026-10-15',
     title: 'Two connector tools renamed to say what they do',
     body:
       'In the assistant connector, tp_convert_markdown is now tp_convert_from_markdown — it writes '

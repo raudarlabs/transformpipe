@@ -351,6 +351,13 @@ export const ui: Content['ui'] = {
   'check.empty-href': 'Un link che non porta da nessuna parte',
   'converter.tab.summary': 'Riepilogo IA',
   'converter.fullscreen.enter': 'Leggi a schermo intero',
+  'book.on': 'Leggi come un libro: due pagine',
+  'book.off': 'Leggi su una sola pagina',
+  'book.nav': 'Sfoglia le pagine',
+  'book.previous': 'Pagine precedenti',
+  'book.next': 'Pagine successive',
+  'book.pages': 'Pagine {from}–{to} di {total}',
+  'book.page': 'Pagina {at} di {total}',
   'converter.fullscreen.exit': 'Esci da schermo intero',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Apri lo schema a schermo intero',

@@ -8,6 +8,7 @@ import {
   FileCode2,
   FileText,
   Maximize2,
+  BookOpen,
   Minimize2,
   Printer,
   RefreshCw,
@@ -170,6 +171,23 @@ export function ConverterPage({
     overlaid,
     toggle: toggleFullscreen,
   } = useFullscreen(previewFrame);
+
+  /* Reading as a book — two pages turned rather than one scrolled — remembered in this browser. */
+  const [bookView, setBookViewState] = useState(() => {
+    try {
+      return localStorage.getItem('tp.bookView') === '1';
+    } catch {
+      return false;
+    }
+  });
+  const setBookView = (on: boolean) => {
+    setBookViewState(on);
+    try {
+      localStorage.setItem('tp.bookView', on ? '1' : '0');
+    } catch {
+      // A preference that cannot be kept is still the one in use now.
+    }
+  };
 
   const [summary, setSummary] = useState<string | null>(null);
   /** Asked for, and nothing written yet. */
@@ -827,27 +845,42 @@ export function ConverterPage({
             </TabsList>
           </div>
 
+          {/* The two ways to read the preview, side by side at the end of the row. */}
           {tab === 'preview' && (
-            <Hint
-              content={
-                isFullscreen
-                  ? t('converter.fullscreen.exit')
-                  : t('converter.fullscreen.enter')
-              }
-            >
-              <IconButton
-                variant="tertiary"
-                size="sm"
-                aria-label={
+            <div className="flex items-center gap-1">
+              <Hint content={bookView ? t('book.off') : t('book.on')}>
+                <IconButton
+                  variant="tertiary"
+                  className={cn(bookView && 'bg-surface-accent text-brand-tertiary')}
+                  size="sm"
+                  aria-label={bookView ? t('book.off') : t('book.on')}
+                  aria-pressed={bookView}
+                  onClick={() => setBookView(!bookView)}
+                >
+                  <BookOpen />
+                </IconButton>
+              </Hint>
+              <Hint
+                content={
                   isFullscreen
                     ? t('converter.fullscreen.exit')
                     : t('converter.fullscreen.enter')
                 }
-                onClick={toggleFullscreen}
               >
-                {isFullscreen ? <Minimize2 /> : <Maximize2 />}
-              </IconButton>
-            </Hint>
+                <IconButton
+                  variant="tertiary"
+                  size="sm"
+                  aria-label={
+                    isFullscreen
+                      ? t('converter.fullscreen.exit')
+                      : t('converter.fullscreen.enter')
+                  }
+                  onClick={toggleFullscreen}
+                >
+                  {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+                </IconButton>
+              </Hint>
+            </div>
           )}
         </div>
 
@@ -876,9 +909,14 @@ export function ConverterPage({
               </IconButton>
             )}
 
+            {/* Two pages want the width of two; one page keeps the measure a line reads best at. */}
             <DocumentPreview
               html={doc.html}
-              className="mx-auto max-w-3xl rounded-lg border border-stroke p-6 shadow-rest sm:p-10"
+              book={bookView}
+              className={cn(
+                'mx-auto rounded-lg border border-stroke p-6 shadow-rest sm:p-10',
+                bookView ? 'max-w-6xl' : 'max-w-3xl'
+              )}
             />
 
             <ScrollToTop />

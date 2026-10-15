@@ -359,6 +359,13 @@ export const ui: Content['ui'] = {
   'check.empty-href': 'Un enlace que no lleva a ninguna parte',
   'converter.tab.summary': 'Resumen con IA',
   'converter.fullscreen.enter': 'Leer a pantalla completa',
+  'book.on': 'Leer como un libro: dos páginas',
+  'book.off': 'Leer en una sola página',
+  'book.nav': 'Pasar las páginas',
+  'book.previous': 'Páginas anteriores',
+  'book.next': 'Páginas siguientes',
+  'book.pages': 'Páginas {from}–{to} de {total}',
+  'book.page': 'Página {at} de {total}',
   'converter.fullscreen.exit': 'Salir de pantalla completa',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Abrir el diagrama a pantalla completa',

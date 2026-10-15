@@ -354,6 +354,13 @@ export const ui: Content['ui'] = {
   'check.empty-href': 'Un lien qui ne mène nulle part',
   'converter.tab.summary': 'Résumé IA',
   'converter.fullscreen.enter': 'Lire en plein écran',
+  'book.on': 'Lire comme un livre : deux pages',
+  'book.off': 'Lire sur une seule page',
+  'book.nav': 'Tourner les pages',
+  'book.previous': 'Pages précédentes',
+  'book.next': 'Pages suivantes',
+  'book.pages': 'Pages {from}–{to} sur {total}',
+  'book.page': 'Page {at} sur {total}',
   'converter.fullscreen.exit': 'Quitter le plein écran',
   /* A diagram in the preview, opened over the whole screen — see DiagramViewer. */
   'diagram.open': 'Ouvrir le schéma en plein écran',
