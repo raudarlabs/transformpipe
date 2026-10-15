@@ -717,16 +717,26 @@ export function HistoryPage({
         />
       )}
       <div className="flex min-w-0 flex-col gap-4">
-      {isSynced && !isShared && (
-        <FolderHeader
-          folders={folders}
-          current={folder}
-          counts={folderCounts}
-          onOpen={openFolder}
-          onChanged={folderChanged}
-          onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
-        />
-      )}
+      {/*
+        * The same row in both views, so switching to Shared with me moves nothing below it: a
+        * folder's trail and actions here, the view's own name there.
+        */}
+      {isSynced &&
+        (isShared ? (
+          <div className="flex min-h-9 items-center gap-1.5 px-1 font-semibold text-ink-primary text-sm">
+            <Users className="size-4" />
+            {t('history.chip.shared')}
+          </div>
+        ) : (
+          <FolderHeader
+            folders={folders}
+            current={folder}
+            counts={folderCounts}
+            onOpen={openFolder}
+            onChanged={folderChanged}
+            onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
+          />
+        ))}
 
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-[12rem] flex-1">
@@ -764,9 +774,10 @@ export function HistoryPage({
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
-                variant={chip !== 'all' && chip !== 'shared' ? 'primaryTertiary' : 'secondary'}
+                variant="secondary"
                 size="sm"
                 rightSlot={<ChevronDown />}
+                className={cn(chip !== 'all' && chip !== 'shared' && 'border-brand-tertiary text-brand-tertiary')}
               >
                 {chip === 'all' || chip === 'shared'
                   ? t('history.chip.all')
@@ -788,10 +799,12 @@ export function HistoryPage({
         {/* Nobody can share with a browser: this belongs to an account. */}
         {isSynced && (
           <Button
-            variant={isShared ? 'primaryTertiary' : 'secondary'}
+            variant="secondary"
             size="sm"
             leftSlot={<Users />}
             aria-pressed={isShared}
+            // Pressed is a colour, not another button: the same border and size either way.
+            className={cn(isShared && 'border-brand-tertiary text-brand-tertiary')}
             onClick={() => pickChip(isShared ? 'all' : 'shared')}
           >
             {t('history.chip.shared')}
