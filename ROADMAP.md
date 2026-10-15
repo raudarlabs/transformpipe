@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 15 October 2026.** Next up: **Folders in the API, the CLI and the MCP connector**.
+**Updated 15 October 2026.** Next up: **Comparing** — see Next, in order.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -14,24 +14,8 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 
 ## Now
 
-- [ ] **Folders, and an export as the pages it is made of** — three steps, decided 15 October
-      1. ~~Folders with subfolders.~~ **Shipped 15 October.** A Notion, Confluence or Obsidian export (and an EPUB, by chapter)
-         becomes one document per page inside a folder that mirrors the export's tree, saved in
-         batches with progress, conversion in a worker so the page never freezes; the history is a
-         tree. "One document" stays as an option. Signed out: the tree locally, and a .zip of .md
-         files in the same structure
-      2. ~~Links between pages point at the saved pages; pictures are budgeted per page, not per
-         export; one read-only link for a whole folder~~ **Shipped 15 October**, and every
-         picture of an export kept the same day (shrunk on the way in). Left: folders in the API,
-         the CLI and the connector
-      3. ~~Members by email, read-only first~~ **Shipped 15 October** as sharing: a folder is
-         shared the way a document is — a link with an end date and a password, or named
-         addresses that sign in — and its reader can save all of it to their own account, links
-         between pages kept. "Shared with me" lists folders too. Left, for all three steps:
-         folders in the API, the CLI and the MCP connector
-      · this is the Projects item of 14 October, grown: a project is a folder. The account limits
-      (500 documents, 100 MB) do not survive one Confluence space and are decided before step 1
-      ships. `big-files-wip` holds the worker
+Nothing in flight: the folders item shipped whole on 15 October (see Shipped). The next item is
+the first under Next.
 
 ## Next, in order
 
@@ -116,6 +100,13 @@ says otherwise.
 
 ### 15 October
 
+- [x] **Folders, steps 2 and 3, and folders everywhere** — links between imported pages point at
+      the saved pages, every picture of an export kept; a folder shared like a document (a link
+      with an end date and a password, or named addresses), saved whole to the reader's account
+      with a progress bar; "Shared with me" lists folders; the history's folders are a tree with
+      drag and drop and a right-click menu; folders in the API, the CLI (`tp folders`, `mkdir`,
+      `mv`, `share-folder`, `rmdir`, `--folder`) and the MCP connector (four tools, `folder` on
+      list and save)
 - [x] **Folders, step 1, and an export as the pages it is made of** — `m2h_folder` (a tree per
       account), batch saving, conversion in a worker with a page count, the import's tree with a
       preview, a .zip in the same layout (plain or for Obsidian), folders in the history. Links

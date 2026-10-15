@@ -170,7 +170,8 @@ export const docsPage = {
    */
   'docs.api.post':
     'Markdown as the body ({name}) or JSON {json}. {share} publishes it in the same call. {kindHtml}, {kindCsv}, {kindJson} or {word} converts the body first, so a page, a spreadsheet, an API response or a {docx} can be posted as it is. Every conversion has a kind of its own — fifteen of them, named after the page each belongs to — and a file that is bytes rather than text is posted as the body.',
-  'docs.api.list': 'The newest 500, with sizes, stats and share state.',
+  'docs.api.list':
+    'The newest 5000, with sizes, stats, share state and the folder each is in. ?folder=<id> narrows it to a folder and every folder under it; ?folder=none to the documents filed nowhere.',
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
   'docs.api.delete': 'Removes the row and its stored source.',
@@ -183,6 +184,12 @@ export const docsPage = {
   'docs.api.views':
     'The link\'s recent opens, newest first, each with {who} when the document is shared with specific people.',
   'docs.api.usage': 'What the account is using, against the limits.',
+  'docs.api.folders':
+    'The folder tree: each folder with its parent and how many documents it holds. POST makes one ({name, parent_id}), PATCH renames or moves it, DELETE removes it — adding ?contents=delete removes what is in it too. POST /api/v1/documents?folder=<id> files a new document as it is made.',
+  'docs.api.move':
+    'Files documents in a folder, or takes them out of every folder with folder_id null.',
+  'docs.api.folderShare':
+    'A folder shared the way a document is: the same three modes, end date and password, at /f/<token>; POST or DELETE …/share/people adds or removes an address.',
   /** `{shape}` is the error body itself. */
   'docs.api.errors':
     'Errors are {shape} with a status that means what it says: 401 unknown key, 404 not yours, 413 the document is over 4 MB, 403 the account is out of room, 429 too fast, 410 the source is gone.',
@@ -224,7 +231,7 @@ export const docsPage = {
   'docs.assistant.auth':
     'There is no key to paste. The first call comes back unauthorised, your assistant follows that to a page here, and you sign in with the same account you already use and approve a named client — which is why the page tells you which address it is about to act as. What it gets is a token of ours, good for your documents and nothing else: not your account, not your sign-in, and not your API keys. Disconnect it from the account menu, under MCP connector, and it stops working on the next call.',
   'docs.assistant.tools':
-    'The tools are the same code as the API above, called in process, so a conversation and a script get the same answer. Four cases take an explicit `confirm: true`, because they disclose, change what others read, or destroy: saving or sharing a document as a public link or with named people, updating one that is already shared, and deleting, which removes exactly one document for good. Without it the call is refused and nothing changes.',
+    'The tools are the same code as the API above, called in process, so a conversation and a script get the same answer. Five cases take an explicit `confirm: true`, because they disclose, change what others read, or destroy: saving or sharing a document as a public link or with named people, sharing a folder the same way, filing a document in a folder that is shared, updating one that is already shared, and deleting, which removes exactly one document for good. Without it the call is refused and nothing changes.',
   'docs.assistant.cards':
     'An assistant that draws them gets cards rather than paragraphs. A saved or opened document arrives as a card with its counts, its first lines and a button that opens it here; asking what is on the account draws a list whose rows open a document. A share shows who can open the document and how often it has been opened, with a button for the shared link; an update shows the lines it changed; the history is a timeline in which each earlier text opens with a button; and a call refused for want of a confirmation comes back as a card with a button that confirms it. The text answer is unchanged underneath, so a client that draws nothing loses nothing.',
 

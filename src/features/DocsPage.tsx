@@ -537,6 +537,21 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
                 ),
               },
               {
+                key: 'folders',
+                term: <InlineCode>GET | POST | PATCH | DELETE /api/v1/folders[/:id]</InlineCode>,
+                text: t('docs.api.folders'),
+              },
+              {
+                key: 'move',
+                term: <InlineCode>PATCH /api/v1/documents/move</InlineCode>,
+                text: t('docs.api.move'),
+              },
+              {
+                key: 'folder-share',
+                term: <InlineCode>GET | PUT /api/v1/folders/:id/share</InlineCode>,
+                text: t('docs.api.folderShare'),
+              },
+              {
                 key: 'usage',
                 term: <InlineCode>GET /api/v1/usage</InlineCode>,
                 text: t('docs.api.usage'),
@@ -602,7 +617,12 @@ node cli/tp.mjs push docs/*.md --merge --share --name handbook.md
 node cli/tp.mjs push page.html            # converted to Markdown on the way in
 node cli/tp.mjs list
 node cli/tp.mjs rm <id>
-node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 documents`}</CodeBlock>
+node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 documents
+node cli/tp.mjs folders                   # the folder tree, with ids
+node cli/tp.mjs push notes.md --folder "Team/Notes"   # missing folders are made
+node cli/tp.mjs list --folder "Team/Notes"
+node cli/tp.mjs mv <id> "Team/Archive"    # - for no folder
+node cli/tp.mjs share-folder "Team/Notes" --link      # prints the folder's link`}</CodeBlock>
           <p>
             <Rich
               text={t('docs.cli.extensions')}

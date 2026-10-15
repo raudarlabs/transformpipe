@@ -32,10 +32,14 @@ export const MCP_TOOL_NAMES = [
   'tp_save_document',
   'tp_update_document',
   'tp_list_documents',
+  'tp_list_folders',
+  'tp_create_folder',
+  'tp_move_documents',
   'tp_get_document',
   'tp_summarize_document',
   'tp_document_versions',
   'tp_share_document',
+  'tp_share_folder',
   'tp_usage',
   'tp_delete_document',
 ] as const;
@@ -50,10 +54,16 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_convert_to_markdown:
     'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
   tp_save_document:
-    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in. Publishing it in the same call takes an explicit confirmation.',
+    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in — and files it in a folder, making the folder if it is missing. Publishing it in the same call, or into a shared folder, takes an explicit confirmation.',
   tp_update_document:
     'New text for a document already on the account — the same id and the same link, the old text kept as a revision. Changing one that is shared takes an explicit confirmation.',
-  tp_list_documents: 'What is on the account, with the id each other tool takes.',
+  tp_list_documents:
+    'What is on the account, with the id each other tool takes and the folder each is in — or only what is in one folder.',
+  tp_list_folders:
+    'The account\'s folders as a tree: each with its id, how many documents it holds, and whether it is shared.',
+  tp_create_folder: 'Makes a folder, at the top or inside another, named by its id or its path.',
+  tp_move_documents:
+    'Files documents in a folder, or takes them out of every folder. Moving them into a shared folder takes an explicit confirmation.',
   tp_get_document: 'One document, as its Markdown source or as rendered HTML.',
   tp_summarize_document:
     'A short summary of a document, cached on the account so asking again is free.',
@@ -61,6 +71,8 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
     'A document\'s history: the texts its updates replaced, each readable again, and any documents linked to it as versions.',
   tp_share_document:
     'Changes who may open a document: a link, named addresses, or nobody — and adds or removes one reader without touching the rest. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
+  tp_share_folder:
+    'Changes who may open a folder and everything under it: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
   tp_usage: 'What the account is using against its limits.',
   tp_delete_document:
     'Deletes one document, permanently, and only with an explicit confirmation.',

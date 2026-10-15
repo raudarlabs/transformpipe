@@ -10,6 +10,7 @@ import { FAQ_ENTRIES } from '../src/lib/faq.js';
 import { MCP_TOOL_NAMES, type McpToolName } from '../src/lib/mcp-facts.js';
 import { selfOrigin } from './auth.js';
 import { type Caller, cameFromUs, mayWrite, resolveCaller } from './caller.js';
+import { looksLikeId } from './db.js';
 import { countCall, QUOTA, RATE } from './limits.js';
 import { markdownToHtml } from './render.js';
 import {
@@ -139,9 +140,13 @@ const MAX_TEXT = 40_000;
 
 const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
 
-Four of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document and tp_share_document require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. On tp_share_document, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+Six of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document, tp_share_document and tp_share_folder require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. A shared folder discloses everything in it and in the folders under it, so tp_save_document and tp_move_documents also require it when the folder a document goes into is shared or sits inside one that is. On tp_share_document and tp_share_folder, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+
+Most answers are also drawn for the person as a card — a document, a list, a conversion, a share, a confirmation with its button. When a card is shown, what is on it has been said: do not repeat it in text, not as a list, a summary or a restatement of its numbers and names. Write only what the card does not say — the answer to the question that was asked, an observation drawn from what it shows, or the next step — and write nothing when the card already answers it. Only where no card can be shown does the text stand in for it, briefly.
 
 To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
+
+Documents can be filed in folders. Every tool that takes a \`folder\` takes its id or its path from the top — "Devart AI/Home", with \`/\` or \`›\` between the names — and tp_list_folders prints both.
 
 tp_convert_markdown and tp_convert_to_markdown return the converted document through the conversation and are bounded at 40,000 characters; tp_save_document returns an id, a size and — when shared — a URL instead.
 
@@ -227,8 +232,16 @@ const forConversion = (name: string, markdown: string) => ({
   excerpt: markdown.slice(0, 600),
 });
 
+/*
+ * Said in the answer itself and not only in INSTRUCTIONS: the card's text is what the model reads
+ * after every call, and the instructions are read once, if the host passes them on at all. Without
+ * it the person saw each answer twice — the card, and under it the same list in sentences.
+ */
+const CARD_NOTE =
+  '\n\n(Shown to the person as a card with all of the above. Do not repeat it; add only what the card does not say, or nothing. If no card can be shown here, say it briefly instead.)';
+
 const card = (text: string, data: Record<string, unknown>) => ({
-  content: [{ type: 'text', text }],
+  content: [{ type: 'text', text: text + CARD_NOTE }],
   structuredContent: data,
   isError: false,
 });
@@ -254,7 +267,14 @@ const refusedCard = (
   const carried = typeof markdown !== 'string' || markdown.length <= CONFIRM_TEXT_LIMIT;
 
   return {
-    content: [{ type: 'text', text }],
+    content: [
+      {
+        type: 'text',
+        text: carried
+          ? `${text}\n\n(The card shows the person what would happen, with a button to go ahead. Do not repeat it; one line asking them to decide is enough.)`
+          : text,
+      },
+    ],
     structuredContent: carried ? { ...data, confirm } : { ...data, confirmNote: confirm.note },
     isError: true,
   };
@@ -585,26 +605,32 @@ const linkOpens = (views: number | undefined, lastViewedAt: string | null | unde
         .toISOString()
         .slice(0, 10)}.`;
 
-const describe = (document: {
-  id: string;
-  name: string;
-  /* Which conversion made it: the row's address on the site is that conversion's page. */
-  kind: string;
-  size: number;
-  words?: number;
-  created_at: string;
-  share: {
-    mode: string;
-    url: string | null;
-    expires_at?: string | null;
-    views?: number;
-    last_viewed_at?: string | null;
-    has_password?: boolean;
-  };
-}) =>
+const describe = (
+  document: {
+    id: string;
+    name: string;
+    /* Which conversion made it: the row's address on the site is that conversion's page. */
+    kind: string;
+    size: number;
+    words?: number;
+    created_at: string;
+    share: {
+      mode: string;
+      url: string | null;
+      expires_at?: string | null;
+      views?: number;
+      last_viewed_at?: string | null;
+      has_password?: boolean;
+    };
+    folder_id?: string | null;
+  },
+  /* Where it is filed, as `pathOf` prints it — or nothing, for a document filed nowhere. */
+  folder = ''
+) =>
   [
     `${document.name}`,
     `  id: ${document.id}`,
+    folder ? `  in ${folder}` : null,
     `  ${bytes(document.size)}${document.words ? ` · ${document.words} words` : ''} · ${new Date(
       document.created_at
     ).toISOString().slice(0, 10)} · ${document.share.mode}`,
@@ -619,6 +645,278 @@ const describe = (document: {
   ]
     .filter(Boolean)
     .join('\n');
+
+/* ---------------------------------------------------------------- folders */
+
+/*
+ * Folders, as a tool takes them: by id, or by the path a person would say.
+ *
+ * Nobody says an id. They say "put it in Devart AI, under Home", so every folder argument takes
+ * either: an id as tp_list_folders prints it, or names from the top separated by `/` or `›` — the
+ * second because that is how the tools print a path, and a path printed by one tool should be one
+ * the next tool takes back. Names are matched without regard to case; nobody remembers whether it
+ * was "Home" or "home", and an account with both is one where the tool asks rather than guesses.
+ *
+ * A path that does not start at the top is accepted when it names exactly one folder. "Guides" is
+ * enough while the account has one Guides, and a question the moment it has two — a document filed
+ * in the wrong one of two folders with the same name is found by nobody.
+ *
+ * One GET of every folder answers all of it. An account's folders are rows in the hundreds at
+ * most, and walking them here is cheaper and simpler than a route per question.
+ */
+interface Folder {
+  id: string;
+  parent_id: string | null;
+  name: string;
+  share_token?: string | null;
+  share_mode?: 'private' | 'link' | 'people' | null;
+  /* Directly in this folder, not under it — `inside` adds the folders below. */
+  documents: number;
+}
+
+async function foldersOf(c: Context): Promise<{ ok: true; folders: Folder[] } | { ok: false; error: string }> {
+  const got = await callApi(c, '/api/v1/folders');
+
+  return got.status === 200 && Array.isArray(got.body?.folders)
+    ? { ok: true, folders: got.body.folders as Folder[] }
+    : { ok: false, error: got.body?.error ?? `Could not read the folders (${got.status}).` };
+}
+
+/** "Devart AI › Home › Guides" — how every tool prints a folder, and a path every tool takes back. */
+function pathOf(folders: Folder[], id: string | null | undefined): string {
+  const names: string[] = [];
+  const seen = new Set<string>();
+  let at = id ? folders.find((one) => one.id === id) : undefined;
+
+  // The API refuses a folder inside itself; the guard is for a list read half way through a move.
+  while (at && !seen.has(at.id)) {
+    seen.add(at.id);
+    names.unshift(at.name);
+    at = at.parent_id ? folders.find((one) => one.id === at!.parent_id) : undefined;
+  }
+
+  return names.join(' › ');
+}
+
+/** Every folder from this one down, itself first. */
+function below(folders: Folder[], id: string): Folder[] {
+  const found: Folder[] = [];
+  const queue = folders.filter((one) => one.id === id);
+
+  while (queue.length > 0) {
+    const one = queue.shift()!;
+
+    if (found.includes(one)) continue;
+    found.push(one);
+    queue.push(...folders.filter((child) => child.parent_id === one.id));
+  }
+
+  return found;
+}
+
+/** Documents in a folder and every folder under it — what the folder shows in the app. */
+const inside = (folders: Folder[], id: string) =>
+  below(folders, id).reduce((sum, one) => sum + (one.documents ?? 0), 0);
+
+/*
+ * The folder a document here would be read through: this one if it is shared, else the nearest
+ * one above it that is. A shared folder's page shows everything under it, so a document filed three
+ * levels down in a shared space is as public as one filed at its top.
+ */
+function sharedThrough(folders: Folder[], id: string | null | undefined): Folder | null {
+  const seen = new Set<string>();
+  let at = id ? folders.find((one) => one.id === id) : undefined;
+
+  while (at && !seen.has(at.id)) {
+    if (at.share_mode === 'link' || at.share_mode === 'people') return at;
+    seen.add(at.id);
+    at = at.parent_id ? folders.find((one) => one.id === at!.parent_id) : undefined;
+  }
+
+  return null;
+}
+
+const folderUrl = (c: Context, folder: Folder) =>
+  folder.share_token ? `${selfOrigin(c)}/f/${folder.share_token}` : null;
+
+const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+
+/** Names, each a child of the one before, starting under `from` — null is the top. */
+function walk(folders: Folder[], names: string[], from: string | null): Folder[] {
+  let parents: Array<string | null> = [from];
+  let found: Folder[] = [];
+
+  for (const name of names) {
+    found = folders.filter((one) => parents.includes(one.parent_id) && sameName(one.name, name));
+    parents = found.map((one) => one.id);
+
+    if (found.length === 0) break;
+  }
+
+  return found;
+}
+
+/** Folders whose path ends in these names, wherever it starts. */
+const endingIn = (folders: Folder[], names: string[]) =>
+  folders.filter((one) => {
+    let at: Folder | undefined = one;
+
+    for (let index = names.length - 1; index >= 0; index--) {
+      if (!at || !sameName(at.name, names[index])) return false;
+      at = at.parent_id ? folders.find((parent) => parent.id === at!.parent_id) : undefined;
+    }
+
+    return true;
+  });
+
+/*
+ * What a folder argument means, before anything is made: the folder, or — for a path that runs
+ * past what exists — the deepest folder on it that does, and the names still to make under it.
+ *
+ * Split from the making so a caller can look before it writes. tp_save_document needs to know
+ * whether the folder sits inside a shared one before it creates a single folder: a save that is
+ * then refused for want of `confirm` should leave nothing behind, not an empty folder per attempt.
+ */
+type FolderPlan =
+  | { ok: true; folder: Folder | null; parent: Folder | null; missing: string[] }
+  | { ok: false; error: string };
+
+function planFolder(
+  folders: Folder[],
+  value: unknown,
+  { create = false, base }: { create?: boolean; base?: Folder | null } = {}
+): FolderPlan {
+  const text = typeof value === 'string' ? value.trim() : '';
+
+  if (!text) return { ok: true, folder: null, parent: null, missing: [] };
+
+  if (base === undefined) {
+    const byId = folders.find((one) => one.id === text);
+
+    if (byId) return { ok: true, folder: byId, parent: null, missing: [] };
+
+    if (looksLikeId(text)) {
+      return { ok: false, error: `No folder on this account has the id ${text}. tp_list_folders lists them.` };
+    }
+  }
+
+  /* Under `base` when one is given; otherwise from the top, and failing that from anywhere. */
+  const look = (names: string[]) => {
+    if (base !== undefined) return walk(folders, names, base?.id ?? null);
+
+    const anchored = walk(folders, names, null);
+
+    return anchored.length > 0 ? anchored : endingIn(folders, names);
+  };
+  const ambiguous = (named: string, found: Folder[]): FolderPlan => ({
+    ok: false,
+    error: `"${named}" could be any of ${found.length} folders — ${found
+      .map((one) => `${pathOf(folders, one.id)} (id ${one.id})`)
+      .join(', ')}. Give the whole path from the top, or the id.`,
+  });
+
+  const names = text.split(/[/›]/).map((name) => name.trim()).filter(Boolean);
+
+  if (names.length === 0) return { ok: false, error: `"${text}" has separators in it and no folder name.` };
+
+  let found = look(names);
+
+  // A name with a slash in it — an imported page called "Q3/Q4" — is a name, not a path.
+  if (found.length === 0 && names.length > 1) found = look([text]);
+  if (found.length === 1) return { ok: true, folder: found[0], parent: null, missing: [] };
+  if (found.length > 1) return ambiguous(text, found);
+
+  if (!create) {
+    return {
+      ok: false,
+      error: `There is no folder "${text}" on this account. tp_list_folders lists them, and tp_create_folder makes one.`,
+    };
+  }
+
+  /* The longest part of the path that exists, and the names after it to make. */
+  for (let length = names.length - 1; length > 0; length--) {
+    const head = look(names.slice(0, length));
+
+    if (head.length > 1) return ambiguous(names.slice(0, length).join(' › '), head);
+    if (head.length === 1) return { ok: true, folder: null, parent: head[0], missing: names.slice(length) };
+  }
+
+  return { ok: true, folder: null, parent: base ?? null, missing: names };
+}
+
+/** The folders a plan says are missing, made in order; `folders` gains each one as it is made. */
+async function makeFolders(
+  c: Context,
+  folders: Folder[],
+  plan: Extract<FolderPlan, { ok: true }>
+): Promise<{ ok: true; folder: Folder | null; created: Folder[] } | { ok: false; error: string }> {
+  let parent = plan.parent;
+  const created: Folder[] = [];
+
+  if (plan.folder || plan.missing.length === 0) return { ok: true, folder: plan.folder, created };
+
+  for (const name of plan.missing) {
+    const made = await callApi(c, '/api/v1/folders', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name, parent_id: parent?.id ?? null }),
+    });
+
+    if (made.status !== 201) {
+      return {
+        ok: false,
+        error: `${made.body?.error ?? `The folder "${name}" was not made (${made.status}).`}${
+          created.length ? ` Made before that: ${pathOf(folders, created.at(-1)!.id)}.` : ''
+        }`,
+      };
+    }
+
+    // The share columns are not in the answer; a folder made a moment ago is shared with nobody.
+    parent = { ...(made.body.folder as Folder), share_mode: 'private', share_token: null, documents: 0 };
+    folders.push(parent);
+    created.push(parent);
+  }
+
+  return { ok: true, folder: parent, created };
+}
+
+/**
+ * A folder argument, resolved: the one helper every folder-taking tool goes through, so "Devart
+ * AI/Home" means the same folder to all of them. With `create`, the missing end of a path is made.
+ */
+async function resolveFolder(
+  c: Context,
+  value: unknown,
+  options: { create?: boolean; base?: Folder | null; folders?: Folder[] } = {}
+): Promise<
+  | { ok: true; folder: Folder | null; path: string; created: Folder[]; folders: Folder[] }
+  | { ok: false; error: string }
+> {
+  let folders = options.folders;
+
+  if (!folders) {
+    const read = await foldersOf(c);
+
+    if (!read.ok) return read;
+    folders = read.folders;
+  }
+
+  const plan = planFolder(folders, value, options);
+
+  if (!plan.ok) return plan;
+
+  const made = await makeFolders(c, folders, plan);
+
+  if (!made.ok) return made;
+
+  return { ...made, path: made.folder ? pathOf(folders, made.folder.id) : '', folders };
+}
+
+/** "Devart AI, which is shared by link — …" — names the folder and who reads it, so a person knows what they agree to. */
+const throughWords = (folders: Folder[], folder: Folder) =>
+  `${pathOf(folders, folder.id)}, which is shared ${
+    folder.share_mode === 'link' ? 'by link — anyone holding its URL can read what is in it' : 'with named people, who can read what is in it'
+  }`;
 
 /*
  * Keyed by name, and the names come from the module the documentation page reads. TypeScript then
@@ -870,7 +1168,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_save_document: {
     description:
-      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `replaces` records this document as a new version of an earlier one, beside it and under a new link; a save that omits it is an unrelated document. To change a document that already exists — "update it", "fix it", "keep the old version", "keep the link" — use tp_update_document, which keeps the old text as a revision and the link as it is.',
+      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `folder` files it in a folder, by id or by path ("Devart AI/Home"); folders on the path that do not exist yet are made. A folder that is shared, or sits inside one that is, is read by everyone it is shared with, so saving into one requires `confirm: true` as well. `replaces` records this document as a new version of an earlier one, beside it and under a new link; a save that omits it is an unrelated document. To change a document that already exists — "update it", "fix it", "keep the old version", "keep the link" — use tp_update_document, which keeps the old text as a revision and the link as it is.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Save a document',
@@ -914,10 +1212,15 @@ const TOOLS: Record<McpToolName, Tool> = {
           description:
             'Id of an earlier document this is a separate new version of — a second document, with its own id and its own link. To change a document the person already has, or to keep its link, use tp_update_document instead: it keeps the replaced text as a revision on its own. tp_list_documents prints ids.',
         },
+        folder: {
+          type: 'string',
+          description:
+            'The folder to file it in: an id from tp_list_folders, or a path from the top such as "Devart AI/Home" (`/` or `›` between names, case does not matter). Missing folders on the path are made. Omit to file it in no folder.',
+        },
         confirm: {
           type: 'boolean',
           description:
-            'Required when `share` is "link" or "people". True when the person asked for this document to be published to that audience.',
+            'Required when `share` is "link" or "people", or when `folder` is shared or inside a shared folder. True when the person asked for this document to be published to that audience.',
         },
       },
     },
@@ -965,34 +1268,107 @@ const TOOLS: Record<McpToolName, Tool> = {
        *
        * "private" is not gated: it discloses nothing, and a save is the ordinary case.
        */
-      if (share && args.confirm !== true) {
+      /*
+       * The folder is looked up before the gate and made after it. A shared folder publishes what
+       * is filed in it as surely as `share: "link"` does — its page lists everything under it — so
+       * it is the same decision and gets the same gate; and a save the gate refuses must not leave
+       * behind the folders it would have been filed in.
+       */
+      const wantsFolder = typeof args.folder === 'string' && args.folder.trim() !== '';
+      let folders: Folder[] = [];
+      let plan: Extract<FolderPlan, { ok: true }> = { ok: true, folder: null, parent: null, missing: [] };
+
+      if (wantsFolder) {
+        const read = await foldersOf(c);
+
+        if (!read.ok) return say(read.error, true);
+
+        const planned = planFolder(read.folders, args.folder, { create: true });
+
+        if (!planned.ok) return say(planned.error, true);
+        folders = read.folders;
+        plan = planned;
+      }
+
+      const through = sharedThrough(folders, (plan.folder ?? plan.parent)?.id);
+
+      if ((share || through) && args.confirm !== true) {
         const { confirm: _unasked, ...asked } = args;
         const named = Array.isArray(args.emails) ? args.emails.map(String) : [];
+        /* The folder by the path it has, or would have once the missing end of it is made. */
+        const into = plan.folder
+          ? pathOf(folders, plan.folder.id)
+          : [pathOf(folders, plan.parent?.id), ...plan.missing].filter(Boolean).join(' › ');
+        const intoShared = through
+          ? `${into} ${plan.folder ? 'is' : 'would be'} ${
+              through.id === plan.folder?.id ? '' : `inside ${pathOf(folders, through.id)}, which is `
+            }shared ${
+              through.share_mode === 'link'
+                ? 'by link, so anyone holding its URL could read this document'
+                : 'with named people, who could read this document'
+            }`
+          : '';
 
         return refusedCard(
-          `Nothing was saved. \`share: "${share}"\` would ${
-            share === 'link'
-              ? 'publish this document as a page on the public web that anyone holding the URL can open'
-              : `send ${
-                  Array.isArray(args.emails) && args.emails.length
-                    ? `${args.emails.length} address${args.emails.length === 1 ? '' : 'es'}`
-                    : 'the addresses given'
-                } an email with a link to it`
-          } — ask the person, then call this again with confirm: true. To save it to the account without publishing, omit \`share\`.`,
-          { ...forConversion(name, markdown), share, readers: named },
+          `Nothing was saved. ${
+            share
+              ? `\`share: "${share}"\` would ${
+                  share === 'link'
+                    ? 'publish this document as a page on the public web that anyone holding the URL can open'
+                    : `send ${
+                        Array.isArray(args.emails) && args.emails.length
+                          ? `${args.emails.length} address${args.emails.length === 1 ? '' : 'es'}`
+                          : 'the addresses given'
+                      } an email with a link to it`
+                }${intoShared ? `, and ${intoShared}` : ''}`
+              : intoShared
+          } — ask the person, then call this again with confirm: true. ${
+            !through
+              ? 'To save it to the account without publishing, omit `share`.'
+              : share
+                ? 'To save it without publishing, omit `share` and choose a folder that is not shared.'
+                : 'To save it without that, choose a folder that is not shared, or omit `folder`.'
+          }`,
+          { ...forConversion(name, markdown), share: share || through?.share_mode || 'private', readers: named },
           {
             tool: 'tp_save_document',
             args: asked,
-            label: share === 'link' ? 'Save and publish' : named.length === 1 ? `Save and share with ${named[0]}` : 'Save and share',
+            label: share === 'link' ? 'Save and publish' : share && named.length === 1 ? `Save and share with ${named[0]}` : share ? 'Save and share' : 'Save into the shared folder',
             note:
               share === 'link'
                 ? 'It becomes a page on the public web that anyone holding the link can open.'
-                : 'The people named get an email with a link to it.',
+                : share
+                  ? 'The people named get an email with a link to it.'
+                  : `Everyone the folder ${pathOf(folders, through!.id)} is shared with can read it.`,
           }
         );
       }
 
+      const filed = await makeFolders(c, folders, plan);
+
+      if (!filed.ok) return say(`Nothing was saved. ${filed.error}`, true);
+
+      /* Where it went, for the answer: a path, and any folder made on the way so nobody is surprised by one. */
+      const filedIn = filed.folder
+        ? [
+            `Filed in ${pathOf(folders, filed.folder.id)}${
+              filed.created.length
+                ? ` (made ${filed.created.length === 1 ? 'the folder' : 'the folders'} ${filed.created.map((one) => one.name).join(', ')} for it)`
+                : ''
+            }.`,
+            through && folderUrl(c, through)
+              ? `Everyone ${pathOf(folders, through.id)} is shared with can read it there: ${folderUrl(c, through)}`
+              : null,
+          ]
+            .filter(Boolean)
+            .join('\n')
+        : '';
+
       const query = new URLSearchParams({ name });
+
+      if (filed.folder) {
+        query.set('folder', filed.folder.id);
+      }
 
       if (kind) {
         query.set('kind', kind);
@@ -1014,7 +1390,9 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       if (created.status !== 201) {
         return say(
-          created.body?.error ?? `The save failed (${created.status}).`,
+          `${created.body?.error ?? `The save failed (${created.status}).`}${
+            filed.created.length ? ` The folder ${pathOf(folders, filed.created.at(-1)!.id)} was made for it and is still there, empty.` : ''
+          }`,
           true
         );
       }
@@ -1046,7 +1424,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         return card(
           `Saved ${document.name} (id ${document.id}, ${bytes(document.size)}) and shared it with ${
             (shared.body.emails ?? []).join(', ') || 'nobody yet'
-          }.\n${shared.body.url ?? ''}`.trim(),
+          }.\n${shared.body.url ?? ''}\n${filedIn}`.trim(),
           forCard(
             c,
             { ...document, share: { mode: 'people', url: shared.body.url ?? null } },
@@ -1066,8 +1444,13 @@ const TOOLS: Record<McpToolName, Tool> = {
             ? `Anyone with this link can read it: ${document.share.url}`
             : document.share.mode === 'people' && document.share.url
               ? `Only the addresses on it can read it: ${document.share.url}`
-              : 'It is private. Share it with tp_share_document when asked.',
-        ].join('\n'),
+              : through
+                ? 'It has no link of its own; tp_share_document gives it one when asked.'
+                : 'It is private. Share it with tp_share_document when asked.',
+          filedIn || null,
+        ]
+          .filter(Boolean)
+          .join('\n'),
         forCard(c, document, markdown)
       );
     },
@@ -1177,7 +1560,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_list_documents: {
     description:
-      'What is on this TransformPipe account: documents with their names, sizes, dates and whether each is shared. Start here when the question is "what have I got". `query` matches a document by its name or by what is written inside it. Prints the id of each, which is what the other tools take.',
+      'What is on this TransformPipe account: documents with their names, sizes, dates, the folder each is filed in and whether each is shared. Start here when the question is "what have I got". `query` matches a document by its name or by what is written inside it; `folder` narrows the list to one folder and every folder under it. Prints the id of each, which is what the other tools take.',
     ui: DOCUMENT_LIST_URI,
     annotations: { title: 'List documents', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
@@ -1194,10 +1577,34 @@ const TOOLS: Record<McpToolName, Tool> = {
           type: 'string',
           description: 'Matches a document by name or by its content.',
         },
+        folder: {
+          type: 'string',
+          description:
+            'Only what is in this folder and the folders under it: an id from tp_list_folders, or a path from the top such as "Devart AI/Home".',
+        },
       },
     },
     run: async (c, args) => {
-      const listed = await callApi(c, '/api/v1/documents');
+      /*
+       * Every folder, read once: it resolves `folder` and it prints the path beside each document,
+       * which is one request for the whole list rather than one per row. A list of folders that
+       * cannot be read costs the paths, not the documents — unless a folder was asked for.
+       */
+      const read = await foldersOf(c);
+      const folders = read.ok ? read.folders : [];
+      let within: Folder | null = null;
+
+      if (typeof args.folder === 'string' && args.folder.trim()) {
+        if (!read.ok) return say(read.error, true);
+
+        const found = await resolveFolder(c, args.folder, { folders });
+
+        if (!found.ok) return say(found.error, true);
+        within = found.folder;
+      }
+
+      const narrowed = within ? `folder=${segment(within.id)}` : '';
+      const listed = await callApi(c, `/api/v1/documents${narrowed ? `?${narrowed}` : ''}`);
 
       if (listed.status !== 200) {
         return say(listed.body?.error ?? `Could not read the list (${listed.status}).`, true);
@@ -1217,7 +1624,7 @@ const TOOLS: Record<McpToolName, Tool> = {
       if (needle) {
         const byContent = await callApi(
           c,
-          `/api/v1/documents?q=${encodeURIComponent(needle)}`
+          `/api/v1/documents?q=${encodeURIComponent(needle)}${narrowed ? `&${narrowed}` : ''}`
         );
 
         if (byContent.status === 200) {
@@ -1240,12 +1647,17 @@ const TOOLS: Record<McpToolName, Tool> = {
        * plain text left it saying "Waiting for the list…" for good — seen in Claude on a phone,
        * where a first search found nothing before a second one did.
        */
+      const where = within ? pathOf(folders, within.id) : '';
+
       if (matching.length === 0) {
         return card(
           needle
-            ? `Nothing on this account has "${needle}" in its name or content.`
-            : 'This account has no documents yet.',
-          { total: 0, documents: [], query: needle || null }
+            ? `Nothing ${where ? `in ${where}` : 'on this account'} has "${needle}" in its name or content.`
+            : where
+              ? `There are no documents in ${where} or in any folder under it.`
+              : 'This account has no documents yet.',
+          // The card reads `query` to say what found nothing; a folder is the nearest thing to one.
+          { total: 0, documents: [], query: needle || where || null }
         );
       }
 
@@ -1255,9 +1667,9 @@ const TOOLS: Record<McpToolName, Tool> = {
       return card(
         clip(
           [
-            `${shown.length} of ${matching.length} shown, newest first.`,
+            `${shown.length} of ${matching.length} shown${where ? ` from ${where} and the folders under it` : ''}, newest first.`,
             '',
-            ...shown.map(describe),
+            ...shown.map((document) => describe(document, pathOf(folders, document.folder_id))),
           ].join('\n')
         ),
         {
@@ -1270,8 +1682,253 @@ const TOOLS: Record<McpToolName, Tool> = {
             created: document.created_at ?? '',
             share: document.share?.mode ?? 'private',
             url: `${selfOrigin(c)}${conversion(document.kind).path}?doc=${document.id}`,
+            // Not drawn by the list today; carried so a card that wants the folder need not ask.
+            folder: pathOf(folders, document.folder_id),
           })),
         }
+      );
+    },
+  },
+
+  tp_list_folders: {
+    description:
+      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id.',
+    annotations: { title: 'List folders', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    inputSchema: { type: 'object', additionalProperties: false, properties: {} },
+    run: async (c) => {
+      const read = await foldersOf(c);
+
+      if (!read.ok) return say(read.error, true);
+
+      const { folders } = read;
+
+      if (folders.length === 0) {
+        return say(
+          'This account has no folders. Its documents are filed nowhere until one is made — tp_create_folder makes one, and tp_save_document files into one with `folder`.'
+        );
+      }
+
+      /*
+       * Indented, the way the app draws it, with the whole path on the top line of each so the
+       * answer can be copied into the next call as it stands. Depth is the indent; the path says it
+       * again because a model reading the fortieth line has lost count of the spaces.
+       */
+      const lines: string[] = [];
+      const seen = new Set<string>();
+      const draw = (parent: string | null, depth: number) => {
+        const pad = '  '.repeat(depth);
+
+        for (const one of folders.filter((folder) => folder.parent_id === parent)) {
+          if (seen.has(one.id)) continue;
+          seen.add(one.id);
+
+          const total = inside(folders, one.id);
+          const url = folderUrl(c, one);
+
+          lines.push(
+            `${pad}${pathOf(folders, one.id)}`,
+            `${pad}  id: ${one.id}`,
+            `${pad}  ${total} document${total === 1 ? '' : 's'}${
+              total !== one.documents ? ` (${one.documents} directly in it)` : ''
+            } · ${
+              one.share_mode === 'link' && url
+                ? `shared by link: ${url}`
+                : one.share_mode === 'people' && url
+                  ? `shared with named people: ${url}`
+                  : 'private'
+            }`
+          );
+          draw(one.id, depth + 1);
+        }
+      };
+
+      draw(null, 0);
+
+      const filed = folders.reduce((sum, one) => sum + (one.documents ?? 0), 0);
+
+      return say(
+        clip(
+          [
+            `${folders.length} folder${folders.length === 1 ? '' : 's'}, holding ${filed} document${filed === 1 ? '' : 's'} between them.`,
+            '',
+            ...lines,
+          ].join('\n')
+        )
+      );
+    },
+  },
+
+  tp_create_folder: {
+    description:
+      'Makes a folder on this TransformPipe account, at the top or inside `parent`, and returns its id and its path. `parent` is an id or a path such as "Devart AI/Home"; folders on it that do not exist yet are made too. A folder of that name already in that place is returned rather than made twice. To file documents in it, pass `folder` to tp_save_document or use tp_move_documents.',
+    annotations: {
+      title: 'Create a folder',
+      readOnlyHint: false,
+      destructiveHint: false,
+      /* Asking twice returns the folder the first call made. */
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['name'],
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The new folder\'s name. A path such as "Guides/2026" makes each folder on it that is missing.',
+        },
+        parent: {
+          type: 'string',
+          description: 'The folder to make it in: an id from tp_list_folders, or a path from the top. Omit for the top level.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const name = typeof args.name === 'string' ? args.name.trim() : '';
+
+      if (!name) {
+        return say('A folder needs a name.', true);
+      }
+
+      const parent = await resolveFolder(c, args.parent, { create: true });
+
+      if (!parent.ok) return say(parent.error, true);
+
+      /*
+       * The name under the parent, not anywhere on the account: "make Guides in Home" is a question
+       * about Home, and a Guides somewhere else is not the one that was asked for.
+       */
+      const made = await resolveFolder(c, name, { create: true, base: parent.folder, folders: parent.folders });
+
+      if (!made.ok) return say(made.error, true);
+
+      const created = [...parent.created, ...made.created];
+
+      return say(
+        [
+          created.length === 0
+            ? `${made.path} already exists, so nothing was made.`
+            : `Made ${made.path}.`,
+          `id: ${made.folder!.id}`,
+          created.length > 1 ? `Folders made on the way: ${created.map((one) => pathOf(made.folders, one.id)).join(', ')}.` : null,
+          sharedThrough(made.folders, made.folder!.id)
+            ? `It is inside ${throughWords(made.folders, sharedThrough(made.folders, made.folder!.id)!)}.`
+            : null,
+        ]
+          .filter(Boolean)
+          .join('\n')
+      );
+    },
+  },
+
+  tp_move_documents: {
+    description:
+      'Files documents in a folder, or takes them out of every folder with `folder: null`. `ids` are document ids from tp_list_documents; `folder` is an id from tp_list_folders or a path such as "Devart AI/Home", and it has to exist — tp_create_folder makes one. A folder that is shared, or sits inside one that is, is read by everyone it is shared with, so moving documents into one requires `confirm: true`; without it nothing moves and the call says who would read them. Moving out of a shared folder is not gated.',
+    annotations: {
+      title: 'Move documents to a folder',
+      readOnlyHint: false,
+      /*
+       * Into a shared folder is publishing them to whoever the folder is shared with — the reason
+       * saving and sharing carry both hints, and the gate is the same `confirm`.
+       */
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['ids', 'folder'],
+      properties: {
+        ids: {
+          type: 'array',
+          items: { type: 'string' },
+          minItems: 1,
+          description: 'The documents to move, by id.',
+        },
+        folder: {
+          type: ['string', 'null'],
+          description: 'Where to: a folder id, or a path from the top. null or "" takes them out of every folder.',
+        },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when the folder is shared or inside a shared folder. True when the person asked for these documents to be filed where those people can read them.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const ids = Array.isArray(args.ids) ? [...new Set(args.ids.map((one) => String(one).trim()).filter(Boolean))] : [];
+
+      if (ids.length === 0) {
+        return say('Which documents? tp_list_documents prints the ids.', true);
+      }
+
+      /*
+       * `folder` is required and may be null, because the two absences mean different things: a
+       * call that forgot to say where must not quietly take documents out of the folders they are in.
+       */
+      if (!('folder' in args)) {
+        return say('Say which folder — or `folder: null` to take them out of every folder.', true);
+      }
+
+      const target = await resolveFolder(c, args.folder);
+
+      if (!target.ok) return say(target.error, true);
+
+      const to = target.folder;
+      const where = to ? target.path : 'no folder';
+      const through = sharedThrough(target.folders, to?.id);
+
+      /* Named in the answer, so "moved 3" can be checked against the three that were meant. */
+      const listed = await callApi(c, '/api/v1/documents');
+      const known = (listed.status === 200 ? listed.body.documents : []) as Array<{ id: string; name: string; folder_id?: string | null }>;
+      const moving = known.filter((one) => ids.includes(one.id));
+
+      if (through && args.confirm !== true) {
+        return say(
+          `Nothing moved. ${target.path} is ${
+            through.id === to?.id ? '' : `inside ${pathOf(target.folders, through.id)}, `
+          }shared ${
+            through.share_mode === 'link'
+              ? 'by link, so anyone holding its URL would be able to read'
+              : 'with named people, who would be able to read'
+          } ${moving.length ? moving.map((one) => one.name).join(', ') : `the ${ids.length} document${ids.length === 1 ? '' : 's'}`} — ask the person, then call this again with confirm: true.`,
+          true
+        );
+      }
+
+      const moved = await callApi(c, '/api/v1/documents/move', {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ids, folder_id: to?.id ?? null }),
+      });
+
+      if (moved.status !== 200) {
+        return say(moved.body?.error ?? `Nothing moved (${moved.status}).`, true);
+      }
+
+      const count = Number(moved.body.moved ?? 0);
+      const missed = ids.filter((id) => !known.some((one) => one.id === id));
+
+      return say(
+        [
+          count === 0
+            ? 'Nothing moved: none of those ids is a document on this account.'
+            : `Moved ${count} document${count === 1 ? '' : 's'} to ${where}${
+                moving.length ? `: ${moving.map((one) => one.name).join(', ')}` : ''
+              }.`,
+          count > 0 && missed.length > 0 ? `Not on this account, so not moved: ${missed.join(', ')}.` : null,
+          through && folderUrl(c, through)
+            ? `Everyone ${pathOf(target.folders, through.id)} is shared with can read ${count === 1 ? 'it' : 'them'} there: ${folderUrl(c, through)}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        count === 0
       );
     },
   },
@@ -1698,6 +2355,174 @@ const TOOLS: Record<McpToolName, Tool> = {
     },
   },
 
+  tp_share_folder: {
+    description:
+      'Changes who may open a folder — and with it every document in it and in the folders under it, as one page at /f/…. "link" is anyone holding the URL, "people" is only the addresses given, each of whom signs in to read it, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the folder outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list; `add` and `remove` change the list it already has. Only addresses new to the list are emailed. `folder` is an id from tp_list_folders or a path such as "Devart AI/Home". Returns the mode, the URL and the addresses as they now stand.',
+    annotations: {
+      title: 'Share a folder',
+      readOnlyHint: false,
+      /* As for a document: publishing, emailing a notice, and revoking access can have irreversible effects. */
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['folder', 'mode'],
+      properties: {
+        folder: { type: 'string', description: 'The folder: an id, or a path from the top such as "Devart AI/Home".' },
+        mode: {
+          type: 'string',
+          enum: ['private', 'link', 'people'],
+          description: 'Who may open it. No default: say which.',
+        },
+        emails: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'The whole address list, for mode "people" — it replaces the list. To change it by a name or two, use `add` or `remove` instead.',
+        },
+        add: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Addresses to add to the list it has, for mode "people". Only these are emailed.',
+        },
+        remove: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Addresses to take off the list it has, for mode "people".',
+        },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when `mode` is "link" or "people". True when the person asked for this folder to be opened to that audience.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const mode = String(args.mode ?? '');
+
+      if (!['private', 'link', 'people'].includes(mode)) {
+        return say('Give the folder and a mode of private, link or people.', true);
+      }
+
+      const target = await resolveFolder(c, args.folder);
+
+      if (!target.ok) return say(target.error, true);
+
+      if (!target.folder) {
+        return say('Which folder? tp_list_folders prints them.', true);
+      }
+
+      const folder = target.folder;
+      const at = `/api/v1/folders/${segment(folder.id)}/share`;
+      const now = await callApi(c, at);
+
+      if (now.status !== 200) {
+        return say(now.body?.error ?? `That folder is not on this account (${now.status}).`, true);
+      }
+
+      /*
+       * The list as it will stand, worked out the way tp_share_document works it out: `emails` is
+       * the whole of it, `add` and `remove` are changes to the one it has. The API takes a folder's
+       * readers one address at a time, so the difference between the two lists is what gets sent.
+       */
+      const listed = (value: unknown) =>
+        Array.isArray(value) ? value.map((one) => String(one).trim().toLowerCase()).filter(Boolean) : [];
+      const before = (Array.isArray(now.body.emails) ? now.body.emails : []) as string[];
+      const adding = listed(args.add);
+      const removing = new Set(listed(args.remove));
+      const emails: string[] | undefined = Array.isArray(args.emails)
+        ? [...new Set(listed(args.emails))]
+        : adding.length > 0 || removing.size > 0
+          ? [...new Set([...before, ...adding])].filter((email) => !removing.has(email))
+          : undefined;
+      const readers = mode === 'people' ? (emails ?? before) : before;
+      const fresh = mode === 'people' ? readers.filter((email) => !before.includes(email)) : [];
+      const gone = mode === 'people' && emails ? before.filter((email) => !emails.includes(email)) : [];
+      const total = inside(target.folders, folder.id);
+
+      /*
+       * The same gate as a document's, and the refusal names the folder and what is in it: a
+       * person can agree to "Devart AI, 140 documents" and can only guess at an id. A folder is the
+       * larger disclosure of the two — everything under it, and whatever is filed there later.
+       */
+      if (mode !== 'private' && args.confirm !== true) {
+        return say(
+          `Nothing changed. ${target.path}, with the ${total} document${total === 1 ? '' : 's'} in it and in the folders under it, would ${
+            mode === 'link'
+              ? 'become a page on the public web that anyone holding the URL can open'
+              : `be shared with ${readers.join(', ') || 'nobody yet'}${fresh.length ? `; ${fresh.join(', ')} would be emailed a link` : ''}`
+          }${before.length && now.body.mode === 'people' ? ` (shared now with ${before.join(', ')})` : ''}. Anything filed in it later is shared the same way — ask the person, then call this again with confirm: true.`,
+          true
+        );
+      }
+
+      const changed = await callApi(c, at, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+
+      if (changed.status !== 200) {
+        return say(changed.body?.error ?? `That did not work (${changed.status}).`, true);
+      }
+
+      let state = changed.body;
+      const notified: string[] = [];
+      const unsent: string[] = [];
+
+      /* Taken off first, so a list that swaps one address for another never holds both. */
+      for (const email of gone) {
+        const off = await callApi(c, `${at}/people?email=${encodeURIComponent(email)}`, { method: 'DELETE' });
+
+        if (off.status === 200) state = off.body;
+      }
+
+      for (const email of fresh) {
+        const on = await callApi(c, `${at}/people`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        if (on.status !== 200) {
+          return say(
+            `Now ${state.mode}, but ${email} was not added: ${on.body?.error ?? on.status}.${
+              notified.length ? ` Emailed before that: ${notified.join(', ')}.` : ''
+            }`,
+            true
+          );
+        }
+
+        state = on.body;
+        (on.body.notified ? notified : unsent).push(email);
+      }
+
+      const url = state.mode !== 'private' && state.token ? `${selfOrigin(c)}/f/${state.token}` : null;
+      const kept = (state.emails ?? []) as string[];
+
+      return say(
+        [
+          `${target.path} is now ${
+            state.mode === 'link' ? 'shared by link' : state.mode === 'people' ? 'shared with named people' : 'private'
+          }${state.mode === 'private' ? '' : `, with the ${total} document${total === 1 ? '' : 's'} in it and under it`}.`,
+          url ?? 'The link is revoked, so one already sent no longer opens.',
+          url ? linkEnds(state.expiresAt) : null,
+          url ? linkOpens(state.views, state.lastViewedAt) : null,
+          url && state.hasPassword ? LOCKED : null,
+          state.mode === 'people' && kept.length > 0 ? `Readers: ${kept.join(', ')}` : null,
+          notified.length > 0 ? `Emailed a link: ${notified.join(', ')}` : null,
+          /* Added and able to open it, but not told — the day's mail limit, or the mailer said no. */
+          unsent.length > 0 ? `Added but not emailed, so tell them yourself: ${unsent.join(', ')}` : null,
+        ]
+          .filter(Boolean)
+          .join('\n')
+      );
+    },
+  },
+
   tp_usage: {
     description:
       'What this account is using against its limits: bytes stored, documents held, and the ceiling on each. Ask this when a save was refused.',
@@ -1776,7 +2601,7 @@ const TOOLS: Record<McpToolName, Tool> = {
               type: 'text',
               text: `Not deleted. ${found.body.document.name} is ${bytes(
                 found.body.document.size
-              )} and deleting it cannot be undone — ask the person, then call this again with confirm: true.`,
+              )} and deleting it cannot be undone — ask the person, then call this again with confirm: true.\n\n(The card shows the person the document with a button to delete it. Do not repeat it; one line asking them to decide is enough.)`,
             },
           ],
           structuredContent: forCard(c, found.body.document),

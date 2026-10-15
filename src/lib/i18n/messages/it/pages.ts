@@ -1018,8 +1018,8 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cosa può fare a quel punto',
         body: [
-          'Dodici strumenti, tutti con il prefisso `tp_`. Quelli che contano in una conversazione sono `tp_convert_markdown`, che trasforma il Markdown in un documento HTML finito, `tp_convert_to_markdown` per un file che fa il percorso inverso, `tp_save_document`, che conserva il risultato nel tuo account, e `tp_share_document`, che lo pubblica e restituisce un link da mandare — oppure aggiunge o toglie un lettore.',
-          'Gli altri sono quelli a cui un assistente ricorre da sé: `tp_list_documents` e `tp_get_document` per ritrovare qualcosa fatto prima, `tp_summarize_document` per dire cosa contiene un documento lungo, `tp_update_document` per modificarne uno e tenere il suo link, `tp_document_versions` per mostrare cosa ha sostituito cosa, `tp_usage` per controllare quanto spazio resta, `tp_delete_document`, e `tp_help`, che risponde alle domande su TransformPipe partendo dalla sua documentazione.',
+          'Sedici strumenti, tutti con il prefisso `tp_`. Quelli che contano in una conversazione sono `tp_convert_markdown`, che trasforma il Markdown in un documento HTML finito, `tp_convert_to_markdown` per un file che fa il percorso inverso, `tp_save_document`, che conserva il risultato nel tuo account, e `tp_share_document`, che lo pubblica e restituisce un link da mandare — oppure aggiunge o toglie un lettore.',
+          'Gli altri sono quelli a cui un assistente ricorre da sé: `tp_list_documents` e `tp_get_document` per ritrovare qualcosa fatto prima, `tp_summarize_document` per dire cosa contiene un documento lungo, `tp_update_document` per modificarne uno e tenere il suo link, `tp_document_versions` per mostrare cosa ha sostituito cosa, `tp_list_folders`, `tp_create_folder` e `tp_move_documents` per tenere i documenti in cartelle, `tp_share_folder` per condividere un’intera cartella come si condivide un documento, `tp_usage` per controllare quanto spazio resta, `tp_delete_document`, e `tp_help`, che risponde alle domande su TransformPipe partendo dalla sua documentazione.',
           'In pratica la frase utile è breve. Chiedigli di scrivere le note di rilascio, poi chiedigli di pubblicarle — l’assistente converte, salva e condivide, e risponde con l’indirizzo.',
         ],
       },
@@ -1042,7 +1042,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convertire e condividere un documento da un assistente AI — TransformPipe',
       description:
-        'Come aggiungere TransformPipe a Claude o a ChatGPT via MCP, cosa fanno i dodici strumenti e cosa un assistente può e non può raggiungere nel tuo account.',
+        'Come aggiungere TransformPipe a Claude o a ChatGPT via MCP, cosa fanno i sedici strumenti e cosa un assistente può e non può raggiungere nel tuo account.',
     },
   },
 

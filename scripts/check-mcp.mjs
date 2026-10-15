@@ -818,6 +818,14 @@ check(
     tools.find((one) => one.name === 'tp_share_document')?.annotations?.openWorldHint === true
 );
 check(
+  'sharing a folder, and filing documents in a shared one, can disclose them and are marked so',
+  ['tp_share_folder', 'tp_move_documents'].every(
+    (name) =>
+      tools.find((one) => one.name === name)?.annotations?.destructiveHint === true &&
+      tools.find((one) => one.name === name)?.annotations?.openWorldHint === true
+  )
+);
+check(
   'updating changes what people holding the link read, and is marked so',
   tools.find((one) => one.name === 'tp_update_document')?.annotations?.destructiveHint === true &&
     tools.find((one) => one.name === 'tp_update_document')?.annotations?.openWorldHint === true &&
@@ -1125,7 +1133,8 @@ if (blobless) {
 }
 
 const usage = await tool(tokens.access_token, 'tp_usage', {});
-check('usage names both ceilings', /of 100.0 MB/.test(usage.text) && /of 500 documents/.test(usage.text), usage.text);
+// Both ceilings named, whatever they are this month — they moved from 100 MB / 500 to 250 MB / 5000.
+check('usage names both ceilings', /of [\d.]+ MB/.test(usage.text) && /of \d+ documents/.test(usage.text), usage.text);
 
 const unconfirmed = await tool(tokens.access_token, 'tp_delete_document', {
   id: savedId ?? '00000000-0000-0000-0000-000000000000',

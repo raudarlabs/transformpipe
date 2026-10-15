@@ -174,7 +174,7 @@ export const docsPage = {
   'docs.api.post':
     'Markdown als Body ({name}) oder JSON {json}. {share} veröffentlicht es im selben Aufruf. {kindHtml}, {kindCsv}, {kindJson} oder {word} wandelt den Body zuerst um, sodass eine Seite, eine Tabelle, eine API-Antwort oder ein {docx} so gesendet werden kann, wie es ist. Jede Konvertierung hat ihre eigene Art — fünfzehn insgesamt, benannt nach der Seite, zu der sie gehört — und eine Datei, die Bytes und kein Text ist, wird als Rumpf gesendet.',
   'docs.api.list':
-    'Die neuesten 500, mit Größen, Zahlen und Freigabestand.',
+    'Die neuesten 5000, mit Größe, Statistik, Freigabestatus und dem Ordner, in dem jedes liegt. ?folder=<id> beschränkt auf einen Ordner und alle Ordner darunter, ?folder=none auf Dokumente ohne Ordner.',
   'docs.api.one': 'Metadaten und der Markdown-Quelltext.',
   'docs.api.html': 'Das eigenständige Dokument. {theme} optional.',
   'docs.api.delete': 'Entfernt die Zeile und die gespeicherte Quelle.',
@@ -187,6 +187,12 @@ export const docsPage = {
   'docs.api.views':
     'Die letzten Aufrufe des Links, der neueste zuerst, jeder mit {who}, wenn das Dokument mit bestimmten Personen geteilt ist.',
   'docs.api.usage': 'Was das Konto belegt, gemessen an den Grenzen.',
+  'docs.api.folders':
+    'Der Ordnerbaum: jeder Ordner mit seinem übergeordneten Ordner und der Zahl seiner Dokumente. POST legt einen an ({name, parent_id}), PATCH benennt ihn um oder verschiebt ihn, DELETE entfernt ihn – mit ?contents=delete auch seinen Inhalt. POST /api/v1/documents?folder=<id> legt ein neues Dokument gleich dort ab.',
+  'docs.api.move':
+    'Legt Dokumente in einem Ordner ab oder nimmt sie mit folder_id null aus allen Ordnern heraus.',
+  'docs.api.folderShare':
+    'Ein Ordner wird geteilt wie ein Dokument: dieselben drei Modi, Enddatum und Passwort, unter /f/<token>; POST oder DELETE …/share/people fügt eine Adresse hinzu oder entfernt sie.',
   /** `{shape}` ist der Fehler-Body selbst. */
   'docs.api.errors':
     'Fehler sind {shape}, mit einem Status, der sagt, was er meint: 401 unbekannter Schlüssel, 404 nicht Ihres, 413 das Dokument liegt über 4 MB, 403 das Konto hat keinen Platz mehr, 429 zu schnell, 410 die Quelle ist fort.',
@@ -230,7 +236,7 @@ export const docsPage = {
   'docs.assistant.auth':
     'Es gibt keinen Schlüssel zum Einfügen. Der erste Aufruf kommt unautorisiert zurück, Ihr Assistent folgt dem auf eine Seite hier, und Sie melden sich mit demselben Konto an, das Sie ohnehin nutzen, und genehmigen einen benannten Client — deshalb nennt die Seite die Adresse, als die er handeln will. Was er bekommt, ist ein Token von uns, gut für Ihre Dokumente und für nichts sonst: nicht für Ihr Konto, nicht für Ihre Anmeldung und nicht für Ihre API-Schlüssel. Im Kontomenü, unter MCP-Konnektor, wieder trennen, und beim nächsten Aufruf ist Schluss.',
   'docs.assistant.tools':
-    'Die Werkzeuge sind derselbe Code wie die API oben, im Prozess aufgerufen, sodass ein Gespräch und ein Skript dieselbe Antwort bekommen. Vier Fälle verlangen ein ausdrückliches `confirm: true`, weil sie etwas offenlegen, ändern, was andere lesen, oder zerstören: ein Dokument als öffentlichen Link oder für benannte Personen speichern oder teilen, ein bereits geteiltes Dokument ändern und löschen, was genau ein Dokument endgültig entfernt. Ohne die Bestätigung wird der Aufruf abgewiesen, und nichts ändert sich.',
+    'Die Werkzeuge sind derselbe Code wie die API oben, im Prozess aufgerufen, sodass ein Gespräch und ein Skript dieselbe Antwort bekommen. Fünf Fälle verlangen ein ausdrückliches `confirm: true`, weil sie etwas offenlegen, ändern, was andere lesen, oder zerstören: ein Dokument als öffentlichen Link oder für benannte Personen speichern oder teilen, einen Ordner ebenso teilen, ein Dokument in einem geteilten Ordner ablegen, ein bereits geteiltes Dokument ändern und löschen, was genau ein Dokument endgültig entfernt. Ohne die Bestätigung wird der Aufruf abgewiesen, und nichts ändert sich.',
   'docs.assistant.cards':
     'Ein Assistent, der sie zeichnet, bekommt Karten statt Absätze. Ein gespeichertes oder geöffnetes Dokument kommt als Karte mit seinen Zahlen, seinen ersten Zeilen und einer Schaltfläche, die es hier öffnet; die Frage nach dem Konto zeichnet eine Liste, deren Zeilen ein Dokument öffnen. Eine Freigabe zeigt, wer das Dokument öffnen darf und wie oft es geöffnet wurde, mit einer Schaltfläche für den geteilten Link; eine Änderung zeigt die Zeilen, die sie geändert hat; der Verlauf ist eine Zeitleiste, in der sich jeder frühere Text per Schaltfläche wieder lesen lässt; und ein Aufruf, der mangels Bestätigung abgewiesen wurde, kommt als Karte mit einer Schaltfläche zurück, die ihn bestätigt. Die Textantwort darunter bleibt dieselbe — ein Client, der nichts zeichnet, verliert nichts.',
 

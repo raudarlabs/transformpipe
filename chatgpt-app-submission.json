@@ -4,7 +4,7 @@
   "app_info": {
     "display_name": "TransformPipe",
     "subtitle": "Convert, save and share docs",
-    "description": "TransformPipe converts Markdown to HTML and text-based HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. Connect your TransformPipe account to save documents, search and read them, inspect versions, generate summaries, check usage, and share or revoke access. Publishing, emailing share notices and permanent deletion require explicit confirmation. Binary files such as Word, Excel, PowerPoint and PDF cannot be passed through these MCP tools; use the TransformPipe website or API for supported binary formats.",
+    "description": "TransformPipe converts Markdown to HTML and text-based HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. Connect your TransformPipe account to save documents, organise them in folders, search and read them, inspect versions, generate summaries, check usage, and share documents or whole folders or revoke access. Publishing, emailing share notices and permanent deletion require explicit confirmation. Binary files such as Word, Excel, PowerPoint and PDF cannot be passed through these MCP tools; use the TransformPipe website or API for supported binary formats.",
     "category": "PRODUCTIVITY"
   },
   "tools": {
@@ -56,6 +56,30 @@
         "destructive_justification": "No document, permission or other account state is changed."
       }
     },
+    "tp_list_folders": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Lists the connected account's folders as a tree, with each folder's id, document count and sharing state, without modifying them.",
+        "open_world_justification": "It reads only the authenticated account's own folders.",
+        "destructive_justification": "No folder, document, permission or other account state is changed."
+      }
+    },
+    "tp_create_folder": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false },
+      "justifications": {
+        "read_only_justification": "Creates a folder, and any missing folders on the path given, in the connected account.",
+        "open_world_justification": "A new folder is private to the account; creating one does not publish anything or contact anyone.",
+        "destructive_justification": "It only adds folders. A folder that already exists in that place is returned rather than created again, and nothing is overwritten or removed."
+      }
+    },
+    "tp_move_documents": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Changes which folder documents in the connected account are filed in, or takes them out of every folder.",
+        "open_world_justification": "Moving a document into a folder shared by link or with named people makes it readable by everyone that folder is shared with.",
+        "destructive_justification": "This hint covers moving into a shared folder, which discloses the documents to that folder's audience and requires confirm=true. Moving into a private folder or out of every folder discloses nothing and deletes nothing."
+      }
+    },
     "tp_get_document": {
       "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
       "justifications": {
@@ -86,6 +110,14 @@
         "read_only_justification": "Changes a document's audience to private, anyone with the link, or specified email addresses.",
         "open_world_justification": "Link mode exposes a page to anyone holding its URL, and people mode can send notices to user-supplied external addresses.",
         "destructive_justification": "This hint covers every mode of the tool: link mode can publish content, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
+      }
+    },
+    "tp_share_folder": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Changes a folder's audience — and with it every document in the folder and the folders under it — to private, anyone with the link, or specified email addresses.",
+        "open_world_justification": "Link mode exposes the folder's page to anyone holding its URL, and people mode can send notices to user-supplied external addresses.",
+        "destructive_justification": "This hint covers every mode of the tool: link mode can publish a folder of documents, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
       }
     },
     "tp_usage": {

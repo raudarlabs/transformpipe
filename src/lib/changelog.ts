@@ -140,6 +140,16 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'Folders from a script, a terminal and an assistant',
+    body:
+      'The API lists, makes, renames, moves, deletes and shares folders, and files a document in one '
+      + 'as it is saved (`?folder=`). The command line has `tp folders`, `tp mkdir`, `tp mv`, '
+      + '`tp share-folder`, `tp rmdir` and `--folder` on push and list. An assistant connected over MCP '
+      + 'can list folders, save into a path, move documents and share a folder — and no longer repeats '
+      + 'in words what its card already shows.',
+  },
+  {
+    date: '2026-10-15',
     title: 'Share a whole folder, and keep one shared with you',
     slug: 'share-folders',
     body:

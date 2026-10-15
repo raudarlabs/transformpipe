@@ -159,7 +159,8 @@ export const docsPage = {
    */
   'docs.api.post':
     'Markdown en el cuerpo ({name}) o JSON {json}. {share} lo publica en la misma llamada. {kindHtml}, {kindCsv}, {kindJson} o {word} convierten antes el cuerpo, así que una página, una hoja de cálculo, la respuesta de una API o un {docx} se pueden enviar tal cual. Cada conversión tiene su propio kind — quince en total, con el nombre de la página a la que pertenece — y un archivo que son bytes y no texto se envía como cuerpo.',
-  'docs.api.list': 'Los 500 más recientes, con tamaños, recuentos y estado de lo compartido.',
+  'docs.api.list':
+    'Los 5000 más recientes, con tamaños, recuentos, estado de lo compartido y la carpeta de cada uno. ?folder=<id> lo limita a una carpeta y todas las que tiene debajo; ?folder=none, a los documentos sin carpeta.',
   'docs.api.one': 'Los metadatos y el Markdown de origen.',
   'docs.api.html': 'El documento autónomo. {theme} es opcional.',
   'docs.api.delete': 'Elimina la fila y el original guardado.',
@@ -172,6 +173,12 @@ export const docsPage = {
   'docs.api.views':
     'Las aperturas recientes del enlace, la más reciente primero, cada una con {who} cuando el documento se comparte con personas concretas.',
   'docs.api.usage': 'Lo que está usando la cuenta, frente a los límites.',
+  'docs.api.folders':
+    'El árbol de carpetas: cada carpeta con su carpeta superior y cuántos documentos contiene. POST crea una ({name, parent_id}), PATCH le cambia el nombre o la mueve, DELETE la elimina; con ?contents=delete, también su contenido. POST /api/v1/documents?folder=<id> guarda un documento nuevo directamente allí.',
+  'docs.api.move':
+    'Mete documentos en una carpeta, o los saca de todas con folder_id null.',
+  'docs.api.folderShare':
+    'Una carpeta se comparte igual que un documento: los mismos tres modos, fecha de fin y contraseña, en /f/<token>; POST o DELETE …/share/people añade o quita una dirección.',
   /** `{shape}` es el cuerpo del error mismo. */
   'docs.api.errors':
     'Los errores son {shape} con un estado que significa lo que dice: 401 clave desconocida, 404 no es tuyo, 413 el documento pasa de 4 MB, 403 la cuenta se ha quedado sin espacio, 429 demasiado rápido, 410 el original ya no está.',
@@ -213,7 +220,7 @@ export const docsPage = {
   'docs.assistant.auth':
     'No hay ninguna clave que pegar. La primera llamada vuelve sin autorizar, tu asistente sigue ese camino hasta una página de aquí, e inicias sesión con la misma cuenta que ya usas y apruebas un cliente con nombre — por eso la página te dice en nombre de qué dirección va a actuar. Lo que obtiene es un token nuestro, válido para tus documentos y para nada más: no para tu cuenta, ni para tu inicio de sesión, ni para tus claves API. Desconéctalo desde el menú de la cuenta, en Conector MCP, y deja de funcionar en la llamada siguiente.',
   'docs.assistant.tools':
-    'Las herramientas son el mismo código de la API de arriba, llamado en el mismo proceso, así que una conversación y un script obtienen la misma respuesta. Cuatro casos exigen un `confirm: true` explícito, porque revelan algo, cambian lo que otros leen o destruyen: guardar o compartir un documento con un enlace público o con personas concretas, actualizar uno que ya está compartido, y eliminar, que quita exactamente un documento y para siempre. Sin esa confirmación la llamada se rechaza y nada cambia.',
+    'Las herramientas son el mismo código de la API de arriba, llamado en el mismo proceso, así que una conversación y un script obtienen la misma respuesta. Cinco casos exigen un `confirm: true` explícito, porque revelan algo, cambian lo que otros leen o destruyen: guardar o compartir un documento con un enlace público o con personas concretas, compartir una carpeta del mismo modo, guardar un documento en una carpeta compartida, actualizar uno que ya está compartido, y eliminar, que quita exactamente un documento y para siempre. Sin esa confirmación la llamada se rechaza y nada cambia.',
   'docs.assistant.cards':
     'Un asistente que sabe dibujarlas recibe tarjetas en vez de párrafos. Un documento guardado o abierto llega como una tarjeta con sus cifras, sus primeras líneas y un botón que lo abre aquí; preguntar qué hay en la cuenta dibuja una lista cuyas filas abren un documento. Compartir muestra quién puede abrir el documento y cuántas veces se ha abierto, con un botón para el enlace compartido; una actualización muestra las líneas que cambió; el historial es una línea de tiempo en la que cada texto anterior se lee con un botón; y una llamada rechazada por falta de confirmación vuelve como una tarjeta con un botón que la confirma. La respuesta en texto sigue igual debajo: un cliente que no dibuja nada no pierde nada.',
 

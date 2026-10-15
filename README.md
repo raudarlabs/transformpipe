@@ -384,10 +384,23 @@ node cli/tp.mjs push v2.md --replaces <id>    # links it to an earlier document 
 node cli/tp.mjs push notes.md --update <id>   # new text, same link; the old text is kept as a revision
 node cli/tp.mjs versions <id>                 # every document in the chain, oldest first
 node cli/tp.mjs usage                         # 65.8 kB of 100.0 MB · 3 of 500 documents
+
+node cli/tp.mjs folders                       # the tree: ids, documents in each, the link if shared
+node cli/tp.mjs push notes.md --folder "Team/Notes"   # filed there; missing folders are made
+node cli/tp.mjs list --folder "Team/Notes"    # that folder and everything under it; - for unfiled
+node cli/tp.mjs mkdir "Team/Notes/2026"       # every part of the path not there yet
+node cli/tp.mjs mv <id>… "Team/Archive"       # documents, or folders, into a folder; - for none
+node cli/tp.mjs share-folder "Team/Notes" --link --expires 7d    # prints <host>/f/<token>
+node cli/tp.mjs share-folder "Team/Notes" --people a@example.com,b@example.com
+node cli/tp.mjs share-folder "Team/Notes" --private
+node cli/tp.mjs rmdir "Team/Old"              # its documents move up a level
+node cli/tp.mjs rmdir "Team/Old" --with-documents   # and deletes everything under it
 ```
 
 The key comes from `--key`, `TP_API_KEY`, or that config file, in that order; `TP_HOST` points it
 at another deployment. `--json` prints the API's own response, which is what the Action reads.
+A folder is named by its id from `tp folders` or by its path — the names from the top, `/` between
+them, in any case.
 
 ## As a GitHub Action
 

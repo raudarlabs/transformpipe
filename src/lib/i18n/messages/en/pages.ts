@@ -1025,8 +1025,8 @@ export const pages: Content['pages'] = {
       {
         heading: 'What it can then do',
         body: [
-          'Twelve tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send — or adds or removes one reader.',
-          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_usage` to check how much room is left, `tp_delete_document`, and `tp_help`, which answers questions about TransformPipe from its documentation.',
+          'Sixteen tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send — or adds or removes one reader.',
+          'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_list_folders`, `tp_create_folder` and `tp_move_documents` to keep documents in folders, `tp_share_folder` to share a whole folder the way a document is shared, `tp_usage` to check how much room is left, `tp_delete_document`, and `tp_help`, which answers questions about TransformPipe from its documentation.',
           'In practice the useful sentence is short. Ask it to write the release notes, then ask it to publish them — the assistant converts, saves and shares, and answers with the address.',
         ],
       },
@@ -1049,7 +1049,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convert and share a document from an AI assistant — TransformPipe',
       description:
-        'How to add TransformPipe to Claude or ChatGPT over MCP, what its twelve tools do, and what an assistant can and cannot reach in your account.',
+        'How to add TransformPipe to Claude or ChatGPT over MCP, what its sixteen tools do, and what an assistant can and cannot reach in your account.',
     },
   },
 

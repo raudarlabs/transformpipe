@@ -160,7 +160,7 @@ export const docsPage = {
   'docs.api.post':
     'Le Markdown en corps de requête ({name}) ou en JSON {json}. {share} le publie dans le même appel. {kindHtml}, {kindCsv}, {kindJson} ou {word} convertit d’abord le corps, de sorte qu’une page, un tableur, une réponse d’API ou un {docx} se poste tel quel. Chaque conversion a son propre kind — quinze en tout, nommés d’après la page à laquelle chacun appartient — et un fichier qui est des octets plutôt que du texte se poste dans le corps.',
   'docs.api.list':
-    'Les 500 plus récents, avec les tailles, les décomptes et l’état de partage.',
+    'Les 5000 plus récents, avec tailles, statistiques, état du partage et dossier de chacun. ?folder=<id> limite à un dossier et à tous ceux en dessous ; ?folder=none aux documents rangés nulle part.',
   'docs.api.one': 'Les métadonnées et la source Markdown.',
   'docs.api.html': 'Le document autonome. {theme} en option.',
   'docs.api.delete': 'Retire la ligne et sa source conservée.',
@@ -173,6 +173,12 @@ export const docsPage = {
   'docs.api.views':
     'Les ouvertures récentes du lien, la plus récente d’abord, chacune avec {who} quand le document est partagé avec des personnes précises.',
   'docs.api.usage': 'Ce que le compte utilise, face aux limites.',
+  'docs.api.folders':
+    'L’arborescence : chaque dossier avec son parent et le nombre de documents qu’il contient. POST en crée un ({name, parent_id}), PATCH le renomme ou le déplace, DELETE le supprime — avec ?contents=delete, son contenu aussi. POST /api/v1/documents?folder=<id> range un nouveau document dès sa création.',
+  'docs.api.move':
+    'Range des documents dans un dossier, ou les retire de tout dossier avec folder_id null.',
+  'docs.api.folderShare':
+    'Un dossier se partage comme un document : les trois mêmes modes, date de fin et mot de passe, à /f/<token> ; POST ou DELETE …/share/people ajoute ou retire une adresse.',
   /** `{shape}` est le corps d’erreur lui-même. */
   'docs.api.errors':
     'Les erreurs sont {shape} avec un statut qui dit ce qu’il veut dire : 401 clé inconnue, 404 pas à vous, 413 le document dépasse 4 MB, 403 le compte n’a plus de place, 429 trop vite, 410 la source a disparu.',
@@ -214,7 +220,7 @@ export const docsPage = {
   'docs.assistant.auth':
     'Il n’y a aucune clé à coller. Le premier appel revient non autorisé, votre assistant suit cela jusqu’à une page ici, et vous vous connectez avec le compte que vous utilisez déjà et approuvez un client nommé — c’est pourquoi la page vous dit au nom de quelle adresse il s’apprête à agir. Ce qu’il obtient est un jeton de notre part, valable pour vos documents et rien d’autre : pas votre compte, pas votre connexion, et pas vos clés API. Déconnectez-le depuis le menu du compte, sous Connecteur MCP, et il cesse de fonctionner au prochain appel.',
   'docs.assistant.tools':
-    'Les outils sont le même code que l’API ci-dessus, appelé dans le processus, de sorte qu’une conversation et un script obtiennent la même réponse. Quatre cas exigent un `confirm: true` explicite, parce qu’ils divulguent, changent ce que d’autres lisent ou détruisent : enregistrer ou partager un document par lien public ou avec des personnes nommées, modifier un document déjà partagé, et supprimer, ce qui retire exactement un document, définitivement. Sans cette confirmation, l’appel est refusé et rien ne change.',
+    'Les outils sont le même code que l’API ci-dessus, appelé dans le processus, de sorte qu’une conversation et un script obtiennent la même réponse. Cinq cas exigent un `confirm: true` explicite, parce qu’ils divulguent, changent ce que d’autres lisent ou détruisent : enregistrer ou partager un document par lien public ou avec des personnes nommées, partager un dossier de la même façon, ranger un document dans un dossier partagé, modifier un document déjà partagé, et supprimer, ce qui retire exactement un document, définitivement. Sans cette confirmation, l’appel est refusé et rien ne change.',
   'docs.assistant.cards':
     'Un assistant qui sait les dessiner reçoit des cartes plutôt que des paragraphes. Un document enregistré ou ouvert arrive en carte, avec ses chiffres, ses premières lignes et un bouton qui l’ouvre ici ; la question « qu’y a-t-il sur le compte » dessine une liste dont les lignes ouvrent un document. Un partage montre qui peut ouvrir le document et combien de fois il a été ouvert, avec un bouton vers le lien partagé ; une modification montre les lignes qu’elle a changées ; l’historique est une frise où chaque texte antérieur se relit d’un bouton ; et un appel refusé faute de confirmation revient en carte, avec un bouton qui le confirme. La réponse en texte reste la même dessous : un client qui ne dessine rien ne perd rien.',
 

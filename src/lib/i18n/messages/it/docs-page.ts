@@ -152,7 +152,8 @@ export const docsPage = {
    */
   'docs.api.post':
     'Markdown nel corpo ({name}) oppure JSON {json}. {share} lo pubblica nella stessa chiamata. {kindHtml}, {kindCsv}, {kindJson} o {word} convertono prima il corpo, così una pagina, un foglio di calcolo, una risposta di API o un {docx} si possono inviare così come sono. Ogni conversione ha il proprio kind — quindici in tutto, dal nome della pagina a cui appartiene — e un file che è byte e non testo si invia come corpo.',
-  'docs.api.list': 'I 500 più recenti, con dimensioni, statistiche e stato della condivisione.',
+  'docs.api.list':
+    'I 5000 più recenti, con dimensioni, statistiche, stato della condivisione e la cartella di ciascuno. ?folder=<id> limita a una cartella e a tutte quelle sotto; ?folder=none ai documenti senza cartella.',
   'docs.api.one': 'I metadati e il sorgente Markdown.',
   'docs.api.html': 'Il documento autosufficiente. {theme} è opzionale.',
   'docs.api.delete': 'Elimina la riga e il sorgente conservato.',
@@ -165,6 +166,12 @@ export const docsPage = {
   'docs.api.views':
     'Le aperture recenti del link, la più recente per prima, ognuna con {who} quando il documento è condiviso con persone precise.',
   'docs.api.usage': 'Quanto sta usando l’account, rispetto ai limiti.',
+  'docs.api.folders':
+    'L’albero delle cartelle: ogni cartella con la cartella superiore e quanti documenti contiene. POST ne crea una ({name, parent_id}), PATCH la rinomina o la sposta, DELETE la elimina; con ?contents=delete anche il suo contenuto. POST /api/v1/documents?folder=<id> archivia subito lì un nuovo documento.',
+  'docs.api.move':
+    'Mette documenti in una cartella, o li toglie da ogni cartella con folder_id null.',
+  'docs.api.folderShare':
+    'Una cartella si condivide come un documento: le stesse tre modalità, data di scadenza e password, a /f/<token>; POST o DELETE …/share/people aggiunge o rimuove un indirizzo.',
   /** `{shape}` is the error body itself. */
   'docs.api.errors':
     'Gli errori sono {shape} con uno stato che dice quello che significa: 401 chiave sconosciuta, 404 non è tuo, 413 il documento supera i 4 MB, 403 l’account ha esaurito lo spazio, 429 troppo veloce, 410 il sorgente non c’è più.',
@@ -206,7 +213,7 @@ export const docsPage = {
   'docs.assistant.auth':
     'Non c’è nessuna chiave da incollare. La prima chiamata torna come non autorizzata, il tuo assistente segue quella risposta fino a una pagina qui, e tu accedi con lo stesso account che usi già e approvi un client con un nome — ed è per questo che la pagina dice con quale indirizzo sta per agire al posto tuo. Quello che ottiene è un token nostro, valido per i tuoi documenti e per nient’altro: non per l’account, non per l’accesso, non per le chiavi API. Scollegalo dal menu dell’account, sotto Connettore MCP, e smette di funzionare alla chiamata successiva.',
   'docs.assistant.tools':
-    'Gli strumenti sono lo stesso codice dell’API qui sopra, chiamato nello stesso processo, così una conversazione e uno script ottengono la stessa risposta. Quattro casi richiedono un `confirm: true` esplicito, perché rivelano, cambiano ciò che altri leggono o distruggono: salvare o condividere un documento con un link pubblico o con persone indicate, aggiornarne uno già condiviso, ed eliminare, che rimuove esattamente un documento ed è definitivo. Senza la conferma la chiamata viene rifiutata e non cambia nulla.',
+    'Gli strumenti sono lo stesso codice dell’API qui sopra, chiamato nello stesso processo, così una conversazione e uno script ottengono la stessa risposta. Cinque casi richiedono un `confirm: true` esplicito, perché rivelano, cambiano ciò che altri leggono o distruggono: salvare o condividere un documento con un link pubblico o con persone indicate, condividere una cartella allo stesso modo, archiviare un documento in una cartella condivisa, aggiornarne uno già condiviso, ed eliminare, che rimuove esattamente un documento ed è definitivo. Senza la conferma la chiamata viene rifiutata e non cambia nulla.',
   'docs.assistant.cards':
     'Un assistente che sa disegnarle riceve schede invece di paragrafi. Un documento salvato o aperto arriva come scheda con i suoi numeri, le prime righe e un pulsante che lo apre qui; chiedere che cosa c’è sull’account disegna un elenco le cui righe aprono un documento. Una condivisione mostra chi può aprire il documento e quante volte è stato aperto, con un pulsante per il link condiviso; un aggiornamento mostra le righe che ha cambiato; la cronologia è una sequenza temporale in cui ogni testo precedente si rilegge con un pulsante; e una chiamata rifiutata per mancanza di conferma torna come scheda con un pulsante che la conferma. La risposta testuale sotto resta la stessa: un client che non disegna nulla non perde nulla.',
 
