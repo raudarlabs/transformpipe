@@ -4,7 +4,7 @@
   "app_info": {
     "display_name": "TransformPipe",
     "subtitle": "Convert, save and share docs",
-    "description": "TransformPipe converts Markdown to HTML, Confluence storage format, Jira wiki markup and Slack mrkdwn, and converts HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. With a connected TransformPipe account it saves documents, organises them in folders, searches and reads them, shows their versions, generates summaries, reports usage, and shares documents or folders or revokes access. Publishing, emailing share notices, filing content into shared folders and permanent deletion require explicit confirmation. Binary files such as Word, Excel and PowerPoint cannot be passed as tool arguments; they are converted on the TransformPipe website or through its API.",
+    "description": "Convert Markdown to HTML, Confluence, Jira or Slack markup, and HTML, CSV, JSON, plain text, RTF or Evernote exports to Markdown. With a connected TransformPipe account, save, search and read documents, organise them in folders, view versions and summaries, and share documents or folders. Publishing, emailing share notices and deleting ask for confirmation first. Binary files such as Word or PDF are not accepted through these tools.",
     "category": "PRODUCTIVITY"
   },
   "tools": {
