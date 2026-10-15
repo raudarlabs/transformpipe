@@ -14,6 +14,10 @@ import { saveBlob } from './download';
  * rather than six hundred — and the progress the screen shows is pages actually stored.
  */
 
+/** A saved document's name: its title as written, with only what no name can hold taken out. */
+const documentName = (title: string) =>
+  `${title.replace(/[\/\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Untitled'}.md`;
+
 /** A page's file name: its title, minus what a file name cannot hold. */
 const fileName = (title: string) => `${title.replace(/[\\/:*?"<>|\u0000-\u001f]+/g, ' ').trim() || 'Untitled'}.md`;
 
@@ -76,7 +80,7 @@ export async function saveImport(
 
     batch.push({
       id: pageIds[at],
-      name: fileName(page.title),
+      name: documentName(page.title),
       kind,
       markdown,
       stats: page.stats,
