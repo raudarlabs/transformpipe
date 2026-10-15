@@ -35,10 +35,17 @@ interface MoveDialogProps {
   onOpenChange: (open: boolean) => void;
   title: string;
   folders: Folder[];
-  /** Folders that cannot be chosen — a folder being moved, and everything inside it. */
+  /**
+   * Folders that cannot be chosen — a folder being moved, and everything inside it. They stay in
+   * the tree, greyed out: a space that vanished from the list read as a list that was broken.
+   */
   excluded?: Set<string>;
+  /** Said under the tree when something is greyed out, so it is clear why. */
+  excludedNote?: string;
   /** Whether "No folder" (the top) is a destination. */
   allowNone?: boolean;
+  /** What the top is called here: "No folder" for documents, "Top level" for a folder. */
+  noneLabel?: string;
   onMove: (folderId: string | null) => void;
   /** A folder was made here; the caller reloads the list. */
   onCreated: () => void;
@@ -52,7 +59,9 @@ export function MoveDialog({
   title,
   folders,
   excluded = new Set(),
+  excludedNote,
   allowNone = true,
+  noneLabel,
   onMove,
   onCreated,
 }: MoveDialogProps) {
@@ -116,15 +125,19 @@ export function MoveDialog({
 
   const branch = (parent: string | null, depth: number): React.ReactNode =>
     folders
-      .filter((one) => one.parent_id === parent && !excluded.has(one.id))
+      .filter((one) => one.parent_id === parent)
       .sort(sortByName)
       .map((one) => {
-        const hasChildren = folders.some((child) => child.parent_id === one.id && !excluded.has(child.id));
+        const hasChildren = folders.some((child) => child.parent_id === one.id);
         const isOpen = expanded.has(one.id);
+        const blocked = excluded.has(one.id);
 
         return (
           <li key={one.id}>
-            <div className={rowClass(one.id)} style={{ paddingLeft: `${0.5 + depth * 1.1}rem` }}>
+            <div
+              className={cn(rowClass(one.id), blocked && 'opacity-45 hover:bg-transparent')}
+              style={{ paddingLeft: `${0.5 + depth * 1.1}rem` }}
+            >
               <button
                 type="button"
                 aria-label={isOpen ? t('move.collapse') : t('move.expand')}
@@ -135,7 +148,9 @@ export function MoveDialog({
               </button>
               <button
                 type="button"
-                className="flex min-w-0 flex-1 items-center gap-2"
+                disabled={blocked}
+                title={blocked ? excludedNote : undefined}
+                className="flex min-w-0 flex-1 items-center gap-2 disabled:cursor-not-allowed"
                 onClick={() => setChosen(one.id)}
                 onDoubleClick={() => onMove(one.id)}
               >
@@ -200,7 +215,7 @@ export function MoveDialog({
                   <li>
                     <button type="button" className={rowClass(null)} onClick={() => setChosen(null)} onDoubleClick={() => onMove(null)}>
                       <FolderX className="size-4 shrink-0 text-ink-secondary" />
-                      {t('folders.none')}
+                      {noneLabel ?? t('folders.none')}
                     </button>
                   </li>
                 )}
@@ -208,6 +223,10 @@ export function MoveDialog({
               </ul>
             )}
           </div>
+
+          {excludedNote && excluded.size > 0 && (
+            <p className="text-ink-secondary text-xs">{excludedNote}</p>
+          )}
 
           {naming !== null && (
             <form onSubmit={(event) => void create(event)} className="flex items-center gap-2">

@@ -219,8 +219,9 @@ export function FolderBar({ folders, current, counts, onOpen, onChanged, onDropD
               <Button variant="tertiary" size="xs" leftSlot={<Pencil />} onClick={() => { setEditing('rename'); setName(here.name); }}>
                 {t('folders.rename')}
               </Button>
+              {/* "Move folder", not "Move": the selection's "Move to" sits just below. */}
               <Button variant="tertiary" size="xs" leftSlot={<FolderInput />} onClick={() => setMovingFolder(true)}>
-                {t('folders.move')}
+                {t('folders.move.folder')}
               </Button>
               <MoveDialog
                 open={movingFolder}
@@ -228,6 +229,8 @@ export function FolderBar({ folders, current, counts, onOpen, onChanged, onDropD
                 title={t('move.folder.title', { name: here.name })}
                 folders={folders}
                 excluded={blocked}
+                excludedNote={t('move.excluded', { name: here.name })}
+                noneLabel={t('move.top')}
                 onCreated={onChanged}
                 onMove={(target) => {
                   setMovingFolder(false);
