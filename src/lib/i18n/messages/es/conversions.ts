@@ -84,7 +84,7 @@ export const conversions: Content['conversions'] = {
     short: 'Notion → MD',
     title: 'Exportación de Notion a Markdown',
     blurb:
-      'Sube el .zip de "Export as Markdown & CSV" de Notion y obtén un documento: cada página en orden, con un índice, las bases de datos como tablas.',
+      'Sube el .zip de "Export as Markdown & CSV" de Notion y obtén cada página como un documento propio, en carpetas anidadas como en Notion; las bases de datos como tablas. O todo en un solo documento.',
     hint: 'Sube el .zip que exporta Notion. Cada página se vuelve una sección con su propio encabezado, en el orden original; una base de datos se vuelve una tabla.',
     seo: {
       title: 'Convertir exportación de Notion a Markdown — TransformPipe',
@@ -97,7 +97,7 @@ export const conversions: Content['conversions'] = {
     short: 'Confluence → MD',
     title: 'Exportación de Confluence a Markdown',
     blurb:
-      'Sube el .zip del "Export → HTML" de un espacio de Confluence y obtén un documento Markdown: cada página en orden, con un índice.',
+      'Sube el .zip del "Export → HTML" de un espacio de Confluence y obtén cada página en su propio Markdown, en carpetas que siguen el árbol de páginas del espacio, con los enlaces entre páginas funcionando. O todo en un solo documento.',
     hint: 'Sube el .zip que produce la exportación de un espacio de Confluence. Cada página se vuelve una sección con su propio encabezado, en el orden original.',
     seo: {
       title: 'Convertir exportación de Confluence a Markdown — TransformPipe',
@@ -110,7 +110,7 @@ export const conversions: Content['conversions'] = {
     short: 'Obsidian → MD',
     title: 'Vault de Obsidian a Markdown',
     blurb:
-      'Sube un vault de Obsidian comprimido y obtén un documento: cada nota en orden, con un índice, los wikilinks conservados como texto.',
+      'Sube un vault de Obsidian comprimido y obtén cada nota como un documento propio, en las carpetas del vault, los wikilinks conservados como texto. O todo en un solo documento.',
     hint: 'Sube el .zip de la carpeta de un vault de Obsidian. Cada nota se vuelve una sección con su propio encabezado, en el orden original.',
     seo: {
       title: 'Convertir vault de Obsidian a Markdown — TransformPipe',

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 14 October 2026.** Next up: **Folders, and an export as the pages it is made of**.
+**Updated 14 October 2026.** Next up: **Folders, step 2 — links, pictures and a link for a whole folder**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -15,7 +15,7 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
 ## Now
 
 - [ ] **Folders, and an export as the pages it is made of** — three steps, decided 15 October
-      1. Folders with subfolders. A Notion, Confluence or Obsidian export (and an EPUB, by chapter)
+      1. ~~Folders with subfolders.~~ **Shipped 15 October.** A Notion, Confluence or Obsidian export (and an EPUB, by chapter)
          becomes one document per page inside a folder that mirrors the export's tree, saved in
          batches with progress, conversion in a worker so the page never freezes; the history is a
          tree. "One document" stays as an option. Signed out: the tree locally, and a .zip of .md
@@ -108,6 +108,14 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 15 October
+
+- [x] **Folders, step 1, and an export as the pages it is made of** — `m2h_folder` (a tree per
+      account), batch saving, conversion in a worker with a page count, the import's tree with a
+      preview, a .zip in the same layout (plain or for Obsidian), folders in the history. Links
+      between pages and contents lists checked on a real 178-page space. Limits 5000 documents,
+      250 MB
 
 ### 14 October
 

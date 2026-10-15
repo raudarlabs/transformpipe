@@ -119,6 +119,44 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-15',
+    title: 'An export arrives as its pages, in folders',
+    slug: 'folders-and-exports-as-pages',
+    body:
+      'A Notion, Confluence or Obsidian export used to become one document — a Confluence section '
+      + 'came out at 275,000 words, which nobody reads. Now every page is a document of its own, in a '
+      + 'folder that follows the export’s tree, links between pages and contents lists still working. '
+      + 'Folders can be made, renamed, moved and deleted in the history, and a large export no longer '
+      + 'freezes the page while it converts.',
+    detail: {
+      en: {
+        description:
+          'Notion, Confluence and Obsidian exports become folders of pages with working links, and the history gets folders you can rename, move and delete.',
+        keywords:
+          'confluence export to markdown files, notion export folders, obsidian vault import, markdown folders, convert confluence space',
+        body: `A Confluence space exported as HTML is hundreds of pages and a folder of attachments. Converting it to one document gave somebody a file of 275,000 words with a contents list on top: unreadable, unsearchable, and — at 4.5 MB — too large to keep in an account.
+
+## Pages, in folders
+
+Now an export is kept as the pages it is made of. Each page is a document of its own, in a folder named after the space or the vault, with a subfolder for every section. A page that has pages under it becomes a folder, with the page itself first inside it — the way Confluence's page tree and Notion's nesting already read. Notion's ids come off the names; a vault's own folders come across as they are.
+
+The pages open as a tree before anything is kept: pick one and it renders on the right. From there the whole export goes into the account in one press, saved in batches with a count, or onto disk as a .zip of Markdown files in the same layout — in a flavour for GitHub and editors, or for Obsidian, whose links to headings are spelled differently. **One document instead** is still there for anyone handing the whole space to an assistant.
+
+## Links that still go somewhere
+
+Checked against a real 178-page space: every contents list jumps to its headings, and every link from one page to another opens that page — in the preview's tree before saving, the saved document after it, the neighbouring file in a .zip. Links into Confluence's attachments and its own screens, which had nowhere to go, keep their words.
+
+## Folders in the history
+
+The history has folders now: make one, rename it, move it inside another, delete it alone (what it held moves up a level) or with everything in it. Documents move into a folder from the selection bar. The top still shows every document, filed or not.
+
+## No more frozen tab
+
+Converting happens off the page's own thread, with a page count in the dropzone. A 60 MB export used to freeze the tab long enough for Chrome to offer to kill it.`,
+      },
+    },
+  },
+  {
     date: '2026-10-14',
     title: 'An export .zip can be 250 MB, and a Word or PowerPoint file 50 MB',
     body:

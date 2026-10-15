@@ -79,7 +79,7 @@ export const conversions: Content['conversions'] = {
     short: 'Notion → MD',
     title: 'Da export Notion a Markdown',
     blurb:
-      'Carica lo .zip dell’"Export as Markdown & CSV" di Notion e ottieni un documento unico: ogni pagina in ordine, con un indice, i database come tabelle.',
+      'Carica lo .zip dell’"Export as Markdown & CSV" di Notion e ottieni ogni pagina come documento a sé, in cartelle annidate come in Notion — i database come tabelle. Oppure tutto in un solo documento.',
     hint: 'Carica lo .zip che Notion esporta. Ogni pagina diventa una sezione con il proprio titolo, nell’ordine originale; un database diventa una tabella.',
     seo: {
       title: 'Da export Notion a Markdown — TransformPipe',
@@ -92,7 +92,7 @@ export const conversions: Content['conversions'] = {
     short: 'Confluence → MD',
     title: 'Da export Confluence a Markdown',
     blurb:
-      'Carica lo .zip dell’"Export → HTML" di uno spazio Confluence e ottieni un documento Markdown: ogni pagina in ordine, con un indice.',
+      'Carica lo .zip dell’"Export → HTML" di uno spazio Confluence e ottieni ogni pagina come Markdown a sé, in cartelle che seguono l’albero delle pagine dello spazio, con i link tra le pagine funzionanti. Oppure tutto in un solo documento.',
     hint: 'Carica lo .zip prodotto dall’export di uno spazio Confluence. Ogni pagina diventa una sezione con il proprio titolo, nell’ordine originale.',
     seo: {
       title: 'Da export Confluence a Markdown — TransformPipe',
@@ -105,7 +105,7 @@ export const conversions: Content['conversions'] = {
     short: 'Obsidian → MD',
     title: 'Da vault Obsidian a Markdown',
     blurb:
-      'Carica un vault Obsidian compresso e ottieni un documento: ogni nota in ordine, con un indice, i wikilink conservati come testo.',
+      'Carica un vault Obsidian compresso e ottieni ogni nota come documento a sé, nelle cartelle del vault, i wikilink conservati come testo. Oppure tutto in un solo documento.',
     hint: 'Carica lo .zip della cartella di un vault Obsidian. Ogni nota diventa una sezione con il proprio titolo, nell’ordine originale.',
     seo: {
       title: 'Da vault Obsidian a Markdown — TransformPipe',

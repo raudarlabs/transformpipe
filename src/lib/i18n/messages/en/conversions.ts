@@ -84,7 +84,7 @@ export const conversions: Content['conversions'] = {
     short: 'Notion → MD',
     title: 'Notion export to Markdown',
     blurb:
-      'Upload the .zip from Notion’s "Export as Markdown & CSV" and get one document: every page in order, with a table of contents, databases included as tables.',
+      'Upload the .zip from Notion’s "Export as Markdown & CSV" and get every page as a document of its own, in folders laid out the way Notion nested them — databases as tables. Or all of it as one document.',
     hint: 'Upload the .zip Notion exports. Every page becomes a section, in order, with its own heading; a database becomes a table.',
     seo: {
       title: 'Notion export to Markdown converter — TransformPipe',
@@ -97,7 +97,7 @@ export const conversions: Content['conversions'] = {
     short: 'Confluence → MD',
     title: 'Confluence export to Markdown',
     blurb:
-      'Upload the .zip from a Confluence space’s "Export → HTML" and get one Markdown document: every page in order, with a table of contents.',
+      'Upload the .zip from a Confluence space’s "Export → HTML" and get every page as Markdown of its own, in folders that follow the space’s page tree, with links between pages still working. Or all of it as one document.',
     hint: 'Upload the .zip a Confluence space export produces. Every page becomes a section, in order, with its own heading.',
     seo: {
       title: 'Confluence export to Markdown converter — TransformPipe',
@@ -110,7 +110,7 @@ export const conversions: Content['conversions'] = {
     short: 'Obsidian → MD',
     title: 'Obsidian vault to Markdown',
     blurb:
-      'Upload a zipped Obsidian vault and get one document: every note in order, with a table of contents, wikilinks kept as words.',
+      'Upload a zipped Obsidian vault and get every note as a document of its own, in the vault’s own folders, wikilinks kept as words. Or all of it as one document.',
     hint: 'Upload the .zip of an Obsidian vault folder. Every note becomes a section, in order, with its own heading.',
     seo: {
       title: 'Obsidian vault to Markdown converter — TransformPipe',

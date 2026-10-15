@@ -82,7 +82,7 @@ export const conversions: Content['conversions'] = {
     short: 'Notion → MD',
     title: 'Export Notion vers Markdown',
     blurb:
-      'Déposez le .zip de l’« Export as Markdown & CSV » de Notion et obtenez un seul document : chaque page dans l’ordre, avec un sommaire, les bases de données en tableaux.',
+      'Déposez le .zip de l’« Export as Markdown & CSV » de Notion et obtenez chaque page comme un document à part, dans des dossiers imbriqués comme dans Notion — les bases de données en tableaux. Ou le tout en un seul document.',
     hint: 'Déposez le .zip que Notion exporte. Chaque page devient une section avec son propre titre, dans l’ordre d’origine ; une base de données devient un tableau.',
     seo: {
       title: 'Convertir un export Notion en Markdown — TransformPipe',
@@ -95,7 +95,7 @@ export const conversions: Content['conversions'] = {
     short: 'Confluence → MD',
     title: 'Export Confluence vers Markdown',
     blurb:
-      'Déposez le .zip du « Export → HTML » d’un espace Confluence et obtenez un document Markdown : chaque page dans l’ordre, avec un sommaire.',
+      'Déposez le .zip du « Export → HTML » d’un espace Confluence et obtenez chaque page en Markdown à part, dans des dossiers qui suivent l’arborescence de l’espace, les liens entre pages toujours fonctionnels. Ou le tout en un seul document.',
     hint: 'Déposez le .zip que produit l’export d’un espace Confluence. Chaque page devient une section avec son propre titre, dans l’ordre d’origine.',
     seo: {
       title: 'Convertir un export Confluence en Markdown — TransformPipe',
@@ -108,7 +108,7 @@ export const conversions: Content['conversions'] = {
     short: 'Obsidian → MD',
     title: 'Coffre Obsidian vers Markdown',
     blurb:
-      'Déposez un coffre Obsidian zippé et obtenez un document : chaque note dans l’ordre, avec un sommaire, les wikiliens conservés en texte.',
+      'Déposez un coffre Obsidian zippé et obtenez chaque note comme un document à part, dans les dossiers du coffre, les wikiliens conservés en texte. Ou le tout en un seul document.',
     hint: 'Déposez le .zip du dossier d’un coffre Obsidian. Chaque note devient une section avec son propre titre, dans l’ordre d’origine.',
     seo: {
       title: 'Convertir un coffre Obsidian en Markdown — TransformPipe',
