@@ -32,6 +32,11 @@ export const docs: Content['docs'] = {
     summary:
       'Ordner als Baum neben der Liste, mit Ziehen und Ablegen und einem Kontextmenü; Suche, sortierbare Spalten und ein Chip je Umwandlung. Zeilen lassen sich zusammenfügen, verschieben, in jedem Format herunterladen oder in einem Zug löschen.',
   },
+  folders: {
+    title: 'Ordner',
+    summary:
+      'Ein Baum neben dem Verlauf: Ordner anlegen, umbenennen, verschieben und löschen, Dokumente hineinziehen, einen Ordner wie ein Dokument teilen – und all das auch über die API, die Kommandozeile oder einen Assistenten.',
+  },
   sharing: {
     title: 'Teilen',
     summary:

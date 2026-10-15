@@ -29,6 +29,11 @@ export const docs: Content['docs'] = {
     summary:
       'Cartelle ad albero accanto all’elenco, con trascinamento e menu contestuale; ricerca, colonne ordinabili e un chip per conversione. Le righe si possono unire, spostare, scaricare in qualsiasi formato o eliminare in blocco.',
   },
+  folders: {
+    title: 'Cartelle',
+    summary:
+      'Un albero accanto alla cronologia: creare, rinominare, spostare ed eliminare cartelle, trascinarvi documenti, condividerne una come un documento, e tutto questo anche dall’API, dalla riga di comando o da un assistente.',
+  },
   sharing: {
     title: 'Condivisione',
     summary:

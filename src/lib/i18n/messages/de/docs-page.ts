@@ -155,6 +155,22 @@ export const docsPage = {
     'Dokumente, die andere an eine Adresse gerichtet haben, erscheinen unter dem Chip {shared}, samt der Angabe, wer sie geteilt hat. Sie sind nur zum Lesen: öffnen und herunterladen, kein Löschen, kein Weiterteilen. Eine Link-Freigabe gehört dem, der den Link hat, und erscheint darum auf niemandes Liste.',
   'docs.sharing.folders':
     'Ein Ordner wird genauso geteilt, über {share} in seinem Menü: dieselben drei Modi, Enddatum und Passwort, unter {path}. Wer ihn öffnet, sieht den ganzen Baum, jede Seite öffnet sich darin, und Links zwischen Seiten bleiben im geteilten Ordner. Angemeldet lässt sich alles behalten: {save} kopiert jeden Ordner und jede Seite samt Links ins eigene Konto – als Kopie, spätere Änderungen des Eigentümers erreichen sie nicht. Ordner, die an Sie adressiert sind, erscheinen unter dem Chip {shared} über den Dokumenten.',
+  'docs.sharing.leave':
+    'Was ungewollt mit Ihnen geteilt wurde, lässt sich aus Ihrer Liste entfernen: {leave} im Menü der Zeile oder das Kreuz bei einem geteilten Ordner. Ihr Zugriff endet, die Kopie des Eigentümers bleibt, und niemand bekommt eine E-Mail.',
+  'docs.folders.everywhere':
+    'Ordner funktionieren auch außerhalb der App. Die API listet, erstellt, benennt um, verschiebt, löscht und teilt sie unter {api} und legt ein neues Dokument mit {param} direkt in einem ab. Die Kommandozeile hat {cli}, dazu mkdir, mv, share-folder und rmdir, sowie {flag} bei push und list. Ein über MCP verbundener Assistent hat {mcp} und sechs weitere Werkzeuge und benennt einen Ordner per ID oder Pfad.',
+  'docs.folders.shot.tree.alt':
+    'Der Ordnerbaum neben dem Verlauf, geöffnet auf einem Ordner zwei Ebenen tief',
+  'docs.folders.shot.tree.caption': 'Ein Ordner zeigt seinen Inhalt und den aller Ordner darunter.',
+  'docs.folders.shot.menu.alt':
+    'Das Kontextmenü eines Ordners im Baum',
+  'docs.folders.shot.menu.caption': 'Rechtsklick auf einen Ordner zeigt alles, was sich damit tun lässt.',
+  'docs.folders.shot.share.alt':
+    'Der Teilen-Dialog eines Ordners, geteilt mit zwei Personen',
+  'docs.folders.shot.share.caption': 'Ein Ordner, geteilt mit benannten Personen bis zu einem Datum.',
+  'docs.folders.shot.shared.alt':
+    'Ein geteilter Ordner aus Sicht des Empfängers, mit „In meinem Konto speichern“',
+  'docs.folders.shot.shared.caption': 'Was der Empfänger sieht und mit einem Klick behält.',
   /** `{csp}` ist die Content-Security-Policy-Direktive selbst. */
   'docs.sharing.safety':
     'Eine geteilte Seite trägt den Inhalt eines anderen auf unserer Domain, also wird sie mit {csp} ausgeliefert und lässt sich nicht in einen Rahmen setzen, und jede von ihnen verweist auf ein Meldeformular, das kein JavaScript braucht. Nichts wird automatisch widerrufen: eine Meldung ist die Behauptung eines Fremden über das Dokument eines anderen, und beide Fehler — eine schlechte Seite stehen zu lassen, einen unschuldigen Link zu töten — verdienen erst den Blick eines Menschen.',

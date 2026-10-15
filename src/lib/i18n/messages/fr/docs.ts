@@ -31,6 +31,11 @@ export const docs: Content['docs'] = {
     summary:
       'Des dossiers en arborescence à côté de la liste, avec glisser-déposer et un menu contextuel ; recherche, colonnes triables et une puce par conversion. Les lignes peuvent être fusionnées, déplacées, téléchargées dans n’importe quel format ou supprimées en lot.',
   },
+  folders: {
+    title: 'Dossiers',
+    summary:
+      'Une arborescence à côté de l’historique : créer, renommer, déplacer et supprimer des dossiers, y glisser des documents, en partager un comme un document — et tout cela depuis l’API, la ligne de commande ou un assistant.',
+  },
   sharing: {
     title: 'Partage',
     summary:

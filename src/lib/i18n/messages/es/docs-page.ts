@@ -141,6 +141,22 @@ export const docsPage = {
     'Los documentos que otras personas te han dirigido aparecen bajo el filtro {shared}, con quién ha compartido cada uno. Son de solo lectura: abrir y descargar, sin eliminar y sin volver a compartir. Un enlace compartido pertenece a quien lo tenga, así que no aparece en la lista de nadie.',
   'docs.sharing.folders':
     'Una carpeta se comparte igual, desde {share} en su menú: los mismos tres modos, fecha de fin y contraseña, en {path}. Quien la abre ve todo el árbol, cada página se abre dentro y los enlaces entre páginas se quedan en la carpeta compartida. Un lector con sesión iniciada puede quedarse con todo: {save} copia cada carpeta y cada página en su propia cuenta, enlaces incluidos; es una copia, así que los cambios posteriores del propietario no le llegan. Las carpetas dirigidas a ti aparecen bajo el chip {shared}, encima de los documentos.',
+  'docs.sharing.leave':
+    'Lo que te compartieron sin que lo quisieras puede salir de tu lista: {leave} en el menú de la fila, o la cruz de una carpeta compartida. Tu acceso termina, la copia del propietario se queda y nadie recibe un correo.',
+  'docs.folders.everywhere':
+    'Las carpetas también funcionan fuera de la aplicación. La API las lista, crea, renombra, mueve, elimina y comparte en {api}, y guarda un documento nuevo directamente en una con {param}. La línea de comandos tiene {cli}, junto con mkdir, mv, share-folder y rmdir, y {flag} en push y list. Un asistente conectado por MCP tiene {mcp} y seis herramientas más, y nombra una carpeta por su id o por su ruta.',
+  'docs.folders.shot.tree.alt':
+    'El árbol de carpetas junto al historial, abierto en una carpeta a dos niveles de profundidad',
+  'docs.folders.shot.tree.caption': 'Una carpeta muestra lo que contiene y lo de todas las carpetas por debajo.',
+  'docs.folders.shot.menu.alt':
+    'El menú contextual de una carpeta en el árbol',
+  'docs.folders.shot.menu.caption': 'Clic derecho en una carpeta para todo lo que se puede hacer con ella.',
+  'docs.folders.shot.share.alt':
+    'El diálogo Compartir de una carpeta, compartida con dos personas',
+  'docs.folders.shot.share.caption': 'Una carpeta compartida con personas concretas, hasta una fecha.',
+  'docs.folders.shot.shared.alt':
+    'Una carpeta compartida como la ve quien la recibe, con Guardar en mi cuenta',
+  'docs.folders.shot.shared.caption': 'Lo que ve quien la recibe, y se queda con un clic.',
   /** `{csp}` es la propia directiva Content-Security-Policy. */
   'docs.sharing.safety':
     'Una página compartida lleva contenido de alguien en nuestro dominio, así que se sirve con {csp} y no se puede meter en un marco, y todas ellas enlazan con un formulario de denuncia que no necesita JavaScript. Nada se revoca automáticamente: una denuncia es lo que un desconocido afirma sobre el documento de otra persona, y los dos errores —dejar en pie una página dañina, matar un enlace inocente— merecen que alguien lo lea primero.',

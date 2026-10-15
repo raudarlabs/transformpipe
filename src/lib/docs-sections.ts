@@ -27,6 +27,7 @@ export const DOCS_SECTION_IDS = [
   'converting',
   'extension',
   'history',
+  'folders',
   'sharing',
   'account',
   'api',

@@ -32,6 +32,11 @@ export const docs: Content['docs'] = {
     summary:
       'Folders in a tree beside the list, with drag and drop and a right-click menu; search, sortable columns, and a chip per conversion. Rows can be merged, moved, downloaded in any format, or deleted in bulk.',
   },
+  folders: {
+    title: 'Folders',
+    summary:
+      'A tree beside the history: make, rename, move and delete folders, drag documents into them, share one like a document — and do all of it from the API, the command line or an assistant.',
+  },
   sharing: {
     title: 'Sharing',
     summary:

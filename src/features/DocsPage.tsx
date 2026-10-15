@@ -358,13 +358,59 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             alt={t('docs.history.shot.selection.alt')}
             caption={t('docs.history.shot.selection.caption')}
           />
+        </Section>
+
+        <Section id="folders" title={titles.folders.title}>
           <p>
             <Rich text={t('docs.history.folders')} parts={{ all: <em>{t('folders.all')}</em> }} />
           </p>
+          <Shot
+            name="folders-tree"
+            alt={t('docs.folders.shot.tree.alt')}
+            caption={t('docs.folders.shot.tree.caption')}
+          />
           <p>
             <Rich text={t('docs.history.folders.moving')} parts={{ moveto: <strong>{t('folders.moveto')}</strong> }} />
           </p>
+          <Shot
+            name="folders-menu"
+            alt={t('docs.folders.shot.menu.alt')}
+            caption={t('docs.folders.shot.menu.caption')}
+          />
           <p>{t('docs.history.folders.imports')}</p>
+          <p>
+            <Rich
+              text={t('docs.sharing.folders')}
+              parts={{
+                share: <strong>{t('folders.share.dialog')}</strong>,
+                path: <InlineCode>/f/&lt;token&gt;</InlineCode>,
+                save: <strong>{t('sharedFolder.save')}</strong>,
+                shared: <strong>{t('docs.chip.shared')}</strong>,
+              }}
+            />
+          </p>
+          <Shot
+            name="folders-share"
+            alt={t('docs.folders.shot.share.alt')}
+            caption={t('docs.folders.shot.share.caption')}
+          />
+          <Shot
+            name="folders-shared"
+            alt={t('docs.folders.shot.shared.alt')}
+            caption={t('docs.folders.shot.shared.caption')}
+          />
+          <p>
+            <Rich
+              text={t('docs.folders.everywhere')}
+              parts={{
+                api: <InlineCode>/api/v1/folders</InlineCode>,
+                param: <InlineCode>?folder=&lt;id&gt;</InlineCode>,
+                cli: <InlineCode>tp folders</InlineCode>,
+                flag: <InlineCode>--folder</InlineCode>,
+                mcp: <InlineCode>tp_list_folders</InlineCode>,
+              }}
+            />
+          </p>
         </Section>
 
         <Section id="sharing" title={titles.sharing.title}>
@@ -409,15 +455,7 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
             />
           </p>
           <p>
-            <Rich
-              text={t('docs.sharing.folders')}
-              parts={{
-                share: <strong>{t('folders.share.dialog')}</strong>,
-                path: <InlineCode>/f/&lt;token&gt;</InlineCode>,
-                save: <strong>{t('sharedFolder.save')}</strong>,
-                shared: <strong>{t('docs.chip.shared')}</strong>,
-              }}
-            />
+            <Rich text={t('docs.sharing.leave')} parts={{ leave: <strong>{t('history.shared.leave')}</strong> }} />
           </p>
           <p>
             <Rich

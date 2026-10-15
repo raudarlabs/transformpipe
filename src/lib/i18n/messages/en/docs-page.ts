@@ -152,6 +152,22 @@ export const docsPage = {
     "Documents other people addressed to you appear under the {shared} chip, with who shared each one. They are read-only: open and download, no delete, no re-share. A link share belongs to whoever holds the link, so it appears on no one's list.",
   'docs.sharing.folders':
     'A folder is shared the same way, from {share} in its menu: the same three modes, end date and password, at {path}. The reader gets the whole tree, every page opens inside it, and links between pages stay inside the shared folder. A reader who is signed in can keep all of it: {save} copies every folder and page into their own account with the links between them, as a copy, so changes the owner makes later do not reach it. Folders addressed to you appear under the {shared} chip, above the documents.',
+  'docs.sharing.leave':
+    'Something shared with you that you did not want can come off your list: {leave} in the row’s menu, or the cross on a shared folder. Your access ends, the owner’s copy stays, and nobody is emailed about it.',
+  'docs.folders.everywhere':
+    'Folders work from outside the app too. The API lists, makes, renames, moves, deletes and shares them at {api}, and files a new document in one with {param}. The command line has {cli} with mkdir, mv, share-folder and rmdir beside it, and {flag} on push and list. An assistant connected over MCP has {mcp} and six tools more, and names a folder by its id or by its path.',
+  'docs.folders.shot.tree.alt':
+    'The folder tree beside the history, opened on a folder two levels down',
+  'docs.folders.shot.tree.caption': 'A folder shows what is in it and in every folder below it.',
+  'docs.folders.shot.menu.alt':
+    'The right-click menu of a folder in the tree',
+  'docs.folders.shot.menu.caption': 'Right-click a folder for everything that can be done to it.',
+  'docs.folders.shot.share.alt':
+    'The Share dialog of a folder, shared with two people',
+  'docs.folders.shot.share.caption': 'A folder shared with named people, until a date.',
+  'docs.folders.shot.shared.alt':
+    'A shared folder as its reader sees it, with Save to my account',
+  'docs.folders.shot.shared.caption': 'What the reader sees, and keeps in one press.',
   /** `{csp}` is the Content-Security-Policy directive itself. */
   'docs.sharing.safety':
     "A shared page carries someone's content on our domain, so it is served with {csp} and cannot be framed, and every one of them links to a report form that needs no JavaScript. Nothing is revoked automatically: a report is a stranger's claim about someone else's document, and both mistakes — leaving a bad page up, killing an innocent link — deserve a person reading it first.",

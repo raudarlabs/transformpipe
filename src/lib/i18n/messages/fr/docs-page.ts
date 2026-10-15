@@ -141,6 +141,22 @@ export const docsPage = {
     'Les documents que d’autres vous ont adressés apparaissent sous le filtre {shared}, avec le nom de qui a partagé chacun. Ils sont en lecture seule : ouvrir et télécharger, pas de suppression, pas de repartage. Un partage par lien appartient à qui détient le lien, il n’apparaît donc sur la liste de personne.',
   'docs.sharing.folders':
     'Un dossier se partage de la même manière, via {share} dans son menu : les trois mêmes modes, la date de fin et le mot de passe, à l’adresse {path}. Le lecteur voit toute l’arborescence, chaque page s’ouvre à l’intérieur, et les liens entre pages restent dans le dossier partagé. Un lecteur connecté peut tout garder : {save} copie chaque dossier et chaque page dans son propre compte, liens compris, sous forme de copie, donc les modifications ultérieures du propriétaire ne l’atteignent pas. Les dossiers qui vous sont adressés apparaissent sous la puce {shared}, au-dessus des documents.',
+  'docs.sharing.leave':
+    'Ce qu’on a partagé avec vous sans que vous le vouliez peut quitter votre liste : {leave} dans le menu de la ligne, ou la croix sur un dossier partagé. Votre accès prend fin, la copie du propriétaire reste, et personne ne reçoit d’e-mail.',
+  'docs.folders.everywhere':
+    'Les dossiers fonctionnent aussi hors de l’application. L’API les liste, les crée, les renomme, les déplace, les supprime et les partage à {api}, et range un nouveau document dans l’un d’eux avec {param}. La ligne de commande a {cli}, avec mkdir, mv, share-folder et rmdir, et {flag} sur push et list. Un assistant connecté par MCP a {mcp} et six autres outils, et désigne un dossier par son identifiant ou son chemin.',
+  'docs.folders.shot.tree.alt':
+    'L’arborescence à côté de l’historique, ouverte sur un dossier à deux niveaux de profondeur',
+  'docs.folders.shot.tree.caption': 'Un dossier montre son contenu et celui de tous les dossiers en dessous.',
+  'docs.folders.shot.menu.alt':
+    'Le menu contextuel d’un dossier dans l’arborescence',
+  'docs.folders.shot.menu.caption': 'Un clic droit sur un dossier montre tout ce qu’on peut en faire.',
+  'docs.folders.shot.share.alt':
+    'La fenêtre de partage d’un dossier, partagé avec deux personnes',
+  'docs.folders.shot.share.caption': 'Un dossier partagé avec des personnes nommées, jusqu’à une date.',
+  'docs.folders.shot.shared.alt':
+    'Un dossier partagé tel que le voit son lecteur, avec Enregistrer dans mon compte',
+  'docs.folders.shot.shared.caption': 'Ce que voit le lecteur, et garde en un clic.',
   /** `{csp}` est la directive Content-Security-Policy elle-même. */
   'docs.sharing.safety':
     'Une page partagée porte le contenu de quelqu’un sur notre domaine, elle est donc servie avec {csp} et ne peut pas être mise dans un cadre, et chacune renvoie vers un formulaire de signalement qui ne demande aucun JavaScript. Rien n’est révoqué automatiquement : un signalement est l’affirmation d’un inconnu sur le document d’un autre, et les deux erreurs — laisser une mauvaise page en ligne, tuer un lien innocent — méritent qu’une personne le lise d’abord.',

@@ -31,6 +31,11 @@ export const docs: Content['docs'] = {
     summary:
       'Carpetas en un árbol junto a la lista, con arrastrar y soltar y un menú contextual; búsqueda, columnas ordenables y un chip por conversión. Las filas se pueden combinar, mover, descargar en cualquier formato o eliminar en bloque.',
   },
+  folders: {
+    title: 'Carpetas',
+    summary:
+      'Un árbol junto al historial: crear, renombrar, mover y eliminar carpetas, arrastrar documentos a ellas, compartir una como un documento, y todo ello también desde la API, la línea de comandos o un asistente.',
+  },
   sharing: {
     title: 'Compartir',
     summary:

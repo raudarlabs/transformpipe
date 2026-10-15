@@ -134,6 +134,22 @@ export const docsPage = {
     'I documenti che altre persone hanno indirizzato a te compaiono sotto il filtro {shared}, con il nome di chi li ha condivisi. Sono in sola lettura: si aprono e si scaricano, non si eliminano e non si ricondividono. Una condivisione per link appartiene a chi ha il link, quindi non compare nell’elenco di nessuno.',
   'docs.sharing.folders':
     'Una cartella si condivide allo stesso modo, da {share} nel suo menu: le stesse tre modalità, data di scadenza e password, all’indirizzo {path}. Chi la apre vede tutto l’albero, ogni pagina si apre al suo interno e i collegamenti tra le pagine restano nella cartella condivisa. Un lettore che ha effettuato l’accesso può tenerla tutta: {save} copia ogni cartella e ogni pagina nel suo account, collegamenti compresi; è una copia, quindi le modifiche successive del proprietario non la raggiungono. Le cartelle indirizzate a te compaiono sotto il chip {shared}, sopra i documenti.',
+  'docs.sharing.leave':
+    'Ciò che ti è stato condiviso senza che lo volessi può uscire dal tuo elenco: {leave} nel menu della riga, o la croce su una cartella condivisa. Il tuo accesso termina, la copia del proprietario resta e nessuno riceve un’e-mail.',
+  'docs.folders.everywhere':
+    'Le cartelle funzionano anche fuori dall’app. L’API le elenca, crea, rinomina, sposta, elimina e condivide a {api}, e archivia un nuovo documento in una di esse con {param}. La riga di comando ha {cli}, con mkdir, mv, share-folder e rmdir, e {flag} su push e list. Un assistente collegato tramite MCP ha {mcp} e altri sei strumenti, e indica una cartella con il suo id o il suo percorso.',
+  'docs.folders.shot.tree.alt':
+    'L’albero delle cartelle accanto alla cronologia, aperto su una cartella a due livelli di profondità',
+  'docs.folders.shot.tree.caption': 'Una cartella mostra ciò che contiene e ciò che c’è in tutte le cartelle sotto.',
+  'docs.folders.shot.menu.alt':
+    'Il menu contestuale di una cartella nell’albero',
+  'docs.folders.shot.menu.caption': 'Clic destro su una cartella per tutto ciò che si può farne.',
+  'docs.folders.shot.share.alt':
+    'La finestra Condividi di una cartella, condivisa con due persone',
+  'docs.folders.shot.share.caption': 'Una cartella condivisa con persone specifiche, fino a una data.',
+  'docs.folders.shot.shared.alt':
+    'Una cartella condivisa come la vede chi la riceve, con Salva nel mio account',
+  'docs.folders.shot.shared.caption': 'Ciò che vede chi la riceve, e tiene con un clic.',
   /** `{csp}` is the Content-Security-Policy directive itself. */
   'docs.sharing.safety':
     'Una pagina condivisa porta il contenuto di qualcuno sul nostro dominio, quindi viene servita con {csp} e non può essere messa in un frame, e ognuna di esse rimanda a un modulo di segnalazione che non ha bisogno di JavaScript. Niente viene revocato automaticamente: una segnalazione è l’affermazione di un estraneo sul documento di un altro, ed entrambi gli errori — lasciare in piedi una pagina dannosa, uccidere un link innocente — meritano che prima una persona la legga.',

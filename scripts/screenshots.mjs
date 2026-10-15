@@ -437,6 +437,202 @@ async function passwordShot(browser, theme) {
   }
 }
 
+/*
+ * The folder shots: the tree beside the history, a folder's right-click menu, its Share dialog
+ * with named people, and the page a reader of a shared folder keeps it from.
+ *
+ * Signed in, so the API is answered from fixtures as for the sharing shots — a small account with
+ * three top-level folders, one of them shared — and the app draws everything on the screen.
+ */
+const FOLDER = {
+  handbook: '00000000-0000-4000-8000-0000000000f1',
+  onboarding: '00000000-0000-4000-8000-0000000000f2',
+  engineering: '00000000-0000-4000-8000-0000000000f3',
+  architecture: '00000000-0000-4000-8000-0000000000f4',
+  runbooks: '00000000-0000-4000-8000-0000000000f5',
+  marketing: '00000000-0000-4000-8000-0000000000f6',
+};
+const FOLDER_TOKEN = 'h4NdB00kSh4r3dL1nk9xQw';
+
+function folderAnswer(url) {
+  const now = Date.now();
+  const at = (hoursAgo) => new Date(now - hoursAgo * 3_600_000).toISOString();
+  const folder = (id, parent, name, documents, share = {}) => ({
+    id, parent_id: parent, name, source: null, created_at: at(240), share_token: null, share_mode: 'private', documents, ...share,
+  });
+  const folders = [
+    folder(FOLDER.handbook, null, 'Product handbook', 3, { share_token: FOLDER_TOKEN, share_mode: 'people' }),
+    folder(FOLDER.onboarding, FOLDER.handbook, 'Onboarding', 4),
+    folder(FOLDER.engineering, FOLDER.handbook, 'Engineering', 2),
+    folder(FOLDER.architecture, FOLDER.engineering, 'Architecture', 3),
+    folder(FOLDER.runbooks, FOLDER.engineering, 'Runbooks', 5),
+    folder(FOLDER.marketing, null, 'Marketing', 6),
+  ];
+  let n = 0;
+  const doc = (name, folderId, words, hoursAgo, kind = 'confluence-to-markdown') => ({
+    id: `00000000-0000-4000-8000-${String(++n).padStart(12, '0')}`,
+    name, kind, size: words * 7, stats: { words, headings: 4, tables: 0 }, created_at: at(hoursAgo), folder_id: folderId,
+  });
+  const documents = [
+    doc('Engineering home.md', FOLDER.engineering, 640, 3),
+    doc('Release process.md', FOLDER.engineering, 1820, 3),
+    doc('Service map.md', FOLDER.architecture, 2310, 3),
+    doc('Data model.md', FOLDER.architecture, 1475, 3),
+    doc('Decisions log.md', FOLDER.architecture, 3980, 3),
+    doc('Incident response.md', FOLDER.runbooks, 1210, 3),
+    doc('Rotating credentials.md', FOLDER.runbooks, 530, 3),
+    doc('Restoring a backup.md', FOLDER.runbooks, 880, 3),
+    doc('On-call handover.md', FOLDER.runbooks, 420, 3),
+    doc('Scaling the queue.md', FOLDER.runbooks, 760, 3),
+    doc('Welcome.md', FOLDER.onboarding, 350, 30),
+    doc('First week.md', FOLDER.onboarding, 910, 30),
+    doc('Tools and access.md', FOLDER.onboarding, 610, 30),
+    doc('Who to ask.md', FOLDER.onboarding, 240, 30),
+    doc('Product handbook.md', FOLDER.handbook, 1200, 30),
+    doc('Glossary.md', FOLDER.handbook, 2050, 30),
+    doc('Roadmap.md', FOLDER.handbook, 760, 30),
+    doc('Q4 campaign.md', FOLDER.marketing, 1390, 50, 'word-to-markdown'),
+    doc('Meeting notes.md', null, 420, 70, 'markdown-to-html'),
+  ];
+
+  if (url.pathname === '/api/auth/get-session') {
+    return { user: { id: 'sample', name: 'Alex', email: 'alex@example.com', image: null, emailVerified: true } };
+  }
+
+  if (url.pathname === '/api/folders') return { folders };
+  if (url.pathname === '/api/documents') return { documents };
+  if (url.pathname === `/api/folders/${FOLDER.handbook}/share`) {
+    return {
+      mode: 'people', token: FOLDER_TOKEN, emails: ['anna@example.com', 'marco@example.com'],
+      expiresAt: new Date(now + 30 * 24 * 3_600_000).toISOString(), views: 7, lastViewedAt: at(2), hasPassword: false,
+    };
+  }
+  if (url.pathname === `/api/shared-folders/${FOLDER_TOKEN}`) {
+    const inside = new Set([FOLDER.handbook, FOLDER.onboarding, FOLDER.engineering, FOLDER.architecture, FOLDER.runbooks]);
+
+    return {
+      folder: { name: 'Product handbook', created_at: at(240), owner: 'alex@example.com' },
+      folders: folders.filter((one) => inside.has(one.id)).map(({ id, parent_id, name }) => ({ id, parent_id: id === FOLDER.handbook ? null : parent_id, name })),
+      documents: documents.filter((one) => inside.has(one.folder_id)).map(({ id, name, size, folder_id }, index) => ({ id, name, size, folder_id, position: index })),
+      root: FOLDER.handbook,
+      mine: false,
+    };
+  }
+  if (url.pathname === '/api/usage') {
+    return { bytes: 2_400_000, documents: documents.length, limits: { bytes: 250 * 1024 * 1024, documents: 5000, documentBytes: 4 * 1024 * 1024 } };
+  }
+  if (url.pathname === '/api/shared-with-me') return { documents: [] };
+  if (url.pathname === '/api/shared-folders') return { folders: [] };
+
+  return {};
+}
+
+async function folderShots(browser, theme) {
+  console.log(`folders, ${theme}:`);
+
+  const page = await browser.newPage();
+
+  await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 2 });
+  await page.setRequestInterception(true);
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+
+    if (!url.pathname.startsWith('/api/')) {
+      request.continue();
+
+      return;
+    }
+
+    request.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(folderAnswer(url)) });
+  });
+
+  await page.goto(HOST, { waitUntil: 'networkidle2' });
+  await page.evaluate((value, open) => {
+    localStorage.setItem('m2h.theme', value);
+    localStorage.removeItem('md2html.history.v1');
+    localStorage.setItem('tp.openFolders', JSON.stringify(open));
+    localStorage.setItem('m2h.consent', JSON.stringify({ version: 1, analytics: false, at: Date.now() }));
+  }, theme, [FOLDER.handbook, FOLDER.engineering]);
+
+  /* The history, opened on a folder two levels down, so the tree shows where it is. */
+  await page.goto(`${HOST}/history?folder=${FOLDER.engineering}`, { waitUntil: 'networkidle2' });
+  await settle(page, 900);
+  await shootAround(page, 'folders-tree', theme, ['nav[aria-label="Folders"]', 'table'], 24, 640);
+
+  /* A right click on a folder, with its menu open beside it. */
+  await page.evaluate(() => {
+    const row = [...document.querySelectorAll('nav[aria-label="Folders"] [role=treeitem] > div')].find(
+      (one) => one.querySelector('span.truncate')?.textContent === 'Product handbook'
+    );
+    const box = row.getBoundingClientRect();
+
+    row.querySelectorAll('button')[1].dispatchEvent(
+      new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: box.left + 90, clientY: box.top + 12 })
+    );
+  });
+  await settle(page, 600);
+  await shootAround(page, 'folders-menu', theme, ['nav[aria-label="Folders"]', '[role="menu"]']);
+  await page.keyboard.press('Escape');
+  await settle(page, 300);
+
+  /* Its Share dialog, addressed to two people. */
+  await page.evaluate(() => {
+    const row = [...document.querySelectorAll('nav[aria-label="Folders"] [role=treeitem] > div')].find(
+      (one) => one.querySelector('span.truncate')?.textContent === 'Product handbook'
+    );
+
+    row.querySelectorAll('button')[1].click();
+  });
+  await settle(page, 600);
+  /* Clicked in the page, not by pointer: the sticky header can sit over the button. */
+  await page.evaluate(() => {
+    [...document.querySelectorAll('button')].find((one) => one.textContent?.trim() === 'Shared with people')?.click();
+  });
+  await page.waitForSelector('[role="dialog"]');
+  await settle(page, 700);
+  await shootElement(page, 'folders-share', theme, '[role="dialog"]');
+  await page.keyboard.press('Escape');
+
+  /* What the reader sees, and keeps it from. */
+  await page.goto(`${HOST}/open-folder/${FOLDER_TOKEN}`, { waitUntil: 'networkidle2' });
+  await settle(page, 900);
+  await shoot(page, 'folders-shared', theme, 'main nav');
+
+  await page.close();
+}
+
+/**
+ * The box around several elements at once — a tree and the menu that opened beside it — in the
+ * document's coordinates, which is what a clip is measured in. `maxHeight` stops a long list.
+ */
+async function shootAround(page, name, theme, selectors, pad = 24, maxHeight = Infinity) {
+  const file = join(OUT, `${name}-${theme}.png`);
+
+  await hushToasts(page);
+
+  const box = await page.evaluate((all) => {
+    const rects = all.map((one) => document.querySelector(one)?.getBoundingClientRect()).filter(Boolean);
+
+    return {
+      x: Math.min(...rects.map((one) => one.left)),
+      y: Math.min(...rects.map((one) => one.top)) + window.scrollY,
+      right: Math.max(...rects.map((one) => one.right)),
+      bottom: Math.max(...rects.map((one) => one.bottom)) + window.scrollY,
+    };
+  }, selectors);
+
+  await page.screenshot({
+    path: file,
+    clip: {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      width: box.right - box.x + pad * 2,
+      height: Math.min(box.bottom - box.y + pad * 2, maxHeight),
+    },
+  });
+  console.log(`  ${name}-${theme}.png`);
+}
+
 const browser = await puppeteer.launch({
   executablePath: chrome,
   headless: 'new',
@@ -448,7 +644,11 @@ const browser = await puppeteer.launch({
 const only = flag('only', '');
 
 try {
-  if (only === 'sharing') {
+  if (only === 'folders') {
+    for (const theme of ['dark', 'light']) {
+      await folderShots(browser, theme);
+    }
+  } else if (only === 'sharing') {
     for (const theme of ['dark', 'light']) {
       await sharingShots(browser, theme);
       await passwordShot(browser, theme);
@@ -459,6 +659,7 @@ try {
         await capture(browser, theme);
         await sharingShots(browser, theme);
         await passwordShot(browser, theme);
+        await folderShots(browser, theme);
       }
     }
 
