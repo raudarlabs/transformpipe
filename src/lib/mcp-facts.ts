@@ -26,8 +26,8 @@ export const CLAUDE_DIRECTORY = 'https://claude.ai/directory/tp';
 export const CHATGPT_PLUGINS = 'https://chatgpt.com/plugins';
 
 export const MCP_TOOL_NAMES = [
-  'tp_help',
-  'tp_convert_markdown',
+  'tp_search_documentation',
+  'tp_convert_from_markdown',
   'tp_convert_to_markdown',
   'tp_save_document',
   'tp_update_document',
@@ -48,38 +48,48 @@ export const MCP_TOOL_NAMES = [
 
 export type McpToolName = (typeof MCP_TOOL_NAMES)[number];
 
+/*
+ * The names the first two tools had until 15 October 2026. A client that connected before then
+ * holds a tool list with these in it, so the server still answers them — but does not list them,
+ * and nothing new is written against them.
+ */
+export const MCP_TOOL_ALIASES: Record<string, McpToolName> = {
+  tp_help: 'tp_search_documentation',
+  tp_convert_markdown: 'tp_convert_from_markdown',
+};
+
 /** One line each, for the page. The server holds the long descriptions the model reads. */
 export const MCP_TOOLS: Record<McpToolName, string> = {
-  tp_help: 'Answers questions about TransformPipe from the documentation rather than from memory.',
-  tp_convert_markdown:
-    'Markdown in, sanitised HTML out — or Confluence storage format, Jira wiki markup or Slack mrkdwn. Optionally the whole self-contained HTML document.',
+  tp_search_documentation: 'Searches the TransformPipe documentation and returns the sections that match a question.',
+  tp_convert_from_markdown:
+    'Converts Markdown to sanitised HTML, Confluence storage format, Jira wiki markup or Slack mrkdwn, optionally as a complete HTML document.',
   tp_convert_to_markdown:
-    'HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out. A file that is bytes — Word, Excel, PowerPoint, EPUB, OpenDocument, an export zip — goes to the API or the app.',
+    'Converts HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export to Markdown. Binary files — Word, Excel, PowerPoint, EPUB, OpenDocument, export zips — are converted in the app or through the API.',
   tp_save_document:
-    'Saves Markdown to the account — or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export, converted on the way in — and files it in a folder, making the folder if it is missing. Publishing it in the same call, or into a shared folder, takes an explicit confirmation.',
+    'Saves a new document — Markdown, or HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export converted on save — optionally into a folder, which is created if missing. Publishing it, or saving it into a shared folder, requires an explicit confirmation.',
   tp_update_document:
-    'New text for a document already on the account — the same id and the same link, the old text kept as a revision. Changing one that is shared takes an explicit confirmation.',
+    'Replaces the text of an existing document, keeping its id and link and the previous text as a revision. Changing a shared document requires an explicit confirmation.',
   tp_list_documents:
-    'What is on the account, with the id each other tool takes and the folder each is in — or only what is in one folder.',
+    'Lists the documents on the account with their ids and folders, optionally filtered by text or by folder.',
   tp_list_folders:
-    'The account\'s folders as a tree: each with its id, how many documents it holds, and whether it is shared.',
-  tp_create_folder: 'Makes a folder, at the top or inside another, named by its id or its path.',
+    'Lists the account\'s folders as a tree, with each folder\'s id, document count and sharing state, and the account\'s totals.',
+  tp_create_folder: 'Creates a folder at the top level or inside another, given by id or path.',
   tp_move_documents:
-    'Files documents in a folder, or takes them out of every folder. Moving them into a shared folder takes an explicit confirmation.',
-  tp_get_document: 'One document, as its Markdown source or as rendered HTML.',
+    'Moves documents into a folder or out of all folders. Moving them into a shared folder requires an explicit confirmation.',
+  tp_get_document: 'Returns one document as its Markdown source or as rendered HTML.',
   tp_summarize_document:
-    'A short summary of a document, cached on the account so asking again is free.',
+    'Summarises a document with Google\'s Gemini model and caches the summary on the account.',
   tp_document_versions:
-    'A document\'s history: the texts its updates replaced, each readable again, and any documents linked to it as versions.',
+    'Returns a document\'s history: the earlier texts its updates replaced, and any documents linked to it as versions.',
   tp_share_document:
-    'Changes who may open a document: a link, named addresses, or nobody — and adds or removes one reader without touching the rest. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
+    'Sets who can open a document — anyone with a link, named addresses, or the owner alone — and adds or removes individual readers. Sharing requires an explicit confirmation; revoking does not.',
   tp_share_folder:
-    'Changes who may open a folder and everything under it: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
+    'Sets who can open a folder and everything in it — anyone with a link, named addresses, or the owner alone. Sharing requires an explicit confirmation; revoking does not.',
   tp_update_folder:
-    'Renames a folder or moves it under another, everything in it going with it. Moving it under a shared folder takes an explicit confirmation.',
+    'Renames a folder or moves it, with its contents, under another folder or to the top level. Moving it under a shared folder requires an explicit confirmation.',
   tp_delete_folder:
-    'Deletes a folder — alone, with what it held moving up a level, or with every document in it, permanently. Always with an explicit confirmation.',
-  tp_usage: 'What the account is using against its limits.',
+    'Deletes a folder — moving its contents up a level, or deleting its documents permanently with it. Always requires an explicit confirmation.',
+  tp_usage: 'Returns the account\'s storage and document count against their limits.',
   tp_delete_document:
-    'Deletes one document, permanently, and only with an explicit confirmation.',
+    'Permanently deletes one document. Always requires an explicit confirmation.',
 };

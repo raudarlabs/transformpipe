@@ -163,7 +163,7 @@ for (const [name, body] of [
   ['a language we do not have', { ...view, l: 'ru' }],
   ['a host as a source', { ...view, s: 'intranet.example.com' }],
   ['a campaign with spaces', { ...view, u: 'a b' }],
-  ['a server event from a browser', { ...view, e: 'mcp', k: 'tp_help' }],
+  ['a server event from a browser', { ...view, e: 'mcp', k: 'tp_search_documentation' }],
   ['a number for a key', { ...view, k: 42 }],
   ['an array', [view]],
   ['nothing', null],

@@ -4,152 +4,170 @@
   "app_info": {
     "display_name": "TransformPipe",
     "subtitle": "Convert, save and share docs",
-    "description": "TransformPipe converts Markdown to HTML and text-based HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. Connect your TransformPipe account to save documents, organise them in folders, search and read them, inspect versions, generate summaries, check usage, and share documents or whole folders or revoke access. Publishing, emailing share notices and permanent deletion require explicit confirmation. Binary files such as Word, Excel, PowerPoint and PDF cannot be passed through these MCP tools; use the TransformPipe website or API for supported binary formats.",
+    "description": "TransformPipe converts Markdown to HTML, Confluence storage format, Jira wiki markup and Slack mrkdwn, and converts HTML, CSV, TSV, JSON, plain text, RTF and Evernote exports to Markdown. With a connected TransformPipe account it saves documents, organises them in folders, searches and reads them, shows their versions, generates summaries, reports usage, and shares documents or folders or revokes access. Publishing, emailing share notices, filing content into shared folders and permanent deletion require explicit confirmation. Binary files such as Word, Excel and PowerPoint cannot be passed as tool arguments; they are converted on the TransformPipe website or through its API.",
     "category": "PRODUCTIVITY"
   },
   "tools": {
-    "tp_help": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+    "tp_search_documentation": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Returns TransformPipe documentation already bundled with the server; it does not change account data.",
-        "open_world_justification": "Reads only the server's fixed documentation and FAQ, without fetching arbitrary external content.",
-        "destructive_justification": "It neither writes nor removes data."
+        "read_only_justification": "It searches the documentation bundled with the server and returns matching sections; it changes no account data.",
+        "open_world_justification": "It reads only the server's own documentation and FAQ text and contacts no external system or person.",
+        "destructive_justification": "It does not create, change or delete anything.",
+        "idempotent_justification": "The same question returns the same sections and has no side effects."
       }
     },
-    "tp_convert_markdown": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+    "tp_convert_from_markdown": {
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Renders supplied Markdown as sanitized HTML and returns it in the tool response without saving it.",
-        "open_world_justification": "The conversion uses supplied text and local rendering code; it does not retrieve public content or contact arbitrary recipients.",
-        "destructive_justification": "No document or account state is changed or removed."
+        "read_only_justification": "It converts the supplied Markdown to HTML, Confluence storage format, Jira wiki markup or Slack mrkdwn and returns it without saving anything.",
+        "open_world_justification": "The conversion runs on the server with local code; it does not publish the result, fetch URLs or contact anyone.",
+        "destructive_justification": "No document or account data is created, changed or deleted.",
+        "idempotent_justification": "The same input always returns the same output and has no side effects."
       }
     },
     "tp_convert_to_markdown": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Converts supplied text in one of the seven supported source formats and returns Markdown without saving it.",
-        "open_world_justification": "It processes the caller's source text with local converters and does not fetch an external URL.",
-        "destructive_justification": "It does not create, overwrite, share or delete an account document."
+        "read_only_justification": "It converts supplied HTML, CSV, TSV, JSON, plain text, RTF or ENEX text to Markdown and returns it without saving anything.",
+        "open_world_justification": "It processes the supplied text with local converters and does not fetch URLs or contact anyone.",
+        "destructive_justification": "No document or account data is created, changed or deleted.",
+        "idempotent_justification": "The same input always returns the same Markdown and has no side effects."
       }
     },
     "tp_save_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": false, "idempotentHint": false },
       "justifications": {
-        "read_only_justification": "Creates a document in the connected account and can create a linked version of an existing document.",
-        "open_world_justification": "With share=link it publishes a page reachable by anyone with the URL; with share=people it may email user-supplied external addresses.",
-        "destructive_justification": "This hint covers every mode of the tool: share=link can publish the document and share=people can send email notices that cannot be recalled. Both modes require confirm=true. The default private save does not disclose content."
+        "read_only_justification": "It creates a new document in the connected account, and missing folders when a folder path is given.",
+        "open_world_justification": "With share=link it publishes a page anyone with the URL can open, with share=people it emails the given addresses, and saving into a shared folder makes the document visible to that folder's readers; each of these requires confirm=true.",
+        "destructive_justification": "It only adds data: it creates a new document (and any missing folders) and never modifies or deletes an existing document.",
+        "idempotent_justification": "Each call creates another document with a new id, so repeating a call adds a second copy."
       }
     },
     "tp_update_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Replaces the text of a document in the connected account; the previous text is kept as a revision.",
-        "open_world_justification": "When the document is shared by link or with named people, the new text is what everyone holding the link then reads.",
-        "destructive_justification": "The text it replaces leaves the shared page, so updating a shared document requires confirm=true; a private document is updated without it. The previous text is kept as a revision on the account, so it can be recovered."
+        "read_only_justification": "It replaces the text of an existing document in the connected account.",
+        "open_world_justification": "When the document is shared by link or with named people, its readers see the new text; this case requires confirm=true.",
+        "destructive_justification": "It overwrites the document's current text; the previous text is kept as a revision, but only the ten most recent revisions are retained.",
+        "idempotent_justification": "Sending the same text again leaves the document unchanged and creates no new revision."
       }
     },
     "tp_list_documents": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Lists or searches documents already in the connected user's account without modifying them.",
-        "open_world_justification": "Search is limited to the authenticated account's document collection.",
-        "destructive_justification": "No document, permission or other account state is changed."
+        "read_only_justification": "It lists or searches the documents in the connected account without modifying them.",
+        "open_world_justification": "It reads only the authenticated account's own documents.",
+        "destructive_justification": "No document, folder, permission or other account data is changed.",
+        "idempotent_justification": "Repeating the call returns the same list and has no side effects."
       }
     },
     "tp_list_folders": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Lists the connected account's folders as a tree, with each folder's id, document count and sharing state, without modifying them.",
-        "open_world_justification": "It reads only the authenticated account's own folders.",
-        "destructive_justification": "No folder, document, permission or other account state is changed."
+        "read_only_justification": "It lists the connected account's folders with document counts and sharing state, and the account's storage totals, without modifying anything.",
+        "open_world_justification": "It reads only the authenticated account's own folders and usage.",
+        "destructive_justification": "No folder, document, permission or other account data is changed.",
+        "idempotent_justification": "Repeating the call returns the same tree and totals and has no side effects."
       }
     },
     "tp_create_folder": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Creates a folder, and any missing folders on the path given, in the connected account.",
-        "open_world_justification": "A new folder is private to the account; creating one does not publish anything or contact anyone.",
-        "destructive_justification": "It only adds folders. A folder that already exists in that place is returned rather than created again, and nothing is overwritten or removed."
+        "read_only_justification": "It creates a folder, and any missing parent folders on the given path, in the connected account.",
+        "open_world_justification": "A new folder contains no documents and is not published, emailed or sent to any external system.",
+        "destructive_justification": "It only adds folders; nothing existing is modified or deleted.",
+        "idempotent_justification": "If a folder with the same name already exists in the same place, that folder is returned and nothing new is created."
       }
     },
     "tp_move_documents": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Changes which folder documents in the connected account are filed in, or takes them out of every folder.",
-        "open_world_justification": "Moving a document into a folder shared by link or with named people makes it readable by everyone that folder is shared with.",
-        "destructive_justification": "This hint covers moving into a shared folder, which discloses the documents to that folder's audience and requires confirm=true. Moving into a private folder or out of every folder discloses nothing and deletes nothing."
+        "read_only_justification": "It changes which folder documents in the connected account are filed in, or removes them from all folders.",
+        "open_world_justification": "Moving documents into a folder shared by link or with named people makes them readable by that folder's audience; this requires confirm=true.",
+        "destructive_justification": "Nothing is deleted or overwritten: a move can be reversed by moving the documents back.",
+        "idempotent_justification": "Moving the same documents to the same folder again leaves them where they are."
       }
     },
     "tp_get_document": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Retrieves one document from the connected account as Markdown or rendered HTML.",
-        "open_world_justification": "It reads only an account document identified by its id, not arbitrary public content.",
-        "destructive_justification": "Reading or rendering the document does not change or remove it."
+        "read_only_justification": "It returns one document from the connected account as Markdown or rendered HTML.",
+        "open_world_justification": "It reads only an account document identified by its id, not public content.",
+        "destructive_justification": "Reading or rendering the document does not change or remove it.",
+        "idempotent_justification": "Repeating the call returns the same document and has no side effects."
       }
     },
     "tp_summarize_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": false, "idempotentHint": false },
       "justifications": {
-        "read_only_justification": "Generates a summary through a configured Google model and caches it on the account; force=true regenerates the cached summary.",
-        "open_world_justification": "It reads one authenticated account document and calls one configured model provider; it cannot browse arbitrary sites or address arbitrary recipients.",
-        "destructive_justification": "It adds or refreshes a cached summary but does not delete the source document, alter sharing, or send a user-directed notice."
+        "read_only_justification": "It generates a summary and stores it on the document as a cache.",
+        "open_world_justification": "The document's text is sent to Google's Gemini API, a third-party model, to write the summary.",
+        "destructive_justification": "It writes only a derived, cached summary that can be regenerated; the document itself is not changed or deleted.",
+        "idempotent_justification": "Without force=true a repeat returns the cached summary, but with force=true each call generates and stores a new summary and counts against the daily limit."
       }
     },
     "tp_document_versions": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Retrieves the existing version chain for one document without adding a version.",
-        "open_world_justification": "The version chain is limited to documents in the connected account.",
-        "destructive_justification": "It does not change or delete documents or their links."
+        "read_only_justification": "It returns a document's earlier revisions and linked versions, or the text of one revision, without adding or changing any.",
+        "open_world_justification": "It reads only documents in the authenticated account.",
+        "destructive_justification": "No document, revision or link is changed or deleted.",
+        "idempotent_justification": "Repeating the call returns the same history and has no side effects."
       }
     },
     "tp_share_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Changes a document's audience to private, anyone with the link, or specified email addresses.",
-        "open_world_justification": "Link mode exposes a page to anyone holding its URL, and people mode can send notices to user-supplied external addresses.",
-        "destructive_justification": "This hint covers every mode of the tool: link mode can publish content, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
+        "read_only_justification": "It changes who can open a document: private, anyone with the link, or specified email addresses.",
+        "open_world_justification": "Link mode publishes a page reachable by anyone with its URL, and people mode emails user-supplied external addresses; both require confirm=true.",
+        "destructive_justification": "Private mode permanently ends the existing link (a later share gets a new URL), and the emails and remove arguments take readers off the list.",
+        "idempotent_justification": "Repeating the same share leaves the same state and emails no one again, because only addresses new to the list are notified."
       }
     },
     "tp_share_folder": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Changes a folder's audience — and with it every document in the folder and the folders under it — to private, anyone with the link, or specified email addresses.",
-        "open_world_justification": "Link mode exposes the folder's page to anyone holding its URL, and people mode can send notices to user-supplied external addresses.",
-        "destructive_justification": "This hint covers every mode of the tool: link mode can publish a folder of documents, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
+        "read_only_justification": "It changes who can open a folder and every document in it: private, anyone with the link, or specified email addresses.",
+        "open_world_justification": "Link mode publishes the folder as a page reachable by anyone with its URL, and people mode emails user-supplied external addresses; both require confirm=true.",
+        "destructive_justification": "Private mode permanently ends the existing folder link (a later share gets a new URL), and the emails and remove arguments take readers off the list.",
+        "idempotent_justification": "Repeating the same share leaves the same state and emails no one again, because only addresses new to the list are notified."
       }
     },
     "tp_update_folder": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Renames a folder in the connected account or moves it, with everything in it, under another folder or to the top level.",
-        "open_world_justification": "Moving a folder under a folder shared by link or with named people makes its documents readable by everyone that folder is shared with.",
-        "destructive_justification": "This hint covers moving under a shared folder, which discloses the folder's documents to that audience and requires confirm=true. Renaming, or moving where nobody new can read it, discloses nothing and deletes nothing."
+        "read_only_justification": "It renames a folder in the connected account or moves it, with its contents, under another folder or to the top level.",
+        "open_world_justification": "Moving a folder under a folder shared by link or with named people makes its documents readable by that audience; this requires confirm=true.",
+        "destructive_justification": "Nothing is deleted: a rename or move can be reversed by renaming or moving the folder back.",
+        "idempotent_justification": "Repeating the same rename or move leaves the folder as it already is."
       }
     },
     "tp_delete_folder": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "With confirm=true it deletes one folder; with with_documents=true it also permanently deletes every document in that folder and the folders under it.",
-        "open_world_justification": "Deletion is limited to one folder of the connected account and does not contact external recipients.",
-        "destructive_justification": "Every call requires confirm=true. Without with_documents only the folder is removed and its contents move up one level; with it the documents are deleted with no undo or trash, and a shared folder's link stops working either way."
+        "read_only_justification": "It deletes one folder from the connected account, and with with_documents=true every document in it.",
+        "open_world_justification": "Deletion is limited to the connected account and does not contact anyone or publish anything.",
+        "destructive_justification": "The folder is deleted with no undo; with with_documents=true its documents are permanently deleted, and a shared folder's link stops working. Every call requires confirm=true.",
+        "idempotent_justification": "Once the folder is deleted, repeating the call finds no folder and changes nothing further."
       }
     },
     "tp_usage": {
-      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
+      "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "Retrieves document count, stored bytes and limits for the connected account.",
-        "open_world_justification": "It only reads the authenticated account's usage record.",
-        "destructive_justification": "It does not change storage or account limits."
+        "read_only_justification": "It returns the connected account's stored bytes and document count and their limits.",
+        "open_world_justification": "It reads only the authenticated account's usage record.",
+        "destructive_justification": "It does not change storage, documents or limits.",
+        "idempotent_justification": "Repeating the call returns the same figures and has no side effects."
       }
     },
     "tp_delete_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "With confirm=true it permanently deletes one document and its Markdown source.",
-        "open_world_justification": "Deletion is limited to one document in the connected account and does not contact external recipients.",
-        "destructive_justification": "Deletion has no undo or trash and requires the user to name the document and pass confirm=true."
+        "read_only_justification": "With confirm=true it permanently deletes one document and its stored source from the connected account.",
+        "open_world_justification": "Deletion is limited to one document in the connected account and contacts no one.",
+        "destructive_justification": "Deletion has no undo or trash, and a shared link to the document stops working; it requires confirm=true.",
+        "idempotent_justification": "Once the document is deleted, repeating the call finds no document and changes nothing further."
       }
     }
   },
@@ -157,7 +175,7 @@
     {
       "description": "Convert supplied Markdown into a complete HTML page. No account fixture is needed. Pass if the returned HTML contains a document wrapper, an h1 for Review note, and a list with two items; nothing is saved.",
       "user_prompt": "Convert this Markdown into a standalone HTML page with a dark theme: # Review note\n\n- Alpha\n- Beta",
-      "tools_triggered": "tp_convert_markdown with markdown set to the supplied text, standalone=true and theme=dark",
+      "tools_triggered": "tp_convert_from_markdown with markdown set to the supplied text, standalone=true and theme=dark",
       "expected_output": "A complete HTML document containing the Review note heading and Alpha and Beta list items, with no claim that it was saved."
     },
     {

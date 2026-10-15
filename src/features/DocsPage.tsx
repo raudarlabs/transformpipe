@@ -179,7 +179,7 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
    * The whole list of questions, in the reader's language.
    *
    * Not `FAQ_ENTRIES`: that one is zipped against the English slice on purpose, because the
-   * connector's `tp_help` tool reads it from the server and answers in English. Rendering it here
+   * connector's `tp_search_documentation` tool reads it from the server and answers in English. Rendering it here
    * put an English FAQ at the foot of a French manual — the words come from the catalogue, and the
    * flags stay in the code, position being the only id a question has.
    *

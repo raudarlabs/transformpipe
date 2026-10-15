@@ -1693,7 +1693,7 @@ ${OPENAI_BRIDGE}
 /*
  * The documentation, as the sections an answer came from.
  *
- * `tp_help` hands the model the text, which is what it answers from; the person was shown
+ * `tp_search_documentation` hands the model the text, which is what it answers from; the person was shown
  * nothing, or the model's retelling of it. Here are the headings it drew on, each opening its own
  * place on the docs page, so "where does it say that" is one press away rather than a search.
  */

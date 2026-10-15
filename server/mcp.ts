@@ -7,7 +7,7 @@ import { conversion } from '../shared/conversions.js';
 import { buildStandaloneHtml } from '../shared/markdown.js';
 import { DOCS_SECTIONS } from '../src/lib/docs-sections.js';
 import { FAQ_ENTRIES } from '../src/lib/faq.js';
-import { MCP_TOOL_NAMES, type McpToolName } from '../src/lib/mcp-facts.js';
+import { MCP_TOOL_ALIASES, MCP_TOOL_NAMES, type McpToolName } from '../src/lib/mcp-facts.js';
 import { selfOrigin } from './auth.js';
 import { type Caller, cameFromUs, mayWrite, resolveCaller } from './caller.js';
 import { looksLikeId } from './db.js';
@@ -144,19 +144,19 @@ const serverInfo = (c: Context) => {
 /** Long enough to be useful, short enough that a document does not eat a conversation. */
 const MAX_TEXT = 40_000;
 
-const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
+const INSTRUCTIONS = `These tools act on the TransformPipe account of the person who authorised this connector, and have no access to any other account.
 
-Eight of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document, tp_share_document and tp_share_folder require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. A shared folder discloses everything in it and in the folders under it, so tp_save_document and tp_move_documents also require it when the folder a document goes into is shared or sits inside one that is, and tp_update_folder when it moves a folder under a shared one. On tp_share_document and tp_share_folder, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. tp_delete_folder requires it always too: without \`with_documents\` only the folder goes and what it held moves up a level; with it, every document under the folder is deleted the same permanent way. A mode of "private" discloses nothing and is not gated.
+Eight tools take a \`confirm\` boolean, because they can disclose content, change what other people read, or delete data. Without \`confirm: true\` they change nothing and return what would happen and to whom. tp_save_document, tp_share_document and tp_share_folder require it for the mode "link", which publishes a page on the public web that anyone with the URL can open, and for "people", which emails a link to each address not already on the list. A shared folder shows everything in it and in its subfolders, so tp_save_document and tp_move_documents also require it when the destination folder is shared or inside a shared folder, and tp_update_folder requires it when it moves a folder under a shared one. tp_update_document requires it when the document is shared, because its readers see the new text. tp_delete_document and tp_delete_folder require it on every call; deletion is permanent, with no undo and no trash. Without \`with_documents\`, tp_delete_folder removes only the folder and moves its contents up one level; with it, the documents are deleted too. The mode "private" discloses nothing and needs no confirmation. On tp_share_document and tp_share_folder, \`emails\` replaces the reader list, and \`add\` and \`remove\` change individual addresses.
 
-Every answer is also drawn for the person as a card — a document, a list, a conversion, a summary, a folder, the account, a share, a confirmation with its button, the documentation it came from. When a card is shown, what is on it has been said: do not repeat it in text, not as a list, a summary or a restatement of its numbers and names. Write only what the card does not say — the answer to the question that was asked, an observation drawn from what it shows, or the next step — and write nothing when the card already answers it. Only where no card can be shown does the text stand in for it, briefly.
+Each answer is also shown to the person as a card: a document, a list, a conversion, a summary, a folder, the account, a share, a confirmation with its button, or the documentation it came from. The card already shows its content, so do not repeat it in text — as a list, a summary or a restatement of its numbers and names. Write what the card does not show: the answer to the question asked, an observation, or the next step; write nothing when the card answers the question. Where no card can be shown, summarise the result briefly in text.
 
-To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
+To change an existing document's text, call tp_update_document; it keeps the document's id and link. tp_save_document creates a new document with a new id and link.
 
-Documents can be filed in folders. Every tool that takes a \`folder\` takes its id or its path from the top — "Devart AI/Home", with \`/\` or \`›\` between the names — and tp_list_folders prints both. tp_create_folder makes one, tp_update_folder renames or moves one, tp_delete_folder deletes one, and tp_move_documents files documents in one.
+Documents can be organised in folders. Every \`folder\` argument takes a folder id or a path from the top level, such as "Devart AI/Home", with \`/\` or \`›\` between names; tp_list_folders returns both. tp_create_folder creates a folder, tp_update_folder renames or moves one, tp_delete_folder deletes one, and tp_move_documents moves documents into one.
 
-tp_convert_markdown and tp_convert_to_markdown return the converted document through the conversation and are bounded at 40,000 characters; tp_save_document returns an id, a size and — when shared — a URL instead.
+tp_convert_from_markdown and tp_convert_to_markdown return the converted text in the response, limited to 40,000 characters, and save nothing. tp_save_document returns an id, a size and, when shared, a URL.
 
-tp_help returns TransformPipe's own documentation as text: the Markdown it understands, what happens to a file, what is stored, how sharing works, the limits and the HTTP API.`;
+tp_search_documentation returns sections of TransformPipe's documentation: the Markdown it supports, how files are handled, what is stored, how sharing works, the limits and the HTTP API.`;
 
 interface Rpc {
   jsonrpc?: string;
@@ -497,19 +497,23 @@ mcp.delete('/', notPost);
  * What a client may say about a tool before it runs one.
  *
  * `title` is the name a person reads in a list of permissions; the hints are the protocol's own
- * three questions — does it change anything, does it destroy anything, does it reach outside this
- * account. A client uses them to decide what to confirm, and the directory's review asks for them,
- * which is fair: "tp_delete_document" and "tp_usage" look identical to a reader who has only the
- * names.
+ * four questions — does it change anything, may it delete or overwrite what exists, does a repeat
+ * do anything more, does it reach outside this account. A client uses them to decide what to
+ * confirm, and the directory's review asks for them, which is fair: "tp_delete_document" and
+ * "tp_usage" look identical to a reader who has only the names.
  *
- * All three review hints are explicit. Save and share can publish or email a document; share can
- * revoke access, so their risk hints cover those modes even when a private save is harmless.
+ * All four are required, so none can be left for a host to guess. ChatGPT's review of v1.0.0
+ * refused the app with three of them on some tools and the fourth missing; a missing hint is read
+ * as its riskiest default, and the reviewer cannot tell an omission from a decision. The meanings
+ * are the specification's: destructive is deleting or overwriting — publishing is open-world, not
+ * destructive, and a move that can be moved back is neither — and idempotent is "a repeat with the
+ * same arguments changes nothing more".
  */
 interface ToolAnnotations {
   title: string;
   readOnlyHint: boolean;
   destructiveHint: boolean;
-  idempotentHint?: boolean;
+  idempotentHint: boolean;
   openWorldHint: boolean;
 }
 
@@ -967,18 +971,18 @@ const throughWords = (folders: Folder[], folder: Folder) =>
  * page describing a tool cannot outlive the tool.
  */
 const TOOLS: Record<McpToolName, Tool> = {
-  tp_help: {
+  tp_search_documentation: {
     description:
-      'Returns TransformPipe\'s own documentation as text: what Markdown it understands, what happens to a file, what is stored and what is not, how sharing works, the limits, and the HTTP API. It is the authoritative description of this service\'s behaviour, kept in step with the running version. With `question`, returns the sections matching it; with no arguments, returns all of them.',
+      'Searches TransformPipe\'s documentation and returns the matching sections as text: the Markdown it supports, how files are handled, what is stored, how sharing works, the limits and the HTTP API. Use it when the user asks how TransformPipe works, what it supports or what its limits are. With `question`, it returns the sections that match; without arguments, it returns every section.',
     ui: HELP_CARD_URI,
-    annotations: { title: 'TransformPipe documentation', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Search TransformPipe documentation', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
       properties: {
         question: {
           type: 'string',
-          description: 'What you want to know. Matched against the documentation.',
+          description: 'The user\'s question or keywords, matched against the documentation.',
         },
       },
     },
@@ -1033,11 +1037,11 @@ const TOOLS: Record<McpToolName, Tool> = {
     },
   },
 
-  tp_convert_markdown: {
+  tp_convert_from_markdown: {
     description:
-      'Convert Markdown to sanitised HTML and return it — or, with `to`, to Confluence storage format, Jira wiki markup or Slack mrkdwn, for pasting into those or sending through their APIs. GitHub Flavored Markdown; raw HTML in the source goes through a sanitiser, so a script tag in a file someone sent cannot survive. `standalone: true` returns a complete self-contained HTML document with its styles inlined — the same file the app downloads. Nothing is saved to the account. For anything long, prefer tp_save_document and share the link: what this returns has to travel back through the conversation.',
+      'Converts Markdown to sanitised HTML, Confluence storage format, Jira wiki markup or Slack mrkdwn and returns the result. Use it when the user wants Markdown as HTML, or as markup to paste into Confluence, Jira or Slack. The input is GitHub Flavored Markdown; raw HTML in it is sanitised. `standalone: true` returns a complete HTML document with inline styles. Nothing is saved to the account, and the output is limited to 40,000 characters. To keep the document on the account, call tp_save_document.',
     ui: DOCUMENT_CARD_URI,
-    annotations: { title: 'Markdown to HTML', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Convert Markdown to HTML, Confluence, Jira or Slack', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
@@ -1048,21 +1052,21 @@ const TOOLS: Record<McpToolName, Tool> = {
           type: 'string',
           enum: ['html', 'confluence', 'jira', 'slack'],
           description:
-            'What to convert to. `confluence` is storage format (code macros, info and warning panels, task lists), `jira` is wiki markup, `slack` is mrkdwn for a bot, a webhook or chat.postMessage. Default html.',
+            'Output format: `html` (default), `confluence` (storage format, with code macros, info and warning panels and task lists), `jira` (wiki markup) or `slack` (mrkdwn, for a bot, a webhook or chat.postMessage).',
         },
         standalone: {
           type: 'boolean',
           description:
-            'A whole HTML document with inline styles, rather than the body fragment. Default false.',
+            'When true, return a complete HTML document with inline styles; when false, an HTML body fragment. Default false.',
         },
         theme: {
           type: 'string',
           enum: ['light', 'dark'],
-          description: 'Palette for a standalone document. Default light.',
+          description: 'Colour palette of a standalone document. Default light.',
         },
         name: {
           type: 'string',
-          description: 'Title for a standalone document. Default "document".',
+          description: 'Title of a standalone document. Default "document".',
         },
       },
     },
@@ -1131,24 +1135,24 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_convert_to_markdown: {
     description:
-      'Convert HTML, CSV, TSV, JSON, plain text, rich text (.rtf) or an Evernote export (.enex) to Markdown and return it. `from` says which. Nothing is saved to the account; to keep the result, pass the same source and `from` to tp_save_document, which stores it and records what it was made from. A file that is bytes rather than text cannot come through a tool — a .docx, .xlsx, .pptx, .epub, .odt or an export .zip is an archive — so those convert in the app, or by POSTing the file to /api/v1/documents?kind=word-to-markdown and the rest.',
+      'Converts HTML, CSV, TSV, JSON, plain text, rich text (.rtf) or an Evernote export (.enex) to Markdown and returns it. Use it when the user provides one of these formats as text and wants Markdown. `from` names the source format. Nothing is saved to the account, and the output is limited to 40,000 characters; to save the result, call tp_save_document with the same `source` and `from`. Binary files (.docx, .xlsx, .pptx, .epub, .odt, export .zip) cannot be passed as tool arguments; they are converted in the TransformPipe app or with POST /api/v1/documents.',
     ui: DOCUMENT_CARD_URI,
-    annotations: { title: 'Convert to Markdown', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Convert HTML, CSV, JSON, text, RTF or Evernote to Markdown', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
       required: ['source', 'from'],
       properties: {
-        source: { type: 'string', description: 'The file, as text.' },
+        source: { type: 'string', description: 'The file content, as text.' },
         from: {
           type: 'string',
           enum: ['html', 'csv', 'tsv', 'json', 'text', 'rtf', 'enex'],
-          description: 'What the source is.',
+          description: 'The source format.',
         },
         name: {
           type: 'string',
           description:
-            'What to call it. JSON uses it as the heading of the document it builds; the others ignore it.',
+            'A name for the result. JSON uses it as the document heading; the other formats ignore it.',
         },
       },
     },
@@ -1239,13 +1243,16 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_save_document: {
     description:
-      'Saves a document to this TransformPipe account, and publishes it in the same call when asked. Markdown by default; `from` sends HTML, CSV, TSV or JSON instead, which is converted on the way in and recorded as what it was made from. Returns the id, the size and — when shared — the URL. `share: "link"` is anyone holding the URL, `"people"` is the addresses in `emails`, `"private"` (the default) is nobody but the owner. A `share` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it the call saves nothing and returns what would have been disclosed. `folder` files it in a folder, by id or by path ("Devart AI/Home"); folders on the path that do not exist yet are made. A folder that is shared, or sits inside one that is, is read by everyone it is shared with, so saving into one requires `confirm: true` as well. `replaces` records this document as a new version of an earlier one, beside it and under a new link; a save that omits it is an unrelated document. To change a document that already exists — "update it", "fix it", "keep the old version", "keep the link" — use tp_update_document, which keeps the old text as a revision and the link as it is.',
+      'Saves a new document to the user\'s TransformPipe account and returns its id, size and, when shared, its URL. Use it when the user asks to save, keep or store content, or to publish it as a link. The source is Markdown, or HTML, CSV, TSV, JSON, plain text, RTF or ENEX named in `from`, converted on save. `folder` saves it into a folder by id or path and creates missing folders on the path. `share` sets who can open it: "private" (default), "link" (anyone with the URL) or "people" (the addresses in `emails`, who are emailed a link). A `share` of "link" or "people", or a `folder` that is shared or inside a shared folder, requires `confirm: true`; without it nothing is saved and the response describes what would be disclosed. `replaces` records the new document as the next version of an earlier one. Each call creates a new document; to change the text of an existing document, call tp_update_document.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Save a document',
       readOnlyHint: false,
-      destructiveHint: true,
+      /* It only adds: a new document, and any missing folders on its path. Nothing existing changes. */
+      destructiveHint: false,
+      /* Each call is a new document with a new id. */
       idempotentHint: false,
+      /* "link" publishes a page, "people" emails a notice, a shared folder shows it to its readers. */
       openWorldHint: true,
     },
     writes: true,
@@ -1256,42 +1263,42 @@ const TOOLS: Record<McpToolName, Tool> = {
       properties: {
         markdown: {
           type: 'string',
-          description: 'The source to store. Markdown unless `from` says otherwise.',
+          description: 'The content to save: Markdown, or the format named in `from`.',
         },
         from: {
           type: 'string',
           enum: ['html', 'csv', 'tsv', 'json', 'text', 'rtf', 'enex'],
           description:
-            'Convert the source on the way in. Omit for Markdown. A file that is bytes — .docx, .xlsx, .pptx, .epub, .odt, an export .zip — cannot come through a tool; use the app or the API.',
+            'Source format to convert on save. Omit for Markdown. Binary files (.docx, .xlsx, .pptx, .epub, .odt, export .zip) cannot be passed as tool arguments.',
         },
         name: {
           type: 'string',
-          description: 'File name. Default "document.md"; a converted file is stored as .md.',
+          description: 'File name. Default "document.md"; converted content is stored as .md.',
         },
         share: {
           type: 'string',
           enum: ['private', 'link', 'people'],
-          description: 'Who may open it. Default private.',
+          description: 'Who can open it: private (default), link or people.',
         },
         emails: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Addresses for share: "people". Replaces any existing list.',
+          description: 'Reader addresses when `share` is "people".',
         },
         replaces: {
           type: 'string',
           description:
-            'Id of an earlier document this is a separate new version of — a second document, with its own id and its own link. To change a document the person already has, or to keep its link, use tp_update_document instead: it keeps the replaced text as a revision on its own. tp_list_documents prints ids.',
+            'Id of an earlier document; the new document is recorded as its next version, with its own id and link. tp_list_documents returns ids.',
         },
         folder: {
           type: 'string',
           description:
-            'The folder to file it in: an id from tp_list_folders, or a path from the top such as "Devart AI/Home" (`/` or `›` between names, case does not matter). Missing folders on the path are made. Omit to file it in no folder.',
+            'Folder to save into: an id from tp_list_folders, or a path from the top such as "Devart AI/Home" (`/` or `›` between names, case-insensitive). Missing folders on the path are created. Omit to save outside any folder.',
         },
         confirm: {
           type: 'boolean',
           description:
-            'Required when `share` is "link" or "people", or when `folder` is shared or inside a shared folder. True when the person asked for this document to be published to that audience.',
+            'Required when `share` is "link" or "people", or when `folder` is shared or inside a shared folder. Set true after the user has agreed to that audience.',
         },
       },
     },
@@ -1529,14 +1536,16 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_update_document: {
     description:
-      'Replaces the text of a document already on the account and keeps everything else: its id, its link, its password and end, and who may open it. Use it when the person asks to change, fix, extend or rewrite a document they have — above all one already shared, so the link they sent shows the change; use tp_save_document for something new. The text it replaces is kept as a revision on the account (the newest ten), so nothing is lost. A document shared by link or with people is a page others read, so updating one requires `confirm: true`; without it nothing changes and the call says who would see the new text. A private document updates without it. `markdown` is the whole new text, not a diff. The same text again changes nothing.',
+      'Replaces the text of an existing document and keeps its id, link, sharing settings, password and expiry. Use it when the user asks to change, fix, extend or rewrite a document that is already on the account, including one they have shared. `markdown` is the complete new text. The previous text is kept as a revision; the ten most recent revisions are kept. When the document is shared by link or with people, `confirm: true` is required, because its readers will see the new text; without it nothing changes and the response says who would see it. Sending the current text again changes nothing.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Update a document',
       readOnlyHint: false,
-      /* It changes what people holding the link read, and the old text leaves the page. */
+      /* It overwrites the text; older revisions beyond the newest ten are dropped. */
       destructiveHint: true,
+      /* The same text again changes nothing. */
       idempotentHint: true,
+      /* A shared document's readers see the new text. */
       openWorldHint: true,
     },
     writes: true,
@@ -1545,16 +1554,16 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['id', 'markdown'],
       properties: {
-        id: { type: 'string', description: 'The document id, from tp_list_documents.' },
+        id: { type: 'string', description: 'Document id from tp_list_documents.' },
         markdown: {
           type: 'string',
-          description: 'The whole new text, as Markdown.',
+          description: 'The complete new text, as Markdown.',
         },
-        name: { type: 'string', description: 'A new name for it. Leave out to keep the one it has.' },
+        name: { type: 'string', description: 'A new file name. Omit to keep the current one.' },
         confirm: {
           type: 'boolean',
           description:
-            'Required when the document is shared by link or with people. True when the person asked for this shared document to be changed.',
+            'Required when the document is shared by link or with people. Set true after the user has agreed that its readers will see the new text.',
         },
       },
     },
@@ -1631,9 +1640,9 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_list_documents: {
     description:
-      'What is on this TransformPipe account: documents with their names, sizes, dates, the folder each is filed in and whether each is shared. Start here when the question is "what have I got". `query` matches a document by its name or by what is written inside it; `folder` narrows the list to one folder and every folder under it. Prints the id of each, which is what the other tools take.',
+      'Lists the documents on the user\'s TransformPipe account, newest first, with each document\'s id, name, size, date, folder and sharing state. Use it when the user asks what documents they have or is looking for a document, or when another tool needs a document id. `query` matches document names and content; `folder` limits the list to one folder and its subfolders.',
     ui: DOCUMENT_LIST_URI,
-    annotations: { title: 'List documents', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'List documents', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
@@ -1642,16 +1651,16 @@ const TOOLS: Record<McpToolName, Tool> = {
           type: 'integer',
           minimum: 1,
           maximum: 200,
-          description: 'How many to show, newest first. Default 50.',
+          description: 'Maximum number of documents to return, newest first. Default 50.',
         },
         query: {
           type: 'string',
-          description: 'Matches a document by name or by its content.',
+          description: 'Text to match against document names and content.',
         },
         folder: {
           type: 'string',
           description:
-            'Only what is in this folder and the folders under it: an id from tp_list_folders, or a path from the top such as "Devart AI/Home".',
+            'A folder id from tp_list_folders, or a path from the top such as "Devart AI/Home". Lists that folder and its subfolders.',
         },
       },
     },
@@ -1763,9 +1772,9 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_list_folders: {
     description:
-      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. Also the account\'s totals: how many documents there are, how many are in no folder, and the storage used against its limit — so "how many folders and files have I got" is this one call. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id — tp_update_folder renames or moves one, tp_delete_folder deletes one.',
+      'Lists the folders on the user\'s TransformPipe account as a tree, with each folder\'s id, path, number of documents (including subfolders) and sharing state, and the account totals: documents, documents in no folder, and storage used against the limit. Use it when the user asks about their folders or how many documents they have, or when another tool needs a folder id or path. The ids and paths it returns are accepted as `folder` by the other tools.',
     ui: ACCOUNT_CARD_URI,
-    annotations: { title: 'List folders', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'List folders and account totals', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: { type: 'object', additionalProperties: false, properties: {} },
     run: async (c) => {
       /*
@@ -1872,7 +1881,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_create_folder: {
     description:
-      'Makes a folder on this TransformPipe account, at the top or inside `parent`, and returns its id and its path. `parent` is an id or a path such as "Devart AI/Home"; folders on it that do not exist yet are made too. A folder of that name already in that place is returned rather than made twice. To file documents in it, pass `folder` to tp_save_document or use tp_move_documents.',
+      'Creates a folder on the user\'s TransformPipe account, at the top level or inside `parent`, and returns its id and path. Use it when the user asks to create or add a folder. `parent` is an id or a path such as "Devart AI/Home"; missing folders on that path are created. If a folder with the same name already exists in that place, that folder is returned and nothing is created. To put documents into a folder, call tp_move_documents, or pass `folder` to tp_save_document.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Create a folder',
@@ -1890,11 +1899,11 @@ const TOOLS: Record<McpToolName, Tool> = {
       properties: {
         name: {
           type: 'string',
-          description: 'The new folder\'s name. A path such as "Guides/2026" makes each folder on it that is missing.',
+          description: 'Name of the new folder. A path such as "Guides/2026" creates each missing folder on it.',
         },
         parent: {
           type: 'string',
-          description: 'The folder to make it in: an id from tp_list_folders, or a path from the top. Omit for the top level.',
+          description: 'Parent folder: an id from tp_list_folders, or a path from the top. Omit for the top level.',
         },
       },
     },
@@ -1942,17 +1951,15 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_move_documents: {
     description:
-      'Files documents in a folder, or takes them out of every folder with `folder: null`. `ids` are document ids from tp_list_documents; `folder` is an id from tp_list_folders or a path such as "Devart AI/Home", and it has to exist — tp_create_folder makes one. A folder that is shared, or sits inside one that is, is read by everyone it is shared with, so moving documents into one requires `confirm: true`; without it nothing moves and the call says who would read them. Moving out of a shared folder is not gated.',
+      'Moves documents into a folder, or out of all folders with `folder: null`. Use it when the user asks to file, move or organise documents in a folder, or to take them out of one. `ids` are document ids from tp_list_documents; `folder` is a folder id or path and must already exist. When the folder is shared, or inside a shared folder, its readers can read the moved documents, so `confirm: true` is required; without it nothing moves and the response says who would gain access. Moving documents out of a shared folder needs no confirmation.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Move documents to a folder',
       readOnlyHint: false,
-      /*
-       * Into a shared folder is publishing them to whoever the folder is shared with — the reason
-       * saving and sharing carry both hints, and the gate is the same `confirm`.
-       */
-      destructiveHint: true,
+      /* A move is undone by moving back; nothing is removed or overwritten. */
+      destructiveHint: false,
       idempotentHint: true,
+      /* Into a shared folder shows the documents to its readers — gated by `confirm`. */
       openWorldHint: true,
     },
     writes: true,
@@ -1965,16 +1972,16 @@ const TOOLS: Record<McpToolName, Tool> = {
           type: 'array',
           items: { type: 'string' },
           minItems: 1,
-          description: 'The documents to move, by id.',
+          description: 'Ids of the documents to move, from tp_list_documents.',
         },
         folder: {
           type: ['string', 'null'],
-          description: 'Where to: a folder id, or a path from the top. null or "" takes them out of every folder.',
+          description: 'Destination folder: an id, or a path from the top. null or "" takes the documents out of all folders.',
         },
         confirm: {
           type: 'boolean',
           description:
-            'Required when the folder is shared or inside a shared folder. True when the person asked for these documents to be filed where those people can read them.',
+            'Required when the destination folder is shared or inside a shared folder. Set true after the user has agreed that its readers can read these documents.',
         },
       },
     },
@@ -2081,19 +2088,19 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_get_document: {
     description:
-      'One document from this account, by the id tp_list_documents printed: its Markdown source, or the rendered HTML.',
+      'Returns one document from the user\'s TransformPipe account, by id, as its Markdown source or as rendered HTML, with its sharing details. Use it when the user asks to see, read or quote a saved document, or to work with its content. Ids come from tp_list_documents. The output is limited to 40,000 characters.',
     ui: DOCUMENT_CARD_URI,
-    annotations: { title: 'Read a document', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Read a document', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
       required: ['id'],
       properties: {
-        id: { type: 'string', description: 'The document id.' },
+        id: { type: 'string', description: 'Document id from tp_list_documents.' },
         as: {
           type: 'string',
           enum: ['markdown', 'html'],
-          description: 'Which face of it. Default markdown.',
+          description: 'Format to return: markdown (default) or html.',
         },
       },
     },
@@ -2159,13 +2166,15 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_summarize_document: {
     description:
-      'A summary of one document — a paragraph on what it is and what it concludes, then its specifics as a short Markdown list — generated by a model and cached on the account so asking again is free. Pass `force: true` to regenerate. Summaries are metered separately from ordinary calls, at a per-day limit per account.',
+      'Generates a summary of one document — a paragraph on what it is and what it concludes, then a short list of its specifics — and caches it on the account. Use it when the user asks for a summary or an overview of a saved document. The document\'s text is sent to Google\'s Gemini API to write the summary. A cached summary is returned without calling the model again unless `force: true` is passed. Summaries have their own daily limit per account.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Summarise a document',
       readOnlyHint: false,
+      /* It writes a cached summary beside the document, which is derived and can be regenerated. */
       destructiveHint: false,
-      idempotentHint: true,
+      /* Not with `force: true`: each repeat writes a new summary and spends the daily allowance. */
+      idempotentHint: false,
       /*
        * Open-world: the summary is written by a model the account does not run — the document's
        * text goes to Google's Gemini API (see server/summarize.ts). Flagged by ChatGPT's tool
@@ -2179,10 +2188,10 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['id'],
       properties: {
-        id: { type: 'string', description: 'The document id.' },
+        id: { type: 'string', description: 'Document id from tp_list_documents.' },
         force: {
           type: 'boolean',
-          description: 'Regenerate even if a summary is already cached. Default false.',
+          description: 'Generate a new summary even when one is cached. Default false.',
         },
       },
     },
@@ -2217,18 +2226,18 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_document_versions: {
     description:
-      'A document\'s history, of both kinds. Its earlier texts: each tp_update_document keeps the text it replaced as a revision (the newest ten), listed newest first with an id — pass one as `revision` to get that earlier text as Markdown, then compare it with tp_get_document. And the documents linked to it as versions of the same thing, oldest first — the chain built by tp_save_document\'s `replaces`. Use it when the person asks what changed, what a document said before, or for an earlier draft.',
+      'Returns a document\'s history: its earlier texts, kept as revisions each time tp_update_document replaces the text (the ten most recent, newest first), and any documents linked to it as versions through tp_save_document\'s `replaces` (oldest first). Use it when the user asks what changed in a document, what it said before, or for an earlier draft. Pass a revision id as `revision` to get that earlier text as Markdown.',
     ui: DOCUMENT_CARD_URI,
-    annotations: { title: 'Document history', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Show a document\'s history', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object',
       additionalProperties: false,
       required: ['id'],
       properties: {
-        id: { type: 'string', description: 'The document id — any document in a chain will do.' },
+        id: { type: 'string', description: 'Document id. Any document in a version chain can be used.' },
         revision: {
           type: 'string',
-          description: 'A revision id from this tool\'s own list, to get that earlier text as Markdown.',
+          description: 'A revision id from this tool\'s list, to return that earlier text as Markdown.',
         },
       },
     },
@@ -2339,13 +2348,17 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_share_document: {
     description:
-      'Changes who may open a document. "link" is anyone holding the URL, "people" is only the addresses given, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the document outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list; `add` and `remove` change the list it already has, so "share it with Sam too" is `add: ["sam@…"]` and nobody else is touched. Only addresses new to the list are emailed. Returns the mode, the URL and the addresses as they now stand.',
+      'Sets who can open a document and returns the sharing mode, URL and reader list. Use it when the user asks to share, publish or unshare a document, to make it private, or to add or remove a reader. Modes: "link" (anyone with the URL), "people" (the listed addresses, who sign in to read it) and "private" (revokes the link; a URL already sent stops working). "link" and "people" require `confirm: true`; without it nothing changes and the response describes what would be disclosed. "private" needs no confirmation. For "people", `emails` replaces the reader list, and `add` and `remove` change individual addresses. Addresses new to the list are emailed a link.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Share a document',
       readOnlyHint: false,
-      /* Publishing, emailing a notice, and revoking access can have irreversible effects. */
+      /*
+       * "private" ends the link for good — a new share is a new URL — and `emails` or `remove`
+       * take readers off the list.
+       */
       destructiveHint: true,
+      /* The same share again sends nothing: only addresses new to the list are emailed. */
       idempotentHint: true,
       openWorldHint: true,
     },
@@ -2355,31 +2368,31 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['id', 'mode'],
       properties: {
-        id: { type: 'string', description: 'The document id.' },
+        id: { type: 'string', description: 'Document id from tp_list_documents.' },
         mode: {
           type: 'string',
           enum: ['private', 'link', 'people'],
-          description: 'Who may open it. No default: say which.',
+          description: 'Who can open it: private, link or people. Required.',
         },
         emails: {
           type: 'array',
           items: { type: 'string' },
-          description: 'The whole address list, for mode "people" — it replaces the list. To change it by a name or two, use `add` or `remove` instead.',
+          description: 'The complete reader list for mode "people"; it replaces the current list.',
         },
         add: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Addresses to add to the list it has, for mode "people". Only these are emailed.',
+          description: 'Addresses to add to the current reader list for mode "people". They are emailed a link.',
         },
         remove: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Addresses to take off the list it has, for mode "people".',
+          description: 'Addresses to remove from the current reader list for mode "people".',
         },
         confirm: {
           type: 'boolean',
           description:
-            'Required when `mode` is "link" or "people". True when the person asked for this document to be opened to that audience.',
+            'Required when `mode` is "link" or "people". Set true after the user has agreed to that audience.',
         },
       },
     },
@@ -2508,12 +2521,12 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_share_folder: {
     description:
-      'Changes who may open a folder — and with it every document in it and in the folders under it, as one page at /f/…. "link" is anyone holding the URL, "people" is only the addresses given, each of whom signs in to read it, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the folder outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list; `add` and `remove` change the list it already has. Only addresses new to the list are emailed. `folder` is an id from tp_list_folders or a path such as "Devart AI/Home". Returns the mode, the URL and the addresses as they now stand.',
+      'Sets who can open a folder — every document in it and in its subfolders, shown as one page at /f/… — and returns the sharing mode, URL and reader list. Use it when the user asks to share, publish or unshare a folder, or to add or remove a reader. Modes: "link" (anyone with the URL), "people" (the listed addresses, who sign in to read it) and "private" (revokes the link; a URL already sent stops working). "link" and "people" require `confirm: true`; without it nothing changes and the response describes what would be disclosed. "private" needs no confirmation. For "people", `emails` replaces the reader list, and `add` and `remove` change individual addresses. Addresses new to the list are emailed a link. Documents saved into the folder later are shared the same way.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Share a folder',
       readOnlyHint: false,
-      /* As for a document: publishing, emailing a notice, and revoking access can have irreversible effects. */
+      /* As for a document: "private" ends the link for good, and readers can be taken off the list. */
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: true,
@@ -2524,31 +2537,31 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['folder', 'mode'],
       properties: {
-        folder: { type: 'string', description: 'The folder: an id, or a path from the top such as "Devart AI/Home".' },
+        folder: { type: 'string', description: 'The folder: an id from tp_list_folders, or a path from the top such as "Devart AI/Home".' },
         mode: {
           type: 'string',
           enum: ['private', 'link', 'people'],
-          description: 'Who may open it. No default: say which.',
+          description: 'Who can open it: private, link or people. Required.',
         },
         emails: {
           type: 'array',
           items: { type: 'string' },
-          description: 'The whole address list, for mode "people" — it replaces the list. To change it by a name or two, use `add` or `remove` instead.',
+          description: 'The complete reader list for mode "people"; it replaces the current list.',
         },
         add: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Addresses to add to the list it has, for mode "people". Only these are emailed.',
+          description: 'Addresses to add to the current reader list for mode "people". They are emailed a link.',
         },
         remove: {
           type: 'array',
           items: { type: 'string' },
-          description: 'Addresses to take off the list it has, for mode "people".',
+          description: 'Addresses to remove from the current reader list for mode "people".',
         },
         confirm: {
           type: 'boolean',
           description:
-            'Required when `mode` is "link" or "people". True when the person asked for this folder to be opened to that audience.',
+            'Required when `mode` is "link" or "people". Set true after the user has agreed to that audience.',
         },
       },
     },
@@ -2714,14 +2727,15 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_update_folder: {
     description:
-      'Renames a folder, moves it under another folder, or both. `folder` is the one to change, by id or path; `name` is its new name; `parent` is where it goes — an id or a path from the top, which has to exist, or null or "" for the top level. Everything in it goes with it. A folder cannot go inside itself or inside a folder under it. Moving it into a folder that is shared, or sits inside one that is, lets everyone that folder is shared with read what is in it, so that move requires `confirm: true`; without it nothing changes and the call says who would read it. Renaming is not gated.',
+      'Renames a folder, moves it under another folder or to the top level, or both; its documents and subfolders move with it. Use it when the user asks to rename, move or reorganise a folder. `parent` is an existing folder\'s id or path, or null or "" for the top level. A folder cannot be moved into itself or into one of its subfolders. When the destination is shared, or inside a shared folder, its readers gain access to this folder\'s contents, so `confirm: true` is required; without it nothing changes and the response says who would gain access. Renaming needs no confirmation.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Rename or move a folder',
       readOnlyHint: false,
-      /* Under a shared folder is publishing what it holds — the reason tp_move_documents carries both hints. */
-      destructiveHint: true,
+      /* A rename or a move is undone by renaming or moving back; nothing is removed. */
+      destructiveHint: false,
       idempotentHint: true,
+      /* Under a shared folder shows what it holds to that folder's readers — gated by `confirm`. */
       openWorldHint: true,
     },
     writes: true,
@@ -2731,15 +2745,15 @@ const TOOLS: Record<McpToolName, Tool> = {
       required: ['folder'],
       properties: {
         folder: { type: 'string', description: 'The folder to change: an id from tp_list_folders, or a path from the top.' },
-        name: { type: 'string', description: 'Its new name. Leave out to keep the one it has.' },
+        name: { type: 'string', description: 'Its new name. Omit to keep the current one.' },
         parent: {
           type: ['string', 'null'],
-          description: 'Where to move it: a folder id or a path from the top, which must exist. null or "" moves it to the top level. Leave out to keep it where it is.',
+          description: 'Destination: an existing folder\'s id or path from the top, or null or "" for the top level. Omit to keep it where it is.',
         },
         confirm: {
           type: 'boolean',
           description:
-            'Required when `parent` is shared or inside a shared folder. True when the person asked for this folder to go where those people can read it.',
+            'Required when the destination is shared or inside a shared folder. Set true after the user has agreed that its readers can read this folder\'s contents.',
         },
       },
     },
@@ -2883,7 +2897,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_delete_folder: {
     description:
-      'Deletes a folder from this account. By default the folder alone goes and nothing in it is lost: its documents and the folders under it move up one level, into the folder it was in or to the top. With `with_documents: true` every document in it and in the folders under it is deleted with it, permanently — there is no undo and no trash. A shared folder\'s link stops working either way. Pass confirm: true only when the person has named this folder and asked for it to be deleted; ask them otherwise. `folder` is an id from tp_list_folders or a path such as "Devart AI/Home".',
+      'Deletes a folder from the user\'s TransformPipe account. Use it when the user asks to delete or remove a folder. By default the folder alone is removed and its documents and subfolders move up one level, to its parent folder or the top level. With `with_documents: true`, every document in the folder and its subfolders is permanently deleted as well. A shared folder\'s link stops working. Deletion cannot be undone. `confirm: true` is required on every call and is set after the user has named the folder and agreed to delete it; without it nothing is deleted and the response describes what the folder contains and what would happen to it.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Delete a folder',
@@ -2899,15 +2913,15 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['folder', 'confirm'],
       properties: {
-        folder: { type: 'string', description: 'The folder: an id, or a path from the top such as "Devart AI/Home".' },
+        folder: { type: 'string', description: 'The folder: an id from tp_list_folders, or a path from the top such as "Devart AI/Home".' },
         with_documents: {
           type: 'boolean',
           description:
-            'Delete every document in it and in the folders under it as well, permanently. Default false: they move up one level instead.',
+            'Also permanently delete every document in the folder and its subfolders. Default false: they move up one level.',
         },
         confirm: {
           type: 'boolean',
-          description: 'True only when the person asked for this folder to be deleted — and, with `with_documents`, its documents too.',
+          description: 'Set true after the user has asked for this folder to be deleted — and, with `with_documents`, its documents.',
         },
       },
     },
@@ -3032,9 +3046,9 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_usage: {
     description:
-      'What this account is using against its limits: bytes stored, documents held, and the ceiling on each. Ask this when a save was refused.',
+      'Returns the account\'s storage used, number of documents and the limit on each, and the maximum size of one document. Use it when the user asks how much space they have used or have left, or when a save was refused for exceeding a limit.',
     ui: ACCOUNT_CARD_URI,
-    annotations: { title: 'Account usage', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+    annotations: { title: 'Show account usage', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: { type: 'object', additionalProperties: false, properties: {} },
     run: async (c) => {
       const usage = await callApi(c, '/api/v1/usage');
@@ -3059,7 +3073,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_delete_document: {
     description:
-      'Permanently delete one document from this account, and its Markdown source with it. There is no undo and no trash. Pass confirm: true only when the person has named this document and asked for it to be deleted; ask them otherwise. Deletes exactly one; the only call that deletes several is tp_delete_folder with `with_documents`, which deletes everything in one folder.',
+      'Permanently deletes one document and its stored source from the user\'s TransformPipe account. Use it when the user asks to delete or remove a specific document. Deletion cannot be undone, and a shared link to the document stops working. `confirm: true` is required and is set after the user has named the document and agreed to delete it; without it nothing is deleted and the response shows which document would be deleted. To delete a folder together with its documents, call tp_delete_folder with `with_documents: true`.',
     ui: DELETE_CONFIRM_URI,
     annotations: {
       title: 'Delete a document',
@@ -3075,10 +3089,10 @@ const TOOLS: Record<McpToolName, Tool> = {
       additionalProperties: false,
       required: ['id', 'confirm'],
       properties: {
-        id: { type: 'string', description: 'The document id.' },
+        id: { type: 'string', description: 'Document id from tp_list_documents.' },
         confirm: {
           type: 'boolean',
-          description: 'True only when the person asked for this document to be deleted.',
+          description: 'Set true after the user has asked for this document to be deleted.',
         },
       },
     },
@@ -3420,7 +3434,13 @@ mcp.post('/', async (c) => {
       );
     }
 
-    const name = String((params as { name?: unknown }).name ?? '');
+    /*
+     * By its current name, or by the one it had before the rename — see MCP_TOOL_ALIASES. A client
+     * holds the tool list from when it connected, and a renamed tool must not become "there is no
+     * tool called tp_help" in the middle of somebody's conversation. Counted under the new name.
+     */
+    const asked = String((params as { name?: unknown }).name ?? '');
+    const name = MCP_TOOL_ALIASES[asked] ?? asked;
     const tool = (TOOLS as Record<string, Tool | undefined>)[name];
 
     if (!tool) {
@@ -3428,7 +3448,7 @@ mcp.post('/', async (c) => {
         rpc(
           id ?? null,
           say(
-            `There is no tool called ${name}. tools/list has the ones there are.`,
+            `There is no tool called ${asked}. tools/list has the ones there are.`,
             true
           )
         )

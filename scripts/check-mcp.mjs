@@ -800,55 +800,64 @@ check(
 );
 
 /*
- * Every tool says what it is and carries all three review hints. The hints cover every mode of a
- * tool: saving can also publish a link or send a share notice, and sharing can revoke access.
+ * Every tool says what it is and carries all four hints as booleans — ChatGPT's review refused
+ * v1.0.0 with some of them missing. The hints are checked against what each tool does, in the
+ * specification's sense: destructive deletes or overwrites, open-world reaches people or systems
+ * outside the account, idempotent means a repeat with the same arguments changes nothing more.
  */
 const tools = listed.body?.result?.tools ?? [];
+const HINTS = ['readOnlyHint', 'destructiveHint', 'idempotentHint', 'openWorldHint'];
 const annotated = tools.filter(
-  (one) =>
-    one.annotations?.title &&
-    ['readOnlyHint', 'openWorldHint', 'destructiveHint'].every(
-      (hint) => typeof one.annotations[hint] === 'boolean'
-    )
+  (one) => one.annotations?.title && HINTS.every((hint) => typeof one.annotations[hint] === 'boolean')
 );
+const hints = (name) => {
+  const a = tools.find((one) => one.name === name)?.annotations ?? {};
+  return HINTS.map((hint) => (a[hint] === true ? 'T' : a[hint] === false ? 'F' : '?')).join('');
+};
 
 check(
-  'every tool carries a title and all three review hints',
-  annotated.length === tools.length,
+  'every tool carries a title and all four hints, each true or false',
+  tools.length > 0 && annotated.length === tools.length,
   tools.filter((one) => !annotated.includes(one)).map((one) => one.name).join(', ')
 );
+/* readOnly, destructive, idempotent, openWorld — in that order. */
+const EXPECTED = {
+  tp_search_documentation: 'TFTF',
+  tp_convert_from_markdown: 'TFTF',
+  tp_convert_to_markdown: 'TFTF',
+  tp_list_documents: 'TFTF',
+  tp_list_folders: 'TFTF',
+  tp_get_document: 'TFTF',
+  tp_document_versions: 'TFTF',
+  tp_usage: 'TFTF',
+  tp_save_document: 'FFFT',
+  tp_update_document: 'FTTT',
+  tp_create_folder: 'FFTF',
+  tp_move_documents: 'FFTT',
+  tp_update_folder: 'FFTT',
+  tp_share_document: 'FTTT',
+  tp_share_folder: 'FTTT',
+  tp_delete_document: 'FTTF',
+  tp_delete_folder: 'FTTF',
+  tp_summarize_document: 'FFFT',
+};
 check(
-  'permanent deletion is marked destructive',
-  tools.find((one) => one.name === 'tp_delete_document')?.annotations?.destructiveHint === true
+  'each tool\'s hints match what it does',
+  Object.entries(EXPECTED).every(([name, want]) => hints(name) === want) &&
+    tools.every((one) => one.name in EXPECTED),
+  Object.entries(EXPECTED)
+    .filter(([name, want]) => hints(name) !== want)
+    .map(([name, want]) => `${name} ${hints(name)}≠${want}`)
+    .concat(tools.filter((one) => !(one.name in EXPECTED)).map((one) => `${one.name} unexpected`))
+    .join(', ')
 );
 check(
-  'saving can disclose a document and is marked destructive and open-world',
-  tools.find((one) => one.name === 'tp_save_document')?.annotations?.destructiveHint === true &&
-    tools.find((one) => one.name === 'tp_save_document')?.annotations?.openWorldHint === true
+  'only reading tools are marked read-only, and none of them destructive or open-world',
+  tools.filter((one) => one.annotations?.readOnlyHint).every((one) => !one.annotations.destructiveHint && !one.annotations.openWorldHint)
 );
 check(
-  'sharing can disclose or revoke access and is marked destructive and open-world',
-  tools.find((one) => one.name === 'tp_share_document')?.annotations?.destructiveHint === true &&
-    tools.find((one) => one.name === 'tp_share_document')?.annotations?.openWorldHint === true
-);
-check(
-  'deleting a folder can delete its documents for good, and is marked destructive',
-  tools.find((one) => one.name === 'tp_delete_folder')?.annotations?.destructiveHint === true &&
-    tools.find((one) => one.name === 'tp_delete_folder')?.annotations?.readOnlyHint === false
-);
-check(
-  'sharing a folder, and filing documents or a folder in a shared one, can disclose them and are marked so',
-  ['tp_share_folder', 'tp_move_documents', 'tp_update_folder'].every(
-    (name) =>
-      tools.find((one) => one.name === name)?.annotations?.destructiveHint === true &&
-      tools.find((one) => one.name === name)?.annotations?.openWorldHint === true
-  )
-);
-check(
-  'updating changes what people holding the link read, and is marked so',
-  tools.find((one) => one.name === 'tp_update_document')?.annotations?.destructiveHint === true &&
-    tools.find((one) => one.name === 'tp_update_document')?.annotations?.openWorldHint === true &&
-    tools.find((one) => one.name === 'tp_update_document')?._meta?.ui?.resourceUri?.endsWith('/document-card') === true
+  'updating changes what people holding the link read, and points at the document card',
+  tools.find((one) => one.name === 'tp_update_document')?._meta?.ui?.resourceUri?.endsWith('/document-card') === true
 );
 
 check(
@@ -876,7 +885,7 @@ check(
     ['tp_create_folder', 'tp_move_documents', 'tp_share_folder', 'tp_update_folder', 'tp_delete_folder'].every(
       (name) => tools.find((one) => one.name === name)?._meta?.ui?.resourceUri?.endsWith('/folder-card') === true
     ) &&
-    tools.find((one) => one.name === 'tp_help')?._meta?.ui?.resourceUri?.endsWith('/help') === true
+    tools.find((one) => one.name === 'tp_search_documentation')?._meta?.ui?.resourceUri?.endsWith('/help') === true
 );
 
 check(
@@ -933,17 +942,33 @@ check(
 
 console.log('\n— the tools');
 
-const help = await tool(tokens.access_token, 'tp_help', { question: 'what are the limits' });
+const help = await tool(tokens.access_token, 'tp_search_documentation', { question: 'what are the limits' });
 check('help answers from the documentation', /100/.test(help.text) && !help.isError, help.text.slice(0, 80));
 
-const converted = await tool(tokens.access_token, 'tp_convert_markdown', {
+const converted = await tool(tokens.access_token, 'tp_convert_from_markdown', {
   markdown: '# Hi\n\n<script>alert(1)</script>\n\n| a | b |\n| --- | --- |\n| 1 | 2 |',
 });
 check('convert renders a table', /<table>/.test(converted.text));
 check('and drops the script', !/<script/.test(converted.text), converted.text.slice(0, 120));
 
-const empty = await tool(tokens.access_token, 'tp_convert_markdown', { markdown: '   ' });
+const empty = await tool(tokens.access_token, 'tp_convert_from_markdown', { markdown: '   ' });
 check('an empty conversion is refused in a sentence', empty.isError && /no Markdown/i.test(empty.text));
+
+/*
+ * The names the two tools had before the rename still answer — a client holds the list it fetched
+ * when it connected — and are not listed, so nothing new is written against them.
+ */
+const oldHelp = await tool(tokens.access_token, 'tp_help', { question: 'what are the limits' });
+const oldConvert = await tool(tokens.access_token, 'tp_convert_markdown', { markdown: '# Hi' });
+check(
+  'the old names tp_help and tp_convert_markdown still answer',
+  !oldHelp.isError && oldHelp.text === help.text && !oldConvert.isError && /<h1/.test(oldConvert.text),
+  oldHelp.text.slice(0, 80) + ' / ' + oldConvert.text.slice(0, 80)
+);
+check(
+  'and are not in tools/list',
+  !tools.some((one) => one.name === 'tp_help' || one.name === 'tp_convert_markdown')
+);
 
 /*
  * The gate the directory's review asked for: publishing without `confirm` saves nothing. Checked

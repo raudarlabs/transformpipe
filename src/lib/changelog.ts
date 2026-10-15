@@ -140,6 +140,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'Two connector tools renamed to say what they do',
+    body:
+      'In the assistant connector, tp_convert_markdown is now tp_convert_from_markdown — it writes '
+      + 'Confluence, Jira and Slack markup as well as HTML — and tp_help is tp_search_documentation. '
+      + 'The old names keep working for anything already connected. Every tool now states plainly '
+      + 'whether it reads, adds, changes, deletes or publishes.',
+  },
+  {
+    date: '2026-10-15',
     title: 'Say no to a share, and tidy folders from an assistant',
     body:
       'A document or folder somebody shared with you can be removed from your list: your access '

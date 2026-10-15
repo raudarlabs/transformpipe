@@ -455,13 +455,17 @@ account menu and revoked there, all tokens for a client at once, because revokin
 alone leaves it able to mint another within the minute.
 
 The tools call this app's own `/api/v1` in process with the caller's credential forwarded, so a
-conversation and a script get the same answer from the same code. Four cases take `confirm: true`
-and are refused without it: `tp_save_document` or `tp_share_document` publishing a link or sharing
-with people, `tp_update_document` on a document that is shared, and `tp_delete_document` always,
-which removes exactly one document. A grant can be read-only, and then the writing tools refuse in a
-sentence. A client that draws MCP Apps gets cards: a saved or read document, the list, a share with
-who can open it, an update with the lines it changed, a history timeline, and a refused call with
-the button that confirms it.
+conversation and a script get the same answer from the same code. Eight tools take
+`confirm: true` and are refused without it: `tp_save_document`, `tp_share_document` and
+`tp_share_folder` publishing a link or sharing with people; `tp_save_document`, `tp_move_documents`
+and `tp_update_folder` putting content into a shared folder; `tp_update_document` on a document that
+is shared; and `tp_delete_document` and `tp_delete_folder` always. A grant can be read-only, and
+then the writing tools refuse in a sentence. Every tool carries all four MCP annotation hints as
+booleans, and every tool answers with an MCP Apps card for a client that draws them — a document,
+the document list, the account and its folders, one folder, the documentation, and a refused call
+with the button that confirms it. `tp_help` and `tp_convert_markdown`, the names two tools had
+before October 2026, still answer as aliases of `tp_search_documentation` and
+`tp_convert_from_markdown`, and are not listed.
 
 `npm run mcp:check` runs the whole flow against a local server and the real database — discovery,
 the 401, registration, an unregistered `redirect_uri`, PKCE, a burnt code, refresh rotation,
