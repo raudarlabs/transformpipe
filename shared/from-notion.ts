@@ -1,6 +1,6 @@
 import { delimitedToMarkdown } from './from-table.js';
 import { arrange, type SplitExport } from './split-export.js';
-import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
+import { embedPictures, pageBudget, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
   buildTocDocument,
@@ -53,12 +53,20 @@ function dropInternalLinks(markdown: string): string {
 /** A folder of a Notion export, named as the page it holds the children of: its id taken off. */
 const folderName = (segment: string) => titleFromFileName(segment);
 
-async function notionPages(bytes: Uint8Array, onProgress: Progress | undefined, perPage: boolean) {
+async function notionPages(
+  bytes: Uint8Array,
+  onProgress: Progress | undefined,
+  perPage: boolean,
+  /** Something to do to the pictures before they are carried — make them smaller, in a browser. */
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
+) {
   const [pages, tables, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipTextFiles(bytes, '.csv'),
     readZipPictures(bytes),
   ]);
+
+  await prepare?.(pictures);
 
   if (pages.length === 0 && tables.length === 0) {
     throw new Error(
@@ -80,10 +88,11 @@ async function notionPages(bytes: Uint8Array, onProgress: Progress | undefined, 
 
       const title = titleFromFileName(page.path);
       const folder = page.path.split('/').slice(0, -1).join('/');
+      const text = dropInternalLinks(withoutDuplicateTitle(page.text, title));
       const body = embedPictures(
-        dropInternalLinks(withoutDuplicateTitle(page.text, title)),
+        text,
         pictureFinder(pictures, folder),
-        perPage ? pictureBudget() : shared
+        perPage ? pageBudget(text) : shared
       );
 
       return { title, markdown: `# ${title}\n\n${body}`, folder: foldersOf(page.path) };
@@ -111,9 +120,10 @@ export async function notionZipToPages(
   bytes: Uint8Array,
   onProgress?: Progress,
   /** What to call the import's folder when Notion's own wrapper is only `Export-<id>`. */
-  name = 'Notion export'
+  name = 'Notion export',
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
 ): Promise<SplitExport> {
-  const split = arrange('notion', name, await notionPages(bytes, onProgress, true));
+  const split = arrange('notion', name, await notionPages(bytes, onProgress, true, prepare));
 
   return /^Export-[0-9a-f-]+$/i.test(split.title) ? { ...split, title: name } : split;
 }

@@ -311,6 +311,7 @@ export const ui: Content['ui'] = {
   'folders.share.open': 'Abrir la página compartida',
   'folders.share.off': 'Desactivar el enlace',
   'folders.share.off.done': 'El enlace está desactivado',
+  'convert.progress.pictures': 'Reduciendo la imagen {done} de {total}…',
   'converter.copy.for': 'Copiar para {target}',
   'converter.copy.done': '{format} copiado al portapapeles',
   'converter.download': 'Descargar .{format}',

@@ -82,3 +82,4 @@ export const PICTURES_BYTES = 2 * 1024 * 1024;
  * megabyte encoded is about 750 KB on disk, which is a generous screenshot and a small photo.
  */
 export const PICTURE_BYTES = 1024 * 1024;
+

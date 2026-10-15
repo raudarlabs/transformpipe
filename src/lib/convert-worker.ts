@@ -5,6 +5,7 @@ import { checkDocument } from '@shared/check';
 import { ALLOWED_ATTR, ALLOWED_TAGS, getDocStats, renderMarkdown } from '@shared/markdown';
 import { convertFile } from './convert';
 import { splitFile } from './split';
+import { shrinkPictures } from './shrink-pictures';
 import type { SplitExport } from '@shared/split-export';
 
 /*
@@ -38,6 +39,7 @@ const marked = (key: string, values?: Record<string, string | number>) =>
 export type FromWorker =
   | { type: 'progress'; done: number; total: number }
   | { type: 'stage'; stage: 'rendering' }
+  | { type: 'stage'; stage: 'pictures'; done: number; total: number }
   | {
       type: 'done';
       markdown: string;
@@ -73,7 +75,9 @@ self.onmessage = async (event: MessageEvent<{ id: ConversionId; file: File; spli
   try {
     /* An export kept as its pages: each with its numbers, which saving it will need. */
     if (event.data.split) {
-      const split = await splitFile(id, file, progress);
+      const split = await splitFile(id, file, progress, (pictures) =>
+        shrinkPictures(pictures, (done, total) => post({ type: 'stage', stage: 'pictures', done, total }))
+      );
 
       post({ type: 'stage', stage: 'rendering' });
       post({

@@ -356,6 +356,8 @@ export function ConverterPage({
     ? undefined
     : progress.stage === 'pages'
       ? t('convert.progress.pages', { done: progress.done, total: progress.total })
+      : progress.stage === 'pictures'
+        ? t('convert.progress.pictures', { done: progress.done, total: progress.total })
       : t(progress.stage === 'rendering' ? 'convert.progress.rendering' : 'convert.progress.reading');
 
   if (!doc) {

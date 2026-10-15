@@ -17,18 +17,19 @@ export const SPLITTABLE = new Set<ConversionId>([
 export async function splitFile(
   id: ConversionId,
   file: File,
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
 ): Promise<SplitExport> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const name = file.name.replace(/\.zip$/i, '') || 'Export';
 
   switch (id) {
     case 'notion-to-markdown':
-      return (await import('@shared/from-notion')).notionZipToPages(bytes, onProgress, name);
+      return (await import('@shared/from-notion')).notionZipToPages(bytes, onProgress, name, prepare);
     case 'confluence-to-markdown':
-      return (await import('@shared/from-confluence')).confluenceZipToPages(bytes, onProgress);
+      return (await import('@shared/from-confluence')).confluenceZipToPages(bytes, onProgress, prepare);
     case 'obsidian-to-markdown':
-      return (await import('@shared/from-obsidian')).obsidianZipToPages(bytes, onProgress);
+      return (await import('@shared/from-obsidian')).obsidianZipToPages(bytes, onProgress, prepare);
     default:
       throw new Error(`${id} is not an export of many pages`);
   }

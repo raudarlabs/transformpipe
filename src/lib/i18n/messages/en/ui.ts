@@ -315,6 +315,7 @@ export const ui: Content['ui'] = {
   'folders.share.open': 'Open the shared page',
   'folders.share.off': 'Turn the link off',
   'folders.share.off.done': 'The link is off',
+  'convert.progress.pictures': 'Making picture {done} of {total} smaller…',
   'converter.copy.for': 'Copy for {target}',
   'converter.copy.done': '{format} copied to clipboard',
   'converter.download': 'Download .{format}',

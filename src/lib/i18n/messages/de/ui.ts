@@ -320,6 +320,7 @@ export const ui: Content['ui'] = {
   'folders.share.open': 'Geteilte Seite öffnen',
   'folders.share.off': 'Link abschalten',
   'folders.share.off.done': 'Der Link ist abgeschaltet',
+  'convert.progress.pictures': 'Bild {done} von {total} wird verkleinert…',
   'converter.copy.for': 'Für {target} kopieren',
   'converter.copy.done': '{format} in die Zwischenablage kopiert',
   'converter.download': '.{format} herunterladen',

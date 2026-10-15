@@ -1,6 +1,6 @@
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
 import { arrange, type SplitExport } from './split-export.js';
-import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
+import { embedPictures, pageBudget, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
   buildTocDocument,
@@ -27,11 +27,19 @@ function titleFromFileName(path: string): string {
   return path.split('/').pop()!.replace(/\.md$/i, '').trim() || 'Untitled';
 }
 
-async function obsidianPages(bytes: Uint8Array, onProgress: Progress | undefined, perPage: boolean) {
+async function obsidianPages(
+  bytes: Uint8Array,
+  onProgress: Progress | undefined,
+  perPage: boolean,
+  /** Something to do to the pictures before they are carried — make them smaller, in a browser. */
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
+) {
   const [pages, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipPictures(bytes),
   ]);
+
+  await prepare?.(pictures);
 
   if (pages.length === 0) {
     throw new Error('No Markdown notes found in that .zip — is it an Obsidian vault?');
@@ -50,12 +58,13 @@ async function obsidianPages(bytes: Uint8Array, onProgress: Progress | undefined
 
     const title = titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
+    const text = rewriteWikilinks(withoutDuplicateTitle(stripFrontmatter(page.text), title), (name) =>
+      names.has(name.toLowerCase())
+    );
     const body = embedPictures(
-      rewriteWikilinks(withoutDuplicateTitle(stripFrontmatter(page.text), title), (name) =>
-        names.has(name.toLowerCase())
-      ),
+      text,
       pictureFinder(pictures, folder),
-      perPage ? pictureBudget() : shared
+      perPage ? pageBudget(text) : shared
     );
 
     // A vault's folders are already the tree; they come across as they are.
@@ -72,6 +81,10 @@ export async function obsidianZipToMarkdown(
   return buildTocDocument('Contents', tocPages);
 }
 
-export async function obsidianZipToPages(bytes: Uint8Array, onProgress?: Progress): Promise<SplitExport> {
-  return arrange('obsidian', 'Obsidian vault', await obsidianPages(bytes, onProgress, true));
+export async function obsidianZipToPages(
+  bytes: Uint8Array,
+  onProgress?: Progress,
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
+): Promise<SplitExport> {
+  return arrange('obsidian', 'Obsidian vault', await obsidianPages(bytes, onProgress, true, prepare));
 }

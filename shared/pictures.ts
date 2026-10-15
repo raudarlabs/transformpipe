@@ -1,4 +1,4 @@
-import { PICTURES_BYTES, PICTURE_BYTES } from './limits.js';
+import { KEEP_BYTES, PICTURES_BYTES, PICTURE_BYTES } from './limits.js';
 
 /*
  * The pictures in an export, carried into the document instead of left behind in the archive.
@@ -46,8 +46,33 @@ export interface Budget {
   left: number;
 }
 
-export function pictureBudget(): Budget {
-  return { left: PICTURES_BYTES };
+export function pictureBudget(bytes: number = PICTURES_BYTES): Budget {
+  return { left: bytes };
+}
+
+/**
+ * The allowance for one page of an export kept on its own: whatever a document may weigh, less the
+ * page's own words and some room. A section that is all screenshots and three lines of text gets
+ * nearly four megabytes; a long page with a few pictures cannot be pushed over the limit by them.
+ */
+export function pageBudget(text: string): Budget {
+  return { left: Math.max(0, KEEP_BYTES - new TextEncoder().encode(text).length - 128 * 1024) };
+}
+
+/**
+ * What a picture is, from its first bytes. A picture made smaller on the way in can change format —
+ * a screenshot saved as .png comes out a JPEG — and the name it is linked by does not change with
+ * it, so the bytes are asked first and the name only when they do not say.
+ */
+export function sniffType(bytes: Uint8Array): string | null {
+  const at = (i: number) => bytes[i] ?? 0;
+
+  if (at(0) === 0x89 && at(1) === 0x50 && at(2) === 0x4e && at(3) === 0x47) return 'image/png';
+  if (at(0) === 0xff && at(1) === 0xd8 && at(2) === 0xff) return 'image/jpeg';
+  if (at(0) === 0x47 && at(1) === 0x49 && at(2) === 0x46) return 'image/gif';
+  if (at(0) === 0x52 && at(1) === 0x49 && at(2) === 0x46 && at(3) === 0x46 && at(8) === 0x57 && at(9) === 0x45) return 'image/webp';
+
+  return null;
 }
 
 const TYPES: Record<string, string> = {
@@ -227,7 +252,7 @@ export function pictureFinder(
     const bytes =
       files.get(path) ?? byName.get(path.split('/').pop()!.toLowerCase()) ?? null;
 
-    return bytes ? { bytes, type } : null;
+    return bytes ? { bytes, type: sniffType(bytes) ?? type } : null;
   };
 }
 

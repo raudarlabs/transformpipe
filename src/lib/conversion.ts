@@ -16,6 +16,7 @@ import type { Translate } from './i18n/context';
 export type ConversionProgress =
   | { stage: 'reading' }
   | { stage: 'pages'; done: number; total: number }
+  | { stage: 'pictures'; done: number; total: number }
   | { stage: 'rendering' };
 
 export interface Prepared {
@@ -121,7 +122,11 @@ export function runSplit(
       if (message.type === 'progress') {
         onProgress({ stage: 'pages', done: message.done, total: message.total });
       } else if (message.type === 'stage') {
-        onProgress({ stage: 'rendering' });
+        onProgress(
+          message.stage === 'pictures'
+            ? { stage: 'pictures', done: message.done, total: message.total }
+            : { stage: 'rendering' }
+        );
       } else if (message.type === 'split') {
         worker.terminate();
         resolve(message.split);

@@ -303,6 +303,7 @@ export const ui: Content['ui'] = {
   'folders.share.open': 'Apri la pagina condivisa',
   'folders.share.off': 'Disattiva il link',
   'folders.share.off.done': 'Il link è disattivato',
+  'convert.progress.pictures': 'Riduzione dell’immagine {done} di {total}…',
   'converter.copy.for': 'Copia per {target}',
   'converter.copy.done': '{format} copiato negli appunti',
   'converter.download': 'Scarica .{format}',
