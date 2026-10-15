@@ -35,6 +35,8 @@ import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
 import { markdownToHtml } from './render.js';
 import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
+import { registerFolders } from './folders.js';
+import { registerFolderSharing } from './folder-share.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { hashPassword, readPassword } from './share-password.js';
 import { apiRouteKey, countServerEvent, INTERNAL_CALL_HEADER, INTERNAL_CALL_KEY, INTERNAL_KEY_HEADER } from './usage.js';
@@ -215,6 +217,7 @@ interface DocumentRow {
   summary_created_at?: string | null;
   replaces?: string | null;
   updated_at?: string | null;
+  folder_id?: string | null;
 }
 
 /*
@@ -260,6 +263,8 @@ const asDocument = (
   // Which document this one supersedes, if it was created that way. Enough for a list already in
   // hand to work out whole chains without a request per row — see GET /documents/:id/versions.
   replaces: row.replaces ?? null,
+  // The folder it is filed in, or null for none — see GET /folders for the tree.
+  folder_id: row.folder_id ?? null,
   ...extra,
 });
 
@@ -271,21 +276,54 @@ const asDocument = (
  */
 v1.get('/documents', async (c) => {
   const q = c.req.query('q')?.trim();
+  const userId = c.get('caller').id;
+
+  /*
+   * `?folder=<id>` narrows the list to that folder and every folder under it — what the folder
+   * shows in the app. `?folder=none` is the documents filed nowhere.
+   */
+  const folder = c.req.query('folder');
+  let inside: string[] | null = null;
+
+  if (folder !== undefined && folder !== 'none') {
+    if (!looksLikeId(folder)) {
+      return c.json({ error: 'folder must be a folder id, or `none`' }, 400);
+    }
+
+    inside = ((await sql()`
+      with recursive tree as (
+        select id from m2h_folder where id = ${folder} and user_id = ${userId}
+        union all
+        select f.id from m2h_folder f join tree t on f.parent_id = t.id
+      )
+      select id::text from tree
+    `) as Array<{ id: string }>).map((row) => row.id);
+
+    if (inside.length === 0) {
+      return c.json({ error: 'No such folder on this account' }, 404);
+    }
+  }
+
+  const unfiled = folder === 'none';
 
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at, folder_id
           from m2h_document
-          where user_id = ${c.get('caller').id}
+          where user_id = ${userId}
             and search @@ websearch_to_tsquery('simple', ${q})
+            and (${inside}::uuid[] is null or folder_id = any(${inside}::uuid[]))
+            and (not ${unfiled} or folder_id is null)
           order by ts_rank(search, websearch_to_tsquery('simple', ${q})) desc, created_at desc
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at
+          select id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, share_views, share_viewed_at, share_password_hash, summary_created_at, replaces, updated_at, folder_id
           from m2h_document
-          where user_id = ${c.get('caller').id}
+          where user_id = ${userId}
+            and (${inside}::uuid[] is null or folder_id = any(${inside}::uuid[]))
+            and (not ${unfiled} or folder_id is null)
           order by created_at desc
           limit ${QUOTA.documents}
         `) as DocumentRow[])
@@ -689,6 +727,19 @@ v1.post('/documents', async (c) => {
     }
   }
 
+  /* `?folder=<id>` files it in one of this account's folders as it is made. */
+  const folderId = c.req.query('folder');
+
+  if (folderId !== undefined) {
+    const owned = looksLikeId(folderId)
+      ? ((await sql()`select 1 from m2h_folder where id = ${folderId} and user_id = ${userId}`) as unknown[])
+      : [];
+
+    if (owned.length === 0) {
+      return c.json({ error: 'No such folder on this account — GET /api/v1/folders lists them' }, 404);
+    }
+  }
+
   const size = new TextEncoder().encode(markdown).length;
   const room = await checkQuota(userId, size);
 
@@ -706,7 +757,7 @@ v1.post('/documents', async (c) => {
   const stats = getDocStats(markdown, html);
 
   const created = (await sql()`
-    insert into m2h_document (user_id, name, kind, size, markdown, stats, share_mode, share_token, share_expires_at, search, replaces)
+    insert into m2h_document (user_id, name, kind, size, markdown, stats, share_mode, share_token, share_expires_at, search, replaces, folder_id)
     values (
       ${userId},
       ${documentName},
@@ -718,9 +769,10 @@ v1.post('/documents', async (c) => {
       ${share ? randomBytes(16).toString('base64url') : null},
       ${expiry.value?.toISOString() ?? null}::timestamptz,
       to_tsvector('simple', ${searchText(markdown)}),
-      ${replaces ?? null}
+      ${replaces ?? null},
+      ${folderId ?? null}
     )
-    returning id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, replaces
+    returning id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, replaces, folder_id
   `) as DocumentRow[];
 
   try {
@@ -1456,5 +1508,36 @@ v1.put('/documents/:id/share', async (c) => {
     notified,
   });
 });
+
+/*
+ * Folders, the same routes the app's own screens use — see server/folders.ts and
+ * server/folder-share.ts. They read the account from `user`, which here is the caller the key or
+ * token resolved to; the read-only check above has already turned away a write it may not make.
+ *
+ *   GET    /folders                     every folder, with its parent and how many documents it holds
+ *   POST   /folders                     { name, parent_id }
+ *   PATCH  /folders/:id                 { name } or { parent_id }
+ *   DELETE /folders/:id[?contents=delete]
+ *   PATCH  /documents/move              { ids, folder_id }
+ *   GET|PUT /folders/:id/share          { mode, expiresAt, password }
+ *   POST|DELETE /folders/:id/share/people
+ */
+const asUser = async (c: Context<Env>, next: () => Promise<void>) => {
+  const caller = c.get('caller');
+
+  (c as unknown as Context<{ Variables: { user: { id: string; email: string | null } } }>).set('user', {
+    id: caller.id,
+    email: caller.email,
+  });
+
+  await next();
+};
+
+v1.use('/folders', asUser);
+v1.use('/folders/*', asUser);
+v1.use('/documents/move', asUser);
+v1.use('/documents/batch', asUser);
+registerFolders(v1);
+registerFolderSharing(v1);
 
 export default v1;
