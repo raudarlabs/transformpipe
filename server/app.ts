@@ -57,6 +57,7 @@ import { authorizationServer, protectedResource } from './wellknown.js';
 import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
 import { registerFolders } from './folders.js';
+import { registerFolderPages } from './folder-page.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
   edgeSeconds,
@@ -1234,6 +1235,8 @@ const SHARED_PAGE_HEADERS: Record<string, string> = {
   'referrer-policy': 'no-referrer',
   'x-robots-tag': 'noindex, nofollow, noarchive',
 };
+
+registerFolderPages(app, SHARED_PAGE_HEADERS);
 
 app.get('/s/:token', async (c) => {
   const token = c.req.param('token');

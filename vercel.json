@@ -62,6 +62,10 @@
       "destination": "/api"
     },
     {
+      "source": "/f/(.*)",
+      "destination": "/api"
+    },
+    {
       "source": "/report/(.*)",
       "destination": "/api"
     },

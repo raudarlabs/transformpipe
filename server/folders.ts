@@ -1,7 +1,8 @@
 import type { Hono } from 'hono';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '../shared/conversions.js';
 import { looksLikeId, sql } from './db.js';
-import { QUOTA, UNVERIFIED, isVerified, usageOf } from './limits.js';
+import { randomBytes } from 'node:crypto';
+import { QUOTA, UNVERIFIED, isVerified, mayPublishPublicly, usageOf } from './limits.js';
 import { deleteSources, putSource } from './source.js';
 
 /*
@@ -30,6 +31,7 @@ interface FolderRow {
   name: string;
   source: string | null;
   created_at: string;
+  share_token?: string | null;
 }
 
 const KINDS = new Set<string>(CONVERSIONS.map((one) => one.id));
@@ -97,7 +99,7 @@ export function registerFolders(api: Api) {
   api.get('/folders', async (c) => {
     const userId = c.get('user').id;
     const folders = (await sql()`
-      select f.id::text, f.parent_id::text, f.name, f.source, f.created_at,
+      select f.id::text, f.parent_id::text, f.name, f.source, f.created_at, f.share_token,
              (select count(*)::int from m2h_document d where d.folder_id = f.id) as documents
       from m2h_folder f
       where f.user_id = ${userId}
@@ -234,6 +236,35 @@ export function registerFolders(api: Api) {
     await deleteSources([...removed.map((row) => row.blob_path), ...revisions.map((row) => row.blob_path)]);
 
     return c.json({ ok: true, deleted: removed.length });
+  });
+
+  /*
+   * One read-only link for a folder and everything in it. Turning it on keeps the token it had, so
+   * a link sent once goes on working; turning it off forgets the token, so the old link stops and a
+   * new one is new. Publishing to anybody with the link asks what a document's link asks: a
+   * confirmed address (see `mayPublishPublicly`).
+   */
+  api.put('/folders/:id/share', async (c) => {
+    const userId = c.get('user').id;
+    const id = c.req.param('id');
+    const body = (await c.req.json().catch(() => ({}))) as { shared?: unknown };
+
+    if (!(await owned(userId, id))) return c.json({ error: 'No such folder' }, 404);
+
+    if (body.shared === true && !(await mayPublishPublicly(userId))) {
+      return c.json({ error: 'Confirm your email address from the account menu to share by link.' }, 403);
+    }
+
+    const [row] = (body.shared === true
+      ? await sql()`
+          update m2h_folder set share_token = coalesce(share_token, ${randomBytes(16).toString('base64url')})
+          where id = ${id} and user_id = ${userId} returning share_token
+        `
+      : await sql()`
+          update m2h_folder set share_token = null where id = ${id} and user_id = ${userId} returning share_token
+        `) as Array<{ share_token: string | null }>;
+
+    return c.json({ token: row.share_token });
   });
 
   /* Documents into a folder, or out of every folder with `folder_id: null`. */

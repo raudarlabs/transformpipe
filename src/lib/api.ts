@@ -38,6 +38,8 @@ export interface Folder {
   source: string | null;
   created_at: string;
   documents: number;
+  /** Set while the folder is shared as one read-only link, `/f/<token>`. */
+  share_token?: string | null;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -348,6 +350,15 @@ export const api = {
         body: JSON.stringify({ parent_id: parentId, folders }),
       })
     ).ids,
+
+  /** One read-only link for the folder and everything in it; the token, or null once it is off. */
+  shareFolder: async (id: string, shared: boolean) =>
+    (
+      await request<{ token: string | null }>(`/api/folders/${id}/share`, {
+        method: 'PUT',
+        body: JSON.stringify({ shared }),
+      })
+    ).token,
 
   moveDocuments: async (ids: string[], folderId: string | null) =>
     request<{ moved: number }>('/api/documents/move', {
