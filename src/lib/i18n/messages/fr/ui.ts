@@ -514,6 +514,9 @@ export const ui: Content['ui'] = {
   'history.row.remove': 'Retirer de l’historique',
   'history.row.stats.one': '{words} mots · {headings} titre',
   'history.row.stats.many': '{words} mots · {headings} titres',
+  'history.row.words.one': '{words} mot',
+  'history.row.words.many': '{words} mots',
+  'history.row.actions.label': 'Actions pour {name}',
 
   /*
    * Ce que la liste dit quand elle a fait quelque chose, ou n’a pas pu.

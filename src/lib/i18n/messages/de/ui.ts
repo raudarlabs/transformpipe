@@ -526,6 +526,9 @@ export const ui: Content['ui'] = {
   'history.row.remove': 'Aus dem Verlauf entfernen',
   'history.row.stats.one': '{words} Wörter · {headings} Überschrift',
   'history.row.stats.many': '{words} Wörter · {headings} Überschriften',
+  'history.row.words.one': '{words} Wort',
+  'history.row.words.many': '{words} Wörter',
+  'history.row.actions.label': 'Aktionen für {name}',
 
   /*
    * Was die Liste sagt, wenn sie etwas getan hat — oder nicht konnte.

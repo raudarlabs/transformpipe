@@ -140,6 +140,16 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'A history with room for names, and an assistant that answers in cards',
+    body:
+      'The history’s format chips are one menu beside the search, with a count for each, and Shared '
+      + 'with me is a button next to it. A row’s share, versions, downloads and delete moved into one '
+      + '⋯ menu and Content says only the words, so a name is no longer cut to five letters. Every '
+      + 'tool the assistant connector has now answers with a card — the account and its folders, a '
+      + 'folder, a summary, a conversion, the documentation — and the assistant stops retelling it.',
+  },
+  {
+    date: '2026-10-15',
     title: 'Folders from a script, a terminal and an assistant',
     body:
       'The API lists, makes, renames, moves, deletes and shares folders, and files a document in one '

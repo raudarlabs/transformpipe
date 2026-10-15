@@ -13,6 +13,9 @@ import {
   X,
   FolderInput,
   FolderOpen,
+  Check,
+  ChevronDown,
+  MoreHorizontal,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hint } from '@/components/Hint';
@@ -34,6 +37,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/ui/components/DropdownMenu';
 import {
@@ -150,72 +155,54 @@ function RowActions({
 }) {
   const t = useT();
 
+  /*
+   * One menu rather than a row of icons: the icons took a column a third as wide as the name they
+   * sat beside, and the name is what the row is for. Everything the icons did is still one click
+   * away, with words.
+   */
   return (
-    <span className="flex items-center justify-end gap-1">
-      {entry.remote && hasVersions && (
-        <Hint content={t('history.row.versions')}>
-          <IconButton
-            variant="tertiary"
-            size="sm"
-            aria-label={t('history.row.versions.label', { name: entry.name })}
-            onClick={() => onVersions(entry)}
-          >
-            <GitCompare />
-          </IconButton>
-        </Hint>
-      )}
-
-      {entry.remote && !isShared && (
-        <Hint content={t('history.row.share')}>
-          <IconButton
-            variant="tertiary"
-            size="sm"
-            aria-label={t('history.row.share.label', { name: entry.name })}
-            onClick={() => onShare(entry)}
-          >
-            <Share2 />
-          </IconButton>
-        </Hint>
-      )}
-
-      {/*
-        * A menu rather than one button: the chips used to decide what a download handed over, and
-        * now that they say what a document came from, the row has to offer the choice itself.
-        */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild disabled={!isReopenable}>
-          <IconButton
-            variant="tertiary"
-            size="sm"
-            aria-label={t('history.row.download.label', { name: entry.name })}
-            disabled={!isReopenable}
-          >
-            <Download />
+    <span className="flex items-center justify-end">
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <IconButton variant="tertiary" size="sm" aria-label={t('history.row.actions.label', { name: entry.name })}>
+            <MoreHorizontal />
           </IconButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-60">
+          {entry.remote && !isShared && (
+            <DropdownMenuItem onSelect={() => onShare(entry)}>
+              <Share2 className="size-4" />
+              {t('history.row.share')}
+            </DropdownMenuItem>
+          )}
+          {entry.remote && hasVersions && (
+            <DropdownMenuItem onSelect={() => onVersions(entry)}>
+              <GitCompare className="size-4" />
+              {t('history.row.versions')}
+            </DropdownMenuItem>
+          )}
+          {entry.remote && (!isShared || hasVersions) && <DropdownMenuSeparator />}
+          {/* The formats a download can hand over, by what they are rather than by file name. */}
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <Download className="size-4" />
+            {t('history.download')}
+          </DropdownMenuLabel>
           {FORMATS.map((one) => (
-            <DropdownMenuItem key={one} onSelect={() => onDownload(entry, one)}>
-              {toFileName(entry.name, one)}
+            <DropdownMenuItem key={one} disabled={!isReopenable} className="pl-8" onSelect={() => onDownload(entry, one)}>
+              {FORMAT_LABELS[one]}
             </DropdownMenuItem>
           ))}
+          {!isShared && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-ink-danger" onSelect={() => onRemove(entry.id)}>
+                <Trash2 className="size-4" />
+                {t('history.row.remove')}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {!isShared && (
-        <Hint content={t('history.row.remove')}>
-          <span>
-            <IconButton
-              variant="destructiveTertiary"
-              size="sm"
-              aria-label={t('history.row.remove')}
-              onClick={() => onRemove(entry.id)}
-            >
-              <Trash2 />
-            </IconButton>
-          </span>
-        </Hint>
-      )}
     </span>
   );
 }
@@ -445,6 +432,12 @@ export function HistoryPage({
     } catch (cause) {
       toast.error(t('folders.error'), { description: cause instanceof Error ? cause.message : undefined });
     }
+  };
+
+  const pickChip = (value: string) => {
+    setSelected([]);
+    setChip(value as 'all' | ConversionId | 'shared');
+    replaceFilter(value);
   };
 
   /* A folder opened from the tree or the trail; from "Shared with me" it goes back to your own. */
@@ -736,6 +729,7 @@ export function HistoryPage({
       )}
 
       <div className="flex flex-wrap items-center gap-2">
+        <div className="min-w-[12rem] flex-1">
         <InputGroup size="sm">
           <InputGroupAddon>
             <Search className="size-4" />
@@ -759,6 +753,51 @@ export function HistoryPage({
             </InputGroupAddon>
           )}
         </InputGroup>
+        </div>
+
+        {/*
+          * The formats are a menu now, not a row of chips: an account with ten conversions in it
+          * had two rows of them over the list, pushing it down a screen. The menu says which one is
+          * on, with its count, and lists the rest the same way.
+          */}
+        {kinds.length > 1 && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={chip !== 'all' && chip !== 'shared' ? 'primaryTertiary' : 'secondary'}
+                size="sm"
+                rightSlot={<ChevronDown />}
+              >
+                {chip === 'all' || chip === 'shared'
+                  ? t('history.chip.all')
+                  : kinds.find((one) => one.value === chip)?.label ?? t('history.chip.all')}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-h-80 w-72 overflow-y-auto">
+              {[{ value: 'all', label: t('history.chip.all'), count: inFolder.length }, ...kinds].map((one) => (
+                <DropdownMenuItem key={one.value} onSelect={() => pickChip(one.value)}>
+                  <Check className={cn('size-4', chip === one.value ? 'opacity-100' : 'opacity-0')} />
+                  <span className="flex-1 truncate">{one.label}</span>
+                  <span className="text-ink-secondary text-xs">{one.count}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Nobody can share with a browser: this belongs to an account. */}
+        {isSynced && (
+          <Button
+            variant={isShared ? 'primaryTertiary' : 'secondary'}
+            size="sm"
+            leftSlot={<Users />}
+            aria-pressed={isShared}
+            onClick={() => pickChip(isShared ? 'all' : 'shared')}
+          >
+            {t('history.chip.shared')}
+            <span className="ml-1 text-ink-secondary text-xs">{shared.length + sharedFolders.length}</span>
+          </Button>
+        )}
       </div>
 
       <MoveDialog
@@ -774,28 +813,6 @@ export function HistoryPage({
       />
 
 
-      <FilterChips
-        value={chip}
-        items={[
-          { value: 'all', label: t('history.chip.all'), count: inFolder.length },
-          ...(kinds.length > 1 ? kinds : []),
-          // Nobody can share with a browser: the chip belongs to an account.
-          ...(isSynced
-            ? [
-                {
-                  value: 'shared',
-                  label: t('history.chip.shared'),
-                  count: shared.length + sharedFolders.length,
-                },
-              ]
-            : []),
-        ]}
-        onValueChange={(value) => {
-          setSelected([]);
-          setChip(value as 'all' | ConversionId | 'shared');
-          replaceFilter(value);
-        }}
-      />
 
       {/* A whole folder shared with you opens in the app, where it can be read or kept. */}
       {isShared && sharedFolders.length > 0 && (
@@ -1044,15 +1061,9 @@ export function HistoryPage({
 
               <div className="flex items-center justify-between gap-2 border-stroke border-t pt-2">
                 <Typography variant="span" textColor="light" className="text-xs">
-                  {t(
-                    entry.stats.headings === 1
-                      ? 'history.row.stats.one'
-                      : 'history.row.stats.many',
-                    {
-                      words: entry.stats.words,
-                      headings: entry.stats.headings,
-                    }
-                  )}
+                  {t(entry.stats.words === 1 ? 'history.row.words.one' : 'history.row.words.many', {
+                    words: entry.stats.words.toLocaleString(numbers),
+                  })}
                 </Typography>
 
                 <RowActions
@@ -1104,7 +1115,7 @@ export function HistoryPage({
             >
               {t('history.column.file')}
             </TableHead>
-            <TableHead className="hidden w-52 sm:table-cell">
+            <TableHead className="hidden w-40 sm:table-cell">
               {isShared
                 ? t('history.column.sharedby')
                 : t('history.column.type')}
@@ -1118,7 +1129,7 @@ export function HistoryPage({
               {t('history.column.size')}
             </TableHead>
             <TableHead
-              className="hidden w-52 md:table-cell"
+              className="hidden w-28 md:table-cell"
               sortable
               sortDirection={directionOf('words')}
               onSort={() => sortBy('words')}
@@ -1133,8 +1144,8 @@ export function HistoryPage({
             >
               {t('history.column.converted')}
             </TableHead>
-            <TableHead className="w-32 text-right">
-              {t('history.column.actions')}
+            <TableHead className="w-12 text-right">
+              <span className="sr-only">{t('history.column.actions')}</span>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -1211,15 +1222,9 @@ export function HistoryPage({
                 </TableCell>
 
                 <TableCell className="hidden text-ink-secondary md:table-cell">
-                  {t(
-                    entry.stats.headings === 1
-                      ? 'history.row.stats.one'
-                      : 'history.row.stats.many',
-                    {
-                      words: entry.stats.words,
-                      headings: entry.stats.headings,
-                    }
-                  )}
+                  {t(entry.stats.words === 1 ? 'history.row.words.one' : 'history.row.words.many', {
+                    words: entry.stats.words.toLocaleString(numbers),
+                  })}
                 </TableCell>
 
                 <TableCell>

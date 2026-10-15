@@ -516,6 +516,9 @@ export const ui: Content['ui'] = {
   'history.row.remove': 'Quitar del historial',
   'history.row.stats.one': '{words} palabras · {headings} encabezado',
   'history.row.stats.many': '{words} palabras · {headings} encabezados',
+  'history.row.words.one': '{words} palabra',
+  'history.row.words.many': '{words} palabras',
+  'history.row.actions.label': 'Acciones para {name}',
 
   /*
    * Lo que dice la lista cuando ha hecho algo, o cuando no ha podido.

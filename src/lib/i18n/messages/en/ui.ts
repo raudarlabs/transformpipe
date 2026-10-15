@@ -518,6 +518,9 @@ export const ui: Content['ui'] = {
   'history.row.remove': 'Remove from history',
   'history.row.stats.one': '{words} words · {headings} heading',
   'history.row.stats.many': '{words} words · {headings} headings',
+  'history.row.words.one': '{words} word',
+  'history.row.words.many': '{words} words',
+  'history.row.actions.label': 'Actions for {name}',
 
   /*
    * What the list says when it has done something, or could not.
