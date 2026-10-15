@@ -1,4 +1,5 @@
 import { htmlToMarkdown } from './from-html.js';
+import { githubSlug } from './markdown.js';
 import { arrange, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
@@ -43,6 +44,51 @@ function titleFromFileName(path: string): string {
   const base = path.split('/').pop()!.replace(/\.html?$/i, '');
 
   return base.replace(/[_-]\d+$/, '').replace(/[_-]+/g, ' ').trim() || 'Untitled';
+}
+
+const decodeEntities = (text: string) =>
+  text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+/**
+ * A page's links to its own headings, pointed at the anchors the converted page will have.
+ *
+ * Confluence gives a heading an id of its own making — the page title and the heading's words with
+ * the spaces taken out, `DevartAI:AINativeConcept-1.ExecutiveSummary` — and its table of contents
+ * links to that. The id does not survive becoming Markdown, which has no ids, so every entry in
+ * the contents went nowhere. Each such link is rewritten to the heading's GitHub-style slug, which
+ * is what the renderer gives a heading and what any other Markdown reader would.
+ */
+function withLocalAnchors(html: string): string {
+  const used = new Map<string, number>();
+  const anchors = new Map<string, string>();
+
+  for (const match of html.matchAll(/<h([1-6])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/gi)) {
+    const words = decodeEntities(match[3].replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+
+    if (words) anchors.set(decodeEntities(match[2]), githubSlug(words, used));
+  }
+
+  if (anchors.size === 0) return html;
+
+  return html.replace(/href="#([^"]+)"/g, (whole, raw: string) => {
+    let id = decodeEntities(raw);
+
+    try {
+      id = decodeURIComponent(id);
+    } catch {
+      // A stray % is still the id somebody meant.
+    }
+
+    const slug = anchors.get(id);
+
+    return slug ? `href="#${slug}"` : whole;
+  });
 }
 
 /** A page's breadcrumbs, the space first: where Confluence filed it. */
@@ -92,7 +138,9 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
     const markdown = embedPictures(
       // The breadcrumbs are where the page is filed, which the folders now say; as text they are noise.
       withoutDuplicateTitle(
-        htmlToMarkdown(page.text.replace(/<div[^>]*id="breadcrumb-section"[^>]*>[\s\S]*?<\/ol>\s*<\/div>/i, '')),
+        htmlToMarkdown(
+          withLocalAnchors(page.text.replace(/<div[^>]*id="breadcrumb-section"[^>]*>[\s\S]*?<\/ol>\s*<\/div>/i, ''))
+        ),
         title
       ),
       pictureFinder(pictures, folder),
