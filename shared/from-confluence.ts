@@ -1,6 +1,6 @@
 import { htmlToMarkdown } from './from-html.js';
 import { githubSlug } from './markdown.js';
-import { arrange, type SplitExport } from './split-export.js';
+import { arrange, linkPages, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
@@ -152,6 +152,7 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
       title,
       markdown: `# ${title}\n\n${markdown}`,
       space: crumbs[0],
+      file: page.path,
       // The space is the import's own folder; the pages above this one are the folders it is in.
       folder: crumbs.slice(1),
     };
@@ -169,6 +170,9 @@ export async function confluenceZipToMarkdown(
 
 export async function confluenceZipToPages(bytes: Uint8Array, onProgress?: Progress): Promise<SplitExport> {
   const pages = await confluencePages(bytes, onProgress, true);
+
+  linkPages(pages);
+
   const space = pages.find((page) => page.space)?.space ?? 'Confluence export';
 
   return arrange('confluence', space, pages);

@@ -357,6 +357,8 @@ export const api = {
 
   saveBatch: async (
     documents: Array<{
+      /** Chosen by the caller so pages can link to each other before they are saved. */
+      id?: string;
       name: string;
       kind: HistoryEntry['kind'];
       markdown: string;

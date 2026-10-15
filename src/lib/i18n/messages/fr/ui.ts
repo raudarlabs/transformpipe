@@ -296,6 +296,8 @@ export const ui: Content['ui'] = {
   'folders.cancel': 'Annuler',
   'folders.moveto': 'Déplacer vers',
   'folders.none': 'Aucun dossier',
+  'import.zip.markdown': 'Markdown (GitHub, VS Code, la plupart des éditeurs)',
+  'import.zip.obsidian': 'Pour Obsidian (liens vers les titres à sa façon)',
   'converter.copy.for': 'Copier pour {target}',
   'converter.copy.done': '{format} copié dans le presse-papiers',
   'converter.download': 'Télécharger .{format}',

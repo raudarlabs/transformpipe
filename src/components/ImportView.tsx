@@ -9,6 +9,12 @@ import { formatBytes } from '@/lib/format';
 import { markdownToHtml } from '@/lib/markdown';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { Button } from '@/ui/components/Button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/ui/components/DropdownMenu';
 import { Card } from '@/ui/components/Card';
 import { ProgressBar } from '@/ui/components/ProgressBar';
 import { Typography } from '@/ui/components/Typography';
@@ -158,9 +164,17 @@ export function ImportView({ split, kind, canSave, onSaved, onOneDocument, onRes
           <Button variant="secondary" size="sm" leftSlot={<Rows3 />} onClick={onOneDocument} disabled={saving !== null}>
             {t('import.one')}
           </Button>
-          <Button variant="secondary" size="sm" leftSlot={<Download />} onClick={() => void downloadImport(split)} disabled={saving !== null}>
-            {t('import.zip')}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="sm" leftSlot={<Download />} disabled={saving !== null}>
+                {t('import.zip')}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => void downloadImport(split)}>{t('import.zip.markdown')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void downloadImport(split, true)}>{t('import.zip.obsidian')}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             variant="primary"
             size="sm"
@@ -200,7 +214,20 @@ export function ImportView({ split, kind, canSave, onSaved, onOneDocument, onRes
               {t('import.pick')}
             </Typography>
           ) : (
-            <DocumentPreview html={html} className="mx-auto max-w-3xl" />
+            /* A link to another page of the export opens that page here: it has no address yet. */
+            <div
+              onClickCapture={(event) => {
+                const link = (event.target as HTMLElement).closest('a');
+                const target = link?.getAttribute('href')?.match(/^#tp-page-(\d+)$/);
+
+                if (target) {
+                  event.preventDefault();
+                  setSelected(Number(target[1]));
+                }
+              }}
+            >
+              <DocumentPreview html={html} className="mx-auto max-w-3xl" />
+            </div>
           )}
         </div>
       </div>

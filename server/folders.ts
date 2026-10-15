@@ -264,6 +264,7 @@ export function registerFolders(api: Api) {
     const userId = c.get('user').id;
     const body = (await c.req.json().catch(() => ({}))) as {
       documents?: Array<{
+        id?: unknown;
         name?: unknown;
         kind?: unknown;
         markdown?: unknown;
@@ -275,6 +276,8 @@ export function registerFolders(api: Api) {
     const incoming = (Array.isArray(body.documents) ? body.documents : []).slice(0, 500);
     const documents = incoming
       .map((one) => ({
+        // The caller's own id, when it gave one, so pages of an import can link to each other.
+        id: typeof one.id === 'string' && looksLikeId(one.id) ? one.id : null,
         name: cleanName(one.name),
         kind: typeof one.kind === 'string' && KINDS.has(one.kind) ? one.kind : DEFAULT_CONVERSION,
         markdown: typeof one.markdown === 'string' ? one.markdown : '',
@@ -308,15 +311,21 @@ export function registerFolders(api: Api) {
     const saved: Array<{ id: string; name: string }> = [];
 
     for (const [index, one] of documents.entries()) {
-      const [row] = (await sql()`
-        insert into m2h_document (user_id, name, kind, size, markdown, stats, search, folder_id, position)
+      const rows = (await sql()`
+        insert into m2h_document (id, user_id, name, kind, size, markdown, stats, search, folder_id, position)
         values (
+          coalesce(${one.id}::uuid, gen_random_uuid()),
           ${userId}, ${one.name}, ${one.kind}, ${sizes[index]}, null,
           ${JSON.stringify(one.stats)}::jsonb, to_tsvector('simple', ${one.markdown}),
           ${one.folder}, ${one.position}
         )
+        on conflict (id) do nothing
         returning id::text, name
       `) as Array<{ id: string; name: string }>;
+      const row = rows[0];
+
+      // An id already taken — somebody else's, or this import sent twice — is not overwritten.
+      if (!row) continue;
 
       try {
         const stored = await putSource(userId, row.id, one.markdown);

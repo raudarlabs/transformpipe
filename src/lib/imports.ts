@@ -1,5 +1,5 @@
-import type { ConversionId } from '@shared/conversions';
-import { folderKey, foldersOf } from '@shared/split-export';
+import { conversion, type ConversionId } from '@shared/conversions';
+import { PAGE_LINKS, folderKey, foldersOf } from '@shared/split-export';
 import { api } from './api';
 import type { SplitResult } from './conversion';
 import { saveBlob } from './download';
@@ -37,6 +37,13 @@ export async function saveImport(
   ]);
   const folderOf = (path: string[]) => (path.length === 0 ? ids[root] : ids[folderKey(path)]);
 
+  /*
+   * Every page's id is chosen here, before any is sent, so a link from one page to another can
+   * name the saved document it will be — in the same request that saves it.
+   */
+  const pageIds = split.pages.map(() => crypto.randomUUID());
+  const address = (at: number) => `${conversion(kind).path}?doc=${pageIds[at]}`;
+
   let saved = 0;
   let failed = 0;
   let batch: Parameters<typeof api.saveBatch>[0] = [];
@@ -56,17 +63,22 @@ export async function saveImport(
 
   onProgress(0, split.pages.length);
 
-  for (const page of split.pages) {
-    const size = new Blob([page.markdown]).size;
+  for (let at = 0; at < split.pages.length; at += 1) {
+    const page = split.pages[at];
+    const markdown = page.markdown.replace(PAGE_LINKS, (whole, n: string) =>
+      pageIds[Number(n)] ? address(Number(n)) : whole
+    );
+    const size = new Blob([markdown]).size;
 
     if (batch.length > 0 && (bytes + size > BATCH_BYTES || batch.length >= BATCH_PAGES)) {
       await flush();
     }
 
     batch.push({
+      id: pageIds[at],
       name: fileName(page.title),
       kind,
-      markdown: page.markdown,
+      markdown,
       stats: page.stats,
       folder_id: folderOf(page.folder),
       position: page.position,
@@ -80,12 +92,23 @@ export async function saveImport(
 }
 
 /** The same tree as a .zip of Markdown files, for somebody who keeps it on disk instead. */
-export async function downloadImport(split: SplitResult): Promise<void> {
-  const { zipSync, strToU8 } = await import('fflate');
+export async function downloadImport(
+  split: SplitResult,
+  /**
+   * Obsidian finds a heading by its words, not by GitHub's slug, so a contents list written for
+   * one does not jump in the other — this writes the vault's spelling (`shared/to-obsidian.ts`).
+   */
+  forObsidian = false
+): Promise<void> {
+  const [{ zipSync, strToU8 }, { obsidianHeadingLinks }] = await Promise.all([
+    import('fflate'),
+    import('@shared/to-obsidian'),
+  ]);
   const files: Record<string, Uint8Array> = {};
   const used = new Set<string>();
 
-  for (const page of split.pages) {
+  /* Where each page lands first, so a link between two pages can be a path from one to the other. */
+  const paths = split.pages.map((page) => {
     const folder = [split.title, ...page.folder].map((one) => fileName(one).replace(/\.md$/, '')).join('/');
     let path = `${folder}/${fileName(page.title)}`;
 
@@ -95,8 +118,30 @@ export async function downloadImport(split: SplitResult): Promise<void> {
     }
 
     used.add(path);
-    files[path] = strToU8(page.markdown);
-  }
 
-  saveBlob(`${fileName(split.title).replace(/\.md$/, '')}.zip`, new Blob([new Uint8Array(zipSync(files))], { type: 'application/zip' }));
+    return path;
+  });
+
+  const relative = (from: string, to: string) => {
+    const a = from.split('/').slice(0, -1);
+    const b = to.split('/');
+    let common = 0;
+
+    while (common < a.length && a[common] === b[common]) common += 1;
+
+    // Brackets too: a `)` left bare would end the Markdown link in the middle of a file name.
+    return [...a.slice(common).map(() => '..'), ...b.slice(common)]
+      .map((part) => encodeURIComponent(part).replace(/\(/g, '%28').replace(/\)/g, '%29'))
+      .join('/');
+  };
+
+  split.pages.forEach((page, at) => {
+    const markdown = page.markdown.replace(PAGE_LINKS, (whole, n: string) =>
+      paths[Number(n)] ? relative(paths[at], paths[Number(n)]) : whole
+    );
+
+    files[paths[at]] = strToU8(forObsidian ? obsidianHeadingLinks(markdown) : markdown);
+  });
+
+  saveBlob(`${fileName(split.title).replace(/\.md$/, '')}${forObsidian ? ' (Obsidian)' : ''}.zip`, new Blob([new Uint8Array(zipSync(files))], { type: 'application/zip' }));
 }

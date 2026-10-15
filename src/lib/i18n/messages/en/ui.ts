@@ -305,6 +305,8 @@ export const ui: Content['ui'] = {
   'folders.cancel': 'Cancel',
   'folders.moveto': 'Move to',
   'folders.none': 'No folder',
+  'import.zip.markdown': 'Markdown (GitHub, VS Code, most editors)',
+  'import.zip.obsidian': 'For Obsidian (links to headings in its spelling)',
   'converter.copy.for': 'Copy for {target}',
   'converter.copy.done': '{format} copied to clipboard',
   'converter.download': 'Download .{format}',

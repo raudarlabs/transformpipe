@@ -109,3 +109,43 @@ export function foldersOf(split: SplitExport): string[][] {
 }
 
 export const folderKey = key;
+
+/**
+ * A link from one page of an export to another, before either has an address of its own.
+ *
+ * Exports link their pages by file name — `Jetbrains-Assistant_176306816.html` — which means
+ * nothing once the pages are documents. An importer rewrites each such link to this, naming the
+ * page by its place in the export, and whoever keeps the pages gives it its real address: the
+ * saved document, the page in the preview's tree, the file beside it in a .zip.
+ */
+export const PAGE_LINK = '#tp-page-';
+
+export const PAGE_LINKS = /#tp-page-(\d+)/g;
+
+/** Links to other pages of the same export, by their file name, rewritten to `PAGE_LINK`. */
+export function linkPages(pages: Array<{ markdown: string; file?: string }>): void {
+  const index = new Map<string, number>();
+
+  pages.forEach((page, at) => {
+    if (page.file) index.set(page.file.split('/').pop()!.toLowerCase(), at);
+  });
+
+  for (const page of pages) {
+    page.markdown = page.markdown.replace(
+      /\]\(<?([^)\s#>]+\.(?:html?|md))(#[^)\s>]*)?>?\)/gi,
+      (whole, target: string) => {
+        let name = target.split('/').pop()!;
+
+        try {
+          name = decodeURIComponent(name);
+        } catch {
+          // A stray % is still the file somebody meant.
+        }
+
+        const at = index.get(name.toLowerCase());
+
+        return at === undefined ? whole : `](${PAGE_LINK}${at})`;
+      }
+    );
+  }
+}

@@ -293,6 +293,8 @@ export const ui: Content['ui'] = {
   'folders.cancel': 'Annulla',
   'folders.moveto': 'Sposta in',
   'folders.none': 'Nessuna cartella',
+  'import.zip.markdown': 'Markdown (GitHub, VS Code, la maggior parte degli editor)',
+  'import.zip.obsidian': 'Per Obsidian (link ai titoli nel suo formato)',
   'converter.copy.for': 'Copia per {target}',
   'converter.copy.done': '{format} copiato negli appunti',
   'converter.download': 'Scarica .{format}',
