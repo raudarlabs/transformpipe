@@ -3,12 +3,14 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
+  ExternalLink,
   Files,
   Folder as FolderIcon,
   FolderInput,
   FolderOpen,
   FolderPlus,
   Link2,
+  Link2Off,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -37,6 +39,7 @@ import { toast } from '@/ui/components/Toast';
  * It was a row of chips above the list, which wrapped onto as many lines as there were folders
  * and pushed the list down whenever a name was being typed. The tree keeps one height whatever it
  * holds — it scrolls inside itself — and a new folder is typed into it, where the folder will be.
+ * A right click on a folder there offers what the menu over the list does, for that folder.
  *
  * "All documents" is every document, filed or not, which is what this page always was, and a
  * folder shows everything in it and below it, so an import of six hundred pages is one click from
@@ -69,6 +72,7 @@ const DRAG_FOLDER = 'application/x-tp-folder';
 
 const OPEN_KEY = 'tp.openFolders';
 const byName = (a: Folder, b: Folder) => a.name.localeCompare(b.name, undefined, { numeric: true });
+const linkOf = (token: string) => `${location.origin}/f/${token}`;
 
 function ancestorsOf(folders: Folder[], id: string | null): string[] {
   const ids: string[] = [];
@@ -95,6 +99,174 @@ function useRun(onChanged: () => void) {
       toast.error(t('folders.error'), { description: cause instanceof Error ? cause.message : undefined });
     }
   };
+}
+
+interface Shared {
+  folders: Folder[];
+  /** The folder being looked at; null is "All documents". */
+  current: string | null;
+  /** How many documents each folder holds, itself and below. */
+  counts: Map<string, number>;
+  onOpen: (id: string | null) => void;
+  /** Something changed on the server: reload folders and documents. */
+  onChanged: () => void;
+  /** Documents dragged onto a folder; null is "All documents", out of every folder. */
+  onDropDocuments: (ids: string[], folderId: string | null) => void;
+}
+
+/*
+ * What can be done to a folder, the same from the menu over the list and from a right click in
+ * the tree: rename, move, share by link, delete. Where a name is typed is the caller's — the trail
+ * over the list, or the folder's own row — so renaming is handed back to it.
+ */
+function useFolderActions({ folders, current, counts, onOpen, onChanged }: Shared) {
+  const t = useT();
+  const run = useRun(onChanged);
+  const [moving, setMoving] = useState<Folder | null>(null);
+
+  const rename = (folder: Folder, name: string) => {
+    const value = name.trim();
+
+    if (value && value !== folder.name) void run(() => api.updateFolder(folder.id, { name: value }));
+  };
+
+  const remove = (folder: Folder, withContents: boolean) => {
+    const count = counts.get(folder.id) ?? 0;
+
+    // An empty folder costs nothing to lose; anything else is asked about.
+    if (count > 0) {
+      const question = withContents
+        ? t('folders.delete.all.confirm', { name: folder.name, count })
+        : t('folders.delete.keep.confirm', { name: folder.name });
+
+      if (!window.confirm(question)) return;
+    }
+
+    const leaving = current !== null && subtreeOf(folders, folder.id).has(current);
+
+    void run(async () => {
+      await api.deleteFolder(folder.id, withContents);
+      if (leaving) onOpen(folder.parent_id);
+    }, t('folders.deleted', { name: folder.name }));
+  };
+
+  const share = (folder: Folder, on: boolean) =>
+    void run(async () => {
+      const token = await api.shareFolder(folder.id, on);
+
+      if (token) {
+        await navigator.clipboard.writeText(linkOf(token)).catch(() => undefined);
+        toast.success(t('folders.share.on'), { description: linkOf(token) });
+      }
+    }, on ? undefined : t('folders.share.off.done'));
+
+  const copy = (folder: Folder) => {
+    if (!folder.share_token) return;
+
+    void navigator.clipboard
+      .writeText(linkOf(folder.share_token))
+      .then(() => toast.success(t('folders.share.copied')))
+      .catch(() => undefined);
+  };
+
+  const dialog = moving && (
+    <MoveDialog
+      open
+      onOpenChange={(open) => !open && setMoving(null)}
+      title={t('move.folder.title', { name: moving.name })}
+      folders={folders}
+      excluded={subtreeOf(folders, moving.id)}
+      excludedNote={t('move.excluded', { name: moving.name })}
+      noneLabel={t('move.top')}
+      onCreated={onChanged}
+      onMove={(target) => {
+        const folder = moving;
+
+        setMoving(null);
+        if (target !== folder.parent_id) void run(() => api.updateFolder(folder.id, { parentId: target }));
+      }}
+    />
+  );
+
+  return { run, rename, remove, share, copy, move: setMoving, dialog };
+}
+
+/** A menu's items for one folder. `onRename` and `onNewInside` are where the name gets typed. */
+function FolderMenuItems({
+  folder,
+  count,
+  actions,
+  onRename,
+  onNewInside,
+}: {
+  folder: Folder;
+  count: number;
+  actions: ReturnType<typeof useFolderActions>;
+  onRename: () => void;
+  onNewInside?: () => void;
+}) {
+  const t = useT();
+
+  return (
+    <>
+      {onNewInside && (
+        <DropdownMenuItem onSelect={onNewInside}>
+          <FolderPlus className="size-4" />
+          {t('move.new.inside')}
+        </DropdownMenuItem>
+      )}
+      <DropdownMenuItem onSelect={onRename}>
+        <Pencil className="size-4" />
+        {t('folders.rename')}
+      </DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => actions.move(folder)}>
+        <FolderInput className="size-4" />
+        {t('folders.move.folder')}
+      </DropdownMenuItem>
+
+      <DropdownMenuSeparator />
+      {folder.share_token ? (
+        <>
+          <DropdownMenuItem onSelect={() => actions.copy(folder)}>
+            <Copy className="size-4" />
+            {t('folders.share.copy')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => window.open(linkOf(folder.share_token!), '_blank', 'noopener')}>
+            <ExternalLink className="size-4" />
+            {t('folders.share.open')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => actions.share(folder, false)}>
+            <Link2Off className="size-4" />
+            {t('folders.share.off')}
+          </DropdownMenuItem>
+        </>
+      ) : (
+        <DropdownMenuItem onSelect={() => actions.share(folder, true)}>
+          <Link2 className="size-4" />
+          {t('folders.share.on.action')}
+        </DropdownMenuItem>
+      )}
+
+      <DropdownMenuSeparator />
+      {count === 0 ? (
+        <DropdownMenuItem className="text-ink-danger" onSelect={() => actions.remove(folder, false)}>
+          <Trash2 className="size-4" />
+          {t('folders.delete.empty')}
+        </DropdownMenuItem>
+      ) : (
+        <>
+          <DropdownMenuItem className="text-ink-danger" onSelect={() => actions.remove(folder, false)}>
+            <Trash2 className="size-4" />
+            {t('folders.delete.keep')}
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-ink-danger" onSelect={() => actions.remove(folder, true)}>
+            <Trash2 className="size-4" />
+            {t('folders.delete.all', { count })}
+          </DropdownMenuItem>
+        </>
+      )}
+    </>
+  );
 }
 
 /*
@@ -155,24 +327,67 @@ function useDrop(
   return { over: (id: string | null) => over === (id ?? 'top'), target };
 }
 
-interface FolderTreeProps {
-  folders: Folder[];
-  /** The folder being looked at; null is "All documents". */
-  current: string | null;
-  /** How many documents each folder holds, itself and below. */
-  counts: Map<string, number>;
-  /** Every document of the account, for "All documents". */
-  total: number;
-  onOpen: (id: string | null) => void;
-  /** Something changed on the server: reload folders and documents. */
-  onChanged: () => void;
-  /** Documents dragged onto a folder; null is "All documents", out of every folder. */
-  onDropDocuments: (ids: string[], folderId: string | null) => void;
+/**
+ * A name being typed in a row: Enter or the tick keeps it, Escape or the cross drops it, and
+ * clicking away keeps it, as in a file browser.
+ */
+function NameField({ initial, onDone }: { initial: string; onDone: (name: string | null) => void }) {
+  const t = useT();
+  const [value, setValue] = useState(initial);
+  const done = useRef(false);
+
+  const finish = (keep: boolean) => {
+    if (done.current) return;
+    done.current = true;
+    onDone(keep ? value : null);
+  };
+
+  return (
+    <>
+      <input
+        autoFocus
+        value={value}
+        maxLength={200}
+        aria-label={t('folders.name')}
+        placeholder={t('folders.name')}
+        className="min-w-0 flex-1 rounded border border-brand-tertiary bg-surface-page px-1.5 py-0.5 text-ink-primary text-sm outline-none"
+        onChange={(event) => setValue(event.target.value)}
+        onFocus={(event) => event.target.select()}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') finish(true);
+          if (event.key === 'Escape') finish(false);
+        }}
+        onBlur={() => finish(true)}
+      />
+      {/* The buttons keep the field focused while pressed, so its blur does not decide for them. */}
+      <IconButton
+        variant="primaryTertiary"
+        size="2xs"
+        aria-label={t('folders.save')}
+        title={`${t('folders.save')} (Enter)`}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => finish(true)}
+      >
+        <Check />
+      </IconButton>
+      <IconButton
+        variant="tertiary"
+        size="2xs"
+        aria-label={t('folders.cancel')}
+        title={`${t('folders.cancel')} (Esc)`}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => finish(false)}
+      >
+        <X />
+      </IconButton>
+    </>
+  );
 }
 
-export function FolderTree({ folders, current, counts, total, onOpen, onChanged, onDropDocuments }: FolderTreeProps) {
+export function FolderTree(props: Shared & { /** Every document of the account. */ total: number }) {
+  const { folders, current, counts, total, onOpen, onDropDocuments } = props;
   const t = useT();
-  const run = useRun(onChanged);
+  const actions = useFolderActions(props);
   const [open, setOpen] = useState<Set<string>>(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem(OPEN_KEY) ?? '[]') as string[]);
@@ -182,7 +397,9 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
   });
   /** Where a new folder is being named: a folder's id, 'top', or nothing. */
   const [creating, setCreating] = useState<string | null>(null);
-  const [name, setName] = useState('');
+  const [renaming, setRenaming] = useState<string | null>(null);
+  /** A right click: which folder ('top' for "All documents") and where the pointer was. */
+  const [menu, setMenu] = useState<{ id: string; x: number; y: number } | null>(null);
   /* On a phone the tree folds away under one line; on a wide screen it is always there. */
   const [shown, setShown] = useState(false);
   const here = folders.find((one) => one.id === current) ?? null;
@@ -212,98 +429,65 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
     remember(next);
   };
 
-  const { over, target } = useDrop(folders, onDropDocuments, run, (id) => {
+  const { over, target } = useDrop(folders, onDropDocuments, actions.run, (id) => {
     if (!open.has(id)) remember(new Set([...open, id]));
   });
 
-  const startCreating = () => {
-    setName('');
-    setCreating(current ?? 'top');
+  const startCreating = (parent: string | null) => {
+    setCreating(parent ?? 'top');
     setShown(true);
-    if (current && !open.has(current)) remember(new Set([...open, current]));
+    if (parent && !open.has(parent)) remember(new Set([...open, parent]));
   };
 
-  const finishCreating = (keep: boolean) => {
-    const value = name.trim();
+  const finishCreating = (name: string | null) => {
     const parent = creating === 'top' ? null : creating;
 
     setCreating(null);
-    setName('');
-    if (keep && value) void run(() => api.createFolder(value, parent));
+    if (name?.trim()) void actions.run(() => api.createFolder(name.trim(), parent));
   };
 
-  const newRow = (depth: number) => (
-    <li>
-      <div className="flex items-center gap-1.5 py-1 pr-2" style={{ paddingLeft: `${0.5 + depth * 1}rem` }}>
-        <span className="size-4 shrink-0" />
-        <FolderPlus className="size-4 shrink-0 text-brand-tertiary" />
-        <input
-          autoFocus
-          value={name}
-          maxLength={200}
-          aria-label={t('folders.name')}
-          placeholder={t('folders.name')}
-          className="min-w-0 flex-1 rounded border border-brand-tertiary bg-surface-page px-1.5 py-0.5 text-ink-primary text-sm outline-none"
-          onChange={(event) => setName(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') finishCreating(true);
-            if (event.key === 'Escape') finishCreating(false);
-          }}
-          onBlur={() => finishCreating(true)}
-        />
-        {/*
-          * Enter alone was the only way to finish, which nobody is told. The buttons keep the
-          * field focused while pressed, so the blur above does not decide for them first.
-          */}
-        <IconButton
-          variant="primaryTertiary"
-          size="2xs"
-          aria-label={t('folders.create')}
-          title={`${t('folders.create')} (Enter)`}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => finishCreating(true)}
-        >
-          <Check />
-        </IconButton>
-        <IconButton
-          variant="tertiary"
-          size="2xs"
-          aria-label={t('folders.cancel')}
-          title={`${t('folders.cancel')} (Esc)`}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => finishCreating(false)}
-        >
-          <X />
-        </IconButton>
-      </div>
-    </li>
-  );
+  const contextMenu = (id: string) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    setMenu({ id, x: event.clientX, y: event.clientY });
+  };
+
+  const indent = (depth: number) => ({ paddingLeft: `${0.5 + depth * 1}rem` });
 
   const branch = (parent: string | null, depth: number): ReactNode => {
     const children = folders.filter((one) => one.parent_id === parent).sort(byName);
 
     return (
       <ul role={parent ? 'group' : undefined}>
-        {creating === (parent ?? 'top') && newRow(depth)}
+        {creating === (parent ?? 'top') && (
+          <li>
+            <div className="flex items-center gap-1.5 py-1 pr-2" style={indent(depth)}>
+              <span className="size-4 shrink-0" />
+              <FolderPlus className="size-4 shrink-0 text-brand-tertiary" />
+              <NameField initial="" onDone={finishCreating} />
+            </div>
+          </li>
+        )}
         {children.map((one) => {
           const hasChildren = folders.some((child) => child.parent_id === one.id) || creating === one.id;
           const isOpen = open.has(one.id);
           const isHere = one.id === current;
+          const Icon = isHere ? FolderOpen : FolderIcon;
 
           return (
             <li key={one.id} role="treeitem" aria-expanded={hasChildren ? isOpen : undefined} aria-selected={isHere}>
               <div
-                draggable
+                draggable={renaming !== one.id}
                 onDragStart={(event) => {
                   event.dataTransfer.setData(DRAG_FOLDER, one.id);
                   event.dataTransfer.effectAllowed = 'move';
                 }}
+                onContextMenu={contextMenu(one.id)}
                 className={cn(
                   'flex items-center gap-1.5 rounded-md py-1 pr-2 text-sm',
                   isHere ? 'bg-surface-accent font-medium text-ink-primary' : 'text-ink-body hover:bg-surface-chips',
-                  over(one.id) && 'ring-2 ring-brand-tertiary ring-inset'
+                  (over(one.id) || menu?.id === one.id) && 'ring-2 ring-brand-tertiary ring-inset'
                 )}
-                style={{ paddingLeft: `${0.5 + depth * 1}rem` }}
+                style={indent(depth)}
                 {...target(one.id)}
               >
                 <button
@@ -317,23 +501,33 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
                 >
                   {isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
                 </button>
-                <button
-                  type="button"
-                  className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
-                  title={one.name}
-                  onClick={() => {
-                    onOpen(one.id);
-                    setShown(false);
-                  }}
-                >
-                  {isHere ? (
-                    <FolderOpen className="size-4 shrink-0 text-brand-tertiary" />
-                  ) : (
-                    <FolderIcon className="size-4 shrink-0 text-brand-tertiary" />
-                  )}
-                  <span className="truncate">{one.name}</span>
-                  <span className="ml-auto pl-1 text-ink-secondary text-xs">{counts.get(one.id) ?? 0}</span>
-                </button>
+                {renaming === one.id ? (
+                  <>
+                    <Icon className="size-4 shrink-0 text-brand-tertiary" />
+                    <NameField
+                      initial={one.name}
+                      onDone={(name) => {
+                        setRenaming(null);
+                        if (name !== null) actions.rename(one, name);
+                      }}
+                    />
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                    title={one.name}
+                    onClick={() => {
+                      onOpen(one.id);
+                      setShown(false);
+                    }}
+                  >
+                    <Icon className="size-4 shrink-0 text-brand-tertiary" />
+                    <span className="truncate">{one.name}</span>
+                    {one.share_token && <Link2 className="size-3.5 shrink-0 text-brand-tertiary" aria-label={t('folders.share.shared')} />}
+                    <span className="ml-auto pl-1 text-ink-secondary text-xs">{counts.get(one.id) ?? 0}</span>
+                  </button>
+                )}
               </div>
               {isOpen && hasChildren && branch(one.id, depth + 1)}
             </li>
@@ -342,6 +536,8 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
       </ul>
     );
   };
+
+  const menuFolder = menu && menu.id !== 'top' ? folders.find((one) => one.id === menu.id) : null;
 
   return (
     <nav
@@ -365,7 +561,7 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
           size="xs"
           aria-label={t('folders.new')}
           title={here ? `${t('move.new.inside')} “${here.name}”` : t('folders.new')}
-          onClick={startCreating}
+          onClick={() => startCreating(current)}
         >
           <FolderPlus />
         </IconButton>
@@ -385,10 +581,11 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
             onOpen(null);
             setShown(false);
           }}
+          onContextMenu={contextMenu('top')}
           className={cn(
             'flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-2 text-left text-sm',
             current === null ? 'bg-surface-accent font-medium text-ink-primary' : 'text-ink-body hover:bg-surface-chips',
-            over(null) && 'ring-2 ring-brand-tertiary ring-inset'
+            (over(null) || menu?.id === 'top') && 'ring-2 ring-brand-tertiary ring-inset'
           )}
           {...target(null)}
         >
@@ -398,71 +595,52 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
         </button>
         {branch(null, 0)}
       </div>
+
+      {/* The right-click menu opens where the pointer was, from a trigger with no size of its own. */}
+      {/*
+        * Not modal: a modal menu holds focus while it fades out, and the name field it just opened
+        * would never get it.
+        */}
+      <DropdownMenu modal={false} open={menu !== null} onOpenChange={(isOpen) => !isOpen && setMenu(null)}>
+        <DropdownMenuTrigger asChild>
+          <span aria-hidden className="pointer-events-none fixed size-0" style={{ left: menu?.x ?? 0, top: menu?.y ?? 0 }} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-64" onCloseAutoFocus={(event) => event.preventDefault()}>
+          {menuFolder ? (
+            <FolderMenuItems
+              folder={menuFolder}
+              count={counts.get(menuFolder.id) ?? 0}
+              actions={actions}
+              onRename={() => setRenaming(menuFolder.id)}
+              onNewInside={() => startCreating(menuFolder.id)}
+            />
+          ) : (
+            <DropdownMenuItem onSelect={() => startCreating(null)}>
+              <FolderPlus className="size-4" />
+              {t('folders.new')}
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {actions.dialog}
     </nav>
   );
 }
 
-interface FolderHeaderProps {
-  folders: Folder[];
-  current: string | null;
-  counts: Map<string, number>;
-  onOpen: (id: string | null) => void;
-  onChanged: () => void;
-  onDropDocuments: (ids: string[], folderId: string | null) => void;
-}
-
 /** Over the list: where you are, as links back up, and what can be done to the folder. */
-export function FolderHeader({ folders, current, counts, onOpen, onChanged, onDropDocuments }: FolderHeaderProps) {
+export function FolderHeader(props: Shared) {
+  const { folders, current, counts, onOpen, onDropDocuments } = props;
   const t = useT();
-  const run = useRun(onChanged);
-  const { over, target } = useDrop(folders, onDropDocuments, run);
+  const actions = useFolderActions(props);
+  const { over, target } = useDrop(folders, onDropDocuments, actions.run);
   const here = folders.find((one) => one.id === current) ?? null;
-  const [renaming, setRenaming] = useState<string | null>(null);
-  const [moving, setMoving] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [renaming, setRenaming] = useState(false);
 
   const trail = useMemo(
     () => ancestorsOf(folders, current).reverse().map((id) => folders.find((one) => one.id === id)!),
     [folders, current]
   );
-
-  const finishRenaming = (keep: boolean) => {
-    const value = renaming?.trim();
-
-    setRenaming(null);
-    if (keep && here && value && value !== here.name) void run(() => api.updateFolder(here.id, { name: value }));
-  };
-
-  const remove = (withContents: boolean) => {
-    if (!here) return;
-
-    const count = counts.get(here.id) ?? 0;
-    const question = withContents
-      ? t('folders.delete.all.confirm', { name: here.name, count })
-      : t('folders.delete.keep.confirm', { name: here.name });
-
-    if (!window.confirm(question)) return;
-
-    void run(async () => {
-      await api.deleteFolder(here.id, withContents);
-      onOpen(here.parent_id);
-    }, t('folders.deleted', { name: here.name }));
-  };
-
-  const link = here?.share_token ? `${location.origin}/f/${here.share_token}` : null;
-
-  const share = (on: boolean) => {
-    if (!here) return;
-
-    void run(async () => {
-      const token = await api.shareFolder(here.id, on);
-
-      if (token) {
-        await navigator.clipboard.writeText(`${location.origin}/f/${token}`).catch(() => undefined);
-        toast.success(t('folders.share.on'), { description: `${location.origin}/f/${token}` });
-      }
-    }, on ? undefined : t('folders.share.off.done'));
-  };
 
   const crumb = (id: string | null, label: string, last: boolean) => (
     <button
@@ -487,21 +665,16 @@ export function FolderHeader({ folders, current, counts, onOpen, onChanged, onDr
           <span key={one.id} className="flex min-w-0 items-center gap-1">
             <ChevronRight className="size-3.5 shrink-0 text-ink-inactive" />
             {/* Renamed where the name is, on the same line: nothing below moves. */}
-            {one.id === current && renaming !== null ? (
-              <input
-                autoFocus
-                value={renaming}
-                maxLength={200}
-                aria-label={t('folders.rename')}
-                className="h-7 min-w-0 rounded border border-brand-tertiary bg-surface-page px-1.5 font-semibold text-ink-primary text-sm outline-none"
-                onChange={(event) => setRenaming(event.target.value)}
-                onFocus={(event) => event.target.select()}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') finishRenaming(true);
-                  if (event.key === 'Escape') finishRenaming(false);
-                }}
-                onBlur={() => finishRenaming(true)}
-              />
+            {one.id === current && renaming ? (
+              <span className="flex min-w-[16rem] items-center gap-1">
+                <NameField
+                  initial={one.name}
+                  onDone={(name) => {
+                    setRenaming(false);
+                    if (name !== null) actions.rename(one, name);
+                  }}
+                />
+              </span>
             ) : (
               crumb(one.id, one.name, one.id === current)
             )}
@@ -511,79 +684,55 @@ export function FolderHeader({ folders, current, counts, onOpen, onChanged, onDr
 
       {here && (
         <div className="flex items-center gap-1">
+          {/* The link is the one thing worth a button of its own: whether it exists is news. */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="tertiary" size="xs" leftSlot={<Link2 />}>
-                {link ? t('folders.share.shared') : t('folders.share')}
+                {here.share_token ? t('folders.share.shared') : t('folders.share')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {link ? (
+              {here.share_token ? (
                 <>
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      void navigator.clipboard.writeText(link).then(() => {
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      });
-                    }}
-                  >
-                    {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                  <DropdownMenuItem onSelect={() => actions.copy(here)}>
+                    <Copy className="size-4" />
                     {t('folders.share.copy')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => window.open(link, '_blank', 'noopener')}>
-                    <Link2 className="size-4" />
+                  <DropdownMenuItem onSelect={() => window.open(linkOf(here.share_token!), '_blank', 'noopener')}>
+                    <ExternalLink className="size-4" />
                     {t('folders.share.open')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => share(false)}>{t('folders.share.off')}</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => actions.share(here, false)}>
+                    <Link2Off className="size-4" />
+                    {t('folders.share.off')}
+                  </DropdownMenuItem>
                 </>
               ) : (
-                <DropdownMenuItem onSelect={() => share(true)}>{t('folders.share.on.action')}</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => actions.share(here, true)}>
+                  <Link2 className="size-4" />
+                  {t('folders.share.on.action')}
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <IconButton variant="tertiary" size="xs" aria-label={t('folders.actions')}>
                 <MoreHorizontal />
               </IconButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setRenaming(here.name)}>
-                <Pencil className="size-4" />
-                {t('folders.rename')}
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setMoving(true)}>
-                <FolderInput className="size-4" />
-                {t('folders.move.folder')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-ink-danger" onSelect={() => remove(false)}>
-                <Trash2 className="size-4" />
-                {t('folders.delete.keep')}
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-ink-danger" onSelect={() => remove(true)}>
-                <Trash2 className="size-4" />
-                {t('folders.delete.all', { count: counts.get(here.id) ?? 0 })}
-              </DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-64" onCloseAutoFocus={(event) => event.preventDefault()}>
+              <FolderMenuItems
+                folder={here}
+                count={counts.get(here.id) ?? 0}
+                actions={actions}
+                onRename={() => setRenaming(true)}
+              />
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <MoveDialog
-            open={moving}
-            onOpenChange={setMoving}
-            title={t('move.folder.title', { name: here.name })}
-            folders={folders}
-            excluded={subtreeOf(folders, here.id)}
-            excludedNote={t('move.excluded', { name: here.name })}
-            noneLabel={t('move.top')}
-            onCreated={onChanged}
-            onMove={(target) => {
-              setMoving(false);
-              if (target !== here.parent_id) void run(() => api.updateFolder(here.id, { parentId: target }));
-            }}
-          />
+          {actions.dialog}
         </div>
       )}
     </div>

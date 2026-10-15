@@ -125,8 +125,9 @@ const ENTRIES: ChangelogEntry[] = [
       'Screenshots in an export are made the size a page needs on the way in, and a page of '
       + 'screenshots gets nearly all of its 4 MB for them: in a real 178-page Confluence space, 793 '
       + 'pictures of 793 now arrive, where 43 were left as their names. Folders sit in a tree beside '
-      + 'the list, documents and folders drag onto it, and moving offers the folders used last and a '
-      + 'search over every folder with its path.',
+      + 'the list, documents and folders drag onto it, a right click on a folder renames, moves, '
+      + 'shares or deletes it, and moving offers the folders used last and a search over every '
+      + 'folder with its path.',
   },
   {
     date: '2026-10-15',
