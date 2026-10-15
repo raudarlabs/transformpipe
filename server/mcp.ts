@@ -14,12 +14,18 @@ import { looksLikeId } from './db.js';
 import { countCall, QUOTA, RATE } from './limits.js';
 import { markdownToHtml } from './render.js';
 import {
+  ACCOUNT_CARD_HTML,
+  ACCOUNT_CARD_URI,
   DELETE_CONFIRM_HTML,
   DELETE_CONFIRM_URI,
   DOCUMENT_CARD_HTML,
   DOCUMENT_CARD_URI,
   DOCUMENT_LIST_HTML,
   DOCUMENT_LIST_URI,
+  FOLDER_CARD_HTML,
+  FOLDER_CARD_URI,
+  HELP_CARD_HTML,
+  HELP_CARD_URI,
   unversioned,
 } from './ui-card.js';
 import { countServerEvent, INTERNAL_CALL_HEADER, INTERNAL_CALL_KEY, INTERNAL_KEY_HEADER } from './usage.js';
@@ -142,7 +148,7 @@ const INSTRUCTIONS = `These tools act on one person's TransformPipe account — 
 
 Six of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document, tp_share_document and tp_share_folder require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. A shared folder discloses everything in it and in the folders under it, so tp_save_document and tp_move_documents also require it when the folder a document goes into is shared or sits inside one that is. On tp_share_document and tp_share_folder, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
 
-Most answers are also drawn for the person as a card — a document, a list, a conversion, a share, a confirmation with its button. When a card is shown, what is on it has been said: do not repeat it in text, not as a list, a summary or a restatement of its numbers and names. Write only what the card does not say — the answer to the question that was asked, an observation drawn from what it shows, or the next step — and write nothing when the card already answers it. Only where no card can be shown does the text stand in for it, briefly.
+Every answer is also drawn for the person as a card — a document, a list, a conversion, a summary, a folder, the account, a share, a confirmation with its button, the documentation it came from. When a card is shown, what is on it has been said: do not repeat it in text, not as a list, a summary or a restatement of its numbers and names. Write only what the card does not say — the answer to the question that was asked, an observation drawn from what it shows, or the next step — and write nothing when the card already answers it. Only where no card can be shown does the text stand in for it, briefly.
 
 To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
 
@@ -240,8 +246,16 @@ const forConversion = (name: string, markdown: string) => ({
 const CARD_NOTE =
   '\n\n(Shown to the person as a card with all of the above. Do not repeat it; add only what the card does not say, or nothing. If no card can be shown here, say it briefly instead.)';
 
-const card = (text: string, data: Record<string, unknown>) => ({
-  content: [{ type: 'text', text: text + CARD_NOTE }],
+/*
+ * For the cards that show only the start of what the text carries — a conversion's first lines,
+ * the documentation's section titles. "Do not repeat it" there would keep back the HTML somebody
+ * asked for; what is on the card still is not said twice.
+ */
+const PARTIAL_CARD_NOTE =
+  '\n\n(The person sees a card with the name, the numbers and the first lines only. Give them the part they asked for — the converted text when they asked for it, the answer to their question — and do not restate what the card shows.)';
+
+const card = (text: string, data: Record<string, unknown>, note = CARD_NOTE) => ({
+  content: [{ type: 'text', text: text + note }],
   structuredContent: data,
   isError: false,
 });
@@ -506,8 +520,9 @@ interface Tool {
   /**
    * The `ui://` resource a host may draw beside this tool's answer — MCP Apps, SEP-1865.
    *
-   * Only on the tools that hand back a document, and only ever as an addition: the `content` a
-   * model reads is the same with or without it, so a host that draws nothing loses nothing.
+   * On every tool now — a document, a list, the account, a folder, the documentation — and only
+   * ever as an addition: the `content` a model reads is the same with or without it, so a host
+   * that draws nothing loses nothing.
    */
   ui?: string;
   /** Set on anything that writes, so a read-only grant is refused before it runs. */
@@ -912,6 +927,34 @@ async function resolveFolder(
   return { ...made, path: made.folder ? pathOf(folders, made.folder.id) : '', folders };
 }
 
+/*
+ * One folder as the folder card draws it — see FOLDER_CARD_HTML for what it reads. `extra` is what
+ * the call did: `did`, the documents `moved`, the folders `created`, a share's readers and opens.
+ *
+ * The folder opens where the app shows it, `/history?folder=`, the address a saved copy of a
+ * shared folder already sends people to; a folder shared through one above it names that one, since
+ * its page is the one people read.
+ */
+const forFolder = (c: Context, folders: Folder[], folder: Folder, extra: Record<string, unknown> = {}) => {
+  const through = sharedThrough(folders, folder.id);
+  const own = folder.share_mode === 'link' || folder.share_mode === 'people';
+
+  return {
+    id: folder.id,
+    name: folder.name,
+    path: pathOf(folders, folder.id),
+    total: inside(folders, folder.id),
+    share: own ? folder.share_mode : 'private',
+    shareUrl: own ? (folderUrl(c, folder) ?? '') : '',
+    through:
+      through && through.id !== folder.id
+        ? { path: pathOf(folders, through.id), share: through.share_mode, url: folderUrl(c, through) ?? '' }
+        : null,
+    open: `${selfOrigin(c)}/history?folder=${encodeURIComponent(folder.id)}`,
+    ...extra,
+  };
+};
+
 /** "Devart AI, which is shared by link — …" — names the folder and who reads it, so a person knows what they agree to. */
 const throughWords = (folders: Folder[], folder: Folder) =>
   `${pathOf(folders, folder.id)}, which is shared ${
@@ -927,6 +970,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_help: {
     description:
       'Returns TransformPipe\'s own documentation as text: what Markdown it understands, what happens to a file, what is stored and what is not, how sharing works, the limits, and the HTTP API. It is the authoritative description of this service\'s behaviour, kept in step with the running version. With `question`, returns the sections matching it; with no arguments, returns all of them.',
+    ui: HELP_CARD_URI,
     annotations: { title: 'TransformPipe documentation', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
@@ -947,16 +991,20 @@ const TOOLS: Record<McpToolName, Tool> = {
       const score = (text: string) =>
         question.filter((word) => text.toLowerCase().includes(word)).length;
 
+      /* Each with the place on the docs page it comes from, which is where the card's rows open. */
+      const docs = `${selfOrigin(c)}/docs`;
       const sections = DOCS_SECTIONS.map((section) => ({
         title: section.title,
         text: section.summary,
         hits: score(`${section.title} ${section.summary}`),
+        url: `${docs}#${section.id}`,
       }));
 
       const questions = FAQ_ENTRIES.map((entry) => ({
         title: entry.question,
         text: entry.answer,
         hits: score(`${entry.question} ${entry.answer}`),
+        url: `${docs}#faq`,
       }));
 
       const all = [...sections, ...questions];
@@ -965,21 +1013,30 @@ const TOOLS: Record<McpToolName, Tool> = {
         (a, b) => b.hits - a.hits
       );
 
-      return say(
+      const topic = String(args.question ?? '').trim();
+      const matched = question.length > 0 && hit.length > 0;
+
+      return card(
         clip(
           [
             `TransformPipe — ${selfOrigin(c)} · full documentation at ${selfOrigin(c)}/docs`,
             '',
             ...shown.map((entry) => `## ${entry.title}\n${entry.text}`),
           ].join('\n')
-        )
-      );
+        ),
+        {
+          topic,
+          sections: shown.slice(0, 40).map(({ title, url }) => ({ title, url })),
+          /* The best match's own place when there was a question that matched; the page's top otherwise. */
+          open: matched ? shown[0].url : docs,
+        }, PARTIAL_CARD_NOTE);
     },
   },
 
   tp_convert_markdown: {
     description:
       'Convert Markdown to sanitised HTML and return it — or, with `to`, to Confluence storage format, Jira wiki markup or Slack mrkdwn, for pasting into those or sending through their APIs. GitHub Flavored Markdown; raw HTML in the source goes through a sanitiser, so a script tag in a file someone sent cannot survive. `standalone: true` returns a complete self-contained HTML document with its styles inlined — the same file the app downloads. Nothing is saved to the account. For anything long, prefer tp_save_document and share the link: what this returns has to travel back through the conversation.',
+    ui: DOCUMENT_CARD_URI,
     annotations: { title: 'Markdown to HTML', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: {
       type: 'object',
@@ -1024,36 +1081,50 @@ const TOOLS: Record<McpToolName, Tool> = {
       }
 
       /*
+       * The model gets the whole output, which it hands on; the card gets what it became and the
+       * first of it — the counts are the Markdown's, since words and headings are what went in, and
+       * the size is the output's, since that is what comes out. No id, so no buttons.
+       */
+      const base = String(args.name ?? 'document').replace(/\.[^.]+$/, '') || 'document';
+      const converted = (output: string, format: string, extension: string) =>
+        card(clip(output), {
+          ...forConversion(`${base}.${extension}`, markdown),
+          size: new TextEncoder().encode(output).length,
+          excerpt: output.slice(0, 600),
+          format,
+        }, PARTIAL_CARD_NOTE);
+
+      /*
        * Markdown going out as somebody else's markup: the same writers the app's Confluence, Jira
        * and Slack screens use, loaded only when asked for.
        */
       if (args.to === 'confluence') {
-        return say(clip((await import('../shared/to-confluence.js')).markdownToConfluence(markdown)));
+        return converted((await import('../shared/to-confluence.js')).markdownToConfluence(markdown), 'Confluence storage format', 'xml');
       }
 
       if (args.to === 'jira') {
-        return say(clip((await import('../shared/to-jira.js')).markdownToJira(markdown)));
+        return converted((await import('../shared/to-jira.js')).markdownToJira(markdown), 'Jira wiki markup', 'txt');
       }
 
       if (args.to === 'slack') {
-        return say(clip((await import('../shared/to-slack.js')).markdownToSlack(markdown)));
+        return converted((await import('../shared/to-slack.js')).markdownToSlack(markdown), 'Slack mrkdwn', 'txt');
       }
 
       const body = markdownToHtml(markdown);
 
       if (!args.standalone) {
-        return say(clip(body));
+        return converted(body, 'HTML', 'html');
       }
 
-      return say(
-        clip(
-          buildStandaloneHtml({
-            title: String(args.name ?? 'document'),
-            body,
-            createdAt: Date.now(),
-            theme: args.theme === 'dark' ? 'dark' : 'light',
-          })
-        )
+      return converted(
+        buildStandaloneHtml({
+          title: String(args.name ?? 'document'),
+          body,
+          createdAt: Date.now(),
+          theme: args.theme === 'dark' ? 'dark' : 'light',
+        }),
+        'standalone HTML',
+        'html'
       );
     },
   },
@@ -1107,7 +1178,7 @@ const TOOLS: Record<McpToolName, Tool> = {
       if (from === 'html') {
         const markdown = htmlToMarkdown(source);
 
-        return card(clip(markdown), forConversion(named, markdown));
+        return card(clip(markdown), forConversion(named, markdown), PARTIAL_CARD_NOTE);
       }
 
       if (from === 'csv' || from === 'tsv') {
@@ -1116,7 +1187,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         });
 
         return table
-          ? card(clip(table), forConversion(named, table))
+          ? card(clip(table), forConversion(named, table), PARTIAL_CARD_NOTE)
           : say('That has no rows in it.', true);
       }
 
@@ -1126,7 +1197,7 @@ const TOOLS: Record<McpToolName, Tool> = {
             title: String(args.name ?? 'document').replace(/\.[^.]+$/, ''),
           });
 
-          return card(clip(markdown), forConversion(named, markdown));
+          return card(clip(markdown), forConversion(named, markdown), PARTIAL_CARD_NOTE);
         } catch (cause) {
           // The parser says where it stopped, and that is the whole of what anybody can act on.
           return say(
@@ -1140,7 +1211,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         const { textToMarkdown } = await import('../shared/from-text.js');
         const markdown = textToMarkdown(source);
 
-        return card(clip(markdown), forConversion(named, markdown));
+        return card(clip(markdown), forConversion(named, markdown), PARTIAL_CARD_NOTE);
       }
 
       if (from === 'rtf' || from === 'enex') {
@@ -1152,7 +1223,7 @@ const TOOLS: Record<McpToolName, Tool> = {
               ? (await import('../shared/from-rtf.js')).rtfToMarkdown(source, title)
               : (await import('../shared/from-evernote.js')).evernoteToMarkdown(source, title);
 
-          return card(clip(markdown), forConversion(named, markdown));
+          return card(clip(markdown), forConversion(named, markdown), PARTIAL_CARD_NOTE);
         } catch (cause) {
           /* Both of these say what is wrong with the file, which is the only useful answer. */
           return say(
@@ -1692,19 +1763,58 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_list_folders: {
     description:
-      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id.',
+      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. Also the account\'s totals: how many documents there are, how many are in no folder, and the storage used against its limit — so "how many folders and files have I got" is this one call. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id.',
+    ui: ACCOUNT_CARD_URI,
     annotations: { title: 'List folders', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: { type: 'object', additionalProperties: false, properties: {} },
     run: async (c) => {
-      const read = await foldersOf(c);
+      /*
+       * The usage beside the folders, because the question is nearly always both — "how many
+       * folders and files have I got" — and two calls for one question is a second round trip the
+       * person waits through. A usage that cannot be read costs the totals, not the tree.
+       */
+      const [read, used] = await Promise.all([foldersOf(c), callApi(c, '/api/v1/usage')]);
 
       if (!read.ok) return say(read.error, true);
 
       const { folders } = read;
+      const usage =
+        used.status === 200
+          ? {
+              bytes: Number(used.body.bytes ?? 0),
+              maxBytes: Number(used.body.limits?.bytes ?? 0),
+              documents: Number(used.body.documents ?? 0),
+              maxDocuments: Number(used.body.limits?.documents ?? 0),
+            }
+          : null;
+      const filed = folders.reduce((sum, one) => sum + (one.documents ?? 0), 0);
+      const unfiled = usage ? Math.max(0, usage.documents - filed) : null;
+      const totals = usage
+        ? `${usage.documents} document${usage.documents === 1 ? '' : 's'} on the account, ${unfiled} in no folder; ${bytes(usage.bytes)} of ${bytes(usage.maxBytes)} stored.`
+        : null;
+      const view = {
+        ...(usage ? { usage } : {}),
+        folders: folders.map((one) => ({
+          id: one.id,
+          parent_id: one.parent_id,
+          name: one.name,
+          path: pathOf(folders, one.id),
+          total: inside(folders, one.id),
+          share: one.share_mode === 'link' || one.share_mode === 'people' ? one.share_mode : 'private',
+          open: `${selfOrigin(c)}/history?folder=${encodeURIComponent(one.id)}`,
+        })),
+        ...(unfiled !== null ? { unfiled } : {}),
+      };
 
       if (folders.length === 0) {
-        return say(
-          'This account has no folders. Its documents are filed nowhere until one is made — tp_create_folder makes one, and tp_save_document files into one with `folder`.'
+        return card(
+          [
+            'This account has no folders. Its documents are filed nowhere until one is made — tp_create_folder makes one, and tp_save_document files into one with `folder`.',
+            totals,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+          view
         );
       }
 
@@ -1744,16 +1854,18 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       draw(null, 0);
 
-      const filed = folders.reduce((sum, one) => sum + (one.documents ?? 0), 0);
-
-      return say(
+      return card(
         clip(
           [
             `${folders.length} folder${folders.length === 1 ? '' : 's'}, holding ${filed} document${filed === 1 ? '' : 's'} between them.`,
+            totals,
             '',
             ...lines,
-          ].join('\n')
-        )
+          ]
+            .filter((line) => line !== null)
+            .join('\n')
+        ),
+        view
       );
     },
   },
@@ -1761,6 +1873,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_create_folder: {
     description:
       'Makes a folder on this TransformPipe account, at the top or inside `parent`, and returns its id and its path. `parent` is an id or a path such as "Devart AI/Home"; folders on it that do not exist yet are made too. A folder of that name already in that place is returned rather than made twice. To file documents in it, pass `folder` to tp_save_document or use tp_move_documents.',
+    ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Create a folder',
       readOnlyHint: false,
@@ -1806,7 +1919,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       const created = [...parent.created, ...made.created];
 
-      return say(
+      return card(
         [
           created.length === 0
             ? `${made.path} already exists, so nothing was made.`
@@ -1818,7 +1931,11 @@ const TOOLS: Record<McpToolName, Tool> = {
             : null,
         ]
           .filter(Boolean)
-          .join('\n')
+          .join('\n'),
+        forFolder(c, made.folders, made.folder!, {
+          did: created.length === 0 ? 'exists' : 'created',
+          created: created.map((one) => pathOf(made.folders, one.id)),
+        })
       );
     },
   },
@@ -1826,6 +1943,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_move_documents: {
     description:
       'Files documents in a folder, or takes them out of every folder with `folder: null`. `ids` are document ids from tp_list_documents; `folder` is an id from tp_list_folders or a path such as "Devart AI/Home", and it has to exist — tp_create_folder makes one. A folder that is shared, or sits inside one that is, is read by everyone it is shared with, so moving documents into one requires `confirm: true`; without it nothing moves and the call says who would read them. Moving out of a shared folder is not gated.',
+    ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Move documents to a folder',
       readOnlyHint: false,
@@ -1888,8 +2006,10 @@ const TOOLS: Record<McpToolName, Tool> = {
       const known = (listed.status === 200 ? listed.body.documents : []) as Array<{ id: string; name: string; folder_id?: string | null }>;
       const moving = known.filter((one) => ids.includes(one.id));
 
-      if (through && args.confirm !== true) {
-        return say(
+      if (through && to && args.confirm !== true) {
+        const them = moving.length === 1 ? 'it' : 'them';
+
+        return refusedCard(
           `Nothing moved. ${target.path} is ${
             through.id === to?.id ? '' : `inside ${pathOf(target.folders, through.id)}, `
           }shared ${
@@ -1897,7 +2017,16 @@ const TOOLS: Record<McpToolName, Tool> = {
               ? 'by link, so anyone holding its URL would be able to read'
               : 'with named people, who would be able to read'
           } ${moving.length ? moving.map((one) => one.name).join(', ') : `the ${ids.length} document${ids.length === 1 ? '' : 's'}`} — ask the person, then call this again with confirm: true.`,
-          true
+          forFolder(c, target.folders, to, { did: 'moved', moved: moving.map((one) => one.name) }),
+          {
+            tool: 'tp_move_documents',
+            // By id, so the button moves them into this folder even if another comes to share its name.
+            args: { ids, folder: to.id },
+            label: 'Move into the shared folder',
+            note: `Everyone ${pathOf(target.folders, through.id)} is shared with ${
+              through.share_mode === 'link' ? '— anyone holding its link — ' : ''
+            }will be able to read ${them}.`,
+          }
         );
       }
 
@@ -1914,21 +2043,38 @@ const TOOLS: Record<McpToolName, Tool> = {
       const count = Number(moved.body.moved ?? 0);
       const missed = ids.filter((id) => !known.some((one) => one.id === id));
 
-      return say(
+      if (count === 0) {
+        return say('Nothing moved: none of those ids is a document on this account.', true);
+      }
+
+      /* Read again for the card's count, which the move has just changed. */
+      const after = await foldersOf(c);
+      const folders = after.ok ? after.folders : target.folders;
+      const landed = to ? (folders.find((one) => one.id === to.id) ?? to) : null;
+      const view = landed
+        ? forFolder(c, folders, landed, { did: 'moved', moved: moving.map((one) => one.name), missed })
+        : {
+            none: true,
+            name: 'No folder',
+            did: 'moved',
+            moved: moving.map((one) => one.name),
+            missed,
+            open: `${selfOrigin(c)}/history`,
+          };
+
+      return card(
         [
-          count === 0
-            ? 'Nothing moved: none of those ids is a document on this account.'
-            : `Moved ${count} document${count === 1 ? '' : 's'} to ${where}${
-                moving.length ? `: ${moving.map((one) => one.name).join(', ')}` : ''
-              }.`,
-          count > 0 && missed.length > 0 ? `Not on this account, so not moved: ${missed.join(', ')}.` : null,
+          `Moved ${count} document${count === 1 ? '' : 's'} to ${where}${
+            moving.length ? `: ${moving.map((one) => one.name).join(', ')}` : ''
+          }.`,
+          missed.length > 0 ? `Not on this account, so not moved: ${missed.join(', ')}.` : null,
           through && folderUrl(c, through)
             ? `Everyone ${pathOf(target.folders, through.id)} is shared with can read ${count === 1 ? 'it' : 'them'} there: ${folderUrl(c, through)}`
             : null,
         ]
           .filter(Boolean)
           .join('\n'),
-        count === 0
+        view
       );
     },
   },
@@ -2014,6 +2160,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_summarize_document: {
     description:
       'A summary of one document — a paragraph on what it is and what it concludes, then its specifics as a short Markdown list — generated by a model and cached on the account so asking again is free. Pass `force: true` to regenerate. Summaries are metered separately from ordinary calls, at a per-day limit per account.',
+    ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Summarise a document',
       readOnlyHint: false,
@@ -2047,11 +2194,11 @@ const TOOLS: Record<McpToolName, Tool> = {
       }
 
       const query = args.force ? '?force=1' : '';
-      const summarized = await callApi(
-        c,
-        `/api/v1/documents/${segment(id)}/summary${query}`,
-        { method: 'POST' }
-      );
+      /* The document beside the summary, for the card's head: its name, size and buttons. */
+      const [summarized, found] = await Promise.all([
+        callApi(c, `/api/v1/documents/${segment(id)}/summary${query}`, { method: 'POST' }),
+        callApi(c, `/api/v1/documents/${segment(id)}`),
+      ]);
 
       if (summarized.status !== 200) {
         return say(
@@ -2060,7 +2207,11 @@ const TOOLS: Record<McpToolName, Tool> = {
         );
       }
 
-      return say(summarized.body.summary);
+      return card(summarized.body.summary, {
+        ...(found.status === 200 ? forCard(c, found.body.document) : { id, name: 'Document' }),
+        summary: summarized.body.summary,
+        summarizedAt: summarized.body.summarized_at ?? '',
+      });
     },
   },
 
@@ -2358,6 +2509,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_share_folder: {
     description:
       'Changes who may open a folder — and with it every document in it and in the folders under it, as one page at /f/…. "link" is anyone holding the URL, "people" is only the addresses given, each of whom signs in to read it, "private" revokes the link entirely — a URL already sent stops working. A `mode` of "link" or "people" discloses the folder outside the account and requires `confirm: true`; without it nothing changes and the call returns what would have been disclosed. Revoking with "private" is not gated. `emails` replaces the list; `add` and `remove` change the list it already has. Only addresses new to the list are emailed. `folder` is an id from tp_list_folders or a path such as "Devart AI/Home". Returns the mode, the URL and the addresses as they now stand.',
+    ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Share a folder',
       readOnlyHint: false,
@@ -2449,13 +2601,37 @@ const TOOLS: Record<McpToolName, Tool> = {
        * larger disclosure of the two — everything under it, and whatever is filed there later.
        */
       if (mode !== 'private' && args.confirm !== true) {
-        return say(
+        return refusedCard(
           `Nothing changed. ${target.path}, with the ${total} document${total === 1 ? '' : 's'} in it and in the folders under it, would ${
             mode === 'link'
               ? 'become a page on the public web that anyone holding the URL can open'
               : `be shared with ${readers.join(', ') || 'nobody yet'}${fresh.length ? `; ${fresh.join(', ')} would be emailed a link` : ''}`
           }${before.length && now.body.mode === 'people' ? ` (shared now with ${before.join(', ')})` : ''}. Anything filed in it later is shared the same way — ask the person, then call this again with confirm: true.`,
-          true
+          /* The share as it would stand, not as it stands: the card heads it "Not yet". */
+          forFolder(c, target.folders, folder, {
+            did: 'shared',
+            share: mode,
+            shareUrl: '',
+            readers: mode === 'people' ? readers : [],
+          }),
+          {
+            tool: 'tp_share_folder',
+            args: { folder: folder.id, mode, ...(mode === 'people' && emails ? { emails } : {}) },
+            label:
+              mode === 'link'
+                ? 'Publish by link'
+                : fresh.length === 1
+                  ? `Share with ${fresh[0]}`
+                  : fresh.length > 1
+                    ? `Share with ${fresh.length} people`
+                    : 'Share',
+            note:
+              mode === 'link'
+                ? `Anyone holding the link will be able to open the folder and the ${total} document${total === 1 ? '' : 's'} under it.`
+                : fresh.length
+                  ? 'Only the people listed can open it, and each new one is emailed the link.'
+                  : 'Only the people listed can open it.',
+          }
         );
       }
 
@@ -2502,8 +2678,11 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       const url = state.mode !== 'private' && state.token ? `${selfOrigin(c)}/f/${state.token}` : null;
       const kept = (state.emails ?? []) as string[];
+      /* The folder as the share left it, so the card's state and its link are the new ones. */
+      const asShared = { ...folder, share_mode: state.mode, share_token: state.token ?? null };
+      const folders = target.folders.map((one) => (one.id === folder.id ? asShared : one));
 
-      return say(
+      return card(
         [
           `${target.path} is now ${
             state.mode === 'link' ? 'shared by link' : state.mode === 'people' ? 'shared with named people' : 'private'
@@ -2518,7 +2697,17 @@ const TOOLS: Record<McpToolName, Tool> = {
           unsent.length > 0 ? `Added but not emailed, so tell them yourself: ${unsent.join(', ')}` : null,
         ]
           .filter(Boolean)
-          .join('\n')
+          .join('\n'),
+        forFolder(c, folders, asShared, {
+          did: 'shared',
+          readers: state.mode === 'people' ? kept : [],
+          emailed: notified,
+          unsent,
+          shareExpires: url ? (state.expiresAt ?? '') : '',
+          opens: state.views ?? 0,
+          lastOpened: state.lastViewedAt ?? '',
+          hasPassword: Boolean(url && state.hasPassword),
+        })
       );
     },
   },
@@ -2526,6 +2715,7 @@ const TOOLS: Record<McpToolName, Tool> = {
   tp_usage: {
     description:
       'What this account is using against its limits: bytes stored, documents held, and the ceiling on each. Ask this when a save was refused.',
+    ui: ACCOUNT_CARD_URI,
     annotations: { title: 'Account usage', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: { type: 'object', additionalProperties: false, properties: {} },
     run: async (c) => {
@@ -2537,13 +2727,14 @@ const TOOLS: Record<McpToolName, Tool> = {
 
       const { bytes: used, documents, limits } = usage.body;
 
-      return say(
+      return card(
         [
           `${bytes(used)} of ${bytes(limits.bytes)} stored.`,
           `${documents} of ${limits.documents} documents.`,
           `One document may hold ${bytes(limits.documentBytes)} of Markdown.`,
           'Reaching a limit refuses the next save; nothing already saved is deleted to make room.',
-        ].join('\n')
+        ].join('\n'),
+        { usage: { bytes: used, maxBytes: limits.bytes, documents, maxDocuments: limits.documents } }
       );
     },
   },
@@ -2668,9 +2859,11 @@ const LISTED = MCP_TOOL_NAMES.map((name) => ({
 /*
  * The views this server ships, which is the whole of its MCP Apps surface.
  *
- * Two, and each is a shape the text answer could not be: a document, and what is on the account.
- * Listed here rather than in each place that mentions one, so `resources/list` and `resources/read`
- * cannot come to disagree about what exists.
+ * Six, one per shape an answer comes in — a document, a list of them, a delete to confirm, the
+ * account and its folders, one folder, and the documentation — and every tool points at one of
+ * them, so no answer reaches the person as text alone where the host can draw a card. Listed here
+ * rather than in each place that mentions one, so `resources/list` and `resources/read` cannot come
+ * to disagree about what exists.
  */
 const VIEWS = [
   {
@@ -2691,6 +2884,24 @@ const VIEWS = [
     description:
       'The document a delete would remove, by name, with the button that removes it.',
     html: DELETE_CONFIRM_HTML,
+  },
+  {
+    uri: ACCOUNT_CARD_URI,
+    name: 'Account',
+    description: 'How full the account is against its limits, and its folders as a tree whose rows open the folder.',
+    html: ACCOUNT_CARD_HTML,
+  },
+  {
+    uri: FOLDER_CARD_URI,
+    name: 'Folder card',
+    description: 'One folder this connector made, filed documents in or shared: what it holds, who can read it, and a confirmation when one is needed.',
+    html: FOLDER_CARD_HTML,
+  },
+  {
+    uri: HELP_CARD_URI,
+    name: 'Documentation',
+    description: 'The sections of the documentation an answer came from, each opening its place on the docs page.',
+    html: HELP_CARD_HTML,
   },
 ];
 

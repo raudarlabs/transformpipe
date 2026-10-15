@@ -758,6 +758,20 @@ check(
   'the card must be self-contained'
 );
 
+/* Every view, not only the first: a tool pointing at a page that does not read is a card that never draws. */
+const everyView = await Promise.all(
+  (resources.body?.result?.resources ?? []).map((one) => call(tokens.access_token, 'resources/read', { uri: one.uri }))
+);
+check(
+  'every view in the list reads back as a self-contained page',
+  everyView.length >= 6 &&
+    everyView.every((one) => {
+      const text = one.body?.result?.contents?.[0]?.text ?? '';
+      return text.startsWith('<!doctype html>') && !/\b(src|href)=["']https?:/.test(text);
+    }),
+  `${everyView.length} views`
+);
+
 /*
  * And says so, in both spellings: an empty policy for the extension, and ChatGPT's own with the one
  * place a view sends the reader. The domain is ChatGPT's key only — `ui.domain` is the host's to
@@ -841,6 +855,23 @@ check(
   'every tool with a card lets ChatGPT call it from the card',
   tools.filter((one) => one._meta?.ui).every((one) => one._meta['openai/widgetAccessible'] === true) &&
     ['tp_document_versions', 'tp_share_document', 'tp_delete_document'].every((name) => tools.find((one) => one.name === name)?._meta?.['openai/widgetAccessible'] === true)
+);
+
+check(
+  'every tool answers with a card the server lists',
+  tools.every((one) =>
+    (resources.body?.result?.resources ?? []).some((view) => view.uri === one._meta?.ui?.resourceUri)
+  ),
+  tools.filter((one) => !one._meta?.ui?.resourceUri).map((one) => one.name).join(', ')
+);
+check(
+  'and folders, the account and the documentation have cards of their own',
+  tools.find((one) => one.name === 'tp_list_folders')?._meta?.ui?.resourceUri?.endsWith('/account') === true &&
+    tools.find((one) => one.name === 'tp_usage')?._meta?.ui?.resourceUri?.endsWith('/account') === true &&
+    ['tp_create_folder', 'tp_move_documents', 'tp_share_folder'].every(
+      (name) => tools.find((one) => one.name === name)?._meta?.ui?.resourceUri?.endsWith('/folder-card') === true
+    ) &&
+    tools.find((one) => one.name === 'tp_help')?._meta?.ui?.resourceUri?.endsWith('/help') === true
 );
 
 check(
