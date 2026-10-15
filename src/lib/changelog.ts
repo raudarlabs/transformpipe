@@ -120,6 +120,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-15',
+    title: 'Share a whole folder as one link',
+    body:
+      'A folder can be shared as one read-only link: the reader sees its tree and opens any page in '
+      + 'it, and links between an import’s pages move through the folder rather than into the app. '
+      + 'Only what is filed in the folder is reachable, and turning the link off ends it. Imported '
+      + 'Confluence pages also lose the space name repeated in front of every title.',
+  },
+  {
+    date: '2026-10-15',
     title: 'An export arrives as its pages, in folders',
     slug: 'folders-and-exports-as-pages',
     body:

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 14 October 2026.** Next up: **Folders, step 2 — links, pictures and a link for a whole folder**.
+**Updated 14 October 2026.** Next up: **Every picture of an export kept, and folders in the API, CLI and connector**.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -20,8 +20,10 @@ Boxes are ticked in the commit that ships the thing, next to the changelog entry
          batches with progress, conversion in a worker so the page never freezes; the history is a
          tree. "One document" stays as an option. Signed out: the tree locally, and a .zip of .md
          files in the same structure
-      2. Links between pages point at the saved pages; pictures are budgeted per page, not per
-         export; one read-only link for a whole folder
+      2. ~~Links between pages point at the saved pages; pictures are budgeted per page, not per
+         export; one read-only link for a whole folder~~ **Shipped 15 October.** Left: every
+         picture kept (43 of 799 in a real space still exceed a page's 2 MB), and folders in the
+         API, the CLI and the connector
       3. Members by email, read-only first — only if folders are used: five accounts with two
          folders or more a month after step 1
       · this is the Projects item of 14 October, grown: a project is a folder. The account limits
