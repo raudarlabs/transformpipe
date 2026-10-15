@@ -1,4 +1,4 @@
-import { ChevronRight, Folder as FolderIcon, FolderInput, FolderPlus, Pencil, Trash2 } from 'lucide-react';
+import { Check, ChevronRight, Copy, Folder as FolderIcon, FolderInput, FolderPlus, Link2, Pencil, Trash2 } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { api, type Folder } from '@/lib/api';
 import { useT } from '@/lib/i18n/context';
@@ -136,6 +136,21 @@ export function FolderBar({ folders, current, counts, onOpen, onChanged }: Folde
   };
 
   const blocked = here ? subtreeOf(folders, here.id) : new Set<string>();
+  const [copied, setCopied] = useState(false);
+  const link = here?.share_token ? `${location.origin}/f/${here.share_token}` : null;
+
+  const share = (on: boolean) => {
+    if (!here) return;
+
+    void run(async () => {
+      const token = await api.shareFolder(here.id, on);
+
+      if (token) {
+        await navigator.clipboard.writeText(`${location.origin}/f/${token}`).catch(() => undefined);
+        toast.success(t('folders.share.on'), { description: `${location.origin}/f/${token}` });
+      }
+    }, on ? undefined : t('folders.share.off.done'));
+  };
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-stroke bg-surface-card p-3">
@@ -191,6 +206,37 @@ export function FolderBar({ folders, current, counts, onOpen, onChanged }: Folde
                         <span style={{ paddingLeft: `${one.depth * 0.75}rem` }}>{one.name}</span>
                       </DropdownMenuItem>
                     ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="tertiary" size="xs" leftSlot={<Link2 />}>
+                    {link ? t('folders.share.shared') : t('folders.share')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {link ? (
+                    <>
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          void navigator.clipboard.writeText(link).then(() => {
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          });
+                        }}
+                      >
+                        {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                        {t('folders.share.copy')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => window.open(link, '_blank', 'noopener')}>
+                        <Link2 className="size-4" />
+                        {t('folders.share.open')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => share(false)}>{t('folders.share.off')}</DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem onSelect={() => share(true)}>{t('folders.share.on.action')}</DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
               <DropdownMenu>

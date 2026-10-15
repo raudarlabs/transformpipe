@@ -135,7 +135,16 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
   return ordered.map((page, index) => {
     onProgress?.(index + 1, ordered.length);
 
-    const title = titleFromHtml(page.text) ?? titleFromFileName(page.path);
+    const crumbs = breadcrumbs(page.text);
+    /*
+     * Confluence titles a page "<space> : <page>" in its <title>, and names it "<page>" everywhere
+     * else — the breadcrumbs, the page tree. The space is the import's folder already; left in, it
+     * prefixed every one of a space's pages and kept a section's own page out of the folder of the
+     * same name, since "Devart AI : Devart AI Home" is not "Devart AI Home".
+     */
+    const full = titleFromHtml(page.text) ?? titleFromFileName(page.path);
+    const title =
+      crumbs[0] && full.startsWith(`${crumbs[0]} : `) ? full.slice(crumbs[0].length + 3).trim() || full : full;
     const folder = page.path.split('/').slice(0, -1).join('/');
     const markdown = embedPictures(
       // The breadcrumbs are where the page is filed, which the folders now say; as text they are noise.
@@ -148,7 +157,6 @@ async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefin
       pictureFinder(pictures, folder),
       perPage ? pictureBudget() : shared
     );
-    const crumbs = breadcrumbs(page.text);
 
     return {
       title,

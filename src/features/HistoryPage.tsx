@@ -368,19 +368,6 @@ export function HistoryPage({
    * one of them: an account with nothing but Markdown does not need to be offered a filter that
    * selects all of it.
    */
-  const kinds = useMemo(() => {
-    const counted = new Map<string, number>();
-
-    for (const entry of entries) {
-      counted.set(entry.kind, (counted.get(entry.kind) ?? 0) + 1);
-    }
-
-    return CONVERSIONS.filter((one) => counted.has(one.id)).map((one) => ({
-      value: one.id,
-      label: content.conversions[one.id].label,
-      count: counted.get(one.id) ?? 0,
-    }));
-  }, [entries, content]);
 
   /*
    * Folders, for an account: the one being looked at, and how much each holds. The top shows every
@@ -411,9 +398,28 @@ export function HistoryPage({
     return counts;
   }, [subtrees, entries]);
 
-  const inFolder = folder === null
-    ? entries
-    : entries.filter((entry) => entry.folderId && subtrees.get(folder)?.has(entry.folderId));
+  const inFolder = useMemo(
+    () =>
+      folder === null
+        ? entries
+        : entries.filter((entry) => entry.folderId && subtrees.get(folder)?.has(entry.folderId)),
+    [entries, folder, subtrees]
+  );
+
+  /* The chips and the count say what is in the folder being looked at, not in the whole account. */
+  const kinds = useMemo(() => {
+    const counted = new Map<string, number>();
+
+    for (const entry of inFolder) {
+      counted.set(entry.kind, (counted.get(entry.kind) ?? 0) + 1);
+    }
+
+    return CONVERSIONS.filter((one) => counted.has(one.id)).map((one) => ({
+      value: one.id,
+      label: content.conversions[one.id].label,
+      count: counted.get(one.id) ?? 0,
+    }));
+  }, [inFolder, content]);
 
   const source = isShared
     ? shared
@@ -695,7 +701,7 @@ export function HistoryPage({
       <FilterChips
         value={chip}
         items={[
-          { value: 'all', label: t('history.chip.all'), count: entries.length },
+          { value: 'all', label: t('history.chip.all'), count: inFolder.length },
           ...(kinds.length > 1 ? kinds : []),
           // Nobody can share with a browser: the chip belongs to an account.
           ...(isSynced
@@ -737,16 +743,16 @@ export function HistoryPage({
         title={
           query
             ? t(
-                entries.length === 1
+                inFolder.length === 1
                   ? 'history.count.filtered.one'
                   : 'history.count.filtered.many',
-                { found: found.length, total: entries.length }
+                { found: found.length, total: inFolder.length }
               )
             : t(
-                entries.length === 1
+                inFolder.length === 1
                   ? 'history.count.one'
                   : 'history.count.many',
-                { count: entries.length }
+                { count: inFolder.length }
               )
         }
         selectedCount={selected.length}

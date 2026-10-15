@@ -491,3 +491,8 @@ alter table m2h_document
   add column if not exists position integer;
 
 create index if not exists m2h_document_folder on m2h_document (folder_id) where folder_id is not null;
+
+-- A folder can be shared as one read-only link: `/f/<token>` lists everything in it and below, and
+-- opens each document. Null is not shared; a new token is a new link, and the old one stops.
+alter table m2h_folder
+  add column if not exists share_token text unique;
