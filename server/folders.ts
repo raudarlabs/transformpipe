@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '../shared/conversions.js';
-import { looksLikeId, sql } from './db.js';
+import { looksLikeId, sql, searchText } from './db.js';
 import { QUOTA, UNVERIFIED, isVerified, usageOf } from './limits.js';
 import { deleteSources, putSource } from './source.js';
 
@@ -311,17 +311,22 @@ export function registerFolders(api: Api) {
     const saved: Array<{ id: string; name: string }> = [];
 
     for (const [index, one] of documents.entries()) {
+      // One page the database refuses is one page not kept, not a batch thrown away with it.
       const rows = (await sql()`
         insert into m2h_document (id, user_id, name, kind, size, markdown, stats, search, folder_id, position)
         values (
           coalesce(${one.id}::uuid, gen_random_uuid()),
           ${userId}, ${one.name}, ${one.kind}, ${sizes[index]}, null,
-          ${JSON.stringify(one.stats)}::jsonb, to_tsvector('simple', ${one.markdown}),
+          ${JSON.stringify(one.stats)}::jsonb, to_tsvector('simple', ${searchText(one.markdown)}),
           ${one.folder}, ${one.position}
         )
         on conflict (id) do nothing
         returning id::text, name
-      `) as Array<{ id: string; name: string }>;
+      `.catch((cause: unknown) => {
+        console.error('batch insert', one.name, cause instanceof Error ? cause.message : cause);
+
+        return [];
+      })) as Array<{ id: string; name: string }>;
       const row = rows[0];
 
       // An id already taken — somebody else's, or this import sent twice — is not overwritten.

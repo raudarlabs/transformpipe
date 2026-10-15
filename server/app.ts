@@ -14,7 +14,7 @@ import { attachment } from './attachment.js';
 import { clientAddress, publicHost } from './address.js';
 import { authProxy, currentUser, selfOrigin, type SessionUser } from './auth.js';
 import { sendShareNotice } from './mail.js';
-import { looksLikeId, sql, type DocumentRow } from './db.js';
+import { looksLikeId, sql, type DocumentRow, searchText } from './db.js';
 import { createKey, forgetKey, listKeys, revokeKey } from './keys.js';
 import {
   CONVERSIONS,
@@ -492,7 +492,7 @@ api.post('/documents', async (c) => {
       ${body.size ?? body.markdown.length},
       null,
       ${JSON.stringify(body.stats ?? {})}::jsonb,
-      to_tsvector('simple', ${body.markdown}),
+      to_tsvector('simple', ${searchText(body.markdown)}),
       ${body.replaces ?? null}
     )
     returning id, name, kind, size, stats, created_at
