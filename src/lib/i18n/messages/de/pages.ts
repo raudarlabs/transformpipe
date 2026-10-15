@@ -1027,8 +1027,8 @@ export const pages: Content['pages'] = {
       {
         heading: 'Was er dann kann',
         body: [
-          'Sechzehn Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können — oder einen einzelnen Leser hinzufügt oder entfernt.',
-          'Der Rest sind die, nach denen ein Assistent von sich aus greift: `tp_list_documents` und `tp_get_document`, um etwas wiederzufinden, das Sie früher gemacht haben, `tp_summarize_document`, um zu sagen, was in einem langen steht, `tp_update_document`, um eines zu ändern und seinen Link zu behalten, `tp_document_versions`, um zu zeigen, was was ersetzt hat, `tp_list_folders`, `tp_create_folder` und `tp_move_documents`, um Dokumente in Ordnern abzulegen, `tp_share_folder`, um einen ganzen Ordner so zu teilen, wie man ein Dokument teilt, `tp_usage`, um zu prüfen, wie viel Platz noch bleibt, `tp_delete_document` und `tp_help`, das Fragen zu TransformPipe aus der Dokumentation beantwortet.',
+          'Achtzehn Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können — oder einen einzelnen Leser hinzufügt oder entfernt.',
+          'Der Rest sind die, nach denen ein Assistent von sich aus greift: `tp_list_documents` und `tp_get_document`, um etwas wiederzufinden, das Sie früher gemacht haben, `tp_summarize_document`, um zu sagen, was in einem langen steht, `tp_update_document`, um eines zu ändern und seinen Link zu behalten, `tp_document_versions`, um zu zeigen, was was ersetzt hat, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` und `tp_move_documents`, um Dokumente in Ordnern abzulegen, `tp_share_folder`, um einen ganzen Ordner so zu teilen, wie man ein Dokument teilt, `tp_usage`, um zu prüfen, wie viel Platz noch bleibt, `tp_delete_document` und `tp_help`, das Fragen zu TransformPipe aus der Dokumentation beantwortet.',
           'In der Praxis ist der nützliche Satz kurz. Bitten Sie ihn, die Release Notes zu schreiben, und dann, sie zu veröffentlichen — der Assistent wandelt um, speichert und teilt und antwortet mit der Adresse.',
         ],
       },
@@ -1051,7 +1051,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Ein Dokument aus einem KI-Assistenten umwandeln und teilen — TransformPipe',
       description:
-        'Wie man TransformPipe per MCP zu Claude oder ChatGPT hinzufügt, was die sechzehn Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
+        'Wie man TransformPipe per MCP zu Claude oder ChatGPT hinzufügt, was die achtzehn Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
     },
   },
 

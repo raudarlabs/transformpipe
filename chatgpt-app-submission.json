@@ -120,6 +120,22 @@
         "destructive_justification": "This hint covers every mode of the tool: link mode can publish a folder of documents, people mode can send email notices that cannot be recalled, and private mode revokes existing access. Link and people modes require confirm=true."
       }
     },
+    "tp_update_folder": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "Renames a folder in the connected account or moves it, with everything in it, under another folder or to the top level.",
+        "open_world_justification": "Moving a folder under a folder shared by link or with named people makes its documents readable by everyone that folder is shared with.",
+        "destructive_justification": "This hint covers moving under a shared folder, which discloses the folder's documents to that audience and requires confirm=true. Renaming, or moving where nobody new can read it, discloses nothing and deletes nothing."
+      }
+    },
+    "tp_delete_folder": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true },
+      "justifications": {
+        "read_only_justification": "With confirm=true it deletes one folder; with with_documents=true it also permanently deletes every document in that folder and the folders under it.",
+        "open_world_justification": "Deletion is limited to one folder of the connected account and does not contact external recipients.",
+        "destructive_justification": "Every call requires confirm=true. Without with_documents only the folder is removed and its contents move up one level; with it the documents are deleted with no undo or trash, and a shared folder's link stops working either way."
+      }
+    },
     "tp_usage": {
       "annotations": { "readOnlyHint": true, "openWorldHint": false, "destructiveHint": false },
       "justifications": {

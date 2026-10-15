@@ -832,8 +832,13 @@ check(
     tools.find((one) => one.name === 'tp_share_document')?.annotations?.openWorldHint === true
 );
 check(
-  'sharing a folder, and filing documents in a shared one, can disclose them and are marked so',
-  ['tp_share_folder', 'tp_move_documents'].every(
+  'deleting a folder can delete its documents for good, and is marked destructive',
+  tools.find((one) => one.name === 'tp_delete_folder')?.annotations?.destructiveHint === true &&
+    tools.find((one) => one.name === 'tp_delete_folder')?.annotations?.readOnlyHint === false
+);
+check(
+  'sharing a folder, and filing documents or a folder in a shared one, can disclose them and are marked so',
+  ['tp_share_folder', 'tp_move_documents', 'tp_update_folder'].every(
     (name) =>
       tools.find((one) => one.name === name)?.annotations?.destructiveHint === true &&
       tools.find((one) => one.name === name)?.annotations?.openWorldHint === true
@@ -868,7 +873,7 @@ check(
   'and folders, the account and the documentation have cards of their own',
   tools.find((one) => one.name === 'tp_list_folders')?._meta?.ui?.resourceUri?.endsWith('/account') === true &&
     tools.find((one) => one.name === 'tp_usage')?._meta?.ui?.resourceUri?.endsWith('/account') === true &&
-    ['tp_create_folder', 'tp_move_documents', 'tp_share_folder'].every(
+    ['tp_create_folder', 'tp_move_documents', 'tp_share_folder', 'tp_update_folder', 'tp_delete_folder'].every(
       (name) => tools.find((one) => one.name === name)?._meta?.ui?.resourceUri?.endsWith('/folder-card') === true
     ) &&
     tools.find((one) => one.name === 'tp_help')?._meta?.ui?.resourceUri?.endsWith('/help') === true
@@ -900,9 +905,10 @@ check(
 );
 /*
  * The thing this actually guards is a tool per document — a list that grows with the account, so a
- * person with forty files sends forty tool definitions with every message. Sixteen is a smoke
- * alarm for that, not a budget to spend down: a real tool that earns its place should be added,
- * not squeezed out to keep a round number.
+ * person with forty files sends forty tool definitions with every message. Twenty is a smoke
+ * alarm for that — raised from sixteen when folders could be renamed and deleted — not a budget
+ * to spend down: a real tool that earns its place should be added, not squeezed out to keep a
+ * round number.
  *
  * What it costs, measured rather than feared: the eleven descriptions are about 870 tokens and
  * their schemas about 935, so roughly 1,800 tokens ride along with every message while the
@@ -911,7 +917,7 @@ check(
  */
 check(
   'no tool per document, and the list has not run away',
-  names.length <= 16 && names.length >= 7 && !names.some((name) => /\d|document-/.test(name)),
+  names.length <= 20 && names.length >= 7 && !names.some((name) => /\d|document-/.test(name)),
   names.join(', ')
 );
 check('every tool has an inputSchema', (listed.body?.result?.tools ?? []).every((t) => t.inputSchema?.type === 'object'));

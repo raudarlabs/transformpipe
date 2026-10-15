@@ -40,6 +40,8 @@ export const MCP_TOOL_NAMES = [
   'tp_document_versions',
   'tp_share_document',
   'tp_share_folder',
+  'tp_update_folder',
+  'tp_delete_folder',
   'tp_usage',
   'tp_delete_document',
 ] as const;
@@ -73,6 +75,10 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
     'Changes who may open a document: a link, named addresses, or nobody — and adds or removes one reader without touching the rest. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
   tp_share_folder:
     'Changes who may open a folder and everything under it: a link, named addresses, or nobody. Opening it to anyone but the owner takes an explicit confirmation; revoking does not.',
+  tp_update_folder:
+    'Renames a folder or moves it under another, everything in it going with it. Moving it under a shared folder takes an explicit confirmation.',
+  tp_delete_folder:
+    'Deletes a folder — alone, with what it held moving up a level, or with every document in it, permanently. Always with an explicit confirmation.',
   tp_usage: 'What the account is using against its limits.',
   tp_delete_document:
     'Deletes one document, permanently, and only with an explicit confirmation.',

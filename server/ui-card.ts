@@ -1321,7 +1321,7 @@ ${OPENAI_BRIDGE}
 `;
 
 /*
- * One folder: what was made, moved or shared, and where it now stands.
+ * One folder: what was made, renamed, moved, shared or deleted, and where it now stands.
  *
  * Making a folder, filing documents in one and sharing one ended in sentences, and the sentence
  * for a share is the longest the connector writes — the link, who reads it, who was emailed, when
@@ -1347,6 +1347,7 @@ export const FOLDER_CARD_HTML = `<!doctype html>
   --card: #ffffff;
   --page: #f8fafc;
   --stroke: #e2e8f0;
+  --danger: #b3261e;
 }
 :root[data-theme="dark"] {
   --ink: #f9fafb;
@@ -1356,6 +1357,7 @@ export const FOLDER_CARD_HTML = `<!doctype html>
   --card: #17171e;
   --page: #0f0e14;
   --stroke: #2a2834;
+  --danger: #e0685f;
 }
 * { box-sizing: border-box; margin: 0; }
 body {
@@ -1414,6 +1416,8 @@ button {
   cursor: pointer;
 }
 button.quiet { background: transparent; border-color: var(--stroke); color: var(--ink); }
+/* A delete's button, in the delete confirmation's red: the one press here that may not be undone. */
+button.danger { background: var(--danger); }
 button[disabled] { opacity: 0.6; cursor: default; }
 button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .ask {
@@ -1483,7 +1487,7 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     }
 
     const actions = el('div', 'actions');
-    const go = el('button', null, confirm.label);
+    const go = el('button', folder.did === 'deleted' ? 'danger' : null, confirm.label);
     go.addEventListener('click', async () => {
       go.disabled = true;
       go.textContent = 'Working…';
@@ -1531,7 +1535,9 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     if (!folder.none) {
       top.append(asking
         ? el('span', 'state off', 'Not yet')
-        : el('span', shared ? 'state' : 'state off', shared ? 'Shared' : 'Private'));
+        : folder.gone
+          ? el('span', 'state off', 'Deleted')
+          : el('span', shared ? 'state' : 'state off', shared ? 'Shared' : 'Private'));
     }
     card.append(top);
 
@@ -1545,6 +1551,22 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
         ? plural(moved.length, 'document', 'documents') + ' taken out of every folder.'
         : plural(moved.length, 'document', 'documents') + ' moved here.'));
     }
+    if (!asking && folder.did === 'updated') {
+      card.append(el('p', 'done', folder.renamed && folder.relocated ? 'Renamed and moved.' : folder.renamed ? 'Renamed.' : 'Moved.'));
+    }
+
+    /* A delete, asked or done: what it held, and where that goes — up a level, or with it for good. */
+    const held = folder.inside
+      ? [
+          folder.inside.documents ? plural(folder.inside.documents, 'document', 'documents') : '',
+          folder.inside.folders ? plural(folder.inside.folders, 'folder', 'folders') : '',
+        ].filter(Boolean).join(', ') || 'Nothing'
+      : '';
+    if (!asking && folder.gone) {
+      card.append(el('p', 'done', folder.withDocuments
+        ? 'Deleted, with ' + plural(folder.deleted || 0, 'document', 'documents') + '.'
+        : held === 'Nothing' ? 'Deleted.' : 'Deleted. What it held is now in ' + folder.goesTo + '.'));
+    }
 
     const rows = el('div', 'rows');
     const row = (label, value, className) => {
@@ -1555,10 +1577,19 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     };
 
     if (made.length > 1) row('Folders made', made.join(', '));
+    if (folder.did === 'updated' && asking && folder.movingTo) row('Would move to', folder.movingTo);
+    if (folder.did === 'updated' && asking && folder.renamingTo) row('New name', folder.renamingTo);
+    if (folder.did === 'updated' && !asking && folder.was) row('Was', folder.was);
+    if (folder.did === 'deleted') {
+      row(folder.gone ? 'It held' : 'Inside', held);
+      if (asking && held !== 'Nothing') row('Afterwards', folder.withDocuments ? 'All of it deleted, for good' : 'Moved up to ' + folder.goesTo);
+      const ending = Array.isArray(folder.linksEnding) ? folder.linksEnding : [];
+      if (ending.length) row(asking ? 'Link stops working' : 'Link ended', ending.join(', '));
+    }
     if (moved.length) row(asking ? 'To move' : 'Moved', moved.join(', '));
     if (Array.isArray(folder.missed) && folder.missed.length) row('Not on the account', folder.missed.join(', '));
 
-    if (!folder.none) {
+    if (!folder.none && folder.did !== 'deleted') {
       row('Access', folder.share === 'link'
         ? 'Anyone with the link'
         : folder.share === 'people'
@@ -1590,7 +1621,9 @@ button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     const actions = el('div', 'actions wide');
     if (folder.open) {
-      const open = el('button', null, folder.none ? 'Open your documents' : 'Open');
+      const open = el('button', null, folder.none || (folder.gone && folder.goesTo === 'the top level')
+        ? 'Open your documents'
+        : folder.gone ? 'Open the folder it was in' : 'Open');
       open.addEventListener('click', () => openLink(folder.open));
       actions.append(open);
     }

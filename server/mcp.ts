@@ -146,13 +146,13 @@ const MAX_TEXT = 40_000;
 
 const INSTRUCTIONS = `These tools act on one person's TransformPipe account — the one that authorised this connector — and see nothing else.
 
-Six of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document, tp_share_document and tp_share_folder require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. A shared folder discloses everything in it and in the folders under it, so tp_save_document and tp_move_documents also require it when the folder a document goes into is shared or sits inside one that is. On tp_share_document and tp_share_folder, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. A mode of "private" discloses nothing and is not gated.
+Eight of them disclose, change what others read, or destroy, and each takes a \`confirm\` boolean that gates it. tp_save_document, tp_share_document and tp_share_folder require it whenever the chosen mode is "link", which publishes a page on the public web that anyone holding the URL can open, or "people", which emails a notice to each address new to the list — one already on it is not written to again; called without it, they return what would be disclosed and to whom, and change nothing. A shared folder discloses everything in it and in the folders under it, so tp_save_document and tp_move_documents also require it when the folder a document goes into is shared or sits inside one that is, and tp_update_folder when it moves a folder under a shared one. On tp_share_document and tp_share_folder, \`emails\` replaces the list, while \`add\` and \`remove\` change it by an address and leave the rest of it as it was. tp_update_document requires it when the document is already shared, because the new text is what everyone holding the link then reads. tp_delete_document requires it always and is permanent: there is no undo and no trash. tp_delete_folder requires it always too: without \`with_documents\` only the folder goes and what it held moves up a level; with it, every document under the folder is deleted the same permanent way. A mode of "private" discloses nothing and is not gated.
 
 Every answer is also drawn for the person as a card — a document, a list, a conversion, a summary, a folder, the account, a share, a confirmation with its button, the documentation it came from. When a card is shown, what is on it has been said: do not repeat it in text, not as a list, a summary or a restatement of its numbers and names. Write only what the card does not say — the answer to the question that was asked, an observation drawn from what it shows, or the next step — and write nothing when the card already answers it. Only where no card can be shown does the text stand in for it, briefly.
 
 To change a document the person already has — fix it, rewrite it, add to it — use tp_update_document, which keeps its link; tp_save_document makes a new document with a new link.
 
-Documents can be filed in folders. Every tool that takes a \`folder\` takes its id or its path from the top — "Devart AI/Home", with \`/\` or \`›\` between the names — and tp_list_folders prints both.
+Documents can be filed in folders. Every tool that takes a \`folder\` takes its id or its path from the top — "Devart AI/Home", with \`/\` or \`›\` between the names — and tp_list_folders prints both. tp_create_folder makes one, tp_update_folder renames or moves one, tp_delete_folder deletes one, and tp_move_documents files documents in one.
 
 tp_convert_markdown and tp_convert_to_markdown return the converted document through the conversation and are bounded at 40,000 characters; tp_save_document returns an id, a size and — when shared — a URL instead.
 
@@ -1763,7 +1763,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_list_folders: {
     description:
-      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. Also the account\'s totals: how many documents there are, how many are in no folder, and the storage used against its limit — so "how many folders and files have I got" is this one call. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id.',
+      'The folders on this TransformPipe account, as a tree: each with its id, how many documents it holds counting the folders under it, and whether it is shared — by link, with the link, or with named people. Also the account\'s totals: how many documents there are, how many are in no folder, and the storage used against its limit — so "how many folders and files have I got" is this one call. The path each prints ("Devart AI › Home › Guides") is what the other tools take as `folder`, as is the id — tp_update_folder renames or moves one, tp_delete_folder deletes one.',
     ui: ACCOUNT_CARD_URI,
     annotations: { title: 'List folders', readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     inputSchema: { type: 'object', additionalProperties: false, properties: {} },
@@ -2712,6 +2712,324 @@ const TOOLS: Record<McpToolName, Tool> = {
     },
   },
 
+  tp_update_folder: {
+    description:
+      'Renames a folder, moves it under another folder, or both. `folder` is the one to change, by id or path; `name` is its new name; `parent` is where it goes — an id or a path from the top, which has to exist, or null or "" for the top level. Everything in it goes with it. A folder cannot go inside itself or inside a folder under it. Moving it into a folder that is shared, or sits inside one that is, lets everyone that folder is shared with read what is in it, so that move requires `confirm: true`; without it nothing changes and the call says who would read it. Renaming is not gated.',
+    ui: FOLDER_CARD_URI,
+    annotations: {
+      title: 'Rename or move a folder',
+      readOnlyHint: false,
+      /* Under a shared folder is publishing what it holds — the reason tp_move_documents carries both hints. */
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['folder'],
+      properties: {
+        folder: { type: 'string', description: 'The folder to change: an id from tp_list_folders, or a path from the top.' },
+        name: { type: 'string', description: 'Its new name. Leave out to keep the one it has.' },
+        parent: {
+          type: ['string', 'null'],
+          description: 'Where to move it: a folder id or a path from the top, which must exist. null or "" moves it to the top level. Leave out to keep it where it is.',
+        },
+        confirm: {
+          type: 'boolean',
+          description:
+            'Required when `parent` is shared or inside a shared folder. True when the person asked for this folder to go where those people can read it.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const target = await resolveFolder(c, args.folder);
+
+      if (!target.ok) return say(target.error, true);
+
+      if (!target.folder) {
+        return say('Which folder? tp_list_folders prints them.', true);
+      }
+
+      const { folders } = target;
+      const folder = target.folder;
+      const was = target.path;
+      const name = typeof args.name === 'string' ? args.name.trim() : '';
+      const renaming = name !== '' && name !== folder.name;
+      /* `parent` left out keeps the folder where it is; `parent: null` is a place — the top. */
+      const moving = 'parent' in args;
+
+      /*
+       * A slash in a name would read as a path to every other tool here, and the folder could only
+       * be named by its id ever after. tp_create_folder takes one as a path; a rename cannot.
+       */
+      if (/[/›]/.test(name)) {
+        return say('A folder\'s name cannot have / or › in it — those separate the names in a path. To move it, use `parent`.', true);
+      }
+
+      if (!renaming && !moving) {
+        return say('Say what to change: a new `name`, a new `parent`, or both.', true);
+      }
+
+      let parent: Folder | null = null;
+
+      if (moving) {
+        const found = await resolveFolder(c, args.parent, { folders });
+
+        if (!found.ok) return say(found.error, true);
+        parent = found.folder;
+      }
+
+      const now = sharedThrough(folders, folder.id);
+      const then = moving ? sharedThrough(folders, parent?.id) : now;
+      const total = inside(folders, folder.id);
+      const goesTo = parent ? pathOf(folders, parent.id) : 'the top level';
+
+      /*
+       * Gated only when the move opens it to people who could not read it before: into a shared
+       * folder from outside one, or from one share into another. Within the same shared tree the
+       * readers are the readers they were, and a rename changes nobody's access at all.
+       */
+      /* A move into itself is the API's to refuse, and asking first would be asking about nothing. */
+      const intoItself = Boolean(parent && below(folders, folder.id).some((one) => one.id === parent!.id));
+
+      if (moving && !intoItself && then && then.id !== now?.id && args.confirm !== true) {
+        return refusedCard(
+          `Nothing changed. Moving ${was} to ${goesTo} would put it ${
+            then.id === parent?.id ? 'in' : `inside ${pathOf(folders, then.id)}, under`
+          } a folder shared ${
+            then.share_mode === 'link'
+              ? 'by link, so anyone holding its URL could read'
+              : 'with named people, who could read'
+          } the ${total} document${total === 1 ? '' : 's'} in it — ask the person, then call this again with confirm: true.`,
+          forFolder(c, folders, folder, { did: 'updated', movingTo: goesTo, ...(renaming ? { renamingTo: name } : {}) }),
+          {
+            tool: 'tp_update_folder',
+            // By id, so the button moves it into this folder even if another comes to share its name.
+            args: { folder: folder.id, parent: parent?.id ?? null, ...(renaming ? { name } : {}) },
+            label: 'Move into the shared folder',
+            note: `Everyone ${pathOf(folders, then.id)} is shared with ${
+              then.share_mode === 'link' ? '— anyone holding its link — ' : ''
+            }will be able to read what is in it.`,
+          }
+        );
+      }
+
+      const at = `/api/v1/folders/${segment(folder.id)}`;
+
+      /*
+       * The move first and the name after, as two requests. The API renames before it checks the
+       * move, so one request with both could rename a folder and then refuse to move it — half a
+       * change, reported as a failure. This way a refused move — a folder put inside itself, which
+       * the API knows how to see — leaves it exactly as it was.
+       */
+      if (moving) {
+        const placed = await callApi(c, at, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ parent_id: parent?.id ?? null }),
+        });
+
+        if (placed.status !== 200) {
+          return say(
+            `${placed.body?.error ?? `It was not moved (${placed.status})`}${
+              placed.status === 400 && parent ? `: ${goesTo} is ${parent.id === folder.id ? 'that folder' : `inside ${was}`}` : ''
+            }. Nothing changed.`,
+            true
+          );
+        }
+      }
+
+      if (renaming) {
+        const named = await callApi(c, at, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ name }),
+        });
+
+        if (named.status !== 200) {
+          return say(
+            `${named.body?.error ?? `It was not renamed (${named.status})`}.${moving ? ` It was moved to ${goesTo}.` : ''}`,
+            true
+          );
+        }
+      }
+
+      /* Read again, so the card's path, its count and what it is shared through are the new ones. */
+      const after = await foldersOf(c);
+      const list = after.ok ? after.folders : folders;
+      const changed = list.find((one) => one.id === folder.id) ?? { ...folder, name: renaming ? name : folder.name };
+      const path = pathOf(list, changed.id) || changed.name;
+      const through = sharedThrough(list, changed.id);
+
+      return card(
+        [
+          renaming && moving
+            ? `Renamed ${was} and moved it to ${goesTo}: it is now ${path}.`
+            : renaming
+              ? `Renamed ${was} to ${path}.`
+              : `Moved ${was} to ${goesTo}: it is now ${path}.`,
+          through && through.id !== changed.id && folderUrl(c, through)
+            ? `Everyone ${pathOf(list, through.id)} is shared with can read what is in it: ${folderUrl(c, through)}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        forFolder(c, list, changed, { did: 'updated', was, renamed: renaming, relocated: moving })
+      );
+    },
+  },
+
+  tp_delete_folder: {
+    description:
+      'Deletes a folder from this account. By default the folder alone goes and nothing in it is lost: its documents and the folders under it move up one level, into the folder it was in or to the top. With `with_documents: true` every document in it and in the folders under it is deleted with it, permanently — there is no undo and no trash. A shared folder\'s link stops working either way. Pass confirm: true only when the person has named this folder and asked for it to be deleted; ask them otherwise. `folder` is an id from tp_list_folders or a path such as "Devart AI/Home".',
+    ui: FOLDER_CARD_URI,
+    annotations: {
+      title: 'Delete a folder',
+      readOnlyHint: false,
+      /* With its documents it is tp_delete_document many times over: no undo, no trash. */
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['folder', 'confirm'],
+      properties: {
+        folder: { type: 'string', description: 'The folder: an id, or a path from the top such as "Devart AI/Home".' },
+        with_documents: {
+          type: 'boolean',
+          description:
+            'Delete every document in it and in the folders under it as well, permanently. Default false: they move up one level instead.',
+        },
+        confirm: {
+          type: 'boolean',
+          description: 'True only when the person asked for this folder to be deleted — and, with `with_documents`, its documents too.',
+        },
+      },
+    },
+    run: async (c, args) => {
+      const target = await resolveFolder(c, args.folder);
+
+      if (!target.ok) return say(target.error, true);
+
+      if (!target.folder) {
+        return say('Which folder? tp_list_folders prints them.', true);
+      }
+
+      const { folders } = target;
+      const folder = target.folder;
+      const path = target.path;
+      const withDocuments = args.with_documents === true;
+      const total = inside(folders, folder.id);
+      const under = below(folders, folder.id).slice(1);
+      const parent = folder.parent_id ? (folders.find((one) => one.id === folder.parent_id) ?? null) : null;
+      const goesTo = parent ? pathOf(folders, parent.id) : 'the top level';
+      /* Every link that ends with it: its own, and — when its contents go too — any under it. */
+      const links = (withDocuments ? [folder, ...under] : [folder]).filter(
+        (one) => (one.share_mode === 'link' || one.share_mode === 'people') && one.share_token
+      );
+      const holds = `${total} document${total === 1 ? '' : 's'}${
+        under.length ? ` and ${under.length} folder${under.length === 1 ? '' : 's'}` : ''
+      }`;
+      const facts = {
+        inside: { documents: total, folders: under.length },
+        withDocuments,
+        goesTo,
+        linksEnding: links.map((one) => pathOf(folders, one.id)),
+      };
+
+      /*
+       * Always gated, as a document's delete is. The refusal says what is in the folder and where it
+       * would go, because "delete the folder" and "delete everything in it" sound alike in a
+       * conversation and are not: the first loses nothing, the second cannot be taken back.
+       */
+      if (args.confirm !== true) {
+        const said = [
+          `Not deleted. ${path} holds ${holds}.`,
+          withDocuments
+            ? total
+              ? `Deleting it with its documents deletes ${total === 1 ? 'that document' : `all ${total} of them`} for good: no undo, no trash.`
+              : 'There are no documents in it to delete.'
+            : total || under.length
+              ? `Deleting the folder alone moves what it holds up to ${goesTo}; nothing is lost.`
+              : 'It is empty, so nothing else is affected.',
+          links.length
+            ? `${links.map((one) => pathOf(folders, one.id)).join(', ')} ${links.length === 1 ? 'is' : 'are'} shared, and the link stops working.`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        return refusedCard(
+          `${said.replace(/[.]$/, '')} — ask the person, then call this again with confirm: true.`,
+          forFolder(c, folders, folder, { did: 'deleted', ...facts }),
+          {
+            tool: 'tp_delete_folder',
+            args: { folder: folder.id, ...(withDocuments ? { with_documents: true } : {}) },
+            label:
+              withDocuments && total
+                ? `Delete folder and its ${total} document${total === 1 ? '' : 's'}`
+                : 'Delete folder',
+            note: withDocuments && total
+              ? `The folder and the ${total} document${total === 1 ? '' : 's'} under it are deleted for good. There is no undo.`
+              : total || under.length
+                ? `Only the folder goes; the ${holds} in it move up to ${goesTo}.`
+                : 'The folder is empty; deleting it loses nothing.',
+          }
+        );
+      }
+
+      const gone = await callApi(c, `/api/v1/folders/${segment(folder.id)}${withDocuments ? '?contents=delete' : ''}`, {
+        method: 'DELETE',
+      });
+
+      if (gone.status !== 200) {
+        return say(gone.body?.error ?? `That folder is not on this account (${gone.status}).`, true);
+      }
+
+      const deleted = Number(gone.body?.deleted ?? 0);
+
+      /*
+       * With something for the card to draw, for the reason tp_delete_document gives one: a host
+       * that confirms by itself calls this with confirm: true the first time, and a card given
+       * nothing would sit on "Waiting for the folder…".
+       */
+      return card(
+        [
+          `Deleted ${path}.`,
+          withDocuments
+            ? `${deleted} document${deleted === 1 ? '' : 's'} deleted with it.`
+            : total || under.length
+              ? `What it held — ${holds} — is now in ${goesTo}.`
+              : null,
+          links.length ? `Its link no longer opens.` : null,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        {
+          id: folder.id,
+          name: folder.name,
+          path,
+          did: 'deleted',
+          gone: true,
+          deleted,
+          ...facts,
+          share: 'private',
+          shareUrl: '',
+          through: null,
+          /* Where what it held went, which is where the person goes next. */
+          open: parent
+            ? `${selfOrigin(c)}/history?folder=${encodeURIComponent(parent.id)}`
+            : `${selfOrigin(c)}/history`,
+        }
+      );
+    },
+  },
+
   tp_usage: {
     description:
       'What this account is using against its limits: bytes stored, documents held, and the ceiling on each. Ask this when a save was refused.',
@@ -2741,7 +3059,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_delete_document: {
     description:
-      'Permanently delete one document from this account, and its Markdown source with it. There is no undo and no trash. Pass confirm: true only when the person has named this document and asked for it to be deleted; ask them otherwise. Deletes exactly one — there is no tool that deletes several.',
+      'Permanently delete one document from this account, and its Markdown source with it. There is no undo and no trash. Pass confirm: true only when the person has named this document and asked for it to be deleted; ask them otherwise. Deletes exactly one; the only call that deletes several is tp_delete_folder with `with_documents`, which deletes everything in one folder.',
     ui: DELETE_CONFIRM_URI,
     annotations: {
       title: 'Delete a document',
@@ -2894,7 +3212,7 @@ const VIEWS = [
   {
     uri: FOLDER_CARD_URI,
     name: 'Folder card',
-    description: 'One folder this connector made, filed documents in or shared: what it holds, who can read it, and a confirmation when one is needed.',
+    description: 'One folder this connector made, renamed, moved, filed documents in, shared or deleted: what it holds, who can read it, and a confirmation when one is needed.',
     html: FOLDER_CARD_HTML,
   },
   {

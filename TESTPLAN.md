@@ -259,6 +259,8 @@ Chrome на Mac (основное) · Safari на iPhone · Chrome на Android,
 | MCP-38 | `tp_list_documents` с `folder` | «What is in zz-A?» | только эта папка и всё под ней, у каждой строки путь |
 | MCP-39 | `tp_create_folder`, `tp_move_documents` | «Make a folder zz-C in zz-A and move zz-… there», затем «take it out of every folder» | папка создана один раз (повтор возвращает ту же), документ перенесён и вынут; в общую папку — вопрос |
 | MCP-39a | `tp_share_folder` | people с D → private | вопрос перед письмом, письмо D приходит один раз, ссылка `/f/…`; private отзывает ссылку без вопроса |
+| MCP-39b | `tp_update_folder` | «Rename zz-C to zz-D», «move zz-D under zz-A», «move it to the top», «move zz-A into zz-A/zz-D» | карточка папки «Renamed»/«Moved» со строкой «Was»; в саму себя — отказ API «A folder cannot go inside itself», ничего не изменилось; под общую папку — вопрос и кнопка |
+| MCP-39c | `tp_delete_folder` | «Delete the zz-D folder», затем «…and everything in it» | всегда вопрос: сколько внутри и куда уйдёт; кнопка «Delete folder» / «Delete folder and its N documents» красная; без `with_documents` содержимое поднимается на уровень выше, с ним — документы удалены; у общей папки сказано, что ссылка перестанет открываться |
 
 ### 7.3 Карточки
 

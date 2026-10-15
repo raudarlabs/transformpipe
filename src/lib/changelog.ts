@@ -140,6 +140,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-15',
+    title: 'Say no to a share, and tidy folders from an assistant',
+    body:
+      'A document or folder somebody shared with you can be removed from your list: your access '
+      + 'ends, their copy stays, and nobody is emailed about it. An assistant connected over MCP can '
+      + 'now rename, move and delete folders too, asking first before anything is deleted or moved '
+      + 'where other people can read it.',
+  },
+  {
+    date: '2026-10-15',
     title: 'A history with room for names, and an assistant that answers in cards',
     body:
       'The history’s format chips are one menu beside the search, with a count for each, and Shared '
