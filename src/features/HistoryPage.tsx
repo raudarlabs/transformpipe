@@ -16,7 +16,9 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hint } from '@/components/Hint';
 import { FilterChips } from '@/components/FilterChips';
-import { FolderBar, flatten, subtreeOf } from '@/components/FolderBar';
+import { DRAG_DOCUMENTS, FolderBar, subtreeOf } from '@/components/FolderBar';
+import { MoveDialog, pathOf } from '@/components/MoveDialog';
+import { recentFolders, rememberFolder } from '@/lib/recent-folders';
 import { ListSelectionBar } from '@/components/ListSelectionBar';
 import { ShareDialog } from '@/components/ShareDialog';
 import { VersionsDialog } from '@/components/VersionsDialog';
@@ -427,9 +429,39 @@ export function HistoryPage({
       ? inFolder
       : inFolder.filter((entry) => entry.kind === chip);
 
+  const [choosing, setChoosing] = useState(false);
+
+  /* Documents into a folder, from the menu, the dialog or a drop; the folder joins the recent ones. */
+  const moveDocuments = async (ids: string[], target: string | null) => {
+    try {
+      await api.moveDocuments(ids, target);
+      rememberFolder(target);
+      setSelected([]);
+      onRefresh();
+      loadFolders();
+    } catch (cause) {
+      toast.error(t('folders.error'), { description: cause instanceof Error ? cause.message : undefined });
+    }
+  };
+
+  /* A row of the account's own can be dragged onto a folder: itself, or every selected row with it. */
+  const dragRow = (entry: HistoryEntry) =>
+    isSynced && !isShared && entry.remote
+      ? {
+          draggable: true,
+          onDragStart: (event: React.DragEvent) => {
+            const ids = selected.includes(entry.id) ? selected : [entry.id];
+
+            event.dataTransfer.setData(DRAG_DOCUMENTS, JSON.stringify(ids));
+            event.dataTransfer.effectAllowed = 'move';
+          },
+        }
+      : {};
+
   const moveSelected = async (target: string | null) => {
     try {
       await api.moveDocuments(selected, target);
+      rememberFolder(target);
       setSelected([]);
       onRefresh();
       loadFolders();
@@ -682,6 +714,18 @@ export function HistoryPage({
         </InputGroup>
       </div>
 
+      <MoveDialog
+        open={choosing}
+        onOpenChange={setChoosing}
+        title={t(selected.length === 1 ? 'move.title.one' : 'move.title.many', { count: selected.length })}
+        folders={folders}
+        onCreated={loadFolders}
+        onMove={(target) => {
+          setChoosing(false);
+          void moveSelected(target);
+        }}
+      />
+
       {isSynced && !isShared && (
         <FolderBar
           folders={folders}
@@ -695,6 +739,7 @@ export function HistoryPage({
             loadFolders();
             onRefresh();
           }}
+          onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
         />
       )}
 
@@ -796,15 +841,32 @@ export function HistoryPage({
                       {t('folders.moveto')}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="max-h-80 overflow-auto">
+                  <DropdownMenuContent align="end" className="w-72">
+                    {/* The last few folders things went into, each with where it is: one click. */}
+                    {recentFolders()
+                      .filter((id) => folders.some((one) => one.id === id))
+                      .map((id) => {
+                        const path = pathOf(folders, id);
+
+                        return (
+                          <DropdownMenuItem key={id} onSelect={() => void moveSelected(id)}>
+                            <span className="flex min-w-0 flex-col">
+                              <span className="truncate">{path[path.length - 1]}</span>
+                              {path.length > 1 && (
+                                <span className="truncate text-ink-secondary text-xs">
+                                  {path.slice(0, -1).join(' › ')}
+                                </span>
+                              )}
+                            </span>
+                          </DropdownMenuItem>
+                        );
+                      })}
                     <DropdownMenuItem onSelect={() => void moveSelected(null)}>
                       {t('folders.none')}
                     </DropdownMenuItem>
-                    {flatten(folders).map((one) => (
-                      <DropdownMenuItem key={one.id} onSelect={() => void moveSelected(one.id)}>
-                        <span style={{ paddingLeft: `${one.depth * 0.75}rem` }}>{one.name}</span>
-                      </DropdownMenuItem>
-                    ))}
+                    <DropdownMenuItem onSelect={() => setChoosing(true)}>
+                      {t('move.choose')}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
@@ -873,6 +935,7 @@ export function HistoryPage({
           return (
             <li
               key={entry.id}
+              {...dragRow(entry)}
               className={cn(
                 'flex flex-col gap-3 rounded-xl border border-stroke bg-surface-card p-3',
                 isSelected && 'border-brand-tertiary'
@@ -1027,6 +1090,7 @@ export function HistoryPage({
             return (
               <TableRow
                 key={entry.id}
+                {...dragRow(entry)}
                 // The whole row opens the document; the controls in it do their own thing.
                 data-interactive={isReopenable ? '' : undefined}
                 role={isReopenable ? 'button' : undefined}
