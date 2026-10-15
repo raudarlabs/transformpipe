@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { api, type Folder } from '@/lib/api';
@@ -250,6 +251,30 @@ export function FolderTree({ folders, current, counts, total, onOpen, onChanged,
           }}
           onBlur={() => finishCreating(true)}
         />
+        {/*
+          * Enter alone was the only way to finish, which nobody is told. The buttons keep the
+          * field focused while pressed, so the blur above does not decide for them first.
+          */}
+        <IconButton
+          variant="primaryTertiary"
+          size="2xs"
+          aria-label={t('folders.create')}
+          title={`${t('folders.create')} (Enter)`}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => finishCreating(true)}
+        >
+          <Check />
+        </IconButton>
+        <IconButton
+          variant="tertiary"
+          size="2xs"
+          aria-label={t('folders.cancel')}
+          title={`${t('folders.cancel')} (Esc)`}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => finishCreating(false)}
+        >
+          <X />
+        </IconButton>
       </div>
     </li>
   );
