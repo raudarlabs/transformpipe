@@ -44,3 +44,15 @@ export interface DocumentRow {
  */
 export const looksLikeId = (id: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+/**
+ * What a document is searched by: its words, not its pictures.
+ *
+ * A picture carried inside a document is a `data:` address of base64, and Postgres made a search
+ * vector out of it as if it were prose — one page of an imported Confluence space with a few
+ * screenshots came to 1.5 MB of vector against a limit of 1 MB, and the save failed with a 500.
+ * The pictures go, and so does anything past the first 400,000 characters of text, which is far
+ * more than anybody searches by and well inside the limit.
+ */
+export const searchText = (markdown: string) =>
+  markdown.replace(/data:[a-z0-9.+/-]+;base64,[A-Za-z0-9+/=\s]*/gi, '').slice(0, 400_000);

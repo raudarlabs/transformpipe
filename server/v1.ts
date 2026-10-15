@@ -6,7 +6,7 @@ import { attachment } from './attachment.js';
 import { selfOrigin } from './auth.js';
 import { type Caller, cameFromUs, mayWrite, resolveCaller } from './caller.js';
 import { sendShareNotice } from './mail.js';
-import { looksLikeId, sql } from './db.js';
+import { looksLikeId, sql, searchText } from './db.js';
 import {
   AI_SUMMARY,
   checkQuota,
@@ -717,7 +717,7 @@ v1.post('/documents', async (c) => {
       ${share ?? 'private'},
       ${share ? randomBytes(16).toString('base64url') : null},
       ${expiry.value?.toISOString() ?? null}::timestamptz,
-      to_tsvector('simple', ${markdown}),
+      to_tsvector('simple', ${searchText(markdown)}),
       ${replaces ?? null}
     )
     returning id, name, kind, size, stats, created_at, share_mode, share_token, share_expires_at, replaces
@@ -856,7 +856,7 @@ v1.put('/documents/:id', async (c) => {
     const [updated] = (await sql()`
       update m2h_document
       set size = ${size}, stats = ${JSON.stringify(stats)}::jsonb, name = ${nextName},
-          search = to_tsvector('simple', ${markdown}),
+          search = to_tsvector('simple', ${searchText(markdown)}),
           blob_path = ${stored.blobPath}, markdown = ${stored.markdown},
           summary = null, summary_created_at = null, updated_at = now()
       where user_id = ${userId} and id = ${row.id}
