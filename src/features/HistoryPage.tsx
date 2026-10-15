@@ -145,6 +145,7 @@ function RowActions({
   onVersions,
   onDownload,
   onRemove,
+  onLeave,
 }: RowPartProps & {
   isReopenable: boolean;
   hasVersions: boolean;
@@ -152,6 +153,8 @@ function RowActions({
   onVersions: (entry: HistoryEntry) => void;
   onDownload: (entry: HistoryEntry, format: DocFormat) => void;
   onRemove: (id: string) => void;
+  /** Somebody else's document: take it off this account's list. */
+  onLeave: (entry: HistoryEntry) => void;
 }) {
   const t = useT();
 
@@ -192,14 +195,17 @@ function RowActions({
               {FORMAT_LABELS[one]}
             </DropdownMenuItem>
           ))}
-          {!isShared && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-ink-danger" onSelect={() => onRemove(entry.id)}>
-                <Trash2 className="size-4" />
-                {t('history.row.remove')}
-              </DropdownMenuItem>
-            </>
+          <DropdownMenuSeparator />
+          {isShared ? (
+            <DropdownMenuItem className="text-ink-danger" onSelect={() => onLeave(entry)}>
+              <X className="size-4" />
+              {t('history.shared.leave')}
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem className="text-ink-danger" onSelect={() => onRemove(entry.id)}>
+              <Trash2 className="size-4" />
+              {t('history.row.remove')}
+            </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -320,6 +326,24 @@ export function HistoryPage({
       api.listSharedFolders().then(setSharedFolders).catch(() => setSharedFolders([])),
     ]).finally(() => setIsLoadingShared(false));
   }, []);
+
+  /*
+   * A share you did not want, off your list. Asked first, because the link stops opening for you
+   * and only the owner can give it back; the owner is not told.
+   */
+  const leaveShared = async (entry: { id: string; name: string; owner?: string }, folder = false) => {
+    if (!window.confirm(t('history.shared.leave.confirm', { name: entry.name, owner: entry.owner || t('history.shared.leave.someone') }))) {
+      return;
+    }
+
+    try {
+      await (folder ? api.leaveSharedFolder(entry.id) : api.leaveSharedDocument(entry.id));
+      toast.success(t('history.shared.left', { name: entry.name }));
+      loadShared();
+    } catch (cause) {
+      toast.error(t('folders.error'), { description: cause instanceof Error ? cause.message : undefined });
+    }
+  };
 
   /*
    * Loaded up front, not only when the chip is picked: an account whose own history is empty must
@@ -831,10 +855,10 @@ export function HistoryPage({
       {isShared && sharedFolders.length > 0 && (
         <ul className="grid gap-2 sm:grid-cols-2">
           {sharedFolders.map((one) => (
-            <li key={one.id}>
+            <li key={one.id} className="relative">
               <a
                 href={`/open-folder/${encodeURIComponent(one.share_token)}`}
-                className="flex items-center gap-3 rounded-xl border border-stroke bg-surface-card p-3 hover:border-brand-tertiary"
+                className="flex items-center gap-3 rounded-xl border border-stroke bg-surface-card p-3 pr-11 hover:border-brand-tertiary"
               >
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-tertiary">
                   <FolderOpen className="size-4" />
@@ -849,6 +873,17 @@ export function HistoryPage({
                   </span>
                 </span>
               </a>
+              <Hint content={t('history.shared.leave')}>
+                <IconButton
+                  variant="tertiary"
+                  size="xs"
+                  className="-translate-y-1/2 absolute top-1/2 right-2"
+                  aria-label={t('history.shared.leave.label', { name: one.name })}
+                  onClick={() => void leaveShared({ id: one.id, name: one.name, owner: one.owner_email }, true)}
+                >
+                  <X />
+                </IconButton>
+              </Hint>
             </li>
           ))}
         </ul>
@@ -1088,6 +1123,7 @@ export function HistoryPage({
                   onVersions={setViewingVersionsOf}
                   onDownload={onDownload}
                   onRemove={onRemove}
+                  onLeave={(entry) => void leaveShared({ id: entry.id, name: entry.name, owner: entry.sharedBy })}
                 />
               </div>
             </li>
@@ -1260,6 +1296,7 @@ export function HistoryPage({
                     onVersions={setViewingVersionsOf}
                     onDownload={onDownload}
                     onRemove={onRemove}
+                    onLeave={(entry) => void leaveShared({ id: entry.id, name: entry.name, owner: entry.sharedBy })}
                   />
                 </TableCell>
               </TableRow>

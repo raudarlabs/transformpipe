@@ -435,6 +435,13 @@ export const api = {
     throw new Error('The copy stopped before it finished. Nothing was kept; try again.');
   },
 
+  /* Off a share you did not want: the owner's document or folder stays, your access goes. */
+  leaveSharedDocument: (id: string) =>
+    request<{ ok: true }>(`/api/shared-with-me/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  leaveSharedFolder: (id: string) =>
+    request<{ ok: true }>(`/api/shared-folders/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
   listSharedFolders: async () => (await request<{ folders: SharedFolderEntry[] }>('/api/shared-folders')).folders,
 
   shareFolder: async (id: string, shared: boolean) =>

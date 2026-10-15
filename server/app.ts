@@ -352,9 +352,11 @@ api.get('/usage', async (c) => c.json(await usageOf(c.get('user').id)));
 api.use('/documents', requireUser);
 api.use('/documents/*', requireUser);
 api.use('/shared-with-me', requireUser);
+api.use('/shared-with-me/*', requireUser);
 api.use('/documents', throttle);
 api.use('/documents/*', throttle);
 api.use('/shared-with-me', throttle);
+api.use('/shared-with-me/*', throttle);
 api.use('/folders', requireUser);
 api.use('/folders/*', requireUser);
 api.use('/folders', throttle);
@@ -396,6 +398,31 @@ api.get('/shared-with-me', async (c) => {
   `) as Array<DocumentRow & { share_token: string; owner_email: string }>;
 
   return c.json({ documents: rows });
+});
+
+/**
+ * Taking yourself off a document somebody shared with you.
+ *
+ * What a reader can do about a share they did not want — a stranger's, or one that keeps coming:
+ * their address comes off the list, so the document leaves "Shared with me" and the link stops
+ * opening for them. The owner's document is untouched, and the owner is not written to — an email
+ * saying "they left" tells whoever is sending unwanted shares that the address is read. The address
+ * simply is no longer on the list in their Share dialog; adding it again shares it again.
+ */
+api.delete('/shared-with-me/:id', async (c) => {
+  const id = c.req.param('id');
+
+  if (!looksLikeId(id)) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+
+  const removed = (await sql()`
+    delete from m2h_document_share
+    where document_id = ${id} and email = ${normaliseEmail(c.get('user').email)}
+    returning document_id
+  `) as unknown[];
+
+  return removed.length > 0 ? c.json({ ok: true }) : c.json({ error: 'Not shared with you' }, 404);
 });
 
 /** `?q=` searches content, not just the name — see the note on the same parameter in v1.ts. */

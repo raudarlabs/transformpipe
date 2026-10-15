@@ -413,6 +413,22 @@ export function registerSharedFolders(api: Api) {
     });
   });
 
+  /* Taking yourself off a folder shared with you — see `DELETE /shared-with-me/:id` for why quietly. */
+  api.delete('/shared-folders/:id', async (c) => {
+    const user = await currentUser(c);
+    const id = c.req.param('id');
+
+    if (!user) return c.json({ error: 'Not authenticated' }, 401);
+    if (!looksLikeId(id)) return c.json({ error: 'Not found' }, 404);
+
+    const removed = (await sql()`
+      delete from m2h_folder_share where folder_id = ${id} and email = ${normaliseEmail(user.email)}
+      returning folder_id
+    `) as unknown[];
+
+    return removed.length > 0 ? c.json({ ok: true }) : c.json({ error: 'Not shared with you' }, 404);
+  });
+
   /* Folders other people shared with this address by name — a link is not addressed to anyone. */
   api.get('/shared-folders', async (c) => {
     const user = await currentUser(c);
