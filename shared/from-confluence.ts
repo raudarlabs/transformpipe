@@ -1,4 +1,5 @@
 import { htmlToMarkdown } from './from-html.js';
+import { arrange, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
@@ -44,10 +45,27 @@ function titleFromFileName(path: string): string {
   return base.replace(/[_-]\d+$/, '').replace(/[_-]+/g, ' ').trim() || 'Untitled';
 }
 
-export async function confluenceZipToMarkdown(
-  bytes: Uint8Array,
-  onProgress?: Progress
-): Promise<string> {
+/** A page's breadcrumbs, the space first: where Confluence filed it. */
+function breadcrumbs(html: string): string[] {
+  const list = html.match(/<ol[^>]*id="breadcrumbs"[^>]*>([\s\S]*?)<\/ol>/i)?.[1] ?? '';
+
+  return [...list.matchAll(/<a[^>]*>([\s\S]*?)<\/a>/gi)].map((match) =>
+    match[1]
+      .replace(/<[^>]*>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim()
+  );
+}
+
+/*
+ * The pages, read once for either shape. Pictures share one budget when the pages become one
+ * document and get one each when they stay separate, since each is then a document of its own.
+ */
+async function confluencePages(bytes: Uint8Array, onProgress: Progress | undefined, perPage: boolean) {
   const [pages, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.html'),
     readZipPictures(bytes),
@@ -59,20 +77,42 @@ export async function confluenceZipToMarkdown(
     );
   }
 
-  const budget = pictureBudget();
+  const shared = pictureBudget();
 
-  const tocPages: TocPage[] = pages.map((page, index) => {
+  return pages.map((page, index) => {
     onProgress?.(index + 1, pages.length);
+
     const title = titleFromHtml(page.text) ?? titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
     const markdown = embedPictures(
       withoutDuplicateTitle(htmlToMarkdown(page.text), title),
       pictureFinder(pictures, folder),
-      budget
+      perPage ? pictureBudget() : shared
     );
+    const crumbs = breadcrumbs(page.text);
 
-    return { title, markdown: `# ${title}\n\n${markdown}` };
+    return {
+      title,
+      markdown: `# ${title}\n\n${markdown}`,
+      space: crumbs[0],
+      // The space is the import's own folder; the pages above this one are the folders it is in.
+      folder: crumbs.slice(1),
+    };
   });
+}
+
+export async function confluenceZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
+  const tocPages: TocPage[] = await confluencePages(bytes, onProgress, false);
 
   return buildTocDocument('Contents', tocPages);
+}
+
+export async function confluenceZipToPages(bytes: Uint8Array, onProgress?: Progress): Promise<SplitExport> {
+  const pages = await confluencePages(bytes, onProgress, true);
+  const space = pages.find((page) => page.space)?.space ?? 'Confluence export';
+
+  return arrange('confluence', space, pages);
 }

@@ -66,7 +66,7 @@ export async function runConversion(
         onProgress({ stage: 'pages', done: message.done, total: message.total });
       } else if (message.type === 'stage') {
         onProgress({ stage: 'rendering' });
-      } else {
+      } else if (message.type === 'done' || message.type === 'error') {
         worker.terminate();
         resolve(message);
       }
@@ -93,4 +93,50 @@ export async function runConversion(
   }
 
   throw new Error(untangle(answer.message, t));
+}
+
+export type SplitResult = Extract<FromWorker, { type: 'split' }>['split'];
+
+/**
+ * An export as its pages, in the worker. No fallback to this thread: the pages of a big export are
+ * exactly the work that froze the page, and a browser with no workers at all gets the one-document
+ * conversion instead (the caller checks `canSplit`).
+ */
+export const canSplit = () => typeof Worker !== 'undefined';
+
+export function runSplit(
+  id: ConversionId,
+  file: File,
+  t: Translate,
+  onProgress: (progress: ConversionProgress) => void
+): Promise<SplitResult> {
+  onProgress({ stage: 'reading' });
+
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./convert-worker.ts', import.meta.url), { type: 'module' });
+
+    worker.onmessage = (event: MessageEvent<FromWorker>) => {
+      const message = event.data;
+
+      if (message.type === 'progress') {
+        onProgress({ stage: 'pages', done: message.done, total: message.total });
+      } else if (message.type === 'stage') {
+        onProgress({ stage: 'rendering' });
+      } else if (message.type === 'split') {
+        worker.terminate();
+        resolve(message.split);
+      } else if (message.type === 'error') {
+        worker.terminate();
+        reject(new Error(untangle(message.message, t)));
+      }
+    };
+
+    worker.onerror = (event) => {
+      event.preventDefault();
+      worker.terminate();
+      reject(new Error(event.message || 'The export could not be read'));
+    };
+
+    worker.postMessage({ id, file, split: true });
+  });
 }

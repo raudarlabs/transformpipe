@@ -4,6 +4,8 @@ import type { ConversionId } from '@shared/conversions';
 import { checkDocument } from '@shared/check';
 import { ALLOWED_ATTR, ALLOWED_TAGS, getDocStats, renderMarkdown } from '@shared/markdown';
 import { convertFile } from './convert';
+import { splitFile } from './split';
+import type { SplitExport } from '@shared/split-export';
 
 /*
  * A conversion, off the page's own thread.
@@ -45,24 +47,50 @@ export type FromWorker =
       stats: ReturnType<typeof getDocStats>;
       problems: number;
     }
+  | {
+      type: 'split';
+      split: SplitExport & {
+        pages: Array<SplitExport['pages'][number] & { stats: ReturnType<typeof getDocStats> }>;
+      };
+    }
   | { type: 'error'; message: string; unavailable?: boolean };
 
 const post = (message: FromWorker) => (self as DedicatedWorkerGlobalScope).postMessage(message);
 
-self.onmessage = async (event: MessageEvent<{ id: ConversionId; file: File }>) => {
+self.onmessage = async (event: MessageEvent<{ id: ConversionId; file: File; split?: boolean }>) => {
   const { id, file } = event.data;
   let last = 0;
+  const progress = (done: number, total: number) => {
+    // Often enough to move, rarely enough not to flood the page with a thousand messages.
+    const now = Date.now();
+
+    if (done === total || now - last > 100) {
+      last = now;
+      post({ type: 'progress', done, total });
+    }
+  };
 
   try {
-    const converted = await convertFile(id, file, marked, (done, total) => {
-      // Often enough to move, rarely enough not to flood the page with a thousand messages.
-      const now = Date.now();
+    /* An export kept as its pages: each with its numbers, which saving it will need. */
+    if (event.data.split) {
+      const split = await splitFile(id, file, progress);
 
-      if (done === total || now - last > 100) {
-        last = now;
-        post({ type: 'progress', done, total });
-      }
-    });
+      post({ type: 'stage', stage: 'rendering' });
+      post({
+        type: 'split',
+        split: {
+          ...split,
+          pages: split.pages.map((page) => ({
+            ...page,
+            stats: getDocStats(page.markdown, renderMarkdown(page.markdown, (raw) => filter.process(raw))),
+          })),
+        },
+      });
+
+      return;
+    }
+
+    const converted = await convertFile(id, file, marked, progress);
 
     post({ type: 'stage', stage: 'rendering' });
 

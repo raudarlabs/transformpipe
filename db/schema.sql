@@ -463,3 +463,31 @@ create table if not exists m2h_rating (
   updated_at timestamptz not null default now(),
   primary key (user_id, campaign)
 );
+
+-- Folders: a tree per account, and where each document sits in it.
+--
+-- An export of many pages is kept as the pages it is made of, in a folder that mirrors the
+-- export's own tree; a person can also make, rename, move and delete folders by hand. The tree is
+-- `parent_id`, so moving a folder is one row whatever it holds. A document's `position` keeps the
+-- order the export listed its pages in. Deleting a folder by itself lifts what it held one level
+-- up (`server/folders.ts`); `on delete set null` is only the floor under that.
+
+create table if not exists m2h_folder (
+  id         uuid        primary key default gen_random_uuid(),
+  user_id    text        not null,
+  parent_id  uuid        references m2h_folder (id) on delete cascade,
+  name       text        not null check (char_length(name) between 1 and 200),
+  -- Where it came from: 'confluence', 'notion', 'obsidian', 'epub', or null when made by hand.
+  source     text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists m2h_folder_user on m2h_folder (user_id, parent_id);
+
+alter table m2h_document
+  add column if not exists folder_id uuid references m2h_folder (id) on delete set null;
+
+alter table m2h_document
+  add column if not exists position integer;
+
+create index if not exists m2h_document_folder on m2h_document (folder_id) where folder_id is not null;

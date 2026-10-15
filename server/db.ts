@@ -29,6 +29,9 @@ export interface DocumentRow {
   summary?: string | null;
   summary_created_at?: string | null;
   replaces?: string | null;
+  /** The folder it is filed in, and its place among that folder's pages. */
+  folder_id?: string | null;
+  position?: number | null;
 }
 
 /**

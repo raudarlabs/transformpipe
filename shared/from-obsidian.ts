@@ -1,4 +1,5 @@
 import { rewriteWikilinks, stripFrontmatter } from './notes.js';
+import { arrange, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
   type Progress,
@@ -26,10 +27,7 @@ function titleFromFileName(path: string): string {
   return path.split('/').pop()!.replace(/\.md$/i, '').trim() || 'Untitled';
 }
 
-export async function obsidianZipToMarkdown(
-  bytes: Uint8Array,
-  onProgress?: Progress
-): Promise<string> {
+async function obsidianPages(bytes: Uint8Array, onProgress: Progress | undefined, perPage: boolean) {
   const [pages, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipPictures(bytes),
@@ -45,10 +43,11 @@ export async function obsidianZipToMarkdown(
    * question, and the same answer, that `pictureFinder` falls back to a line later.
    */
   const names = new Set([...pictures.keys()].map((path) => path.split('/').pop()!.toLowerCase()));
-  const budget = pictureBudget();
+  const shared = pictureBudget();
 
-  const tocPages: TocPage[] = pages.map((page, index) => {
+  return pages.map((page, index) => {
     onProgress?.(index + 1, pages.length);
+
     const title = titleFromFileName(page.path);
     const folder = page.path.split('/').slice(0, -1).join('/');
     const body = embedPictures(
@@ -56,11 +55,23 @@ export async function obsidianZipToMarkdown(
         names.has(name.toLowerCase())
       ),
       pictureFinder(pictures, folder),
-      budget
+      perPage ? pictureBudget() : shared
     );
 
-    return { title, markdown: `# ${title}\n\n${body}` };
+    // A vault's folders are already the tree; they come across as they are.
+    return { title, markdown: `# ${title}\n\n${body}`, folder: page.path.split('/').slice(0, -1) };
   });
+}
+
+export async function obsidianZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
+  const tocPages: TocPage[] = await obsidianPages(bytes, onProgress, false);
 
   return buildTocDocument('Contents', tocPages);
+}
+
+export async function obsidianZipToPages(bytes: Uint8Array, onProgress?: Progress): Promise<SplitExport> {
+  return arrange('obsidian', 'Obsidian vault', await obsidianPages(bytes, onProgress, true));
 }
