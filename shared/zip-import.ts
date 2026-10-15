@@ -29,6 +29,9 @@ export interface ZipPage {
  * gigabytes, and `unzipSync` builds all of it in memory at once. Sixty-four megabytes is far above
  * any real export of a wiki and far below what takes a function down.
  */
+/** How far an importer has got, for a screen that wants to say so: pages done, out of how many. */
+export type Progress = (done: number, total: number) => void;
+
 const MAX_UNPACKED = 64 * 1024 * 1024;
 
 /**
@@ -152,7 +155,8 @@ export async function readZipTextFiles(
     [...files.entries()]
       // A stable order matters: it decides the order pages appear in the merged document, and the
       // path is the only thing here that does not change between two exports of the same space.
-      .sort(([a], [b]) => a.localeCompare(b))
+      // Numbers as numbers: "Page 2" before "Page 10", the way a person numbered them.
+      .sort(([a], [b]) => a.localeCompare(b, 'en', { numeric: true }))
       .map(([path, text]) => ({ path, text }))
   );
 }

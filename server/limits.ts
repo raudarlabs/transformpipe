@@ -11,8 +11,13 @@ import { sql } from './db.js';
 
 /** Per account. Documents are capped as well as bytes: a thousand tiny files cost real rows. */
 export const QUOTA = {
-  bytes: 100 * 1024 * 1024,
-  documents: 500,
+  /*
+   * Raised on 15 October 2026 from 100 MB and 500, when an export started arriving as the pages it
+   * is made of: one Confluence space is hundreds of documents. A row costs next to nothing; bytes
+   * are stored files, which is why they rose less.
+   */
+  bytes: 250 * 1024 * 1024,
+  documents: 5000,
   /**
    * A single document, from `shared/limits.ts`, where the reason it is this number and not the
    * converter's 10 MB is written down: the platform refuses a bigger body before this code runs.

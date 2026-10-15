@@ -25,6 +25,9 @@ export interface HistoryEntry {
   shareToken?: string;
   /** The id of the document this one is a version of, when it was created that way. */
   replaces?: string | null;
+  /** The account folder it is filed in, and its place there; absent for this browser's own rows. */
+  folderId?: string | null;
+  position?: number | null;
   stats: {
     words: number;
     headings: number;

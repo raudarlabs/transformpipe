@@ -11,10 +11,12 @@ import {
   Trash2,
   Upload,
   X,
+  FolderInput,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hint } from '@/components/Hint';
 import { FilterChips } from '@/components/FilterChips';
+import { FolderBar, flatten, subtreeOf } from '@/components/FolderBar';
 import { ListSelectionBar } from '@/components/ListSelectionBar';
 import { ShareDialog } from '@/components/ShareDialog';
 import { VersionsDialog } from '@/components/VersionsDialog';
@@ -39,7 +41,8 @@ import {
   formatRelative,
   toFileName,
 } from '@/lib/format';
-import { api, type Usage } from '@/lib/api';
+import { api, type Folder, type Usage } from '@/lib/api';
+import { toast } from '@/ui/components/Toast';
 import { readRoute, replaceFilter } from '@/lib/route';
 import type { HistoryEntry } from '@/lib/history';
 import { Badge } from '@/ui/components/Badge';
@@ -228,6 +231,10 @@ interface HistoryPageProps {
   onRemoveMany: (ids: string[]) => void;
   onClear: () => void;
   onGoToConverter: () => void;
+  /** The account's documents changed on the server — a folder moved, documents were moved into one. */
+  onRefresh: () => void;
+  /** The folder to open on, when the page was reached from somewhere that just made one. */
+  initialFolder?: string | null;
 }
 
 type SortKey = 'name' | 'size' | 'words' | 'createdAt';
@@ -244,6 +251,8 @@ export function HistoryPage({
   onRemoveMany,
   onClear,
   onGoToConverter,
+  onRefresh,
+  initialFolder = null,
 }: HistoryPageProps) {
   const t = useT();
   const { content, locale } = useI18n();
@@ -373,11 +382,55 @@ export function HistoryPage({
     }));
   }, [entries, content]);
 
+  /*
+   * Folders, for an account: the one being looked at, and how much each holds. The top shows every
+   * document, filed or not; a folder shows what is in it and in everything under it.
+   */
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [folder, setFolder] = useState<string | null>(initialFolder);
+
+  const loadFolders = useCallback(() => {
+    api.listFolders().then(setFolders).catch(() => setFolders([]));
+  }, []);
+
+  useEffect(() => {
+    if (isSynced) loadFolders();
+  }, [isSynced, loadFolders]);
+
+  const subtrees = useMemo(
+    () => new Map(folders.map((one) => [one.id, subtreeOf(folders, one.id)])),
+    [folders]
+  );
+  const folderCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    for (const [id, tree] of subtrees) {
+      counts.set(id, entries.filter((entry) => entry.folderId && tree.has(entry.folderId)).length);
+    }
+
+    return counts;
+  }, [subtrees, entries]);
+
+  const inFolder = folder === null
+    ? entries
+    : entries.filter((entry) => entry.folderId && subtrees.get(folder)?.has(entry.folderId));
+
   const source = isShared
     ? shared
     : chip === 'all'
-      ? entries
-      : entries.filter((entry) => entry.kind === chip);
+      ? inFolder
+      : inFolder.filter((entry) => entry.kind === chip);
+
+  const moveSelected = async (target: string | null) => {
+    try {
+      await api.moveDocuments(selected, target);
+      setSelected([]);
+      onRefresh();
+      loadFolders();
+    } catch (cause) {
+      toast.error(t('folders.error'), { description: cause instanceof Error ? cause.message : undefined });
+    }
+  };
 
   // Debounced: a keystroke should not be a request, and the one that lands is for whatever was
   // last typed — an older, slower response arriving after a newer one is why this checks `query`
@@ -623,6 +676,22 @@ export function HistoryPage({
         </InputGroup>
       </div>
 
+      {isSynced && !isShared && (
+        <FolderBar
+          folders={folders}
+          current={folder}
+          counts={folderCounts}
+          onOpen={(id) => {
+            setSelected([]);
+            setFolder(id);
+          }}
+          onChanged={() => {
+            loadFolders();
+            onRefresh();
+          }}
+        />
+      )}
+
       <FilterChips
         value={chip}
         items={[
@@ -708,6 +777,31 @@ export function HistoryPage({
                   </Button>
                 </span>
               </Hint>
+
+              {isSynced && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="primaryTertiary"
+                      size="xs"
+                      className="!px-1.5 !py-1"
+                      leftSlot={<FolderInput />}
+                    >
+                      {t('folders.moveto')}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="max-h-80 overflow-auto">
+                    <DropdownMenuItem onSelect={() => void moveSelected(null)}>
+                      {t('folders.none')}
+                    </DropdownMenuItem>
+                    {flatten(folders).map((one) => (
+                      <DropdownMenuItem key={one.id} onSelect={() => void moveSelected(one.id)}>
+                        <span style={{ paddingLeft: `${one.depth * 0.75}rem` }}>{one.name}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

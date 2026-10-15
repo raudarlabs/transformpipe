@@ -26,6 +26,18 @@ interface ServerDocument {
   created_at: string;
   markdown?: string;
   replaces?: string | null;
+  folder_id?: string | null;
+  position?: number | null;
+}
+
+/** A folder of the account's, with how many documents sit directly in it. */
+export interface Folder {
+  id: string;
+  parent_id: string | null;
+  name: string;
+  source: string | null;
+  created_at: string;
+  documents: number;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -61,6 +73,8 @@ function toEntry(doc: ServerDocument): HistoryEntry {
     /** Server-backed rows can always be fetched in full on demand. */
     remote: true,
     replaces: doc.replaces ?? null,
+    folderId: doc.folder_id ?? null,
+    position: doc.position ?? null,
   };
 }
 
@@ -294,6 +308,70 @@ export const api = {
     }),
 
   /** `q` searches document content, not just the name the caller already has locally. */
+  listFolders: async () => (await request<{ folders: Folder[] }>('/api/folders')).folders,
+
+  createFolder: async (name: string, parentId: string | null) =>
+    (
+      await request<{ folder: Folder }>('/api/folders', {
+        method: 'POST',
+        body: JSON.stringify({ name, parent_id: parentId }),
+      })
+    ).folder,
+
+  /** Rename, move, or both: `parentId: null` is the top level, leaving it out leaves it where it is. */
+  updateFolder: async (id: string, change: { name?: string; parentId?: string | null }) =>
+    (
+      await request<{ folder: Folder }>(`/api/folders/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          ...(change.name !== undefined ? { name: change.name } : {}),
+          ...(change.parentId !== undefined ? { parent_id: change.parentId } : {}),
+        }),
+      })
+    ).folder,
+
+  /** The folder alone — what it held moves up a level — or the folder with every document in it. */
+  deleteFolder: async (id: string, withContents: boolean) =>
+    request<{ ok: boolean; deleted: number }>(
+      `/api/folders/${id}${withContents ? '?contents=delete' : ''}`,
+      { method: 'DELETE' }
+    ),
+
+  /** A whole tree at once; each folder names its parent by `parent`, a `ref` of one before it. */
+  createFolderTree: async (
+    parentId: string | null,
+    folders: Array<{ ref: string; parent: string | null; name: string; source?: string }>
+  ) =>
+    (
+      await request<{ ids: Record<string, string> }>('/api/folders/tree', {
+        method: 'POST',
+        body: JSON.stringify({ parent_id: parentId, folders }),
+      })
+    ).ids,
+
+  moveDocuments: async (ids: string[], folderId: string | null) =>
+    request<{ moved: number }>('/api/documents/move', {
+      method: 'PATCH',
+      body: JSON.stringify({ ids, folder_id: folderId }),
+    }),
+
+  saveBatch: async (
+    documents: Array<{
+      /** Chosen by the caller so pages can link to each other before they are saved. */
+      id?: string;
+      name: string;
+      kind: HistoryEntry['kind'];
+      markdown: string;
+      stats: HistoryEntry['stats'];
+      folder_id: string | null;
+      position: number;
+    }>
+  ) =>
+    request<{ saved: Array<{ id: string; name: string }>; failed: number }>('/api/documents/batch', {
+      method: 'POST',
+      body: JSON.stringify({ documents }),
+    }),
+
   listDocuments: async (options: { q?: string } = {}) => {
     const query = options.q ? `?q=${encodeURIComponent(options.q)}` : '';
     const { documents } = await request<{ documents: ServerDocument[] }>(

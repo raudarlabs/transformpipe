@@ -1,6 +1,8 @@
 import { delimitedToMarkdown } from './from-table.js';
+import { arrange, type SplitExport } from './split-export.js';
 import { embedPictures, pictureBudget, pictureFinder } from './pictures.js';
 import {
+  type Progress,
   buildTocDocument,
   readZipPictures,
   readZipTextFiles,
@@ -48,7 +50,10 @@ function dropInternalLinks(markdown: string): string {
   );
 }
 
-export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
+/** A folder of a Notion export, named as the page it holds the children of: its id taken off. */
+const folderName = (segment: string) => titleFromFileName(segment);
+
+async function notionPages(bytes: Uint8Array, onProgress: Progress | undefined, perPage: boolean) {
   const [pages, tables, pictures] = await Promise.all([
     readZipTextFiles(bytes, '.md'),
     readZipTextFiles(bytes, '.csv'),
@@ -66,28 +71,49 @@ export async function notionZipToMarkdown(bytes: Uint8Array): Promise<string> {
    * relatively and URL-encoded. So every link resolves against the folder the page itself sits
    * in — which is the one thing `%20` in a path is a sign of and a merged document destroys.
    */
-  const budget = pictureBudget();
+  const shared = pictureBudget();
+  const foldersOf = (path: string) => path.split('/').slice(0, -1).map(folderName);
 
-  const tocPages: TocPage[] = [
-    ...pages.map((page) => {
+  return [
+    ...pages.map((page, index) => {
+      onProgress?.(index + 1, pages.length);
+
       const title = titleFromFileName(page.path);
       const folder = page.path.split('/').slice(0, -1).join('/');
       const body = embedPictures(
         dropInternalLinks(withoutDuplicateTitle(page.text, title)),
         pictureFinder(pictures, folder),
-        budget
+        perPage ? pictureBudget() : shared
       );
 
-      return { title, markdown: `# ${title}\n\n${body}` };
+      return { title, markdown: `# ${title}\n\n${body}`, folder: foldersOf(page.path) };
     }),
     ...tables.flatMap((table) => {
       const title = titleFromFileName(table.path);
       const rendered = delimitedToMarkdown(table.text);
 
       // An empty database export is not an error worth stopping the whole import for.
-      return rendered ? [{ title, markdown: `# ${title}\n\n${rendered}` }] : [];
+      return rendered ? [{ title, markdown: `# ${title}\n\n${rendered}`, folder: foldersOf(table.path) }] : [];
     }),
   ];
+}
+
+export async function notionZipToMarkdown(
+  bytes: Uint8Array,
+  onProgress?: Progress
+): Promise<string> {
+  const tocPages: TocPage[] = await notionPages(bytes, onProgress, false);
 
   return buildTocDocument('Contents', tocPages);
+}
+
+export async function notionZipToPages(
+  bytes: Uint8Array,
+  onProgress?: Progress,
+  /** What to call the import's folder when Notion's own wrapper is only `Export-<id>`. */
+  name = 'Notion export'
+): Promise<SplitExport> {
+  const split = arrange('notion', name, await notionPages(bytes, onProgress, true));
+
+  return /^Export-[0-9a-f-]+$/i.test(split.title) ? { ...split, title: name } : split;
 }

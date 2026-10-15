@@ -6,6 +6,11 @@ import { blogIndex } from './vite-plugin-blog';
 
 export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react(), apiDevServer(), blogIndex()],
+  /*
+   * The conversion worker (src/lib/convert-worker.ts) loads each converter on demand, which is
+   * code-splitting, and only module workers can do that.
+   */
+  worker: { format: 'es' as const },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

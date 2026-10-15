@@ -21,7 +21,11 @@ function headingTexts(markdown: string): string[] {
   const walk = (tokens: Token[]) => {
     for (const token of tokens) {
       if (token.type === 'heading') {
-        found.push((token as Tokens.Heading).text.trim());
+        // The words as shown, not as typed: `1\. Intro` is the heading "1. Intro", and that is what
+        // Obsidian matches a link against.
+        found.push(
+          (token as Tokens.Heading).text.replace(/\\([\\`*_{}[\]()#+\-.!|~>])/g, '$1').trim()
+        );
         continue;
       }
 

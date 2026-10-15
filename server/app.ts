@@ -56,6 +56,7 @@ import oauth from './oauth.js';
 import { authorizationServer, protectedResource } from './wellknown.js';
 import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
+import { registerFolders } from './folders.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
   edgeSeconds,
@@ -349,6 +350,12 @@ api.use('/shared-with-me', requireUser);
 api.use('/documents', throttle);
 api.use('/documents/*', throttle);
 api.use('/shared-with-me', throttle);
+api.use('/folders', requireUser);
+api.use('/folders/*', requireUser);
+api.use('/folders', throttle);
+api.use('/folders/*', throttle);
+
+registerFolders(api);
 
 /**
  * Documents other people shared with this address.
@@ -393,7 +400,7 @@ api.get('/documents', async (c) => {
   const rows = (
     q
       ? ((await sql()`
-          select id, name, kind, size, stats, created_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, summary_created_at, replaces, folder_id, position
           from m2h_document
           where user_id = ${userId}
             and search @@ websearch_to_tsquery('simple', ${q})
@@ -401,7 +408,7 @@ api.get('/documents', async (c) => {
           limit ${QUOTA.documents}
         `) as DocumentRow[])
       : ((await sql()`
-          select id, name, kind, size, stats, created_at, summary_created_at, replaces
+          select id, name, kind, size, stats, created_at, summary_created_at, replaces, folder_id, position
           from m2h_document
           where user_id = ${userId}
           order by created_at desc

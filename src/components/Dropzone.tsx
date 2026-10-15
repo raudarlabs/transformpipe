@@ -6,11 +6,14 @@ import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { type DragEvent, type ChangeEvent, useRef, useState } from 'react';
 import { useT } from '@/lib/i18n/context';
 import { Button } from '@/ui/components/Button';
+import { Spinner } from '@/ui/components/Spinner';
 import { Typography } from '@/ui/components/Typography';
 import { cn } from '@/ui/lib/utils';
 
 interface DropzoneProps {
   isBusy?: boolean;
+  /** What the work in progress has got to, said under the title while it runs. */
+  progress?: string;
   /** What this conversion takes, with the dots. Shown, and given to the file picker. */
   extensions: string[];
   title: string;
@@ -21,6 +24,7 @@ interface DropzoneProps {
 
 export function Dropzone({
   isBusy = false,
+  progress,
   extensions,
   title,
   hint,
@@ -65,21 +69,33 @@ export function Dropzone({
         'flex flex-col items-center justify-center gap-4 rounded-xl border border-dropzone-border border-dashed px-6 py-14 text-center',
         'dot-grid bg-surface-card transition-colors duration-base',
         isDragging && 'border-dropzone-border-active bg-dropzone-bg-active',
-        isBusy && 'pointer-events-none opacity-disabled'
+        // Busy: nothing to click, but the progress stays readable rather than dimmed with the rest.
+        isBusy && 'pointer-events-none'
       )}
     >
       <span className="flex size-14 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
-        <CloudUpload className="size-7" />
+        {isBusy ? <Spinner size="md" /> : <CloudUpload className="size-7" />}
       </span>
 
-      <div className="flex flex-col items-center gap-1.5">
-        <Typography variant="lead" weight="bold" textColor="primary">
-          {title}
-        </Typography>
-        <Typography variant="p" textColor="secondary" align="center">
-          {hint}
-        </Typography>
-      </div>
+      {isBusy ? (
+        <div className="flex flex-col items-center gap-1.5" role="status" aria-live="polite">
+          <Typography variant="lead" weight="bold" textColor="primary">
+            {progress ?? t('convert.progress.reading')}
+          </Typography>
+          <Typography variant="p" textColor="secondary" align="center">
+            {t('convert.progress.note')}
+          </Typography>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-1.5">
+          <Typography variant="lead" weight="bold" textColor="primary">
+            {title}
+          </Typography>
+          <Typography variant="p" textColor="secondary" align="center">
+            {hint}
+          </Typography>
+        </div>
+      )}
 
       <Button
         variant="primary"
