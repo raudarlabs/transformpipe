@@ -120,12 +120,13 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-15',
-    title: 'Every picture of an imported export comes across, and moving files is quicker',
+    title: 'Every picture of an imported export comes across, and folders are a tree',
     body:
       'Screenshots in an export are made the size a page needs on the way in, and a page of '
       + 'screenshots gets nearly all of its 4 MB for them: in a real 178-page Confluence space, 793 '
-      + 'pictures of 793 now arrive, where 43 were left as their names. Moving documents offers the '
-      + 'folders used last, a search over every folder with its path, and dragging rows onto a folder.',
+      + 'pictures of 793 now arrive, where 43 were left as their names. Folders sit in a tree beside '
+      + 'the list, documents and folders drag onto it, and moving offers the folders used last and a '
+      + 'search over every folder with its path.',
   },
   {
     date: '2026-10-15',

@@ -292,6 +292,7 @@ export const ui: Content['ui'] = {
   'folders.rename': 'Renombrar',
   'folders.move': 'Mover',
   'folders.move.folder': 'Mover carpeta',
+  'folders.actions': 'Acciones de la carpeta',
   'folders.top': 'Nivel superior',
   'folders.delete': 'Eliminar',
   'folders.delete.keep': 'Eliminar la carpeta y conservar sus documentos',

@@ -287,6 +287,7 @@ export const ui: Content['ui'] = {
   'folders.rename': 'Renommer',
   'folders.move': 'Déplacer',
   'folders.move.folder': 'Déplacer le dossier',
+  'folders.actions': 'Actions du dossier',
   'folders.top': 'Niveau supérieur',
   'folders.delete': 'Supprimer',
   'folders.delete.keep': 'Supprimer le dossier, garder ses documents',

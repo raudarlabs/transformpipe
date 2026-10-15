@@ -16,7 +16,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hint } from '@/components/Hint';
 import { FilterChips } from '@/components/FilterChips';
-import { DRAG_DOCUMENTS, FolderBar, subtreeOf } from '@/components/FolderBar';
+import { DRAG_DOCUMENTS, FolderHeader, FolderTree, subtreeOf } from '@/components/FolderBar';
 import { MoveDialog, pathOf } from '@/components/MoveDialog';
 import { recentFolders, rememberFolder } from '@/lib/recent-folders';
 import { ListSelectionBar } from '@/components/ListSelectionBar';
@@ -444,6 +444,22 @@ export function HistoryPage({
     }
   };
 
+  /* A folder opened from the tree or the trail; from "Shared with me" it goes back to your own. */
+  const openFolder = (id: string | null) => {
+    setSelected([]);
+    setFolder(id);
+
+    if (chip === 'shared') {
+      setChip('all');
+      replaceFilter('all');
+    }
+  };
+
+  const folderChanged = () => {
+    loadFolders();
+    onRefresh();
+  };
+
   /* A row of the account's own can be dragged onto a folder: itself, or every selected row with it. */
   const dragRow = (entry: HistoryEntry) =>
     isSynced && !isShared && entry.remote
@@ -688,6 +704,34 @@ export function HistoryPage({
         }}
       />
 
+      {/*
+        * An account's folders are a tree beside the list, the way a file browser has them; on a
+        * phone the tree folds into one line above it.
+        */}
+      <div className={cn(isSynced && 'flex flex-col gap-4 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start')}>
+      {isSynced && (
+        <FolderTree
+          folders={folders}
+          current={isShared ? null : folder}
+          counts={folderCounts}
+          total={entries.length}
+          onOpen={openFolder}
+          onChanged={folderChanged}
+          onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
+        />
+      )}
+      <div className="flex min-w-0 flex-col gap-4">
+      {isSynced && !isShared && (
+        <FolderHeader
+          folders={folders}
+          current={folder}
+          counts={folderCounts}
+          onOpen={openFolder}
+          onChanged={folderChanged}
+          onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
+        />
+      )}
+
       <div className="flex flex-wrap items-center gap-2">
         <InputGroup size="sm">
           <InputGroupAddon>
@@ -726,22 +770,6 @@ export function HistoryPage({
         }}
       />
 
-      {isSynced && !isShared && (
-        <FolderBar
-          folders={folders}
-          current={folder}
-          counts={folderCounts}
-          onOpen={(id) => {
-            setSelected([]);
-            setFolder(id);
-          }}
-          onChanged={() => {
-            loadFolders();
-            onRefresh();
-          }}
-          onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
-        />
-      )}
 
       <FilterChips
         value={chip}
@@ -1191,6 +1219,8 @@ export function HistoryPage({
           })}
         </TableBody>
       </Table>
+      </div>
+      </div>
 
       <ShareDialog
         documentId={sharing?.id ?? null}

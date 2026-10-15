@@ -183,7 +183,7 @@ export function MoveDialog({
             />
           </div>
 
-          <div className="max-h-[50vh] min-h-[16rem] overflow-auto rounded-lg border border-stroke p-1">
+          <div className="h-[min(22rem,50vh)] overflow-auto overscroll-contain rounded-lg border border-stroke p-1">
             {query.trim() ? (
               matches.length === 0 ? (
                 <p className="p-3 text-ink-secondary text-sm">{t('move.nothing')}</p>
@@ -227,39 +227,46 @@ export function MoveDialog({
           {excludedNote && excluded.size > 0 && (
             <p className="text-ink-secondary text-xs">{excludedNote}</p>
           )}
-
-          {naming !== null && (
-            <form onSubmit={(event) => void create(event)} className="flex items-center gap-2">
+        </ModalBody>
+        {/* A new folder is named in the footer, in place of its buttons: the window keeps its size. */}
+        <ModalFooter className="flex items-center gap-2">
+          {naming !== null ? (
+            <form onSubmit={(event) => void create(event)} className="flex flex-1 items-center gap-2">
               <Input
                 autoFocus
                 value={naming}
                 maxLength={200}
-                placeholder={t('folders.name')}
+                placeholder={chosen ? `${t('move.new.inside')} “${folders.find((one) => one.id === chosen)?.name ?? ''}”` : t('folders.name')}
                 aria-label={t('folders.name')}
                 onChange={(event) => setNaming(event.target.value)}
+                onKeyDown={(event) => event.key === 'Escape' && (event.preventDefault(), setNaming(null))}
               />
-              <Button type="submit" size="sm" variant="secondary">
+              <Button type="submit" size="sm" variant="primary">
                 {t('folders.create')}
               </Button>
+              <Button type="button" size="sm" variant="secondary" onClick={() => setNaming(null)}>
+                {t('folders.cancel')}
+              </Button>
             </form>
+          ) : (
+            <>
+              <Button variant="tertiary" size="sm" leftSlot={<FolderPlus />} onClick={() => setNaming('')}>
+                {chosen ? t('move.new.inside') : t('folders.new')}
+              </Button>
+              <span className="flex-1" />
+              <Button variant="secondary" size="sm" onClick={() => onOpenChange(false)}>
+                {t('folders.cancel')}
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={chosen === null && !allowNone}
+                onClick={() => onMove(chosen)}
+              >
+                {t('move.here')}
+              </Button>
+            </>
           )}
-        </ModalBody>
-        <ModalFooter className="flex items-center gap-2">
-          <Button variant="tertiary" size="sm" leftSlot={<FolderPlus />} onClick={() => setNaming('')}>
-            {chosen ? t('move.new.inside') : t('folders.new')}
-          </Button>
-          <span className="flex-1" />
-          <Button variant="secondary" size="sm" onClick={() => onOpenChange(false)}>
-            {t('folders.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            disabled={chosen === null && !allowNone}
-            onClick={() => onMove(chosen)}
-          >
-            {t('move.here')}
-          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

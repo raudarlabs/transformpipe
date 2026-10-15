@@ -301,6 +301,7 @@ export const ui: Content['ui'] = {
   'folders.rename': 'Umbenennen',
   'folders.move': 'Verschieben',
   'folders.move.folder': 'Ordner verschieben',
+  'folders.actions': 'Ordneraktionen',
   'folders.top': 'Oberste Ebene',
   'folders.delete': 'Löschen',
   'folders.delete.keep': 'Ordner löschen, Dokumente behalten',
