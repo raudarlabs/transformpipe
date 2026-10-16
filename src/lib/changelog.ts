@@ -140,6 +140,15 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-16',
+    title: 'Download a whole folder as a .zip',
+    body:
+      'A folder’s menu — a right click in the tree, or ⋯ over the list — downloads it and everything '
+      + 'under it as a .zip of Markdown files laid out like the tree, plain or for Obsidian. Links '
+      + 'between its pages become links between the files, and a notice counts the documents as a '
+      + 'large space is read.',
+  },
+  {
+    date: '2026-10-16',
     title: 'Large Confluence spaces open again',
     body:
       'An export whose pages and pictures came to more than 64 MB was refused as "not a readable .zip" '

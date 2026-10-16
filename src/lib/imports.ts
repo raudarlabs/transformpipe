@@ -1,5 +1,5 @@
 import { conversion, type ConversionId } from '@shared/conversions';
-import { PAGE_LINKS, folderKey, foldersOf } from '@shared/split-export';
+import { PAGE_LINK, PAGE_LINKS, folderKey, foldersOf } from '@shared/split-export';
 import { api } from './api';
 import type { SplitResult } from './conversion';
 import { saveBlob } from './download';
@@ -148,4 +148,61 @@ export async function downloadImport(
   });
 
   saveBlob(`${fileName(split.title).replace(/\.md$/, '')}${forObsidian ? ' (Obsidian)' : ''}.zip`, new Blob([new Uint8Array(zipSync(files))], { type: 'application/zip' }));
+}
+
+/**
+ * A saved folder, everything under it, as a .zip laid out like the tree — the same archive an
+ * import offers before it is saved, so a space can go back out the way it came in.
+ *
+ * Read in pieces of about 3 MB (a function's answer cannot carry a whole space), and put together
+ * here. Links between the folder's pages — written as `/<conversion>?doc=<id>` when they were
+ * imported — become paths from one file to the other; a link to anything outside the folder is
+ * left as it was.
+ */
+export async function downloadFolder(
+  folderId: string,
+  forObsidian: boolean,
+  onProgress: (done: number) => void = () => undefined
+): Promise<void> {
+  const { api } = await import('./api');
+  let after: string | null = null;
+  let tree: Array<{ id: string; parent_id: string | null; name: string }> = [];
+  const documents: Array<{ id: string; name: string; folder_id: string; position: number | null; markdown: string }> = [];
+
+  do {
+    const piece = await api.exportFolder(folderId, after);
+
+    if (piece.folders) tree = piece.folders;
+    documents.push(...piece.documents);
+    onProgress(documents.length);
+    after = piece.next;
+  } while (after);
+
+  const root = tree.find((one) => one.id === folderId);
+  const pathOf = (id: string): string[] => {
+    const names: string[] = [];
+    let at = tree.find((one) => one.id === id);
+
+    while (at && at.id !== folderId) {
+      names.unshift(at.name);
+      at = tree.find((one) => one.id === at!.parent_id);
+    }
+
+    return names;
+  };
+  const index = new Map(documents.map((one, at) => [one.id, at]));
+  const appLink = /\]\((?:\/[a-z0-9-]+)?\?doc=([0-9a-f-]{36})(?:#[^)\s]*)?\)/g;
+
+  await downloadImport({
+    source: 'confluence',
+    title: root?.name ?? 'Folder',
+    pages: documents.map((one) => ({
+      folder: pathOf(one.folder_id),
+      title: one.name.replace(/\.(md|markdown|txt)$/i, ''),
+      position: one.position ?? 0,
+      markdown: one.markdown.replace(appLink, (whole, id: string) =>
+        index.has(id) ? `](${PAGE_LINK}${index.get(id)})` : whole
+      ),
+    })),
+  } as SplitResult, forObsidian);
 }

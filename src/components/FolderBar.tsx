@@ -3,6 +3,7 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
+  Download,
   ExternalLink,
   Files,
   Folder as FolderIcon,
@@ -167,6 +168,32 @@ function useFolderActions({ folders, current, counts, onOpen, onChanged }: Share
 
   const [sharing, setSharing] = useState<Folder | null>(null);
 
+  /*
+   * The folder and everything under it as a .zip, read in pieces and put together in this browser.
+   * One notice says how far it has got and is replaced by the result, so a space of a thousand
+   * pages does not look like a click that did nothing.
+   */
+  const download = async (folder: Folder, forObsidian: boolean) => {
+    const id = `folder-zip-${folder.id}`;
+
+    toast.info(t('folders.download.reading', { name: folder.name, count: 0 }), { id, duration: Infinity });
+
+    try {
+      const { downloadFolder } = await import('@/lib/imports');
+
+      await downloadFolder(folder.id, forObsidian, (count) =>
+        toast.info(t('folders.download.reading', { name: folder.name, count }), { id, duration: Infinity })
+      );
+      toast.success(t('folders.download.done', { name: folder.name }), { id, duration: 4000 });
+    } catch (cause) {
+      toast.error(t('folders.download.error'), {
+        id,
+        duration: 8000,
+        description: cause instanceof Error ? cause.message : undefined,
+      });
+    }
+  };
+
   const copy = (folder: Folder) => {
     if (!folder.share_token) return;
 
@@ -211,7 +238,7 @@ function useFolderActions({ folders, current, counts, onOpen, onChanged }: Share
     />
   );
 
-  return { run, rename, remove, copy, share: setSharing, move: setMoving, dialog: <>{dialog}{shareDialog}</> };
+  return { run, rename, remove, copy, download, share: setSharing, move: setMoving, dialog: <>{dialog}{shareDialog}</> };
 }
 
 /** A menu's items for one folder. `onRename` and `onNewInside` are where the name gets typed. */
@@ -245,6 +272,14 @@ function FolderMenuItems({
       <DropdownMenuItem onSelect={() => actions.move(folder)}>
         <FolderInput className="size-4" />
         {t('folders.move.folder')}
+      </DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => void actions.download(folder, false)}>
+        <Download className="size-4" />
+        {t('folders.download.markdown')}
+      </DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => void actions.download(folder, true)}>
+        <Download className="size-4" />
+        {t('folders.download.obsidian')}
       </DropdownMenuItem>
 
       <DropdownMenuSeparator />

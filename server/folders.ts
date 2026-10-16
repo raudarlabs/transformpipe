@@ -2,7 +2,7 @@ import type { Hono } from 'hono';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '../shared/conversions.js';
 import { looksLikeId, sql, searchText } from './db.js';
 import { QUOTA, UNVERIFIED, isVerified, usageOf } from './limits.js';
-import { deleteSources, putSource } from './source.js';
+import { deleteSources, putSource, readSource } from './source.js';
 
 /*
  * Folders, and the documents an export is made of.
@@ -235,6 +235,76 @@ export function registerFolders(api: Api) {
     await deleteSources([...removed.map((row) => row.blob_path), ...revisions.map((row) => row.blob_path)]);
 
     return c.json({ ok: true, deleted: removed.length });
+  });
+
+  /*
+   * A folder and everything under it, as text, for a .zip the browser puts together.
+   *
+   * In pieces, because a function's answer stops at 4.5 MB and a Confluence space is fifty: each
+   * piece is the next documents by id up to about 3 MB of text — sizes are on the rows, so the cut
+   * is planned before a single file is read — and `next` says where the following piece starts.
+   * The first piece carries the folders as well, so the archive can be laid out as the tree is.
+   */
+  api.get('/folders/:id/export', async (c) => {
+    const userId = c.get('user').id;
+    const id = c.req.param('id');
+    const after = c.req.query('after') ?? null;
+
+    if (!(await owned(userId, id)) || (after !== null && !looksLikeId(after))) {
+      return c.json({ error: 'No such folder' }, 404);
+    }
+
+    const ids = await subtree(userId, id);
+    const candidates = (await sql()`
+      select id::text, size from m2h_document
+      where user_id = ${userId} and folder_id = any(${ids}::uuid[])
+        and (${after}::uuid is null or id > ${after}::uuid)
+      order by id
+      limit 400
+    `) as Array<{ id: string; size: number }>;
+    const PIECE = 3 * 1024 * 1024;
+    const take: string[] = [];
+    let bytes = 0;
+
+    for (const one of candidates) {
+      if (take.length > 0 && bytes + one.size > PIECE) break;
+      take.push(one.id);
+      bytes += one.size;
+    }
+
+    const rows = (take.length
+      ? await sql()`
+          select id::text, user_id::text, name, folder_id::text, position, markdown, blob_path
+          from m2h_document where user_id = ${userId} and id = any(${take}::uuid[])
+          order by id
+        `
+      : []) as Array<{ id: string; user_id: string; name: string; folder_id: string; position: number | null; markdown: string | null; blob_path: string | null }>;
+    const documents: Array<{ id: string; name: string; folder_id: string; position: number | null; markdown: string }> = [];
+
+    // Eight files at a time from the store: hundreds at once are refused.
+    for (let at = 0; at < rows.length; at += 8) {
+      const read = await Promise.all(rows.slice(at, at + 8).map((row) => readSource(row)));
+
+      rows.slice(at, at + 8).forEach((row, index) => {
+        if (read[index] !== null) {
+          documents.push({ id: row.id, name: row.name, folder_id: row.folder_id, position: row.position, markdown: read[index]! });
+        }
+      });
+    }
+
+    const folders =
+      after === null
+        ? ((await sql()`
+            select id::text, parent_id::text, name from m2h_folder
+            where user_id = ${userId} and id = any(${ids}::uuid[])
+          `) as Array<{ id: string; parent_id: string | null; name: string }>)
+        : undefined;
+    // More when this piece stopped short of what was found, or what was found hit the query's cap.
+    const more = candidates.length > take.length || candidates.length === 400;
+
+    c.header('cache-control', 'private, no-store');
+
+    return c.json({ folders, documents, next: more ? take[take.length - 1] : null });
   });
 
   // Sharing a folder — link, people, expiry, password — is server/folder-share.ts.

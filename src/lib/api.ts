@@ -373,6 +373,14 @@ export const api = {
     ).ids,
 
   /** One read-only link for the folder and everything in it; the token, or null once it is off. */
+  /** One piece of a folder's documents as text, for a .zip — see `GET /folders/:id/export`. */
+  exportFolder: (id: string, after: string | null) =>
+    request<{
+      folders?: Array<{ id: string; parent_id: string | null; name: string }>;
+      documents: Array<{ id: string; name: string; folder_id: string; position: number | null; markdown: string }>;
+      next: string | null;
+    }>(`/api/folders/${id}/export${after ? `?after=${after}` : ''}`),
+
   /* A folder's sharing has the calls a document's has — see server/folder-share.ts. */
   getFolderShare: (id: string) => request<ShareState>(`/api/folders/${id}/share`),
 
