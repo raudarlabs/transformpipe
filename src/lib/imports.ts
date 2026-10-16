@@ -1,4 +1,5 @@
 import { conversion, type ConversionId } from '@shared/conversions';
+import { KEEP_BYTES } from '@shared/limits';
 import { PAGE_LINK, PAGE_LINKS, folderKey, foldersOf } from '@shared/split-export';
 import { api } from './api';
 import type { SplitResult } from './conversion';
@@ -73,6 +74,15 @@ export async function saveImport(
       pageIds[Number(n)] ? address(Number(n)) : whole
     );
     const size = new Blob([markdown]).size;
+
+    /*
+     * Larger than one document may be: the server would refuse it, and a page this size sent at
+     * all is a request the platform turns away whole, with the pages beside it. Counted, not sent.
+     */
+    if (size > KEEP_BYTES) {
+      failed += 1;
+      continue;
+    }
 
     if (batch.length > 0 && (bytes + size > BATCH_BYTES || batch.length >= BATCH_PAGES)) {
       await flush();

@@ -144,6 +144,9 @@ const serverInfo = (c: Context) => {
 /** Long enough to be useful, short enough that a document does not eat a conversation. */
 const MAX_TEXT = 40_000;
 
+/** What a text weighs as it is stored and sent: Cyrillic is two bytes a letter, not one. */
+const utf8Length = (text: string) => new TextEncoder().encode(text).length;
+
 const INSTRUCTIONS = `These tools act on the TransformPipe account of the person who authorised this connector, and have no access to any other account.
 
 Eight tools take a \`confirm\` boolean, because they can disclose content, change what other people read, or delete data. Without \`confirm: true\` they change nothing and return what would happen and to whom. tp_save_document, tp_share_document and tp_share_folder require it for the mode "link", which publishes a page on the public web that anyone with the URL can open, and for "people", which emails a link to each address not already on the list. A shared folder shows everything in it and in its subfolders, so tp_save_document and tp_move_documents also require it when the destination folder is shared or inside a shared folder, and tp_update_folder requires it when it moves a folder under a shared one. tp_update_document requires it when the document is shared, because its readers see the new text. tp_delete_document and tp_delete_folder require it on every call; deletion is permanent, with no undo and no trash. Without \`with_documents\`, tp_delete_folder removes only the folder and moves its contents up one level; with it, the documents are deleted too. The mode "private" discloses nothing and needs no confirmation. On tp_share_document and tp_share_folder, \`emails\` replaces the reader list, and \`add\` and \`remove\` change individual addresses.
@@ -1077,9 +1080,9 @@ const TOOLS: Record<McpToolName, Tool> = {
         return say('There is no Markdown to convert.', true);
       }
 
-      if (markdown.length > QUOTA.documentBytes) {
+      if (utf8Length(markdown) > QUOTA.documentBytes) {
         return say(
-          `That is ${bytes(markdown.length)} of Markdown; the limit for one document is ${bytes(QUOTA.documentBytes)}.`,
+          `That is ${bytes(utf8Length(markdown))} of Markdown; the limit for one document is ${bytes(QUOTA.documentBytes)}.`,
           true
         );
       }
@@ -1164,9 +1167,9 @@ const TOOLS: Record<McpToolName, Tool> = {
         return say('There is nothing to convert.', true);
       }
 
-      if (source.length > QUOTA.documentBytes) {
+      if (utf8Length(source) > QUOTA.documentBytes) {
         return say(
-          `That is ${bytes(source.length)}; the limit for one document is ${bytes(QUOTA.documentBytes)}.`,
+          `That is ${bytes(utf8Length(source))}; the limit for one document is ${bytes(QUOTA.documentBytes)}.`,
           true
         );
       }

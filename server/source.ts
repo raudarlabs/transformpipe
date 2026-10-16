@@ -144,5 +144,14 @@ export async function deleteSources(paths: (string | null)[]): Promise<void> {
     return;
   }
 
-  await del(present, auth()).catch(() => undefined);
+  /*
+   * In slices: a folder of a thousand pages with their kept versions is thousands of paths, and one
+   * request naming all of them is one the store can refuse whole. Each slice fails on its own, and
+   * says so — `scripts/reconcile-blobs.mjs` sweeps up whatever is left.
+   */
+  for (let at = 0; at < present.length; at += 250) {
+    await del(present.slice(at, at + 250), auth()).catch((cause: unknown) =>
+      console.error('blob delete', present.length, cause instanceof Error ? cause.message : cause)
+    );
+  }
 }

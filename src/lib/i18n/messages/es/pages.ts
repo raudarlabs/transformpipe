@@ -85,7 +85,7 @@ export const pages: Content['pages'] = {
       items: [
         {
           question: '¿Es gratis?',
-          answer: 'Sí, sin plan que elegir ni tarjeta que introducir. Iniciar sesión es opcional y solo te compra un sitio donde guardar cosas: una cuenta admite 500 documentos y 100 MB de Markdown, y un documento suelto puede llegar a 4 MB. Alcanzar un límite rechaza el guardado y lo dice, en vez de descartar en silencio un documento antiguo para hacer hueco.',
+          answer: 'Sí, sin plan que elegir ni tarjeta que introducir. Iniciar sesión es opcional y solo te compra un sitio donde guardar cosas: una cuenta admite 5000 documentos y 250 MB de Markdown, y un documento suelto puede llegar a 4 MB. Alcanzar un límite rechaza el guardado y lo dice, en vez de descartar en silencio un documento antiguo para hacer hueco.',
         },
         {
           question: '¿Subís mi archivo?',
@@ -1170,7 +1170,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratis, con los límites por escrito',
-            body: '500 documentos y 100 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
+            body: '5000 documentos y 250 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
           },
         ],
       },
@@ -1222,7 +1222,7 @@ export const pages: Content['pages'] = {
           {
             question: '¿Es gratis?',
             answer:
-              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta admite 500 documentos y 100 MB de Markdown, y un solo documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se te avisa, en lugar de borrar a escondidas un documento antiguo para hacer sitio.',
+              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta admite 5000 documentos y 250 MB de Markdown, y un solo documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se te avisa, en lugar de borrar a escondidas un documento antiguo para hacer sitio.',
           },
           {
             question: '¿Tengo que registrarme antes?',
@@ -1397,7 +1397,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratis, con los límites por escrito',
-            body: '500 documentos y 100 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
+            body: '5000 documentos y 250 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
           },
         ],
       },
@@ -1449,7 +1449,7 @@ export const pages: Content['pages'] = {
           {
             question: '¿Es gratis?',
             answer:
-              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta admite 500 documentos y 100 MB de Markdown, y un solo documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se te avisa, en lugar de borrar a escondidas un documento antiguo para hacer sitio.',
+              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta admite 5000 documentos y 250 MB de Markdown, y un solo documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se te avisa, en lugar de borrar a escondidas un documento antiguo para hacer sitio.',
           },
           {
             question: '¿Tengo que registrarme antes?',
@@ -1623,7 +1623,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratis, con los límites por escrito',
-            body: '500 documentos y 100 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
+            body: '5000 documentos y 250 MB por cuenta, 4 MB por documento. Al llegar a un límite se rechaza el guardado; no se borra nada para hacer sitio.',
           },
         ],
       },
@@ -1680,7 +1680,7 @@ export const pages: Content['pages'] = {
           {
             question: '¿Es gratis?',
             answer:
-              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta guarda 500 documentos y 100 MB de Markdown, y un documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se dice, en lugar de borrar en silencio un documento antiguo.',
+              'Sí, sin plan que elegir ni tarjeta que introducir. Una cuenta guarda 5000 documentos y 250 MB de Markdown, y un documento puede ocupar hasta 4 MB. Al llegar a un límite se rechaza el guardado y se dice, en lugar de borrar en silencio un documento antiguo.',
           },
           {
             question: '¿Tengo que registrarme antes?',
@@ -1867,7 +1867,7 @@ export const pages: Content['pages'] = {
         items: [
           {
             question: '¿El plugin es gratis?',
-            answer: 'Sí. El plugin es gratuito y de código abierto, y la cuenta de TransformPipe en la que publica también es gratuita. Una cuenta admite hasta 500 documentos y 100 MB, que son muchas notas.',
+            answer: 'Sí. El plugin es gratuito y de código abierto, y la cuenta de TransformPipe en la que publica también es gratuita. Una cuenta admite hasta 5000 documentos y 250 MB, que son muchas notas.',
           },
           {
             question: '¿Necesito una cuenta?',

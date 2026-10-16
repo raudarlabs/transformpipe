@@ -262,7 +262,7 @@ export const docsPage = {
     'Only {embed} may be framed. Every other page of this site answers {ancestors}, so nothing here can be dressed up as somebody else’s.',
 
   'docs.limits.account.term': 'Per account',
-  'docs.limits.account.text': '100 MB of Markdown, 500 documents',
+  'docs.limits.account.text': '250 MB of Markdown, 5,000 documents',
   'docs.limits.convert.term': 'Per conversion',
   'docs.limits.convert.text':
     '10 MB of text — roughly 1.5 million words; 50 MB for an office file or a book, 250 MB for an export .zip. Several files dropped together count as the one document they become',

@@ -144,7 +144,7 @@ one document at a time, plus the part they don't do: keeping and sharing what an
 The blog compares them honestly: https://transformpipe.com/blog/what-is-pandoc
 
 **Limits?**
-500 documents and 100 MB per account, 4 MB per document, 10 MB per conversion. When a limit is
+5,000 documents and 250 MB per account, 4 MB per document, 10 MB per conversion. When a limit is
 reached the save is refused. Nothing is ever deleted to make room.
 
 **Is it open source?**

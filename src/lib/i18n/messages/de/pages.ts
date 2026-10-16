@@ -89,7 +89,7 @@ export const pages: Content['pages'] = {
       items: [
         {
           question: 'Ist es kostenlos?',
-          answer: 'Ja, ohne Tarifwahl und ohne Karte. Das Anmelden ist freiwillig und verschafft Ihnen nur einen Ort zum Aufbewahren: Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument bis zu 4 MB. Wird eine Grenze erreicht, wird das Speichern abgelehnt und gesagt — statt stillschweigend ein älteres Dokument zu verwerfen, um Platz zu schaffen.',
+          answer: 'Ja, ohne Tarifwahl und ohne Karte. Das Anmelden ist freiwillig und verschafft Ihnen nur einen Ort zum Aufbewahren: Ein Konto fasst 5.000 Dokumente und 250 MB Markdown, ein einzelnes Dokument bis zu 4 MB. Wird eine Grenze erreicht, wird das Speichern abgelehnt und gesagt — statt stillschweigend ein älteres Dokument zu verwerfen, um Platz zu schaffen.',
         },
         {
           question: 'Laden Sie meine Datei hoch?',
@@ -1174,7 +1174,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Kostenlos, mit schriftlich festgehaltenen Grenzen',
-            body: '500 Dokumente und 100 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
+            body: '5.000 Dokumente und 250 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
           },
         ],
       },
@@ -1226,7 +1226,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Ist es kostenlos?',
             answer:
-              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
+              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 5.000 Dokumente und 250 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
           },
           {
             question: 'Muss ich mich zuerst registrieren?',
@@ -1401,7 +1401,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Kostenlos, mit schriftlich festgehaltenen Grenzen',
-            body: '500 Dokumente und 100 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
+            body: '5.000 Dokumente und 250 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
           },
         ],
       },
@@ -1453,7 +1453,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Ist es kostenlos?',
             answer:
-              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
+              'Ja, ohne Tarif zur Auswahl und ohne Karte einzugeben. Ein Konto fasst 5.000 Dokumente und 250 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch so gesagt, statt stillschweigend ein älteres Dokument zu löschen, um Platz zu schaffen.',
           },
           {
             question: 'Muss ich mich zuerst registrieren?',
@@ -1627,7 +1627,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Kostenlos, mit schriftlich festgehaltenen Grenzen',
-            body: '500 Dokumente und 100 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
+            body: '5.000 Dokumente und 250 MB pro Konto, 4 MB pro Dokument. Ist eine Grenze erreicht, wird das Speichern abgelehnt; gelöscht wird nichts, um Platz zu schaffen.',
           },
         ],
       },
@@ -1684,7 +1684,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Ist es kostenlos?',
             answer:
-              'Ja, ohne Tarif zur Auswahl und ohne Karte. Ein Konto fasst 500 Dokumente und 100 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch gesagt, statt stillschweigend ein älteres Dokument zu löschen.',
+              'Ja, ohne Tarif zur Auswahl und ohne Karte. Ein Konto fasst 5.000 Dokumente und 250 MB Markdown, ein einzelnes Dokument darf bis zu 4 MB groß sein. Ist eine Grenze erreicht, wird das Speichern abgelehnt und das auch gesagt, statt stillschweigend ein älteres Dokument zu löschen.',
           },
           {
             question: 'Muss ich mich vorher registrieren?',
@@ -1871,7 +1871,7 @@ export const pages: Content['pages'] = {
         items: [
           {
             question: 'Ist das Plugin kostenlos?',
-            answer: 'Ja. Das Plugin ist kostenlos und Open Source, und das TransformPipe-Konto, in dem es veröffentlicht, ist ebenfalls kostenlos. Ein Konto fasst bis zu 500 Dokumente und 100 MB — das sind sehr viele Notizen.',
+            answer: 'Ja. Das Plugin ist kostenlos und Open Source, und das TransformPipe-Konto, in dem es veröffentlicht, ist ebenfalls kostenlos. Ein Konto fasst bis zu 5.000 Dokumente und 250 MB — das sind sehr viele Notizen.',
           },
           {
             question: 'Brauche ich ein Konto?',

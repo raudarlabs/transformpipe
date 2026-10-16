@@ -37,7 +37,7 @@ export const faq: Content['faq'] = [
   {
     question: '¿Hay un límite de tamaño?',
     answer:
-      '10 MB por archivo de texto para convertir —unos 1,5 millones de palabras—, 50 MB por archivo de Word, PowerPoint, Excel, EPUB u OpenDocument y 250 MB por .zip de exportación, casi todo adjuntos; todo porque convertir ocurre en tu propia máquina. Guardarlo en una cuenta está limitado a 4 MB, y ese número no es nuestro: la plataforma rechaza de plano una petición mayor. Un archivo más grande se convierte, se previsualiza y se descarga igual; solo se queda fuera del historial, y la aplicación lo dice en vez de fingir que lo ha guardado. Una cuenta admite 500 documentos o 100 MB, lo que llegue primero. Llegar a un límite rechaza la escritura y lo dice; nada de lo que hayas guardado se elimina en silencio para hacer sitio.',
+      '10 MB por archivo de texto para convertir —unos 1,5 millones de palabras—, 50 MB por archivo de Word, PowerPoint, Excel, EPUB u OpenDocument y 250 MB por .zip de exportación, casi todo adjuntos; todo porque convertir ocurre en tu propia máquina. Guardarlo en una cuenta está limitado a 4 MB, y ese número no es nuestro: la plataforma rechaza de plano una petición mayor. Un archivo más grande se convierte, se previsualiza y se descarga igual; solo se queda fuera del historial, y la aplicación lo dice en vez de fingir que lo ha guardado. Una cuenta admite 5000 documentos o 250 MB, lo que llegue primero. Llegar a un límite rechaza la escritura y lo dice; nada de lo que hayas guardado se elimina en silencio para hacer sitio.',
   },
   {
     question: '¿Puedo convertir archivos desde un script?',

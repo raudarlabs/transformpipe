@@ -1532,7 +1532,12 @@ ${
 }
 
 /** A dead end that still looks like the product rather than a platform error. */
-export function buildNoticePage(title: string, message: string): string {
+export function buildNoticePage(
+  title: string,
+  message: string,
+  /** What the reader can do instead, in place of the invitation to convert a file of their own. */
+  action?: { href: string; label: string }
+): string {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1565,7 +1570,7 @@ a { color: var(--md-brand-3); }
 <body>
 <h1>${escapeHtml(title)}</h1>
 <p>${escapeHtml(message)}</p>
-<p><a href="/">Convert your own file</a></p>
+<p>${action ? `<a href="${escapeHtml(action.href)}">${escapeHtml(action.label)}</a>` : '<a href="/">Convert your own file</a>'}</p>
 </body>
 </html>
 `;

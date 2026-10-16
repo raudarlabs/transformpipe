@@ -80,7 +80,7 @@ export const pages: Content['pages'] = {
       items: [
         {
           question: 'È gratis?',
-          answer: 'Sì, senza un piano da scegliere e senza carta da inserire. Accedere è facoltativo e ti compra solo un posto dove tenere le cose: un account regge 500 documenti e 100 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiungere un limite rifiuta il salvataggio e lo dice, invece di scartare in silenzio un documento più vecchio per fare spazio.',
+          answer: 'Sì, senza un piano da scegliere e senza carta da inserire. Accedere è facoltativo e ti compra solo un posto dove tenere le cose: un account regge 5000 documenti e 250 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiungere un limite rifiuta il salvataggio e lo dice, invece di scartare in silenzio un documento più vecchio per fare spazio.',
         },
         {
           question: 'Caricate il mio file?',
@@ -1165,7 +1165,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuito, con i limiti messi per iscritto',
-            body: '500 documenti e 100 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
+            body: '5000 documenti e 250 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
           },
         ],
       },
@@ -1217,7 +1217,7 @@ export const pages: Content['pages'] = {
           {
             question: 'È gratuito?',
             answer:
-              'Sì, senza piani da scegliere e senza carta da inserire. Un account contiene 500 documenti e 100 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio per fare spazio.',
+              'Sì, senza piani da scegliere e senza carta da inserire. Un account contiene 5000 documenti e 250 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio per fare spazio.',
           },
           {
             question: 'Devo prima registrarmi?',
@@ -1392,7 +1392,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuito, con i limiti messi per iscritto',
-            body: '500 documenti e 100 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
+            body: '5000 documenti e 250 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
           },
         ],
       },
@@ -1444,7 +1444,7 @@ export const pages: Content['pages'] = {
           {
             question: 'È gratuito?',
             answer:
-              'Sì, senza piani da scegliere e senza carta da inserire. Un account contiene 500 documenti e 100 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio per fare spazio.',
+              'Sì, senza piani da scegliere e senza carta da inserire. Un account contiene 5000 documenti e 250 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio per fare spazio.',
           },
           {
             question: 'Devo prima registrarmi?',
@@ -1618,7 +1618,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuito, con i limiti messi per iscritto',
-            body: '500 documenti e 100 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
+            body: '5000 documenti e 250 MB per account, 4 MB per documento. Raggiunto un limite, il salvataggio viene rifiutato; non si elimina nulla per fare spazio.',
           },
         ],
       },
@@ -1675,7 +1675,7 @@ export const pages: Content['pages'] = {
           {
             question: 'È gratis?',
             answer:
-              'Sì, senza piani da scegliere né carte da inserire. Un account contiene 500 documenti e 100 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio.',
+              'Sì, senza piani da scegliere né carte da inserire. Un account contiene 5000 documenti e 250 MB di Markdown, e un singolo documento può arrivare a 4 MB. Raggiunto un limite, il salvataggio viene rifiutato e te lo dice, invece di eliminare in silenzio un documento più vecchio.',
           },
           {
             question: 'Devo registrarmi prima?',
@@ -1862,7 +1862,7 @@ export const pages: Content['pages'] = {
         items: [
           {
             question: 'Il plugin è gratuito?',
-            answer: 'Sì. Il plugin è gratuito e open source, e anche l’account TransformPipe su cui pubblica è gratuito. Un account contiene fino a 500 documenti e 100 MB, che sono parecchie note.',
+            answer: 'Sì. Il plugin è gratuito e open source, e anche l’account TransformPipe su cui pubblica è gratuito. Un account contiene fino a 5000 documenti e 250 MB, che sono parecchie note.',
           },
           {
             question: 'Mi serve un account?',

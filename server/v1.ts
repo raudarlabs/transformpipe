@@ -32,6 +32,7 @@ import { htmlToMarkdown } from '../shared/from-html.js';
 import { jsonToMarkdown } from '../shared/from-json.js';
 import { delimitedToMarkdown } from '../shared/from-table.js';
 import { refuseIfItUnpacksTooFar } from '../shared/zip-import.js';
+import { fitsPage } from '../shared/limits.js';
 import { markdownToHtml } from './render.js';
 import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
@@ -1034,14 +1035,21 @@ v1.get('/documents/:id', async (c) => {
 
   if (wantsHtml) {
     // The same file the app downloads, so a script and a person get the same document.
-    return c.html(
-      buildStandaloneHtml({
-        title: row.name,
-        body: markdownToHtml(markdown),
-        createdAt: new Date(row.created_at).getTime(),
-        theme: c.req.query('theme') === 'dark' ? 'dark' : 'light',
-      })
-    );
+    const html = buildStandaloneHtml({
+      title: row.name,
+      body: markdownToHtml(markdown),
+      createdAt: new Date(row.created_at).getTime(),
+      theme: c.req.query('theme') === 'dark' ? 'dark' : 'light',
+    });
+
+    if (!fitsPage(html)) {
+      return c.json(
+        { error: `As HTML this document is ${mb(new TextEncoder().encode(html).length)}, more than one answer can carry. Ask for the Markdown instead.` },
+        413
+      );
+    }
+
+    return c.html(html);
   }
 
   if (wantsDocx) {

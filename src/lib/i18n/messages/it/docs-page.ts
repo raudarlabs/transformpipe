@@ -244,7 +244,7 @@ export const docsPage = {
     'Solo {embed} può essere incorporato. Ogni altra pagina di questo sito risponde {ancestors}, così che nulla qui possa essere spacciato per altro.',
 
   'docs.limits.account.term': 'Per account',
-  'docs.limits.account.text': '100 MB di Markdown, 500 documenti',
+  'docs.limits.account.text': '250 MB di Markdown, 5000 documenti',
   'docs.limits.convert.term': 'Per conversione',
   'docs.limits.convert.text':
     '10 MB di testo — circa un milione e mezzo di parole; 50 MB per un file d’ufficio o un libro, 250 MB per uno .zip di esportazione. Più file trascinati insieme contano per l’unico documento che diventano',

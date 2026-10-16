@@ -80,7 +80,7 @@ export const docs: Content['docs'] = {
   limits: {
     title: 'Limits',
     summary:
-      '10 MB a text file to convert (50 MB an office file or a book, 250 MB an export .zip) and 4 MB to keep one in an account, 100 MB and 500 documents an account, 60 requests a minute. Reaching one refuses the write rather than deleting anything. A connector’s tool call counts as one request.',
+      '10 MB a text file to convert (50 MB an office file or a book, 250 MB an export .zip) and 4 MB to keep one in an account, 250 MB and 5,000 documents an account, 60 requests a minute. Reaching one refuses the write rather than deleting anything. A connector’s tool call counts as one request.',
   },
   faq: {
     title: 'Questions',

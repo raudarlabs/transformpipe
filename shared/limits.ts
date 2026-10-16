@@ -61,6 +61,19 @@ export function uploadLimit(extensions: readonly string[]): number {
 export const KEEP_BYTES = 4 * 1024 * 1024;
 
 /**
+ * The largest page the server sends, under the same 4.5 MB.
+ *
+ * A document is kept as Markdown and read as HTML, and the HTML is the larger: highlighted code,
+ * tables and the page's own stylesheet can make 2 MB of Markdown into five. A page past this is
+ * answered with a sentence and its Markdown instead of the platform's bare 413.
+ */
+export const PAGE_BYTES = 4.4 * 1024 * 1024;
+
+/** Whether an answer this long fits under `PAGE_BYTES`, counted in the bytes that are sent. */
+export const fitsPage = (html: string) =>
+  html.length * 3 <= PAGE_BYTES || new TextEncoder().encode(html).length <= PAGE_BYTES;
+
+/**
  * What all the pictures in one document may weigh once embedded.
  *
  * It follows from `KEEP_BYTES` rather than being chosen: a picture is carried as a `data:` URI —

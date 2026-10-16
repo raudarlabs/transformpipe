@@ -267,7 +267,7 @@ export const docsPage = {
     'Nur {embed} darf eingebettet werden. Jede andere Seite dieser Site antwortet mit {ancestors}, damit sich hier nichts als etwas Fremdes ausgeben lässt.',
 
   'docs.limits.account.term': 'Je Konto',
-  'docs.limits.account.text': '100 MB Markdown, 500 Dokumente',
+  'docs.limits.account.text': '250 MB Markdown, 5.000 Dokumente',
   'docs.limits.convert.term': 'Je Umwandlung',
   'docs.limits.convert.text':
     '10 MB Text — etwa 1.5 Millionen Wörter; 50 MB für eine Office-Datei oder ein Buch, 250 MB für ein Export-.zip. Mehrere zusammen abgelegte Dateien zählen als das eine Dokument, das sie werden',

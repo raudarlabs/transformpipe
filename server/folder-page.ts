@@ -10,6 +10,7 @@ import { selfOrigin } from './auth.js';
 import { looksLikeId, sql, type DocumentRow } from './db.js';
 import { folderGate, type FolderVerdict, type SharedFolder } from './folder-share.js';
 import { countCall } from './limits.js';
+import { fitsPage } from '../shared/limits.js';
 import { edgeSeconds, writtenUtc } from './share-gate.js';
 import { UNLOCK_SECONDS, passwordMatches, unlockCookie, unlockValue } from './share-password.js';
 import { readSource } from './source.js';
@@ -304,14 +305,29 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
     const createdAt = new Date(document.created_at).getTime();
     const here = `/f/${encodeURIComponent(token)}/${id}`;
 
+    const tooLarge = () => {
+      c.status(413);
+
+      return c.html(
+        buildNoticePage(
+          'This page is too large to show',
+          'It is kept whole, but drawn as a page it is more than a browser is sent at once. Its Markdown downloads in full.',
+          { href: `${here}?download=md`, label: 'Download the Markdown' }
+        )
+      );
+    };
+
     if (download === '' || download === 'html') {
+      const html = buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' });
+
+      if (!fitsPage(html)) return tooLarge();
+
       c.header('content-disposition', attachment(`${base}.html`));
 
-      return c.html(buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' }));
+      return c.html(html);
     }
 
-    return c.html(
-      buildSharedPage({
+    const page = buildSharedPage({
         title: document.name,
         body: trailOf(token, folder, tree, entry.folder_id) + body,
         createdAt,
@@ -326,7 +342,8 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
         watched: verdict.reader !== null && !verdict.reader.isOwner,
         size: document.size,
         stats: document.stats ?? undefined,
-      })
-    );
+      });
+
+    return fitsPage(page) ? c.html(page) : tooLarge();
   });
 }

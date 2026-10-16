@@ -87,7 +87,7 @@ export const pages: Content['pages'] = {
       items: [
         {
           question: 'Is it free?',
-          answer: 'Yes, with no plan to pick and no card to enter. Signing in is optional and only buys you somewhere to keep things: an account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so, rather than quietly dropping an older document to make room.',
+          answer: 'Yes, with no plan to pick and no card to enter. Signing in is optional and only buys you somewhere to keep things: an account holds 5,000 documents and 250 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so, rather than quietly dropping an older document to make room.',
         },
         {
           question: 'Do you upload my file?',
@@ -1172,7 +1172,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Free, with the limits in writing',
-            body: '500 documents and 100 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
+            body: '5,000 documents and 250 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
           },
         ],
       },
@@ -1224,7 +1224,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Is it free?',
             answer:
-              'Yes, with no plan to pick and no card to enter. An account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
+              'Yes, with no plan to pick and no card to enter. An account holds 5,000 documents and 250 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
           },
           {
             question: 'Do I need to sign up first?',
@@ -1399,7 +1399,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Free, with the limits in writing',
-            body: '500 documents and 100 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
+            body: '5,000 documents and 250 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
           },
         ],
       },
@@ -1451,7 +1451,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Is it free?',
             answer:
-              'Yes, with no plan to pick and no card to enter. An account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
+              'Yes, with no plan to pick and no card to enter. An account holds 5,000 documents and 250 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
           },
           {
             question: 'Do I need to sign up first?',
@@ -1625,7 +1625,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Free, with the limits in writing',
-            body: '500 documents and 100 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
+            body: '5,000 documents and 250 MB an account, 4 MB a document. Reaching a limit refuses the save; nothing is deleted to make room.',
           },
         ],
       },
@@ -1682,7 +1682,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Is it free?',
             answer:
-              'Yes, with no plan to pick and no card to enter. An account holds 500 documents and 100 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
+              'Yes, with no plan to pick and no card to enter. An account holds 5,000 documents and 250 MB of Markdown, and a single document can be up to 4 MB. Reaching a limit refuses the save and says so rather than quietly deleting an older document to make room.',
           },
           {
             question: 'Do I need to sign up first?',
@@ -1869,7 +1869,7 @@ export const pages: Content['pages'] = {
         items: [
           {
             question: 'Is the plugin free?',
-            answer: 'Yes. The plugin is free and open source, and the TransformPipe account it publishes to is free as well. An account holds up to 500 documents and 100 MB, which is a lot of notes.',
+            answer: 'Yes. The plugin is free and open source, and the TransformPipe account it publishes to is free as well. An account holds up to 5,000 documents and 250 MB, which is a lot of notes.',
           },
           {
             question: 'Do I need an account?',

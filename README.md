@@ -95,7 +95,7 @@ it, or save the page as a self-contained `.html` file. Signed out, it never talk
 
 An assistant acts as you, on your documents only. It cannot change the account, see your password
 or create API keys, and it deletes nothing without an explicit confirmation. A grant can be
-read-only. The service is free, and the limits are written down: 500 documents and 100 MB an
+read-only. The service is free, and the limits are written down: 5,000 documents and 250 MB an
 account, 4 MB a document. Reaching one refuses the save; nothing is deleted to make room.
 
 ![Your documents, your account](brand/producthunt/08-your-account.png)
@@ -259,7 +259,7 @@ step; a deployment made before them needs a redeploy to see them. The build is a
   HTML rather than a headless Chrome — no button for it in the app, deliberately: "Print or save as
   PDF" already gives a signed-in person the browser's own, pixel-exact PDF, and this is for the
   case that button cannot reach — a script, a CI job, a GitHub Action step with no browser at all.
-- **History** — signed in: stored in the account (up to 500 documents, 4 MB of source
+- **History** — signed in: stored in the account (up to 5,000 documents, 4 MB of source
   each), available on every device; signed out: the last 25 conversions in
   `localStorage`. Whatever was collected locally is moved into the account on
   first sign-in. The page has its own dropzone, a search box over file names,
@@ -383,7 +383,7 @@ node cli/tp.mjs summary <id>                  # generated once, cached; --force 
 node cli/tp.mjs push v2.md --replaces <id>    # links it to an earlier document as a new version
 node cli/tp.mjs push notes.md --update <id>   # new text, same link; the old text is kept as a revision
 node cli/tp.mjs versions <id>                 # every document in the chain, oldest first
-node cli/tp.mjs usage                         # 65.8 kB of 100.0 MB · 3 of 500 documents
+node cli/tp.mjs usage                         # 65.8 kB of 250.0 MB · 3 of 5000 documents
 
 node cli/tp.mjs folders                       # the tree: ids, documents in each, the link if shared
 node cli/tp.mjs push notes.md --folder "Team/Notes"   # filed there; missing folders are made
@@ -476,7 +476,7 @@ pressing Connect) is the one part it mints directly, exactly as `/approve` would
 
 | | |
 | --- | --- |
-| Per account | 100 MB, 500 documents |
+| Per account | 250 MB, 5,000 documents |
 | Per conversion | 10 MB — roughly 1.5 million words. Runs in the browser, so this is a judgement about the machine, not a platform limit |
 | Per kept document | 4 MB. A Vercel Function refuses a request or response body over 4.5 MB with a bare 413 the app never sees, so a bigger document could be neither saved nor read back. Raising it means keeping the Markdown out of the request: a client upload straight to blob storage and reads redirecting to a signed URL. Both numbers live in `shared/limits.ts`, with the reason |
 | Per caller | 60 requests a minute, counted by key or by session; a connector's tool call counts once |

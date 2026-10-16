@@ -79,7 +79,7 @@ export const docs: Content['docs'] = {
   limits: {
     title: 'Limites',
     summary:
-      '10 MB par fichier texte à convertir (50 MB pour un fichier bureautique ou un livre, 250 MB pour un .zip d’export) et 4 MB pour en conserver un dans un compte, 100 MB et 500 documents par compte, 60 requêtes par minute. Atteindre une limite refuse l’écriture au lieu de supprimer quoi que ce soit. Un appel d’outil par un connecteur compte pour une seule requête.',
+      '10 MB par fichier texte à convertir (50 MB pour un fichier bureautique ou un livre, 250 MB pour un .zip d’export) et 4 MB pour en conserver un dans un compte, 250 MB et 5 000 documents par compte, 60 requêtes par minute. Atteindre une limite refuse l’écriture au lieu de supprimer quoi que ce soit. Un appel d’outil par un connecteur compte pour une seule requête.',
   },
   faq: {
     title: 'Questions',

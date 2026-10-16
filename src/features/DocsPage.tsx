@@ -655,7 +655,7 @@ node cli/tp.mjs push docs/*.md --merge --share --name handbook.md
 node cli/tp.mjs push page.html            # converted to Markdown on the way in
 node cli/tp.mjs list
 node cli/tp.mjs rm <id>
-node cli/tp.mjs usage                     # 65.8 kB of 100.0 MB · 3 of 500 documents
+node cli/tp.mjs usage                     # 65.8 kB of 250.0 MB · 3 of 5000 documents
 node cli/tp.mjs folders                   # the folder tree, with ids
 node cli/tp.mjs push notes.md --folder "Team/Notes"   # missing folders are made
 node cli/tp.mjs list --folder "Team/Notes"

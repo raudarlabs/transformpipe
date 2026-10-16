@@ -149,6 +149,17 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-16',
+    title: 'Storage counts what is kept, and big folders stay whole',
+    body:
+      'A document saved from a Word, PowerPoint or Excel file counted the file’s size against the '
+      + 'account rather than the Markdown kept from it; it counts the Markdown now. One oversized '
+      + 'page no longer stops an import — it is skipped and counted. A page too large to show as a '
+      + 'web page offers its Markdown instead of an error, and copying a very large shared folder '
+      + 'stops cleanly rather than half way. The limits written on the site say 250 MB and 5,000 '
+      + 'documents, as they have been since the 15th.',
+  },
+  {
+    date: '2026-10-16',
     title: 'Large Confluence spaces open again',
     body:
       'An export whose pages and pictures came to more than 64 MB was refused as "not a readable .zip" '

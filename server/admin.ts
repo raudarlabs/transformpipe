@@ -131,6 +131,7 @@ interface UserRow {
   documents: number;
   doc_bytes: string | number;
   rev_bytes: string | number;
+  bytes_limit: string | number | null;
   revisions: number;
   first_doc_at: string | Date | null;
   last_doc_at: string | Date | null;
@@ -174,6 +175,8 @@ export interface Person {
   apps: Array<{ label: ClientLabel; name: string; first: number; lastUsed: number | null; active: boolean }>;
   documents: number;
   bytes: number;
+  /** What the account may hold: its own grant, or the default. */
+  limit: number;
   revisions: number;
   sharedLink: number;
   sharedPeople: number;
@@ -282,7 +285,7 @@ export async function loadPeople(): Promise<Person[]> {
       )
       select
         u.id, u.name, u.email, u."emailVerified" as verified, u.image, u."createdAt" as created_at,
-        m.first_seen_at, m.welcomed_at,
+        m.first_seen_at, m.welcomed_at, m.bytes_limit,
         coalesce(d.documents, 0) as documents,
         coalesce(d.doc_bytes, 0) as doc_bytes,
         coalesce(r.rev_bytes, 0) as rev_bytes,
@@ -359,6 +362,7 @@ function toPerson(row: UserRow, session: SessionSummary | null, providers: strin
     apps,
     documents: row.documents,
     bytes: Number(row.doc_bytes) + Number(row.rev_bytes),
+    limit: row.bytes_limit ? Number(row.bytes_limit) : QUOTA.bytes,
     revisions: row.revisions,
     sharedLink: row.shared_link,
     sharedPeople: row.shared_people,
@@ -910,7 +914,7 @@ function overviewPage(
   const rows = people
     .map((p) => {
       const idle = p.documents === 0 && p.apps.length === 0 && p.keys === 0;
-      const share = Math.min(100, (p.bytes / QUOTA.bytes) * 100);
+      const share = Math.min(100, (p.bytes / p.limit) * 100);
       const apps = [...new Set(p.apps.map((one) => one.label))]
         .map((label) => {
           const app = p.apps.find((one) => one.label === label)!;
@@ -934,7 +938,7 @@ function overviewPage(
           p.providers.join(', ')
         )}</span></td>
         <td class="n">${p.documents || '<span class="mute">0</span>'}</td>
-        <td class="n" data-tip="${escapeHtml(`${bytes(p.bytes)} of ${bytes(QUOTA.bytes)} (${share.toFixed(1)}%)`)}">${
+        <td class="n" data-tip="${escapeHtml(`${bytes(p.bytes)} of ${bytes(p.limit)} (${share.toFixed(1)}%)${p.limit !== QUOTA.bytes ? ' · granted' : ''}`)}">${
           p.bytes ? bytes(p.bytes) : '<span class="mute">—</span>'
         }<span class="meter"><i style="width:${Math.max(share, p.bytes ? 2 : 0)}%"></i></span></td>
         <td class="n">${p.sharedLink + p.sharedPeople || '<span class="mute">0</span>'}${
@@ -1112,7 +1116,7 @@ async function personPage(id: string, viewer: SessionUser, saved = false): Promi
       from m2h_document d
       where d.user_id = ${id}
       order by d.created_at desc
-      limit 500
+      limit ${QUOTA.documents}
     `),
     rows<KeyLine>(sql()`
       select name, prefix, created_at, last_used_at, revoked_at
@@ -1209,7 +1213,7 @@ async function personPage(id: string, viewer: SessionUser, saved = false): Promi
   ${hookRows.length ? `<section class="card" style="margin-bottom:12px"><h2>Webhooks</h2>${table(['URL', 'Events', 'Created', 'Last delivery', 'Status'], hookRows, '')}</section>` : ''}
   <section class="card" style="margin-bottom:12px"><h2>Sign-in sessions</h2>
     ${table(['Started', 'Last seen', 'Device', 'IP', 'Status'], sessionRows, 'No sessions on record.')}</section>
-  <section class="card"><h2>Documents${documents.length === 500 ? ' (newest 500)' : ''}</h2>
+  <section class="card"><h2>Documents${documents.length === QUOTA.documents ? ` (newest ${QUOTA.documents})` : ''}</h2>
     ${table(['Name', 'Conversion', '#Size', 'Created', 'Updated', '#Revisions', 'Shared', '#Views'], docRows, 'No documents.')}</section>
   ${limitCard(p.id, limit, saved)}
   ${dangerZone(p, viewer)}

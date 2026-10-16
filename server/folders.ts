@@ -137,7 +137,12 @@ export function registerFolders(api: Api) {
       folders?: Array<{ ref?: unknown; parent?: unknown; name?: unknown; source?: unknown }>;
     };
     const root = typeof body.parent_id === 'string' ? body.parent_id : null;
-    const folders = Array.isArray(body.folders) ? body.folders.slice(0, 2000) : [];
+    const folders = Array.isArray(body.folders) ? body.folders : [];
+
+    // Refused rather than cut: pages whose folder was dropped would be saved loose, outside the tree.
+    if (folders.length > 2000) {
+      return c.json({ error: `That is ${folders.length} folders; one import may make 2000.` }, 413);
+    }
 
     if (!(await owned(userId, root))) return c.json({ error: 'No such folder' }, 404);
 
@@ -263,6 +268,7 @@ export function registerFolders(api: Api) {
       limit 400
     `) as Array<{ id: string; size: number }>;
     const PIECE = 3 * 1024 * 1024;
+    const SEND = 4 * 1024 * 1024;
     const take: string[] = [];
     let bytes = 0;
 
@@ -292,6 +298,28 @@ export function registerFolders(api: Api) {
       });
     }
 
+    /*
+     * The plan above trusts the rows' sizes; what is sent is JSON, where every newline and quote
+     * costs a second byte. Measured again as it will go, and cut short of the platform's limit —
+     * the next piece starts after the last one kept.
+     */
+    const encoder = new TextEncoder();
+    let sending = 0;
+    let kept = documents.length;
+
+    for (const [index, one] of documents.entries()) {
+      sending += encoder.encode(JSON.stringify(one)).length;
+
+      if (index > 0 && sending > SEND) {
+        kept = index;
+        break;
+      }
+    }
+
+    const cut = kept < documents.length;
+
+    documents.length = kept;
+
     const folders =
       after === null
         ? ((await sql()`
@@ -300,11 +328,12 @@ export function registerFolders(api: Api) {
           `) as Array<{ id: string; parent_id: string | null; name: string }>)
         : undefined;
     // More when this piece stopped short of what was found, or what was found hit the query's cap.
-    const more = candidates.length > take.length || candidates.length === 400;
+    const more = cut || candidates.length > take.length || candidates.length === 400;
+    const last = cut ? documents[documents.length - 1].id : take[take.length - 1];
 
     c.header('cache-control', 'private, no-store');
 
-    return c.json({ folders, documents, next: more ? take[take.length - 1] : null });
+    return c.json({ folders, documents, next: more ? last : null });
   });
 
   // Sharing a folder — link, people, expiry, password — is server/folder-share.ts.
@@ -347,7 +376,7 @@ export function registerFolders(api: Api) {
       }>;
     };
     const incoming = (Array.isArray(body.documents) ? body.documents : []).slice(0, 500);
-    const documents = incoming
+    let documents = incoming
       .map((one) => ({
         // The caller's own id, when it gave one, so pages of an import can link to each other.
         id: typeof one.id === 'string' && looksLikeId(one.id) ? one.id : null,
@@ -368,12 +397,23 @@ export function registerFolders(api: Api) {
       if (!(await owned(userId, folder))) return c.json({ error: 'No such folder' }, 404);
     }
 
-    const sizes = documents.map((one) => new TextEncoder().encode(one.markdown).length);
-    const tooBig = sizes.findIndex((size) => size > QUOTA.documentBytes);
+    const measured = documents.map((one) => new TextEncoder().encode(one.markdown).length);
+    /*
+     * A page larger than one document may be is one page not kept, counted with the failures —
+     * refusing the batch for it lost the two hundred pages around it, and left an import half made.
+     */
+    const tooBig = documents.filter((_, index) => measured[index] > QUOTA.documentBytes);
 
-    if (tooBig >= 0) {
-      return c.json({ error: `"${documents[tooBig].name}" is larger than one document may be` }, 413);
+    if (tooBig.length === documents.length) {
+      return c.json({ error: `"${documents[0].name}" is larger than one document may be` }, 413);
     }
+
+    if (tooBig.length > 0) {
+      console.error('batch skipped', tooBig.length, 'oversized');
+      documents = documents.filter((_, index) => measured[index] <= QUOTA.documentBytes);
+    }
+
+    const sizes = measured.filter((size) => size <= QUOTA.documentBytes);
 
     const fits = await room(userId, documents.length, sizes.reduce((sum, size) => sum + size, 0));
 
@@ -419,6 +459,6 @@ export function registerFolders(api: Api) {
       }
     }
 
-    return c.json({ saved, failed: documents.length - saved.length }, 201);
+    return c.json({ saved, failed: documents.length + tooBig.length - saved.length }, 201);
   });
 }

@@ -32,6 +32,7 @@ import {
   RATE,
   usageOf,
 } from './limits.js';
+import { fitsPage } from '../shared/limits.js';
 import {
   hashPassword,
   passwordMatches,
@@ -522,7 +523,7 @@ api.post('/documents', async (c) => {
       ${userId},
       ${name},
       ${KINDS.has(body.kind ?? '') ? body.kind : DEFAULT_CONVERSION},
-      ${body.size ?? body.markdown.length},
+      ${size},
       null,
       ${JSON.stringify(body.stats ?? {})}::jsonb,
       to_tsvector('simple', ${searchText(body.markdown)}),
@@ -1386,13 +1387,27 @@ app.get('/s/:token', async (c) => {
 
   const body = markdownToHtml(source);
 
-  /* `?download` alone is the address every earlier shared page printed, so it stays the HTML. */
-  if (download === '' || download === 'html') {
-    c.header('content-disposition', attachment(`${base}.html`));
+  const tooLarge = () => {
+    c.status(413);
 
     return c.html(
-      buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' })
+      buildNoticePage(
+        'This document is too large to show as a page',
+        'It is kept whole, but drawn as a page it is more than a browser is sent at once. Its Markdown downloads in full.',
+        { href: `/s/${encodeURIComponent(token)}?download=md`, label: 'Download the Markdown' }
+      )
     );
+  };
+
+  /* `?download` alone is the address every earlier shared page printed, so it stays the HTML. */
+  if (download === '' || download === 'html') {
+    const html = buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' });
+
+    if (!fitsPage(html)) return tooLarge();
+
+    c.header('content-disposition', attachment(`${base}.html`));
+
+    return c.html(html);
   }
 
   if (download !== undefined) {
@@ -1407,8 +1422,7 @@ app.get('/s/:token', async (c) => {
     );
   }
 
-  return c.html(
-    buildSharedPage({
+  const page = buildSharedPage({
       title: document.name,
       body,
       createdAt,
@@ -1431,8 +1445,9 @@ app.get('/s/:token', async (c) => {
       watched: verdict.reader !== null && !verdict.reader.isOwner,
       size: document.size,
       stats: document.stats ?? undefined,
-    })
-  );
+    });
+
+  return fitsPage(page) ? c.html(page) : tooLarge();
 });
 
 /** Wrong passwords from one machine for one link, in a minute, before it is asked to wait. */

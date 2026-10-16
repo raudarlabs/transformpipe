@@ -221,6 +221,9 @@ async function pooled<T, R>(items: T[], limit: number, work: (item: T, index: nu
  * the pages in their order, and the links between pages pointed at the copies. All or nothing —
  * a copy that fails half way is taken back out, so the reader is not left with half a space.
  */
+/** How long a copy may run before it stops and takes itself back — well inside the 300 s a function has. */
+const COPY_BUDGET_MS = 220_000;
+
 export type CopyProgress = { stage: 'reading' | 'writing'; done: number; total: number };
 
 async function copyFolder(
@@ -230,10 +233,23 @@ async function copyFolder(
 ): Promise<{ folderId: string; documents: number }> {
   const tree = await treeOf(source.id, source.user_id, true);
   let read = 0;
+  /*
+   * A function is stopped at `maxDuration` (vercel.json) without warning, and a copy stopped that
+   * way never reaches its rollback: the reader keeps half a folder. So the copy gives up on its own
+   * while there is still time to take back what it made.
+   */
+  const started = Date.now();
+  const inTime = () => {
+    if (Date.now() - started > COPY_BUDGET_MS) {
+      throw Object.assign(new Error('This folder is too large to copy in one go. Nothing was kept.'), { status: 413 });
+    }
+  };
 
   onProgress({ stage: 'reading', done: 0, total: tree.documents.length });
 
   const texts = await pooled(tree.documents, 8, async (one) => {
+    inTime();
+
     const text = await readSource(one);
 
     onProgress({ stage: 'reading', done: ++read, total: tree.documents.length });
@@ -274,7 +290,9 @@ async function copyFolder(
       `;
     }
 
-    await pooled(pages, 6, async (one) => {
+    await pooled(pages, 10, async (one) => {
+      inTime();
+
       const id = documentIds.get(one.id)!;
       const text = relink(one.text, documentIds);
 
@@ -308,13 +326,16 @@ async function copyFolder(
 const copyError = (cause: unknown) => {
   console.error('folder copy', cause instanceof Error ? cause.message : cause);
 
-  return (cause as { status?: number }).status === 403
+  return [403, 413].includes((cause as { status?: number }).status ?? 0)
     ? (cause as Error).message
     : 'The copy could not be made. Nothing was kept; try again.';
 };
 
-const copyFailed = (c: Context, cause: unknown) =>
-  c.json({ error: copyError(cause) }, (cause as { status?: number }).status === 403 ? 403 : 500);
+const copyFailed = (c: Context, cause: unknown) => {
+  const status = (cause as { status?: number }).status;
+
+  return c.json({ error: copyError(cause) }, status === 403 ? 403 : status === 413 ? 413 : 500);
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Api = Hono<any>;

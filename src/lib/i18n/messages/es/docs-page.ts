@@ -251,7 +251,7 @@ export const docsPage = {
     'Solo {embed} puede incrustarse. Todas las demás páginas de este sitio responden {ancestors}, para que nada de aquí pueda hacerse pasar por otra cosa.',
 
   'docs.limits.account.term': 'Por cuenta',
-  'docs.limits.account.text': '100 MB de Markdown, 500 documentos',
+  'docs.limits.account.text': '250 MB de Markdown, 5000 documentos',
   'docs.limits.convert.term': 'Por conversión',
   'docs.limits.convert.text':
     '10 MB de texto — alrededor de 1,5 millones de palabras; 50 MB para un archivo de oficina o un libro, 250 MB para un .zip de exportación. Varios archivos soltados juntos cuentan como el único documento en que se convierten',

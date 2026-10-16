@@ -81,7 +81,7 @@ export const pages: Content['pages'] = {
       items: [
         {
           question: 'Est-ce gratuit ?',
-          answer: 'Oui, sans forfait à choisir ni carte à saisir. La connexion est facultative et ne vous achète qu\'un endroit où garder les choses : un compte tient 500 documents et 100 Mo de Markdown, et un document seul peut aller jusqu\'à 4 Mo. Atteindre une limite refuse l\'enregistrement et le dit, au lieu de supprimer discrètement un document plus ancien pour faire de la place.',
+          answer: 'Oui, sans forfait à choisir ni carte à saisir. La connexion est facultative et ne vous achète qu\'un endroit où garder les choses : un compte tient 5 000 documents et 250 Mo de Markdown, et un document seul peut aller jusqu\'à 4 Mo. Atteindre une limite refuse l\'enregistrement et le dit, au lieu de supprimer discrètement un document plus ancien pour faire de la place.',
         },
         {
           question: 'Téléversez-vous mon fichier ?',
@@ -1167,7 +1167,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuit, avec les limites écrites noir sur blanc',
-            body: '500 documents et 100 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
+            body: '5 000 documents et 250 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
           },
         ],
       },
@@ -1219,7 +1219,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Est-ce gratuit ?',
             answer:
-              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 500 documents et 100 MB de Markdown, et un document seul peut atteindre 4 MB. Une limite atteinte fait refuser l’enregistrement, avec un message qui le dit, plutôt que de supprimer discrètement un document plus ancien pour faire de la place.',
+              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 5 000 documents et 250 MB de Markdown, et un document seul peut atteindre 4 MB. Une limite atteinte fait refuser l’enregistrement, avec un message qui le dit, plutôt que de supprimer discrètement un document plus ancien pour faire de la place.',
           },
           {
             question: 'Faut-il d’abord créer un compte ?',
@@ -1394,7 +1394,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuit, avec les limites écrites noir sur blanc',
-            body: '500 documents et 100 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
+            body: '5 000 documents et 250 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
           },
         ],
       },
@@ -1446,7 +1446,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Est-ce gratuit ?',
             answer:
-              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 500 documents et 100 MB de Markdown, et un document seul peut atteindre 4 MB. Une limite atteinte fait refuser l’enregistrement, avec un message qui le dit, plutôt que de supprimer discrètement un document plus ancien pour faire de la place.',
+              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 5 000 documents et 250 MB de Markdown, et un document seul peut atteindre 4 MB. Une limite atteinte fait refuser l’enregistrement, avec un message qui le dit, plutôt que de supprimer discrètement un document plus ancien pour faire de la place.',
           },
           {
             question: 'Faut-il d’abord créer un compte ?',
@@ -1620,7 +1620,7 @@ export const pages: Content['pages'] = {
           },
           {
             title: 'Gratuit, avec les limites écrites noir sur blanc',
-            body: '500 documents et 100 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
+            body: '5 000 documents et 250 MB par compte, 4 MB par document. Une limite atteinte fait refuser l’enregistrement ; rien n’est supprimé pour faire de la place.',
           },
         ],
       },
@@ -1677,7 +1677,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Est-ce gratuit ?',
             answer:
-              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 500 documents et 100 Mo de Markdown, et un document peut atteindre 4 Mo. Une limite atteinte refuse l’enregistrement et le dit, au lieu de supprimer discrètement un document plus ancien.',
+              'Oui, sans offre à choisir ni carte à saisir. Un compte contient 5 000 documents et 250 Mo de Markdown, et un document peut atteindre 4 Mo. Une limite atteinte refuse l’enregistrement et le dit, au lieu de supprimer discrètement un document plus ancien.',
           },
           {
             question: 'Faut-il s’inscrire d’abord ?',
@@ -1864,7 +1864,7 @@ export const pages: Content['pages'] = {
         items: [
           {
             question: 'Le plugin est-il gratuit ?',
-            answer: 'Oui. Le plugin est gratuit et open source, et le compte TransformPipe sur lequel il publie est gratuit lui aussi. Un compte contient jusqu’à 500 documents et 100 Mo, ce qui fait beaucoup de notes.',
+            answer: 'Oui. Le plugin est gratuit et open source, et le compte TransformPipe sur lequel il publie est gratuit lui aussi. Un compte contient jusqu’à 5 000 documents et 250 Mo, ce qui fait beaucoup de notes.',
           },
           {
             question: 'Faut-il un compte ?',

@@ -251,7 +251,7 @@ export const docsPage = {
     'Seul {embed} peut être placé dans un cadre. Toutes les autres pages de ce site répondent {ancestors}, afin que rien ici ne puisse être déguisé en page d’autrui.',
 
   'docs.limits.account.term': 'Par compte',
-  'docs.limits.account.text': '100 MB de Markdown, 500 documents',
+  'docs.limits.account.text': '250 MB de Markdown, 5 000 documents',
   'docs.limits.convert.term': 'Par conversion',
   'docs.limits.convert.text':
     '10 MB de texte — environ 1,5 million de mots ; 50 MB pour un fichier bureautique ou un livre, 250 MB pour un .zip d’export. Plusieurs fichiers déposés ensemble comptent pour le seul document qu’ils deviennent',
