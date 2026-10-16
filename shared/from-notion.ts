@@ -109,9 +109,10 @@ async function notionPages(
 
 export async function notionZipToMarkdown(
   bytes: Uint8Array,
-  onProgress?: Progress
+  onProgress?: Progress,
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
 ): Promise<string> {
-  const tocPages: TocPage[] = await notionPages(bytes, onProgress, false);
+  const tocPages: TocPage[] = await notionPages(bytes, onProgress, false, prepare);
 
   return buildTocDocument('Contents', tocPages);
 }

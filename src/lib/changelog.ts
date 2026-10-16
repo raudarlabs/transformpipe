@@ -149,6 +149,16 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-16',
+    title: 'Links on a shared page go where the reader can follow',
+    body:
+      'A page of an import shared on its own linked to its sibling pages by their address in the '
+      + 'app, so a reader without the owner\'s account clicked through to an empty converter. A '
+      + 'sibling that is shared now opens at its own link, and one that is not reads as plain words. '
+      + 'Exports converted into one document also shrink their pictures now, as page-by-page imports '
+      + 'already did, so far fewer screenshots are left out.',
+  },
+  {
+    date: '2026-10-16',
     title: 'Storage counts what is kept, and big folders stay whole',
     body:
       'A document saved from a Word, PowerPoint or Excel file counted the file’s size against the '

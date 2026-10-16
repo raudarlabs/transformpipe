@@ -25,6 +25,22 @@ export const QUOTA = {
   documentBytes: KEEP_BYTES,
 };
 
+/**
+ * A document's statistics as a caller sent them, kept to what they are: a few counts.
+ *
+ * The browser counts words, headings and the rest and sends them with the document; whatever else
+ * arrives with them would be stored on every row and sent back in every list of them.
+ */
+export function cleanStats(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key, one]) => key.length <= 32 && typeof one === 'number' && Number.isFinite(one))
+      .slice(0, 16)
+  ) as Record<string, number>;
+}
+
 /** Per caller per minute. A key that trips this is looping, not working. */
 export const RATE = {
   perMinute: 60,

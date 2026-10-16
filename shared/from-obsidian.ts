@@ -74,9 +74,10 @@ async function obsidianPages(
 
 export async function obsidianZipToMarkdown(
   bytes: Uint8Array,
-  onProgress?: Progress
+  onProgress?: Progress,
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
 ): Promise<string> {
-  const tocPages: TocPage[] = await obsidianPages(bytes, onProgress, false);
+  const tocPages: TocPage[] = await obsidianPages(bytes, onProgress, false, prepare);
 
   return buildTocDocument('Contents', tocPages);
 }

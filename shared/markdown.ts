@@ -1536,8 +1536,9 @@ export function buildNoticePage(
   title: string,
   message: string,
   /** What the reader can do instead, in place of the invitation to convert a file of their own. */
-  action?: { href: string; label: string }
+  action?: { href: string; label: string } | Array<{ href: string; label: string }>
 ): string {
+  const actions = action ? (Array.isArray(action) ? action : [action]) : [];
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1570,7 +1571,7 @@ a { color: var(--md-brand-3); }
 <body>
 <h1>${escapeHtml(title)}</h1>
 <p>${escapeHtml(message)}</p>
-<p>${action ? `<a href="${escapeHtml(action.href)}">${escapeHtml(action.label)}</a>` : '<a href="/">Convert your own file</a>'}</p>
+<p>${actions.length ? actions.map((one) => `<a href="${escapeHtml(one.href)}">${escapeHtml(one.label)}</a>`).join(' · ') : '<a href="/">Convert your own file</a>'}</p>
 </body>
 </html>
 `;

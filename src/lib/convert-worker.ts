@@ -94,7 +94,9 @@ self.onmessage = async (event: MessageEvent<{ id: ConversionId; file: File; spli
       return;
     }
 
-    const converted = await convertFile(id, file, marked, progress);
+    const converted = await convertFile(id, file, marked, progress, (pictures) =>
+      shrinkPictures(pictures, (done, total) => post({ type: 'stage', stage: 'pictures', done, total }))
+    );
 
     post({ type: 'stage', stage: 'rendering' });
 

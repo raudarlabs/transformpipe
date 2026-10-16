@@ -50,7 +50,9 @@ export async function convertFile(
   file: File,
   t: Translate,
   /** Pages done out of how many, from the importers that read many pages from one archive. */
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
+  /** Something to do to an export's pictures before they are carried — make them smaller. */
+  prepare?: (pictures: Map<string, Uint8Array>) => Promise<void>
 ): Promise<Converted> {
   switch (id) {
     case 'html-to-markdown': {
@@ -179,7 +181,7 @@ export async function convertFile(
 
     case 'notion-to-markdown': {
       const { notionZipToMarkdown } = await import('@shared/from-notion');
-      const markdown = await notionZipToMarkdown(new Uint8Array(await file.arrayBuffer()), onProgress);
+      const markdown = await notionZipToMarkdown(new Uint8Array(await file.arrayBuffer()), onProgress, prepare);
 
       return { markdown, name: renamed(file.name, '.md'), kind: id };
     }
@@ -188,7 +190,8 @@ export async function convertFile(
       const { confluenceZipToMarkdown } = await import('@shared/from-confluence');
       const markdown = await confluenceZipToMarkdown(
         new Uint8Array(await file.arrayBuffer()),
-        onProgress
+        onProgress,
+        prepare
       );
 
       return { markdown, name: renamed(file.name, '.md'), kind: id };
@@ -196,7 +199,7 @@ export async function convertFile(
 
     case 'obsidian-to-markdown': {
       const { obsidianZipToMarkdown } = await import('@shared/from-obsidian');
-      const markdown = await obsidianZipToMarkdown(new Uint8Array(await file.arrayBuffer()), onProgress);
+      const markdown = await obsidianZipToMarkdown(new Uint8Array(await file.arrayBuffer()), onProgress, prepare);
 
       return { markdown, name: renamed(file.name, '.md'), kind: id };
     }

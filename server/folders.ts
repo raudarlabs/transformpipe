@@ -1,7 +1,7 @@
 import type { Hono } from 'hono';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '../shared/conversions.js';
 import { looksLikeId, sql, searchText } from './db.js';
-import { QUOTA, UNVERIFIED, isVerified, usageOf } from './limits.js';
+import { QUOTA, UNVERIFIED, cleanStats, isVerified, usageOf } from './limits.js';
 import { deleteSources, putSource, readSource } from './source.js';
 
 /*
@@ -383,7 +383,7 @@ export function registerFolders(api: Api) {
         name: cleanName(one.name),
         kind: typeof one.kind === 'string' && KINDS.has(one.kind) ? one.kind : DEFAULT_CONVERSION,
         markdown: typeof one.markdown === 'string' ? one.markdown : '',
-        stats: one.stats && typeof one.stats === 'object' ? one.stats : {},
+        stats: cleanStats(one.stats),
         folder: typeof one.folder_id === 'string' ? one.folder_id : null,
         position: Number.isInteger(one.position) ? (one.position as number) : null,
       }))

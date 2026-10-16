@@ -23,6 +23,7 @@ import {
 import {
   AI_SUMMARY,
   checkQuota,
+  cleanStats,
   countCall,
   countShareMail,
   countSummaryCall,
@@ -59,7 +60,7 @@ import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
 import { registerFolders } from './folders.js';
 import { registerFolderSharing, registerSharedFolders } from './folder-share.js';
-import { registerFolderPages } from './folder-page.js';
+import { linkSharedPages, registerFolderPages } from './folder-page.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
   edgeSeconds,
@@ -525,7 +526,7 @@ api.post('/documents', async (c) => {
       ${KINDS.has(body.kind ?? '') ? body.kind : DEFAULT_CONVERSION},
       ${size},
       null,
-      ${JSON.stringify(body.stats ?? {})}::jsonb,
+      ${JSON.stringify(cleanStats(body.stats))}::jsonb,
       to_tsvector('simple', ${searchText(body.markdown)}),
       ${body.replaces ?? null}
     )
@@ -1385,7 +1386,9 @@ app.get('/s/:token', async (c) => {
     return c.body(obsidianHeadingLinks(source));
   }
 
-  const body = markdownToHtml(source);
+  const body = await linkSharedPages(markdownToHtml(source), document.user_id, {
+    isOwner: verdict.reader?.isOwner,
+  });
 
   const tooLarge = () => {
     c.status(413);
