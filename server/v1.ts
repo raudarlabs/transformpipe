@@ -865,10 +865,10 @@ v1.put('/documents/:id', async (c) => {
   /* The new text and the kept old one are both on the account until the eleventh update. */
   const usage = await usageOf(userId);
 
-  if (usage.bytes + size > QUOTA.bytes) {
+  if (usage.bytes + size > usage.limits.bytes) {
     return c.json(
       {
-        error: `That would take the account past ${mb(QUOTA.bytes)}. Delete documents, or older versions go when you update one ten more times.`,
+        error: `That would take the account past ${mb(usage.limits.bytes)}. Delete documents, or older versions go when you update one ten more times.`,
         usage,
       },
       403

@@ -83,10 +83,10 @@ export async function room(userId: string, n: number, bytes: number) {
     };
   }
 
-  if (usage.bytes + bytes > QUOTA.bytes) {
+  if (usage.bytes + bytes > usage.limits.bytes) {
     return {
       ok: false as const,
-      error: `That needs ${(bytes / 1048576).toFixed(1)} MB, and the account has ${(Math.max(0, QUOTA.bytes - usage.bytes) / 1048576).toFixed(1)} MB left.`,
+      error: `That needs ${(bytes / 1048576).toFixed(1)} MB, and the account has ${(Math.max(0, usage.limits.bytes - usage.bytes) / 1048576).toFixed(1)} MB left.`,
       usage,
     };
   }

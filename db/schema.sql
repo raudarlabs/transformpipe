@@ -529,3 +529,8 @@ create table if not exists m2h_folder_share (
 );
 
 create index if not exists m2h_folder_share_email on m2h_folder_share (email);
+
+-- More room for one account than the default, granted by hand: null is the default in
+-- `QUOTA.bytes` (server/limits.ts). Bytes, so a grant can be any size rather than a step.
+alter table m2h_user
+  add column if not exists bytes_limit bigint;

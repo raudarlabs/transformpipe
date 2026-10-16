@@ -54,10 +54,16 @@ export async function usageOf(userId: string): Promise<Usage> {
     where user_id = ${userId}
   `) as Array<{ bytes: string; documents: number }>;
 
+  /* An account may have more room than the default, granted one at a time — see `m2h_user.bytes_limit`. */
+  const granted = (await sql()`
+    select bytes_limit from m2h_user where user_id = ${userId}
+  `.catch(() => [])) as Array<{ bytes_limit: string | null }>;
+  const bytesLimit = granted[0]?.bytes_limit ? Number(granted[0].bytes_limit) : QUOTA.bytes;
+
   return {
     bytes: Number(rows[0].bytes),
     documents: rows[0].documents,
-    limits: QUOTA,
+    limits: { ...QUOTA, bytes: bytesLimit },
   };
 }
 
@@ -216,11 +222,11 @@ export async function checkQuota(
     };
   }
 
-  if (usage.bytes + incomingBytes > QUOTA.bytes) {
+  if (usage.bytes + incomingBytes > usage.limits.bytes) {
     return {
       ok: false,
       status: 403,
-      error: `That would take you past ${mb(QUOTA.bytes)} of storage (you are using ${mb(usage.bytes)}). Delete some documents to make room.`,
+      error: `That would take you past ${mb(usage.limits.bytes)} of storage (you are using ${mb(usage.bytes)}). Delete some documents to make room.`,
       usage,
     };
   }

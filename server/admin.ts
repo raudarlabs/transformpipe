@@ -1088,13 +1088,19 @@ interface SessionLine {
   ip: string | null;
 }
 
-async function personPage(id: string, viewer: SessionUser): Promise<string | null> {
+async function personPage(id: string, viewer: SessionUser, saved = false): Promise<string | null> {
   const people = await loadPeople();
   const person = people.find((one) => one.id === id);
 
   if (!person) {
     return null;
   }
+
+  /* The room this account has: a grant from the form below, or the default. */
+  const granted = await rows<{ bytes_limit: string | null }>(sql()`
+    select bytes_limit from m2h_user where user_id = ${id}
+  `);
+  const limit = granted[0]?.bytes_limit ? Number(granted[0].bytes_limit) : QUOTA.bytes;
 
   const [documents, keys, hooks, sessions] = await Promise.all([
     rows<DocumentLine>(sql()`
@@ -1173,7 +1179,7 @@ async function personPage(id: string, viewer: SessionUser): Promise<string | nul
 
   <section class="tiles">
     <div class="tile"><span>Documents</span><b>${p.documents}</b><small>${p.revisions} revisions kept</small></div>
-    <div class="tile"><span>Storage</span><b>${bytes(p.bytes)}</b><small>${((p.bytes / QUOTA.bytes) * 100).toFixed(1)}% of ${bytes(QUOTA.bytes)}</small></div>
+    <div class="tile"><span>Storage</span><b>${bytes(p.bytes)}</b><small>${((p.bytes / limit) * 100).toFixed(1)}% of ${bytes(limit)}${limit !== QUOTA.bytes ? ' · granted' : ''}</small></div>
     <div class="tile"><span>Shared</span><b>${p.sharedLink + p.sharedPeople}</b><small>${p.sharedLink} by link · ${p.sharedPeople} with people</small></div>
     <div class="tile"><span>Share views</span><b>${p.shareViews}</b><small>all links together</small></div>
     <div class="tile"><span>AI summaries</span><b>${p.summaries}</b><small>documents with one</small></div>
@@ -1205,6 +1211,7 @@ async function personPage(id: string, viewer: SessionUser): Promise<string | nul
     ${table(['Started', 'Last seen', 'Device', 'IP', 'Status'], sessionRows, 'No sessions on record.')}</section>
   <section class="card"><h2>Documents${documents.length === 500 ? ' (newest 500)' : ''}</h2>
     ${table(['Name', 'Conversion', '#Size', 'Created', 'Updated', '#Revisions', 'Shared', '#Views'], docRows, 'No documents.')}</section>
+  ${limitCard(p.id, limit, saved)}
   ${dangerZone(p, viewer)}
 </main>
 <script>${SCRIPT}</script>`;
@@ -1260,6 +1267,37 @@ function undeletable(target: { id: string; email: string | null }, viewer: Sessi
 
 /** What has to be typed to confirm: the address, or the id for an account without one. */
 const confirmation = (target: { id: string; email: string | null }) => target.email || target.id;
+
+/** The sizes the form offers, in MB: the default first, then steps a person might ask for. */
+const LIMIT_STEPS = [500, 1024, 2048, 5120, 10240];
+
+/**
+ * More room for one account, by hand — for the person moving a whole Confluence into it. A grant
+ * is a number on `m2h_user`; every quota check reads it through `usageOf`, and "Default" clears it
+ * so the account follows `QUOTA.bytes` again, wherever that moves.
+ */
+function limitCard(id: string, limit: number, saved: boolean): string {
+  const mbOf = (n: number) => Math.round(n / 1048576);
+  const current = limit === QUOTA.bytes ? 'default' : String(mbOf(limit));
+  const options = [
+    ['default', `Default — ${bytes(QUOTA.bytes)}`],
+    ...LIMIT_STEPS.filter((one) => one !== mbOf(QUOTA.bytes)).map((one) => [String(one), bytes(one * 1048576)]),
+    ...(current !== 'default' && !LIMIT_STEPS.includes(Number(current)) ? [[current, bytes(limit)]] : []),
+  ];
+
+  return `<section class="card"><h2>Storage limit</h2>
+    ${saved ? '<p class="notice">Saved. The account has the new limit from its next request.</p>' : ''}
+    <p class="dim">How much this account may store. Lowering it below what is already stored deletes nothing; the next save is refused.</p>
+    <form method="POST" action="/admin/u/${escapeHtml(id)}/limit">
+      <div class="toolbar">
+        <select name="limit" aria-label="Storage limit">${options
+          .map(([value, label]) => `<option value="${value}"${value === current ? ' selected' : ''}>${escapeHtml(label)}</option>`)
+          .join('')}</select>
+        <button type="submit" class="f">Save</button>
+      </div>
+    </form>
+  </section>`;
+}
 
 function dangerZone(p: Person, viewer: SessionUser): string {
   const why = undeletable({ id: p.id, email: p.email || null }, viewer);
@@ -1363,9 +1401,58 @@ admin.get('/admin/u/:id', async (c) => {
   }
 
   const id = c.req.param('id');
-  const page = looksLikeId(id) ? await personPage(id, verdict) : null;
+  const page = looksLikeId(id) ? await personPage(id, verdict, c.req.query('saved') === 'limit') : null;
 
   return page ? c.html(page, 200, PRIVATE_HEADERS) : c.text('No such account', 404, PRIVATE_HEADERS);
+});
+
+/* A grant of room for one account — see `limitCard`. Locked the way deleting is. */
+admin.post('/admin/u/:id/limit', async (c) => {
+  const verdict = await admitted(c);
+
+  if (typeof verdict === 'string') {
+    return refused(c, verdict);
+  }
+
+  if (!sameSite(c)) {
+    return c.text('Forbidden', 403, PRIVATE_HEADERS);
+  }
+
+  const id = c.req.param('id');
+
+  if (!looksLikeId(id)) {
+    return c.text('No such account', 404, PRIVATE_HEADERS);
+  }
+
+  const form = await c.req.parseBody();
+  const asked = String(form.limit ?? '');
+  // Megabytes, between the default's floor of 1 MB and 100 GB; anything else is not a size.
+  const mbAsked = asked === 'default' ? null : Number(asked);
+
+  if (mbAsked !== null && (!Number.isInteger(mbAsked) || mbAsked < 1 || mbAsked > 102400)) {
+    return c.text('That is not a size', 400, PRIVATE_HEADERS);
+  }
+
+  const exists = await rows<{ id: string }>(sql()`select id from neon_auth."user" where id = ${id}`);
+
+  if (!exists[0]) {
+    return c.text('No such account', 404, PRIVATE_HEADERS);
+  }
+
+  const value = mbAsked === null ? null : mbAsked * 1048576;
+
+  /*
+   * A row made here for an account that had none is marked as welcomed: a row with no welcome is
+   * an account owed the welcome email, and granting it room is not a reason to send one.
+   */
+  await sql()`
+    insert into m2h_user (user_id, bytes_limit, welcomed_at) values (${id}, ${value}, now())
+    on conflict (user_id) do update set bytes_limit = excluded.bytes_limit
+  `;
+  // Who and how much, for the function log; no address.
+  console.info(`admin: storage limit for ${id} set to ${value === null ? 'default' : `${mbAsked} MB`}`);
+
+  return c.redirect(`/admin/u/${id}?saved=limit`, 303);
 });
 
 admin.post('/admin/u/:id/delete', async (c) => {
