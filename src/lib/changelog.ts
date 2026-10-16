@@ -139,6 +139,15 @@ const ENTRIES: ChangelogEntry[] = [
       + 'Confluence pages also lose the space name repeated in front of every title.',
   },
   {
+    date: '2026-10-16',
+    title: 'Large Confluence spaces open again',
+    body:
+      'An export whose pages and pictures came to more than 64 MB was refused as "not a readable .zip" '
+      + 'since conversion moved off the page: the converter took itself for a server and used a '
+      + 'server’s limit. It reads up to 512 MB again — a 948-page space with a thousand screenshots '
+      + 'opens in seconds.',
+  },
+  {
     date: '2026-10-15',
     title: 'Read a document as a book',
     body:

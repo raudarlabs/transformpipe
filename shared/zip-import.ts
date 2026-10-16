@@ -42,7 +42,16 @@ const MAX_UNPACKED = 64 * 1024 * 1024;
  * section whose pages were a few megabytes of HTML. A server keeps the stricter whole-archive
  * figure above, because a function has far less memory to spare than a person's laptop.
  */
-const MAX_WANTED = typeof window === 'undefined' ? MAX_UNPACKED : 512 * 1024 * 1024;
+const inBrowser =
+  typeof window !== 'undefined' ||
+  /*
+   * A Web Worker is the browser too, and it has no `window`: big exports are converted in one so the
+   * page keeps answering, and the test above alone gave them the server's 64 MB — a 948-page space
+   * with its pictures was refused at 118 MB.
+   */
+  typeof (globalThis as { WorkerGlobalScope?: unknown }).WorkerGlobalScope !== 'undefined';
+
+const MAX_WANTED = inBrowser ? 512 * 1024 * 1024 : MAX_UNPACKED;
 
 /**
  * Refuses an archive that unpacks to more than `MAX_UNPACKED`, without unpacking any of it.
