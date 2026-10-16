@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 15 October 2026.** Next up: **Comparing** — see Next, in order.
+**Updated 16 October 2026.** Next up: **Comparing** — see Next, in order.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -46,8 +46,6 @@ Cursor comes in with the sign-in work because it needs the same thing.
 - [ ] **Cursor connects** — its `cursor://` callback is accepted now; seen to work end to end, and
       its row in the assistants' table moves
 - [ ] **A page for Obsidian, and an article** — `/obsidian` and the post, five languages each
-- [ ] **Linked notes become linked pages** — a `[[note]]` that is published too opens its page
-      · the plugin's 1.1
 
 ### The pull request, and the link
 
@@ -97,6 +95,18 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 16 October
+
+- [x] **Linked notes become linked pages** — the Obsidian plugin's 1.1: a `[[note]]` that is
+      published too opens its page, heading links included, and "Publish note with linked notes"
+      sends a note and its neighbours together. The link is decided when the page is read, so it
+      starts working when the other note is shared and goes back to words when it is not — on
+      `/s/`, `/f/`, and in Word, PDF and HTML downloads
+- [x] **Bugs of the same family as the 64 MB one**, hunted on purpose and walked by hand: sizes
+      counted by the server, folder downloads and big pages kept under the platform's 4.5 MB, one
+      oversized page no longer stopping an import, a shared page's links to private pages reading
+      as words, a heading link from another page arriving at its heading
 
 ### 15 October
 

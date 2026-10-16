@@ -23,7 +23,11 @@ export function rewriteWikilinks(
   markdown: string,
   hasPicture?: (name: string) => boolean
 ): string {
-  return markdown.replace(WIKILINK, (whole, target: string, shown?: string) => {
+  /*
+   * Not inside code: a note about Obsidian shows `[[Note]]` as an example, and turning the example
+   * into "Note" turned the explanation into nonsense.
+   */
+  return outsideCode(markdown, (prose) => prose.replace(WIKILINK, (whole, target: string, shown?: string) => {
     const text = (shown ?? target).trim();
     const embed = whole.startsWith('!') && EMBEDDED_FILE.test(target);
 
@@ -36,7 +40,53 @@ export function rewriteWikilinks(
      * nothing to carry over, and the words are what survives.
      */
     return hasPicture?.(target.trim()) ? `![${text}](${target.trim()})` : `*${text}*`;
-  });
+  }));
+}
+
+/** `change` applied to everything but fenced code blocks and inline code spans. */
+function outsideCode(markdown: string, change: (prose: string) => string): string {
+  const out: string[] = [];
+  let fence: string | null = null;
+  let prose: string[] = [];
+
+  const flush = () => {
+    if (prose.length === 0) return;
+
+    out.push(
+      prose
+        .join('\n')
+        .split(/(`+[^`\n]*`+)/)
+        .map((piece, index) => (index % 2 === 1 ? piece : change(piece)))
+        .join('')
+    );
+    prose = [];
+  };
+
+  for (const line of markdown.split('\n')) {
+    const marker = /^ {0,3}(`{3,}|~{3,})/.exec(line)?.[1];
+
+    if (fence) {
+      out.push(line);
+
+      if (marker && marker[0] === fence[0] && marker.length >= fence.length) fence = null;
+
+      continue;
+    }
+
+    if (marker) {
+      flush();
+      fence = marker;
+      out.push(line);
+
+      continue;
+    }
+
+    prose.push(line);
+  }
+
+  flush();
+
+  return out.join('\n');
 }
 
 /**

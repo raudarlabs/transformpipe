@@ -37,6 +37,7 @@ import { markdownToHtml } from './render.js';
 import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import { registerFolders } from './folders.js';
+import { linkSharedMarkdown } from './page-links.js';
 import { registerFolderSharing } from './folder-share.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
 import { hashPassword, readPassword } from './share-password.js';
@@ -1031,6 +1032,14 @@ v1.get('/documents/:id', async (c) => {
 
   if (markdown === null) {
     return c.json({ error: 'The source of this document is missing' }, 410);
+  }
+
+  /*
+   * A file leaves the site: links to the caller's other pages become whole addresses where those
+   * are shared, and words where they are not. The JSON answer keeps the source as it is.
+   */
+  if (wantsHtml || wantsDocx || wantsPdf) {
+    markdown = await linkSharedMarkdown(markdown, c.get('caller').id, { origin: selfOrigin(c) });
   }
 
   if (wantsHtml) {

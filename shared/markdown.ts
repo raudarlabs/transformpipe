@@ -1216,8 +1216,13 @@ const SHARED_CHROME_STYLE = `
 
 .md-top:focus-visible { outline: 2px solid var(--md-brand-3); outline-offset: 2px; }
 
+/*
+ * Smooth only once the page is in use: on the whole document it also smoothed the jump a link from
+ * another page makes to one of these headings, and Chrome dropped that jump half way — the reader
+ * arrived at the top of the page instead of the section the link named.
+ */
 @media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
+  html:focus-within { scroll-behavior: smooth; }
 }
 
 @media print { .md-top { display: none; } }

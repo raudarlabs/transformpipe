@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { Context, Hono } from 'hono';
 import { setCookie } from 'hono/cookie';
-import { CONVERSIONS } from '../shared/conversions.js';
 import { buildNoticePage, buildPasswordPage, buildSharedPage, buildStandaloneHtml } from '../shared/markdown.js';
 import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { attachment } from './attachment.js';
@@ -13,6 +12,7 @@ import { countCall } from './limits.js';
 import { fitsPage } from '../shared/limits.js';
 import { edgeSeconds, writtenUtc } from './share-gate.js';
 import { UNLOCK_SECONDS, passwordMatches, unlockCookie, unlockValue } from './share-password.js';
+import { linkSharedMarkdown, linkSharedPages } from './page-links.js';
 import { readSource } from './source.js';
 
 /*
@@ -88,51 +88,6 @@ function trailOf(token: string, folder: SharedFolder, tree: Tree, folderId: stri
   }
 
   return `<p><a href="/f/${encodeURIComponent(token)}">${html(folder.name)}</a>${path.map((one) => ` › ${one}`).join('')}</p>`;
-}
-
-/**
- * Links between an owner's pages — written as addresses in the app (`/…?doc=<id>`) — pointed where a
- * reader of a shared page can actually follow them.
- *
- * A page inside the shared folder opens there; a page shared on its own opens at its own link; any
- * other is the owner's private page, and a stranger following the app's address landed on an empty
- * converter, so it becomes its words, with a note saying why. The owner reading their own share keeps
- * the app's address, which opens the page for them.
- */
-export async function linkSharedPages(
-  body: string,
-  ownerId: string,
-  options: { folder?: { token: string; inside: Set<string> }; isOwner?: boolean } = {}
-): Promise<string> {
-  const paths = CONVERSIONS.map((one) => one.path.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')).join('|');
-  const pattern = new RegExp(`<a href="(?:${paths})\\?doc=([0-9a-f-]{36})"([^>]*)>([\\s\\S]*?)</a>`, 'g');
-  const wanted = [...new Set([...body.matchAll(pattern)].map((match) => match[1]))].filter(
-    (id) => !options.folder?.inside.has(id)
-  );
-  const shared = new Map<string, string>();
-
-  if (wanted.length > 0) {
-    const rows = (await sql()`
-      select id::text, share_token from m2h_document
-      where user_id = ${ownerId} and id = any(${wanted}::uuid[])
-        and share_token is not null and share_mode in ('link', 'people')
-        and (share_expires_at is null or share_expires_at > now())
-    `.catch(() => [])) as Array<{ id: string; share_token: string }>;
-
-    for (const row of rows) shared.set(row.id, row.share_token);
-  }
-
-  return body.replace(pattern, (whole, id: string, rest: string, text: string) => {
-    if (options.folder?.inside.has(id)) {
-      return `<a href="/f/${encodeURIComponent(options.folder.token)}/${id}"${rest}>${text}</a>`;
-    }
-
-    const token = shared.get(id);
-
-    if (token) return `<a href="/s/${encodeURIComponent(token)}"${rest}>${text}</a>`;
-
-    return options.isOwner ? whole : `<span class="md-unshared" title="A page that is not shared">${text}</span>`;
-  });
 }
 
 /** A transparent 1×1 GIF, as the document's page counts its opens. */
@@ -331,15 +286,19 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
       c.header('content-type', 'text/markdown; charset=utf-8');
       c.header('content-disposition', attachment(`${base}.md`));
 
-      return c.body(download === 'obsidian' ? obsidianHeadingLinks(source) : source);
+      const portable = await linkSharedMarkdown(source, folder.user_id, {
+        folder: { token, inside: new Set(tree.documents.map((one) => one.id)) },
+        origin: selfOrigin(c),
+      });
+
+      return c.body(download === 'obsidian' ? obsidianHeadingLinks(portable) : portable);
     }
 
     const { markdownToHtml } = await import('./render.js');
     const inside = new Set(tree.documents.map((one) => one.id));
-    const body = await linkSharedPages(markdownToHtml(source), folder.user_id, {
-      folder: { token, inside },
-      isOwner: verdict.reader?.isOwner,
-    });
+    const rendered = markdownToHtml(source);
+    const linkOptions = { folder: { token, inside }, isOwner: verdict.reader?.isOwner };
+    const body = await linkSharedPages(rendered, folder.user_id, linkOptions);
     const createdAt = new Date(document.created_at).getTime();
     const here = `/f/${encodeURIComponent(token)}/${id}`;
 
@@ -359,7 +318,9 @@ export function registerFolderPages(app: Hono<any>, headers: Record<string, stri
     };
 
     if (download === '' || download === 'html') {
-      const html = buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' });
+      // A saved file is opened from a disk, where a link has to carry the site's address.
+      const whole = await linkSharedPages(rendered, folder.user_id, { ...linkOptions, origin: selfOrigin(c) });
+      const html = buildStandaloneHtml({ title: document.name, body: whole, createdAt, theme: 'light' });
 
       if (!fitsPage(html)) return tooLarge();
 

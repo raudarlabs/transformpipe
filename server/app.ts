@@ -60,7 +60,8 @@ import { obsidianHeadingLinks } from '../shared/to-obsidian.js';
 import { revisionFiles } from './revisions.js';
 import { registerFolders } from './folders.js';
 import { registerFolderSharing, registerSharedFolders } from './folder-share.js';
-import { linkSharedPages, registerFolderPages } from './folder-page.js';
+import { registerFolderPages } from './folder-page.js';
+import { linkSharedMarkdown, linkSharedPages } from './page-links.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
   edgeSeconds,
@@ -599,12 +600,14 @@ api.get('/documents/:id/docx', async (c) => {
     return c.json({ error: 'Not found' }, 404);
   }
 
-  const markdown = await readSource({ ...row, user_id: userId });
+  const source = await readSource({ ...row, user_id: userId });
 
-  if (markdown === null) {
+  if (source === null) {
     return c.json({ error: 'The source of this document is missing' }, 410);
   }
 
+  // A file leaves the site: links to the owner's other pages become whole addresses, or words.
+  const markdown = await linkSharedMarkdown(source, userId, { origin: selfOrigin(c) });
   const { markdownToDocx } = await import('./docx.js');
   const fileName = `${row.name.replace(/\.[^.]+$/, '')}.docx`;
 
@@ -643,12 +646,14 @@ api.get('/documents/:id/pdf', async (c) => {
     return c.json({ error: 'Not found' }, 404);
   }
 
-  const markdown = await readSource({ ...row, user_id: userId });
+  const source = await readSource({ ...row, user_id: userId });
 
-  if (markdown === null) {
+  if (source === null) {
     return c.json({ error: 'The source of this document is missing' }, 410);
   }
 
+  // A file leaves the site: links to the owner's other pages become whole addresses, or words.
+  const markdown = await linkSharedMarkdown(source, userId, { origin: selfOrigin(c) });
   const { markdownToPdf } = await import('./pdf.js');
   const fileName = `${row.name.replace(/\.[^.]+$/, '')}.pdf`;
 
@@ -1371,11 +1376,14 @@ app.get('/s/:token', async (c) => {
    * — a private document is a 404 and a "people" one only opens for them — because it is the same
    * route, after them.
    */
+  /* Links to the owner's other pages, as a reader of a file on their own disk can follow them. */
+  const portable = () => linkSharedMarkdown(source, document.user_id, { origin: selfOrigin(c) });
+
   if (download === 'md') {
     c.header('content-type', 'text/markdown; charset=utf-8');
     c.header('content-disposition', attachment(`${base}.md`));
 
-    return c.body(source);
+    return c.body(await portable());
   }
 
   /* The same source, its links to its own headings rewritten so they work in an Obsidian vault. */
@@ -1383,12 +1391,11 @@ app.get('/s/:token', async (c) => {
     c.header('content-type', 'text/markdown; charset=utf-8');
     c.header('content-disposition', attachment(`${base}.md`));
 
-    return c.body(obsidianHeadingLinks(source));
+    return c.body(obsidianHeadingLinks(await portable()));
   }
 
-  const body = await linkSharedPages(markdownToHtml(source), document.user_id, {
-    isOwner: verdict.reader?.isOwner,
-  });
+  const rendered = markdownToHtml(source);
+  const body = await linkSharedPages(rendered, document.user_id, { isOwner: verdict.reader?.isOwner });
 
   const tooLarge = () => {
     c.status(413);
@@ -1404,7 +1411,9 @@ app.get('/s/:token', async (c) => {
 
   /* `?download` alone is the address every earlier shared page printed, so it stays the HTML. */
   if (download === '' || download === 'html') {
-    const html = buildStandaloneHtml({ title: document.name, body, createdAt, theme: 'light' });
+    // A saved file is opened from a disk, where a link has to carry the site's address.
+    const whole = await linkSharedPages(rendered, document.user_id, { origin: selfOrigin(c) });
+    const html = buildStandaloneHtml({ title: document.name, body: whole, createdAt, theme: 'light' });
 
     if (!fitsPage(html)) return tooLarge();
 

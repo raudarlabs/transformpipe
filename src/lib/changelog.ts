@@ -149,6 +149,46 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-16',
+    title: 'Linked Obsidian notes become linked pages',
+    slug: 'obsidian-linked-notes',
+    body:
+      'In the Obsidian plugin 1.1, a [[link]] to another published note opens that note\'s page, '
+      + 'heading links included, and "Publish note with linked notes" sends a note and its neighbours '
+      + 'in one go. Links are decided when the page is read: publish the other note later and the '
+      + 'link starts working by itself; make it private and it reads as words again.',
+    detail: {
+      en: {
+        description:
+          'Publish linked Obsidian notes as pages that link to each other, heading links included, with links that follow whatever you share later.',
+        keywords:
+          'publish linked obsidian notes, obsidian publish alternative, share obsidian notes with links, obsidian wikilinks web page, free obsidian publish',
+        body: `A note rarely stands alone. It points at the meeting it came out of, the spec it refers to, the glossary everyone forgets. Until now a note published from Obsidian kept those links as their words, because a page on the web has no vault to look them up in. With version 1.1 of the TransformPipe plugin, a link to another published note opens that note's page.
+
+## Every way Obsidian writes a link
+
+\`[[Note]]\`, \`[[Note|other words]]\`, \`[[Note#Heading]]\` and \`[words](Note.md)\` all work. A link to a heading opens the other page at that heading. Embeds (\`![[Note]]\`) and links inside code are left as they are.
+
+## One command for a note and its neighbours
+
+**Publish note with linked notes** shows the list of notes the current one links to — which are new and which are already published — and publishes all of them, each as its own page, with the links between them pointing at each other, in both directions. The link to the note you started from is copied when it is done. Up to fifty linked notes go in one run.
+
+## Decided when somebody reads
+
+The plugin sends a link as the address of the other note's document, and TransformPipe decides what it becomes each time the page is opened:
+
+- **The other note is shared** — by link or with named people — and the link opens its page.
+- **It is private, or not published at all** — the link reads as its words, so nothing private is exposed and nothing leads to an empty page.
+
+So nothing has to be republished: share the linked note next week and the link in this one starts working by itself; make it private and it goes back to words. The same rule holds in Word, PDF and HTML downloads, where a shared note's link carries the full address.
+
+## Where it does not reach
+
+A note linked only from a linked note is not published by the command — one step out, on purpose, so a well-linked vault does not go out whole by accident. Its link shows as words until you publish it.`,
+      },
+    },
+  },
+  {
+    date: '2026-10-16',
     title: 'Links on a shared page go where the reader can follow',
     body:
       'A page of an import shared on its own linked to its sibling pages by their address in the '
