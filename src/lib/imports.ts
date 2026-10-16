@@ -20,7 +20,15 @@ const documentName = (title: string) =>
   `${title.replace(/[\/\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Untitled'}.md`;
 
 /** A page's file name: its title, minus what a file name cannot hold. */
-const fileName = (title: string) => `${title.replace(/[\\/:*?"<>|\u0000-\u001f]+/g, ' ').trim() || 'Untitled'}.md`;
+const fileName = (title: string) =>
+  `${
+    title
+      // "Release: 2.0" reads as "Release - 2.0"; a colon is the one a title uses most and no disk allows.
+      .replace(/\s*:\s*/g, ' - ')
+      .replace(/[\\/*?"<>|\u0000-\u001f]+/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim() || 'Untitled'
+  }.md`;
 
 const BATCH_BYTES = 3 * 1024 * 1024;
 const BATCH_PAGES = 200;
@@ -29,7 +37,7 @@ export async function saveImport(
   split: SplitResult,
   kind: ConversionId,
   onProgress: (saved: number, total: number) => void
-): Promise<{ folderId: string; saved: number; failed: number }> {
+): Promise<{ folderId: string; saved: number; failed: number; tooLarge: string[] }> {
   const root = 'root';
   const paths = foldersOf(split);
   const ids = await api.createFolderTree(null, [
@@ -51,6 +59,8 @@ export async function saveImport(
 
   let saved = 0;
   let failed = 0;
+  /* By title, so the person is told which pages stayed behind, not only how many. */
+  const tooLarge: string[] = [];
   let batch: Parameters<typeof api.saveBatch>[0] = [];
   let bytes = 0;
 
@@ -80,7 +90,7 @@ export async function saveImport(
      * all is a request the platform turns away whole, with the pages beside it. Counted, not sent.
      */
     if (size > KEEP_BYTES) {
-      failed += 1;
+      tooLarge.push(page.title);
       continue;
     }
 
@@ -102,7 +112,7 @@ export async function saveImport(
 
   await flush();
 
-  return { folderId: ids[root], saved, failed };
+  return { folderId: ids[root], saved, failed, tooLarge };
 }
 
 /** The same tree as a .zip of Markdown files, for somebody who keeps it on disk instead. */

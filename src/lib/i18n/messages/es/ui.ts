@@ -279,6 +279,7 @@ export const ui: Content['ui'] = {
   'import.saving': 'Guardando {done} de {total} páginas…',
   'import.saved': '{count} páginas guardadas en «{name}»',
   'import.saved.failed': '{count} no se pudieron guardar',
+  'import.saved.tooLarge': 'Demasiado grande para guardarse (más de 4 MB), no se guardó: {names}.',
   'import.save.error': 'No se pudieron guardar las páginas',
   'import.save.signedout': 'Inicia sesión para guardar estas páginas en tu cuenta como una carpeta. O descárgalas como .zip.',
   'import.pick': 'Elige una página para verla aquí.',

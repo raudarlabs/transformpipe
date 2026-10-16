@@ -283,6 +283,7 @@ export const ui: Content['ui'] = {
   'import.saving': 'Saving {done} of {total} pages…',
   'import.saved': '{count} pages saved in “{name}”',
   'import.saved.failed': '{count} could not be saved',
+  'import.saved.tooLarge': 'Too large to keep (over 4 MB), not saved: {names}.',
   'import.save.error': 'Could not save the pages',
   'import.save.signedout': 'Sign in to save these pages to your account as a folder. Or download them as a .zip.',
   'import.pick': 'Pick a page to see it here.',

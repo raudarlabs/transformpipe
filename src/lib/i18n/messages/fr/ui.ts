@@ -274,6 +274,7 @@ export const ui: Content['ui'] = {
   'import.saving': 'Enregistrement de {done} pages sur {total}…',
   'import.saved': '{count} pages enregistrées dans « {name} »',
   'import.saved.failed': '{count} n’ont pas pu être enregistrées',
+  'import.saved.tooLarge': 'Trop volumineux pour être conservé (plus de 4 Mo), non enregistré : {names}.',
   'import.save.error': 'Impossible d’enregistrer les pages',
   'import.save.signedout': 'Connectez-vous pour enregistrer ces pages dans votre compte sous forme de dossier. Ou téléchargez-les en .zip.',
   'import.pick': 'Choisissez une page pour la voir ici.',

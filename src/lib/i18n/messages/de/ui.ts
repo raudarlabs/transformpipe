@@ -288,6 +288,7 @@ export const ui: Content['ui'] = {
   'import.saving': '{done} von {total} Seiten gespeichert…',
   'import.saved': '{count} Seiten in „{name}“ gespeichert',
   'import.saved.failed': '{count} konnten nicht gespeichert werden',
+  'import.saved.tooLarge': 'Zu groß zum Behalten (über 4 MB), nicht gespeichert: {names}.',
   'import.save.error': 'Die Seiten konnten nicht gespeichert werden',
   'import.save.signedout': 'Melden Sie sich an, um diese Seiten als Ordner im Konto zu speichern. Oder laden Sie sie als .zip herunter.',
   'import.pick': 'Wählen Sie eine Seite, um sie hier zu sehen.',

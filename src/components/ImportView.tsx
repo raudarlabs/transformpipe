@@ -91,8 +91,17 @@ export function ImportView({ split, kind, canSave, onSaved, onOneDocument, onRes
     try {
       const result = await saveImport(split, kind, (done, total) => setSaving({ done, total }));
 
+      const notes = [
+        result.tooLarge.length > 0
+          ? t('import.saved.tooLarge', { names: result.tooLarge.slice(0, 3).join(', ') + (result.tooLarge.length > 3 ? ` +${result.tooLarge.length - 3}` : '') })
+          : '',
+        result.failed > 0 ? t('import.saved.failed', { count: result.failed }) : '',
+      ].filter(Boolean);
+
       toast.success(t('import.saved', { count: result.saved, name: split.title }), {
-        description: result.failed > 0 ? t('import.saved.failed', { count: result.failed }) : undefined,
+        description: notes.length > 0 ? notes.join(' ') : undefined,
+        // Long enough to read a page's name, when something stayed behind.
+        duration: notes.length > 0 ? 12000 : undefined,
       });
       onSaved(result.folderId);
     } catch (cause) {

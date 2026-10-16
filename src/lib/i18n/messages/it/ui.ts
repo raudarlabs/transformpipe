@@ -271,6 +271,7 @@ export const ui: Content['ui'] = {
   'import.saving': 'Salvataggio di {done} pagine su {total}…',
   'import.saved': '{count} pagine salvate in «{name}»',
   'import.saved.failed': '{count} non sono state salvate',
+  'import.saved.tooLarge': 'Troppo grande per essere conservato (oltre 4 MB), non salvato: {names}.',
   'import.save.error': 'Impossibile salvare le pagine',
   'import.save.signedout': 'Accedi per salvare queste pagine nel tuo account come cartella. Oppure scaricale come .zip.',
   'import.pick': 'Scegli una pagina per vederla qui.',
