@@ -1,5 +1,6 @@
 import {
   Cloud,
+  CloudOff,
   Combine,
   Download,
   FileText,
@@ -1170,7 +1171,7 @@ export function HistoryPage({
               {t('history.column.size')}
             </TableHead>
             <TableHead
-              className="hidden w-28 md:table-cell"
+              className="hidden w-28 xl:table-cell"
               sortable
               sortDirection={directionOf('words')}
               onSort={() => sortBy('words')}
@@ -1247,22 +1248,36 @@ export function HistoryPage({
                       <span className="truncate font-medium text-ink-primary">
                         {entry.name}
                       </span>
+                      {/*
+                        * Beside the name, not in the Type column: it says something about this file,
+                        * and next to the conversion's badge the two outgrew the column and ran into
+                        * the size on a laptop-width screen.
+                        */}
+                      <span className="hidden shrink-0 xl:inline-flex">
+                        <UnsavedBadge entry={entry} isSynced={isSynced} />
+                      </span>
+                      {/* Narrower, the same fact as an icon: the name needs the room more. */}
+                      {isSynced && !entry.remote && (
+                        <CloudOff
+                          className="size-3.5 shrink-0 text-fb-attention xl:hidden"
+                          aria-label={t('history.row.unsaved')}
+                        >
+                          <title>{t('history.row.unsaved')}</title>
+                        </CloudOff>
+                      )}
                     </span>
                   </Hint>
                 </TableCell>
 
                 <TableCell className="hidden sm:table-cell">
-                  <span className="flex items-center gap-2">
-                    <KindBadge entry={entry} isShared={isShared} className="w-24" />
-                    <UnsavedBadge entry={entry} isSynced={isSynced} />
-                  </span>
+                  <KindBadge entry={entry} isShared={isShared} className="w-24" />
                 </TableCell>
 
                 <TableCell className="hidden sm:table-cell">
                   {formatBytes(entry.size, numbers)}
                 </TableCell>
 
-                <TableCell className="hidden text-ink-secondary md:table-cell">
+                <TableCell className="hidden text-ink-secondary xl:table-cell">
                   {t(entry.stats.words === 1 ? 'history.row.words.one' : 'history.row.words.many', {
                     words: entry.stats.words.toLocaleString(numbers),
                   })}

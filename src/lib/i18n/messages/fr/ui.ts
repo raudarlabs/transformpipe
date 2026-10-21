@@ -242,6 +242,8 @@ export const ui: Content['ui'] = {
   'converter.picker.label': 'Ou convertir autre chose',
   'converter.picker.soon': 'Bientôt',
   'converter.picker.soon.title': 'Pas encore là — c’est prévu',
+  'converter.sample.lead': 'Première visite ?',
+  'converter.sample.open': 'Ouvrir un exemple',
   'converter.howto': 'Ce format est nouveau pour vous ?',
   'converter.blog.eyebrow': 'Blog',
   'converter.blog.title': 'Discipliner le Markdown',

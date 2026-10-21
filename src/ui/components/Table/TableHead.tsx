@@ -46,7 +46,7 @@ function TableHead({
           : undefined
       }
       className={cn(
-        'h-9 whitespace-nowrap ps-3 pe-2 text-left align-middle font-medium text-ink-secondary text-xs [&:has([role=checkbox])]:pr-0',
+        'h-9 whitespace-nowrap px-2 text-left align-middle font-medium text-ink-secondary text-xs [&:has([role=checkbox])]:pr-0',
         className
       )}
       {...props}

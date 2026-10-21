@@ -56,6 +56,7 @@ import { OVERLAY, useFullscreen } from '@/lib/use-fullscreen';
 import type { ConvertedDoc } from '@/lib/types';
 import { buildStandaloneHtml, markdownToHtml } from '@/lib/markdown';
 import { downloadDoc, printDoc, saveBlob } from '@/lib/download';
+import { sampleFile } from '@/lib/sample-document';
 import { count } from '@/lib/usage';
 import {
   type DocFormat,
@@ -487,7 +488,8 @@ export function ConverterPage({
               one.covers?.includes(conversion.path)
           );
 
-          return guide ? (
+          // On the home page the guide shares one line with the sample, below.
+          return guide && conversion.id !== DEFAULT_CONVERSION ? (
             <Typography variant="p" textColor="light" className="text-center text-sm">
               {t('converter.howto')}{' '}
               <a
@@ -499,6 +501,39 @@ export function ConverterPage({
             </Typography>
           ) : null;
         })()}
+
+        {/*
+          * For somebody on the home page with nothing to drop yet: the sample is the product's own
+          * short guide, and one click shows what a page here can hold. One quiet line, under the
+          * dropzone rather than above it — the dropzone is what most people come for.
+          */}
+        {conversion.id === DEFAULT_CONVERSION && (
+          <Typography variant="p" textColor="light" className="text-center text-sm">
+            {t('converter.sample.lead')}{' '}
+            <button
+              type="button"
+              className="text-brand-tertiary underline underline-offset-2"
+              onClick={() => {
+                count('start', 'sample');
+                onFiles([sampleFile(locale)]);
+              }}
+            >
+              {t('converter.sample.open')}
+            </button>
+            {(() => {
+              const guide = STATIC_PAGES.find((one) => one.action === conversion.path);
+
+              return guide ? (
+                <>
+                  <span aria-hidden className="px-2 text-ink-inactive">·</span>
+                  <a href={guide.path} className="text-brand-tertiary underline underline-offset-2">
+                    {content.pages[guide.id].label}
+                  </a>
+                </>
+              ) : null;
+            })()}
+          </Typography>
+        )}
 
         <ConversionPicker
           current={conversion.id}

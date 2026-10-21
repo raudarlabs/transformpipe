@@ -513,7 +513,7 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
       <ul role={parent ? 'group' : undefined}>
         {creating === (parent ?? 'top') && (
           <li>
-            <div className="flex items-center gap-1.5 py-1 pr-2" style={indent(depth)}>
+            <div className="flex h-8 items-center gap-1.5 pr-2" style={indent(depth)}>
               <span className="size-4 shrink-0" />
               <FolderPlus className="size-4 shrink-0 text-brand-tertiary" />
               <NameField initial="" onDone={finishCreating} />
@@ -536,7 +536,7 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
                 }}
                 onContextMenu={contextMenu(one.id)}
                 className={cn(
-                  'flex items-center gap-1.5 rounded-md py-1 pr-2 text-sm',
+                  'flex h-8 items-center gap-1.5 rounded-md pr-2 text-sm',
                   isHere ? 'bg-surface-accent font-medium text-ink-primary' : 'text-ink-body hover:bg-surface-chips',
                   (over(one.id) || menu?.id === one.id) && 'ring-2 ring-brand-tertiary ring-inset'
                 )}
@@ -602,7 +602,12 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
       aria-label={t('folders.trail')}
       className="flex flex-col rounded-xl border border-stroke bg-surface-card lg:sticky lg:top-16 lg:max-h-[min(32rem,calc(100vh-5rem))]"
     >
-      <div className="flex items-center gap-1 border-stroke border-b px-2 py-1.5">
+      {/*
+        * On one line with the list's own header and its search box (HistoryPage): 35px and the
+        * card's top border are the header's 36, the list's first row starts where the search box
+        * does and is as tall as it.
+        */}
+      <div className="flex h-[35px] items-center gap-1 border-stroke border-b px-2">
         <button
           type="button"
           aria-expanded={shown}
@@ -631,7 +636,7 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
         */}
       <div
         role="tree"
-        className={cn('min-h-0 flex-1 overflow-auto p-1.5 max-lg:max-h-72', !shown && 'max-lg:hidden')}
+        className={cn('min-h-0 flex-1 overflow-auto px-1.5 pt-4 pb-1.5 max-lg:max-h-72 max-lg:pt-1.5', !shown && 'max-lg:hidden')}
       >
         <button
           type="button"
@@ -641,7 +646,7 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
           }}
           onContextMenu={contextMenu('top')}
           className={cn(
-            'flex w-full items-center gap-1.5 rounded-md py-1 pr-2 pl-2 text-left text-sm',
+            'flex h-8 w-full items-center gap-1.5 rounded-md pr-2 pl-2 text-left text-sm',
             current === null ? 'bg-surface-accent font-medium text-ink-primary' : 'text-ink-body hover:bg-surface-chips',
             (over(null) || menu?.id === 'top') && 'ring-2 ring-brand-tertiary ring-inset'
           )}
