@@ -25,6 +25,7 @@ import { MoveDialog, pathOf } from '@/components/MoveDialog';
 import { recentFolders, rememberFolder } from '@/lib/recent-folders';
 import { ListSelectionBar } from '@/components/ListSelectionBar';
 import { ShareDialog } from '@/components/ShareDialog';
+import { StartChecklist, StartTiles } from '@/components/StartHere';
 import { VersionsDialog } from '@/components/VersionsDialog';
 import {
   ALL_EXTENSIONS,
@@ -62,7 +63,6 @@ import {
   InputGroupInput,
 } from '@/ui/components/InputGroup';
 import { IconButton } from '@/ui/components/IconButton';
-import { StatusView } from '@/ui/components/StatusView';
 import {
   Table,
   TableBody,
@@ -291,7 +291,9 @@ export function HistoryPage({
   const isShared = chip === 'shared';
   const filePicker = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [sharing, setSharing] = useState<HistoryEntry | null>(null);
+  const [sharing, setSharing] = useState<{ id: string; name: string } | null>(null);
+  /* Bumped each time the share dialog closes, so the first-steps list reads its steps again. */
+  const [sharesClosed, setSharesClosed] = useState(0);
   const [viewingVersionsOf, setViewingVersionsOf] = useState<HistoryEntry | null>(
     null
   );
@@ -620,21 +622,9 @@ export function HistoryPage({
         : [...current, id]
     );
 
+  /* Nothing converted yet: the three ways in, rather than a sentence saying there is nothing. */
   if (entries.length === 0 && shared.length === 0 && sharedFolders.length === 0) {
-    return (
-      <StatusView
-        tone="muted"
-        title={t('history.empty.title')}
-        description={
-          isSynced ? t('history.empty.synced') : t('history.empty.local')
-        }
-        actions={
-          <Button variant="primary" size="sm" onClick={onGoToConverter}>
-            {t('history.empty.action')}
-          </Button>
-        }
-      />
-    );
+    return <StartTiles isSynced={isSynced} onFiles={onFiles} onPaste={onGoToConverter} />;
   }
 
   return (
@@ -667,6 +657,8 @@ export function HistoryPage({
           )}
         </Typography>
       </div>
+
+      {isSynced && <StartChecklist changed={`${entries.length}:${sharesClosed}`} onShare={setSharing} />}
 
       <button
         type="button"
@@ -1311,7 +1303,12 @@ export function HistoryPage({
         documentId={sharing?.id ?? null}
         name={sharing?.name ?? ''}
         open={sharing !== null}
-        onOpenChange={(open) => !open && setSharing(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSharing(null);
+            setSharesClosed((n) => n + 1);
+          }
+        }}
       />
 
       <VersionsDialog

@@ -24,6 +24,7 @@ export const BROWSER_EVENTS = [
   'save',
   'share',
   'nudge',
+  'start',
 ] as const;
 
 /**
@@ -39,6 +40,13 @@ export const SERVER_EVENTS = ['mcp', 'api', 'oauth', 'rating'] as const;
 
 /** The steps of a connection, in order. `deny` is the consent page's Cancel. */
 export const OAUTH_STEPS = ['start', 'signin', 'consent', 'approve', 'deny', 'token'] as const;
+
+/**
+ * A new account's first steps (src/components/StartHere.tsx): the three ways in shown before the
+ * first save, the checklist's two buttons, and the checklist being hidden or finished — so a funnel
+ * shows which way in is taken and where people stop.
+ */
+export const START_ACTIONS = ['drop', 'paste', 'sample', 'share', 'connect', 'hide', 'done'] as const;
 
 export type BrowserEvent = (typeof BROWSER_EVENTS)[number];
 export type ServerEvent = (typeof SERVER_EVENTS)[number];
@@ -269,6 +277,7 @@ const KEYS: Record<Exclude<BrowserEvent, 'visit' | 'view'>, readonly string[]> =
   download: DOWNLOAD_FORMATS,
   share: SHARE_KINDS,
   nudge: NUDGE_VARIANTS.flatMap((variant) => NUDGE_ACTIONS.map((action) => `${variant}:${action}`)),
+  start: START_ACTIONS,
 };
 
 /** One count, as the browser sends it and as the table stores it. */

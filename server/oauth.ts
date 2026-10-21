@@ -403,6 +403,21 @@ export function consentPage(options: {
     ['decision', ''],
   ];
 
+  /*
+   * The one time somebody connecting an assistant sees this site, so it is where they are told what
+   * to ask it: coming back to an empty chat box with a new tool in it is where most of them stopped
+   * (15 of 17 connected from Claude had saved nothing). Not for the plugin or the extension, which
+   * have buttons of their own. No script runs here, so each line selects whole on a click instead of
+   * having a Copy button.
+   */
+  const assistant = !/obsidian|chrome|firefox|extension|e2e/i.test(client.name);
+  const asks = [
+    'Save this answer to TransformPipe and give me a link',
+    'Turn this into a Word document I can send',
+    'Share it only with name@company.com',
+    'Find my notes about the launch plan',
+  ];
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -432,6 +447,12 @@ export function consentPage(options: {
            cursor: pointer; }
   button.go { background: var(--brand); border-color: var(--brand); color: #06121a; }
   .foot { margin: 1rem 0 0; font-size: 0.8rem; }
+  .next { border-top: 1px solid var(--line); margin-top: 1.25rem; padding-top: 1rem; }
+  .next h2 { margin: 0 0 0.15rem; font-size: 0.95rem; }
+  .asks { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 0.45rem; }
+  .asks li { margin: 0; padding: 0.5rem 0.7rem; border: 1px solid var(--line); border-radius: 8px;
+             background: var(--page); color: var(--ink); font-size: 0.88rem; user-select: all;
+             -webkit-user-select: all; cursor: text; }
   .warn { border: 1px solid #4a3a12; border-radius: 8px; background: #221a06; padding: 0.7rem 0.8rem;
           color: #e8d9a8; font-size: 0.85rem; }
 </style>
@@ -482,6 +503,17 @@ ${
       <button class="go" type="submit" name="decision" value="allow">Connect</button>
     </div>
   </form>
+${
+  assistant
+    ? `  <section class="next" aria-label="What to ask">
+    <h2>Then, back in ${escapeHtml(client.name)}, try asking</h2>
+    <p class="foot">Click a line to select it, then copy it.</p>
+    <ul class="asks">
+      ${asks.map((one) => `<li>${escapeHtml(one)}</li>`).join('\n      ')}
+    </ul>
+  </section>`
+    : ''
+}
 </main>
 </body>
 </html>

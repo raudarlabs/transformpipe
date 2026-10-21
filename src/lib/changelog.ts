@@ -213,6 +213,15 @@ const ENTRIES: ChangelogEntry[] = [
       + 'that come out the same are numbered, and links between the pages follow the shorter names.',
   },
   {
+    date: '2026-10-21',
+    title: 'A start for a new account',
+    body:
+      'An empty history now offers three ways in — drop a file, paste text, or open a sample that is '
+      + 'a short guide to TransformPipe showing what a page can hold. A new account gets three first '
+      + 'steps above its documents, ticked by what it actually does: save, share a link, connect an '
+      + 'assistant. And connecting Claude or ChatGPT ends with things to ask it.',
+  },
+  {
     date: '2026-10-16',
     title: 'Linked Obsidian notes become linked pages',
     slug: 'obsidian-linked-notes',

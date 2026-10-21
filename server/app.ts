@@ -61,6 +61,7 @@ import { revisionFiles } from './revisions.js';
 import { registerFolders } from './folders.js';
 import { registerFolderSharing, registerSharedFolders } from './folder-share.js';
 import { registerFolderPages } from './folder-page.js';
+import { registerOnboarding } from './onboarding.js';
 import { linkSharedMarkdown, linkSharedPages } from './page-links.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
@@ -367,6 +368,10 @@ api.use('/folders/*', throttle);
 
 registerFolders(api);
 registerFolderSharing(api);
+
+api.use('/onboarding', requireUser);
+api.use('/onboarding/*', requireUser);
+registerOnboarding(api);
 
 /**
  * Documents other people shared with this address.

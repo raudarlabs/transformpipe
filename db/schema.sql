@@ -534,3 +534,8 @@ create index if not exists m2h_folder_share_email on m2h_folder_share (email);
 -- `QUOTA.bytes` (server/limits.ts). Bytes, so a grant can be any size rather than a step.
 alter table m2h_user
   add column if not exists bytes_limit bigint;
+
+-- When the person hid the "get started" checklist in the history (server/onboarding.ts). Null while
+-- it may still be shown; it is shown only to accounts made after ONBOARDING_SINCE anyway.
+alter table m2h_user
+  add column if not exists onboarding_hidden_at timestamptz;

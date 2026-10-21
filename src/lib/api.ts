@@ -101,6 +101,12 @@ function toEntry(doc: ServerDocument): HistoryEntry {
   };
 }
 
+export interface Onboarding {
+  show: boolean;
+  steps: { saved: boolean; shared: boolean; connected: boolean };
+  latest: { id: string; name: string } | null;
+}
+
 export interface Usage {
   bytes: number;
   documents: number;
@@ -545,6 +551,11 @@ export const api = {
   },
 
   usage: () => request<Usage>('/api/usage'),
+
+  /** A new account's first three steps — see server/onboarding.ts. */
+  onboarding: () => request<Onboarding>('/api/onboarding'),
+
+  hideOnboarding: () => request<{ ok: true }>('/api/onboarding/hide', { method: 'POST' }),
 
   listKeys: async () => (await request<{ keys: ApiKey[] }>('/api/keys')).keys,
 
