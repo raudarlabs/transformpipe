@@ -214,6 +214,14 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-21',
+    title: 'A history of a thousand documents opens at once',
+    body:
+      'The history drew every row before showing any, and with a thousand documents that held the '
+      + 'page for two seconds after a click. It now shows the first hundred straight away and the '
+      + 'rest as you scroll; search, sorting, the count and Select all still cover every document.',
+  },
+  {
+    date: '2026-10-21',
     title: 'A start for a new account',
     body:
       'An empty history now offers three ways in — drop a file, paste text, or open a sample that is '

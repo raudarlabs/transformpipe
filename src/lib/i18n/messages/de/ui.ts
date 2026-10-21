@@ -510,6 +510,7 @@ export const ui: Content['ui'] = {
   'start.step.connect': 'Assistenten verbinden',
   'start.step.connect.detail': 'Claude oder ChatGPT speichert Antworten hier und findet Ihre Dokumente.',
   'start.step.connect.action': 'Verbinden',
+  'history.more': '{shown} von {total} angezeigt — mehr anzeigen',
   'history.usage':
     '· {bytes} von {maxBytes} · {documents} von {maxDocuments} Dokumenten',
   'history.drop.title': 'Dateien ablegen',

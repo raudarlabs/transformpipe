@@ -497,6 +497,7 @@ export const ui: Content['ui'] = {
   'start.step.connect': 'Connecter votre assistant',
   'start.step.connect.detail': 'Claude ou ChatGPT enregistre ses réponses ici et retrouve vos documents.',
   'start.step.connect.action': 'Connecter',
+  'history.more': '{shown} sur {total} affichés — afficher plus',
   'history.usage':
     '· {bytes} sur {maxBytes} · {documents} sur {maxDocuments} documents',
   'history.drop.title': 'Déposer des fichiers',

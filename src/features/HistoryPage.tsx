@@ -78,6 +78,10 @@ import { cn } from '@/ui/lib/utils';
 /** The order they are offered in: the document, the page it makes, then the words alone. */
 const FORMATS: DocFormat[] = ['md', 'obsidian', 'html', 'txt', 'docx', 'confluence', 'jira', 'slack', 'epub'];
 
+
+/** Rows drawn before the end of the list comes into view — see `drawn` in HistoryPage. */
+const ROWS_AT_ONCE = 100;
+
 interface RowPartProps {
   entry: HistoryEntry;
   isShared: boolean;
@@ -601,6 +605,37 @@ export function HistoryPage({
     });
   }, [found, sort]);
 
+  /*
+   * How many of the rows are drawn. A thousand rows drawn at once — twice, since the phone's cards
+   * are in the page beside the table — held the page for two seconds before it showed anything, and
+   * again for most of a second each time a request came back. The first hundred go at once and the
+   * next as the end of the list comes into view; counts, search, sorting and Select all still
+   * cover every row.
+   */
+  const [drawn, setDrawn] = useState(ROWS_AT_ONCE);
+  const listEnd = useRef<HTMLDivElement>(null);
+  const shownRows = useMemo(() => rows.slice(0, drawn), [rows, drawn]);
+
+  // A different list starts from its top; the same list refreshed keeps what is drawn.
+  useEffect(() => setDrawn(ROWS_AT_ONCE), [chip, folder, query, contentMatches, sort]);
+
+  useEffect(() => {
+    const end = listEnd.current;
+
+    if (!end || rows.length <= drawn) return;
+
+    const watch = new IntersectionObserver(
+      (seen) => {
+        if (seen.some((one) => one.isIntersecting)) setDrawn((now) => now + ROWS_AT_ONCE * 2);
+      },
+      { rootMargin: '600px 0px' }
+    );
+
+    watch.observe(end);
+
+    return () => watch.disconnect();
+  }, [rows.length, drawn]);
+
   /** Clicking a header sorts by it; clicking the active one flips the direction. */
   const sortBy = (key: SortKey) =>
     setSort((current) =>
@@ -1043,7 +1078,7 @@ export function HistoryPage({
         * here to read. A card has room for the name on its own line and everything else under it.
         */}
       <ul className="flex flex-col gap-2 sm:hidden">
-        {rows.map((entry) => {
+        {shownRows.map((entry) => {
           const isReopenable =
             entry.markdown !== undefined || entry.remote === true;
           const isSelected = selected.includes(entry.id);
@@ -1193,7 +1228,7 @@ export function HistoryPage({
         </TableHeader>
 
         <TableBody>
-          {rows.map((entry) => {
+          {shownRows.map((entry) => {
             const isReopenable =
               entry.markdown !== undefined || entry.remote === true;
             const isSelected = selected.includes(entry.id);
@@ -1311,6 +1346,13 @@ export function HistoryPage({
           })}
         </TableBody>
       </Table>
+      {rows.length > drawn && (
+        <div ref={listEnd} className="flex justify-center py-3">
+          <Button variant="tertiary" size="sm" onClick={() => setDrawn((now) => now + ROWS_AT_ONCE * 2)}>
+            {t('history.more', { shown: drawn, total: rows.length })}
+          </Button>
+        </div>
+      )}
       </div>
       </div>
 
