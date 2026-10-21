@@ -1163,7 +1163,7 @@ export function HistoryPage({
                 : t('history.column.type')}
             </TableHead>
             <TableHead
-              className="hidden w-32 sm:table-cell"
+              className="hidden w-32 text-center sm:table-cell"
               sortable
               sortDirection={directionOf('size')}
               onSort={() => sortBy('size')}
@@ -1171,7 +1171,7 @@ export function HistoryPage({
               {t('history.column.size')}
             </TableHead>
             <TableHead
-              className="hidden w-28 xl:table-cell"
+              className="hidden w-28 text-center xl:table-cell"
               sortable
               sortDirection={directionOf('words')}
               onSort={() => sortBy('words')}
@@ -1273,11 +1273,11 @@ export function HistoryPage({
                   <KindBadge entry={entry} isShared={isShared} className="w-24" />
                 </TableCell>
 
-                <TableCell className="hidden sm:table-cell">
+                <TableCell className="hidden text-center sm:table-cell">
                   {formatBytes(entry.size, numbers)}
                 </TableCell>
 
-                <TableCell className="hidden text-ink-secondary xl:table-cell">
+                <TableCell className="hidden text-center text-ink-secondary xl:table-cell">
                   {t(entry.stats.words === 1 ? 'history.row.words.one' : 'history.row.words.many', {
                     words: entry.stats.words.toLocaleString(numbers),
                   })}

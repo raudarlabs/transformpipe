@@ -600,34 +600,39 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
   return (
     <nav
       aria-label={t('folders.trail')}
-      className="flex flex-col rounded-xl border border-stroke bg-surface-card lg:sticky lg:top-16 lg:max-h-[min(32rem,calc(100vh-5rem))]"
+      className="flex flex-col gap-4 lg:sticky lg:top-16"
     >
       {/*
-        * On one line with the list's own header and its search box (HistoryPage): 35px and the
-        * card's top border are the header's 36, the list's first row starts where the search box
-        * does and is as tall as it.
+        * Laid out the way the list beside it is (HistoryPage): a heading of its own, as tall as the
+        * list's "All documents", then the tree in a card that starts where the search box does. The
+        * heading used to sit inside the card's border, so the card began a line above the list's
+        * heading and the two columns never looked level.
         */}
-      <div className="flex h-[35px] items-center gap-1 border-stroke border-b px-2">
+      <div className="flex h-9 items-center gap-1 pl-1">
         <button
           type="button"
           aria-expanded={shown}
-          className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-ink-secondary text-xs lg:pointer-events-none"
+          className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-ink-primary text-sm lg:pointer-events-none"
           onClick={() => setShown(!shown)}
         >
           <ChevronDown className={cn('size-4 shrink-0 transition-transform lg:hidden', !shown && '-rotate-90')} />
-          <span className="font-semibold uppercase tracking-wide">{t('folders.trail')}</span>
+          <span className="font-semibold">{t('folders.trail')}</span>
           {/* Folded on a phone, the line still says where you are. */}
           <span className="truncate normal-case lg:hidden">· {here?.name ?? t('folders.all')}</span>
         </button>
-        <IconButton
-          variant="tertiary"
+        {/*
+          * Words as well as the icon, and a border: on the page itself rather than inside the card,
+          * the bare icon all but disappeared.
+          */}
+        <Button
+          variant="outline"
           size="xs"
-          aria-label={t('folders.new')}
+          leftSlot={<FolderPlus />}
           title={here ? `${t('move.new.inside')} “${here.name}”` : t('folders.new')}
           onClick={() => startCreating(current)}
         >
-          <FolderPlus />
-        </IconButton>
+          {t('folders.new')}
+        </Button>
       </div>
 
       {/*
@@ -636,7 +641,10 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
         */}
       <div
         role="tree"
-        className={cn('min-h-0 flex-1 overflow-auto px-1.5 pt-4 pb-1.5 max-lg:max-h-72 max-lg:pt-1.5', !shown && 'max-lg:hidden')}
+        className={cn(
+          'min-h-0 overflow-auto rounded-xl border border-stroke bg-surface-card p-1.5 max-lg:max-h-72 lg:max-h-[min(32rem,calc(100vh-8rem))]',
+          !shown && 'max-lg:hidden'
+        )}
       >
         <button
           type="button"
