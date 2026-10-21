@@ -1907,4 +1907,328 @@ export const pages: Content['pages'] = {
         'Publiez une note Obsidian en page web en une commande. Le lien reste le même après chaque modification. Partage avec des personnes nommées, export Word et PDF.',
     },
   },
+  /*
+   * Les quatre pages de fonctionnalités : le partage, l’API, la ligne de commande et la GitHub
+   * Action. Chacune n’était jusqu’ici qu’une phrase dans /docs ou une entrée du changelog, sur
+   * laquelle aucune recherche ne peut tomber. La documentation reste la référence ; ces pages disent
+   * à quoi sert la chose et se terminent sur un lien vers elle.
+   */
+  'share-markdown': {
+    label: 'Partager du Markdown',
+    title: 'Partager un fichier Markdown par un lien',
+    lede: 'Faites d’un fichier .md une page en lecture seule, avec une adresse à envoyer — un mot de passe et une date de fin si vous le souhaitez, un décompte des ouvertures, et un lien que vous pouvez couper à tout moment.',
+    sections: [
+      {
+        heading: 'Du fichier au lien',
+        body: [
+          'Déposez le fichier `.md` sur le convertisseur, ou collez le texte dans l’aperçu en direct et cliquez sur Convertir et garder. Une fois connecté, cliquez sur Enregistrer pour conserver le document dans votre compte, puis sur Partager ; choisissez Toute personne ayant le lien et copiez l’adresse obtenue : `/s/` suivi d’un jeton que personne ne peut deviner. Votre lecteur n’a besoin de rien d’autre — ni compte, ni application, rien à installer.',
+          'S’y ouvre le document lui-même, rendu par notre serveur en simple page en lecture seule, avec le téléchargement du fichier HTML autonome et de la source Markdown pour qui veut continuer à y travailler. Les pages partagées sont servies avec `noindex`, elles restent donc hors des résultats de recherche, et chacune porte un lien pour la signaler.',
+          'Publier un lien public demande une adresse e-mail confirmée sur le compte. Le partage avec des personnes nommées fonctionne dans tous les cas.',
+        ],
+      },
+      {
+        heading: 'Un mot de passe et une date de fin',
+        body: [
+          'Un lien peut demander un mot de passe d’au moins huit caractères. Le lecteur voit un court formulaire avant la page, et la bonne réponse est retenue par ce navigateur pendant un jour. Après dix essais erronés en une minute depuis une même machine, ou trente pour le lien depuis partout à la fois, le formulaire lui demande de patienter.',
+          'Le mot de passe n’est conservé que sous forme de hachage : il peut être changé ou retiré, jamais affiché, et un nouveau met fin d’un coup à toutes les saisies précédentes. Vous pouvez le définir pendant que le document est encore privé, de sorte que le lien est protégé dès qu’il existe. Connecté en tant que propriétaire, vous ne le saisissez jamais.',
+          'Un lien peut aussi prendre fin : dans une heure, un jour, sept ou trente jours, ou à la date de votre choix. Ensuite, la page et ses téléchargements indiquent que le lien a expiré, et depuis quand, et Enregistrer une copie ne fonctionne plus non plus. Une nouvelle date de fin, ou aucune, rouvre le même lien.',
+        ],
+      },
+      {
+        heading: 'Qui l’a ouvert',
+        body: [
+          'La fenêtre Partager indique combien de fois le lien a été ouvert et quand il l’a été pour la dernière fois. L’onglet Vues, à côté de Vérification, liste les 200 dernières ouvertures, de la plus récente à la plus ancienne et regroupées par jour, en précisant si elle est passée par la page partagée ou par l’application.',
+          'Ce sont des ouvertures qui sont comptées, pas des personnes, et les vôtres en font partie. Pour un lien que tout le monde peut ouvrir, rien n’est conservé sur qui l’a ouvert : d’une ouverture ne sont gardés que son heure et le fait qu’elle soit passée par la page ou par l’application, aucun cookie n’est posé pour la compter, et les robots qui récupèrent un lien pour en dessiner l’aperçu dans une messagerie ne sont pas comptés. Les ouvertures appartiennent au lien, sa révocation les supprime donc, et aucune n’est gardée plus d’un an.',
+        ],
+      },
+      {
+        heading: 'Seulement les personnes que vous nommez',
+        body: [
+          'Pour un document qui ne doit pas circuler, choisissez Personnes précises et ajoutez les adresses une par une. Chaque personne reçoit le lien par e-mail, et l’ouvrir suppose de se connecter avec cette adresse : quiconque d’autre met la main sur le lien est refusé. Ce mode n’a pas de mot de passe, car la connexion est déjà le contrôle le plus fort.',
+          'Comme ces lecteurs se sont connectés, l’onglet Vues peut dire lequel d’entre eux a ouvert le document, combien de fois et quand pour la dernière fois, ou qu’une personne ne l’a pas encore ouvert — et la page qu’ils lisent les prévient que vous le voyez. Les documents que d’autres vous adressent apparaissent dans votre historique sous Partagés avec moi, avec le nom de la personne qui les a partagés.',
+        ],
+      },
+      {
+        heading: 'Rendre privé met fin au lien',
+        body: [
+          'Repasser un document en Privé supprime son jeton. L’adresse envoyée cesse de fonctionner pour tout le monde, sa date de fin et son décompte d’ouvertures disparaissent avec elle, et partager à nouveau crée un autre lien : l’ancien ne revient jamais. Comme cela ne peut pas être annulé, c’est la seule modification que la fenêtre vous demande de confirmer.',
+          'La révocation porte sur l’adresse, pas sur les copies : ce qu’un lecteur a téléchargé ou imprimé lui reste. Une page publique peut rester jusqu’à une minute dans le cache en périphérie du réseau, un lien révoqué peut donc mettre ce temps à cesser partout ; une page protégée par un mot de passe, ou partagée avec des personnes nommées, n’est jamais mise en cache.',
+        ],
+      },
+      {
+        heading: 'Des dossiers entiers, et un nouveau texte à la même adresse',
+        body: [
+          'Un dossier se partage de la même façon, depuis Partager dans son menu : les mêmes trois modes, la même date de fin et le même mot de passe, à une adresse sous `/f/`. Le lecteur reçoit toute l’arborescence, chaque page s’ouvre à l’intérieur, et les liens entre pages restent dans le dossier partagé. Un lecteur connecté peut cliquer sur Enregistrer dans mon compte et garder une copie de l’ensemble — une copie, donc vos modifications ultérieures ne l’atteignent pas.',
+          'Un document peut aussi recevoir un nouveau texte sans changer d’adresse. Publier sur place — `PUT /api/v1/documents/:id` depuis un script, `tp push --update` depuis un terminal, le plugin Obsidian ou un assistant — remplace le texte et conserve le lien, le mot de passe, la date de fin et les lecteurs nommés. Le texte remplacé est gardé comme révision, les dix plus récentes.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions sur le partage',
+      intro: 'Les réponses courtes. La documentation dit le reste, sous Partage.',
+      items: [
+        {
+          question: 'Mon lecteur a-t-il besoin d’un compte ?',
+          answer: 'Pas pour un lien : quiconque le détient ouvre la page dans un navigateur, sans rien installer. Un document partagé avec des personnes précises est différent à dessein — chaque lecteur se connecte avec l’adresse que vous avez ajoutée, et c’est ce qui garde le lien entre ses mains.',
+        },
+        {
+          question: 'Peut-on s’en servir comme d’un pastebin Markdown ?',
+          answer: 'Oui. Collez le texte dans l’aperçu en direct, cliquez sur Convertir et garder, puis sur Enregistrer, et partagez le résultat. Contrairement à un pastebin, la page montre le document rendu — tableaux, listes de tâches, code — et le lien peut porter un mot de passe ou une date de fin, ou être révoqué. Un document conservé peut peser jusqu’à 4 Mo.',
+        },
+        {
+          question: 'Est-ce gratuit ?',
+          answer: 'Oui. Partager demande un compte gratuit, qui contient 5 000 documents et 250 Mo de Markdown. Il n’y a pas d’offre à choisir ni de carte à saisir, et le lecteur ne paie rien non plus.',
+        },
+        {
+          question: 'Que devient le lien quand je modifie le document ?',
+          answer: 'Un texte publié sur place garde le lien : les lecteurs voient le nouveau texte à leur prochaine visite, et l’ancien est conservé comme révision. Un nouveau document reçoit en revanche un nouveau lien — c’est ainsi qu’un lien déjà envoyé continue de montrer ce qu’il montrait.',
+        },
+        {
+          question: 'Puis-je voir qui l’a ouvert ?',
+          answer: 'Pour un lien que tout le monde peut ouvrir, non : on compte des ouvertures, et rien n’est enregistré sur le lecteur. Pour un document partagé avec des personnes précises, oui — chaque adresse, combien de fois elle a ouvert le document et quand, et la page en avertit ces lecteurs.',
+        },
+        {
+          question: 'Un script ou un assistant peut-il partager à ma place ?',
+          answer: 'Oui. POST /api/v1/documents?share=link publie dans la même requête et renvoie l’adresse, tp push notes.md --share le fait depuis un terminal, et un assistant connecté par MCP demande avant de publier quoi que ce soit. Vous seul pouvez définir un mot de passe : aucun outil d’assistant n’en accepte.',
+        },
+      ],
+    },
+    action: 'Partager un document de votre historique',
+    seo: {
+      title: 'Partager un fichier Markdown par lien, avec mot de passe',
+      description:
+        'Publiez un fichier .md en page en lecture seule, ouverte à qui a le lien ou à des personnes nommées. Mot de passe, date de fin, ouvertures comptées, révocable.',
+    },
+  },
+  api: {
+    label: 'API',
+    title: 'Une API de conversion de documents pour Markdown, HTML, Word et PDF',
+    lede: 'Envoyez un fichier Word, une page web, un tableur ou du Markdown brut : il devient un document de votre compte. Récupérez-le en Markdown, HTML, Word ou PDF, ou sous forme de lien que quelqu’un peut ouvrir.',
+    sections: [
+      {
+        heading: 'Ce qu’elle fait',
+        body: [
+          'Un script atteint le même compte en HTTP. `POST /api/v1/documents` prend un fichier comme corps de requête et le convertit en Markdown à l’arrivée. Le résultat est conservé dans votre compte, où il peut être récupéré dans un autre format, recevoir un nouveau texte, être rangé dans un dossier ou partagé.',
+          'Tout est stocké en Markdown, si bien qu’un document se relit de quatre façons. `GET /api/v1/documents/:id` répond en JSON avec la source Markdown et les informations du document ; ajouter `.html`, `.docx` ou `.pdf` à la même adresse renvoie à la place une page web autonome, un fichier Word ou un PDF.',
+          'Il n’existe pas d’appel qui ne ferait que convertir. Un document converti est un document du compte et occupe sa place comme les autres — c’est aussi ce qui fait du résultat quelque chose qu’une deuxième requête retrouve.',
+        ],
+      },
+      {
+        heading: 'Ce qu’elle convertit',
+        body: [
+          '`?kind=` nomme la conversion, avec les mêmes noms que les pages de ce site ; sans lui, le corps est du Markdown. `html-to-markdown`, `csv-to-markdown` — un `.tsv` aussi, reconnu à son nom —, `json-to-markdown`, `text-to-markdown` et `evernote-to-markdown` lisent le corps comme du texte.',
+          '`word-to-markdown`, `excel-to-markdown`, `powerpoint-to-markdown`, `epub-to-markdown`, `odt-to-markdown`, `rtf-to-markdown`, ainsi que `notion-to-markdown`, `confluence-to-markdown` et `obsidian-to-markdown` pour les zips d’export, le lisent comme les octets du fichier : un `.docx` ou un `.zip` s’envoie tel qu’il est sur le disque.',
+          'Le Markdown dans l’autre sens, c’est le côté lecture. Envoyez du Markdown sans `kind`, puis demandez `.html` pour une page finie avec ses styles intégrés — `?theme=dark` pour la palette sombre —, `.docx` pour un Word avec les styles de titre propres à Word, ou `.pdf`.',
+          'Un document pèse au plus 4 Mo, qu’il s’agisse du Markdown ou du fichier à convertir ; au-delà, la réponse est une 413.',
+        ],
+      },
+      {
+        heading: 'Les clés',
+        body: [
+          'Créez une clé dans le menu du compte, sous Clés API, et envoyez-la sous la forme `Authorization: Bearer tp_live_…`. Elle n’est affichée qu’une fois et stockée uniquement sous forme de hachage. Une clé atteint les documents, les dossiers et les partages, jamais le compte ni les clés elles-mêmes : une clé divulguée ne peut ni fabriquer sa remplaçante ni vous enfermer dehors, et la révoquer l’arrête dès la requête suivante.',
+          'Une session de navigateur connectée fonctionne sur les mêmes points d’entrée, si bien qu’un `GET` s’essaie dans le navigateur avant même qu’une clé existe. Le préfixe `tp_live_` rend une clé facile à repérer partout où elle n’a rien à faire — collée dans le mauvais champ, ou commise dans un dépôt.',
+        ],
+      },
+      {
+        heading: 'Les points d’entrée',
+        body: [
+          '`POST /api/v1/documents` en crée un. `?name=` le nomme, `?share=link` ou `?share=people` le publie dans la même requête et renvoie l’adresse, `?expires_at=` met fin à ce lien à une heure au format ISO 8601, et `?folder=` le range dans un dossier.',
+          '`GET /api/v1/documents` liste les 5 000 plus récents, et `?q=` cherche dans leur texte. `PUT /api/v1/documents/:id` remplace le texte d’un document en gardant son id et son lien, l’ancien texte étant conservé parmi dix révisions. `DELETE` envoie un document à la Corbeille pour 14 jours, et `/api/v1/trash` liste et restaure ce qui s’y trouve.',
+          '`PUT /api/v1/documents/:id/share` définit le mode, les adresses nommées, une date de fin et un mot de passe, qui voyage dans le corps et jamais dans l’adresse. `GET …/views` liste les ouvertures du lien, `/api/v1/folders` crée, renomme, déplace, partage et supprime les dossiers, `POST /api/v1/documents/:id/summary` rédige un court résumé, et `GET /api/v1/usage` indique la place qui reste.',
+        ],
+      },
+      {
+        heading: 'Erreurs, limites et webhooks',
+        body: [
+          'Une erreur est du JSON, `{ "error": "…" }`, avec une phrase faite pour être lue et un statut qui dit ce qu’il veut dire : 400 pour une requête dont le point d’entrée ne peut rien faire, 401 pour une clé inconnue ou révoquée, 403 quand le compte n’a plus de place ou ne peut pas encore publier, 404 pour un document qui n’est pas le vôtre, 410 pour une source disparue, 413 pour un document de plus de 4 Mo, 429 pour trop de requêtes.',
+          'Chaque clé peut faire 60 requêtes par minute ; au-delà, la 429 porte un en-tête `Retry-After` qui dit combien de temps attendre. Un compte contient 5 000 documents et 250 Mo. Atteindre une limite fait refuser l’écriture, avec la raison ; rien d’ancien n’est supprimé pour faire de la place.',
+          'Un récepteur peut être prévenu au lieu d’interroger. Les webhooks, déclarés dans le menu du compte, envoient un `POST` quand un document est créé ou partagé avec des personnes nommées, signé en HMAC-SHA256 dans l’en-tête `x-transformpipe-signature`. Ils ne se gèrent que depuis une session connectée, pour qu’une clé divulguée ne puisse pas se transformer en flux de tous les documents à venir.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions sur l’API',
+      intro: 'Les réponses courtes. La documentation liste chaque point d’entrée.',
+      items: [
+        {
+          question: 'L’API est-elle gratuite ?',
+          answer: 'Oui. C’est le même compte que sur le site, avec les mêmes limites et rien derrière une offre payante : 5 000 documents, 250 Mo, 60 requêtes par minute et par clé. Un compte dont l’adresse n’est pas encore confirmée garde dix documents et ne peut publier de lien public qu’une fois confirmé.',
+        },
+        {
+          question: 'Comment convertir du HTML en Markdown avec l’API ?',
+          answer: 'Envoyez le HTML comme corps de requête à /api/v1/documents?kind=html-to-markdown, puis relisez le Markdown avec GET /api/v1/documents/:id. Les deux mêmes requêtes convertissent un fichier Word, un tableur, une présentation ou une réponse JSON ; seul kind change.',
+        },
+        {
+          question: 'Et du Markdown en HTML ?',
+          answer: 'Envoyez le Markdown sans kind, puis récupérez /api/v1/documents/:id.html : la même page autonome que le site télécharge, avec ses styles intégrés. Ou ajoutez ?share=link à l’envoi, et la réponse contient une adresse où la page rendue est déjà publiée.',
+        },
+        {
+          question: 'Envoyer deux fois le même fichier pose-t-il problème ?',
+          answer: 'Cela crée deux documents, avec deux id et deux liens : POST n’est pas idempotent et rien ne supprime les doublons. Pour modifier un document, envoyez le nouveau texte à PUT /api/v1/documents/:id ; renvoyer le même texte ne change rien.',
+        },
+        {
+          question: 'Un script obtient-il la même conversion que le site ?',
+          answer: 'Oui. Les convertisseurs sont les mêmes modules que ceux du navigateur, appelés sur le serveur : un tableau sort d’un appel d’API comme il sort de la zone de dépôt.',
+        },
+      ],
+    },
+    action: 'Lire la référence de l’API',
+    seo: {
+      title: 'API de conversion de documents : Markdown, HTML, Word, PDF',
+      description:
+        'Une API REST qui convertit Word, HTML, Excel, PowerPoint, CSV et JSON en Markdown, et le Markdown en HTML, Word ou PDF. Clé gratuite, erreurs en JSON clair.',
+    },
+  },
+  cli: {
+    label: 'Ligne de commande',
+    title: 'Un outil en ligne de commande pour convertir et publier du Markdown',
+    lede: 'Envoyez un fichier Markdown depuis un terminal et récupérez son lien. Un seul fichier JavaScript sans dépendances, qui parle à la même API et aux mêmes convertisseurs que le site.',
+    sections: [
+      {
+        heading: 'Un fichier, aucune dépendance',
+        body: [
+          '`cli/tp.mjs`, dans le dépôt public, est un client de la même API. C’est un fichier unique, sans rien à installer à côté — un outil qui tourne en CI ne devrait pas traîner un arbre de paquets derrière lui —, et il demande Node 20 ou plus récent.',
+          'Depuis une copie du dépôt, il se lance avec `node cli/tp.mjs` ; son paquet nomme la commande `tp`, et c’est ainsi que les exemples de cette page sont écrits. `tp --help` liste chaque commande et chaque option.',
+          'C’est aussi ce qu’exécute la GitHub Action : une commande qui fonctionne sur votre machine se comporte de la même façon dans un workflow.',
+        ],
+      },
+      {
+        heading: 'Convertir et publier',
+        body: [
+          '`tp push README.md --share` convertit le fichier, le conserve dans votre compte et affiche son lien. Un `.html`, `.csv`, `.tsv`, `.json` ou `.enex` d’Evernote envoyé est converti en Markdown par le serveur à l’arrivée, au lieu d’être stocké comme s’il était déjà du Markdown.',
+          'Les fichiers que l’API reçoit en octets plutôt qu’en texte — `.docx`, `.xlsx`, `.pptx`, `.epub`, `.odt`, `.rtf` et les zips d’export — sont refusés, avec l’adresse de la page du site qui les lit dans le navigateur.',
+          '`--merge` enchaîne plusieurs fichiers Markdown en un seul document, dans l’ordre donné, avec un filet entre eux, et `--name` le nomme : `tp push docs/*.md --merge --share --name handbook.md`.',
+          '`--share` crée un lien que quiconque le détient peut ouvrir, et `--share people` réserve le document à des lecteurs nommés, dont vous ajoutez les adresses sur le site. `--expires 7d`, `12h` ou `2026-12-31` met fin au lien — une date seule valant la fin de ce jour-là chez vous —, et `--password` le protège par un mot de passe lu dans `TP_SHARE_PASSWORD`, jamais dans un argument, où il resterait dans l’historique du shell.',
+        ],
+      },
+      {
+        heading: 'Un lien tenu à jour',
+        body: [
+          '`tp push notes.md --update <id>` envoie un nouveau texte à un document qui existe déjà. Son id, son lien, son mot de passe et sa date de fin restent tels quels, et le texte remplacé est gardé sur le serveur comme révision, les dix plus récentes. Renvoyer le même texte ne change rien.',
+          '`--replaces <id>` fait exprès l’inverse : il crée un nouveau document, avec son propre id et, une fois partagé, son propre lien, et l’enregistre comme version suivante d’un document antérieur, ce que `tp versions <id>` liste comme une chaîne. Un lien déjà envoyé continue de montrer ce qu’il montrait.',
+        ],
+      },
+      {
+        heading: 'Les dossiers et le compte',
+        body: [
+          '`tp list` montre ce que contient le compte, et `--q` cherche dans le texte des documents. `tp rm <id>` envoie un document à la Corbeille, où il attend 14 jours ; `tp usage` affiche la part utilisée des 250 Mo et des 5 000 documents ; `tp summary <id>` demande un court résumé, rédigé une fois puis mis en cache.',
+          '`--folder "Team/Notes"` lors d’un envoi range le document selon son chemin et crée toute partie du chemin qui n’existe pas encore. `tp folders` affiche l’arborescence avec les id, `tp mkdir` et `tp mv` créent et déplacent, `tp rmdir` supprime un dossier et fait remonter son contenu d’un niveau, et `tp share-folder` partage un dossier entier avec `--link`, `--people` ou `--private`, avec les mêmes `--expires` et `--password`.',
+        ],
+      },
+      {
+        heading: 'Clés et scripts',
+        body: [
+          '`tp login tp_live_…` enregistre une clé dans `~/.config/tp/config.json`, lisible par vous seul. Une clé peut aussi venir de `--key` ou de `TP_API_KEY`, lues en premier ; la variable d’environnement est celle qui convient en CI, car `tp login` laisse la clé dans l’historique du shell.',
+          '`--json` affiche la réponse de l’API elle-même au lieu des lignes de résumé — c’est ce que lit l’Action —, et `TP_HOST` fait pointer l’outil vers un autre déploiement. Un échec affiche le message de l’API avec son statut et se termine par un code de sortie non nul, pour qu’un script ou un pipeline s’arrête là où il le doit.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions sur la ligne de commande',
+      intro: 'Les réponses courtes. La documentation donne chaque option.',
+      items: [
+        {
+          question: 'De quoi ai-je besoin pour le lancer ?',
+          answer: 'De Node 20 ou plus récent, du fichier et d’une clé API prise dans le menu du compte. Il n’a aucune dépendance propre : pas d’arbre de paquets à installer ni à auditer.',
+        },
+        {
+          question: 'Quels fichiers peut-il convertir ?',
+          answer: 'Le Markdown, ainsi que le HTML, le CSV, le TSV, le JSON et les exports Evernote, que le serveur convertit à l’arrivée. Il refuse Word, Excel, PowerPoint, EPUB, OpenDocument, RTF et les zips d’export : convertissez-les sur le site et envoyez le Markdown, ou postez-les à l’API, qui les accepte en octets.',
+        },
+        {
+          question: 'Convertit-il du Markdown en HTML hors ligne, sans compte ?',
+          answer: 'Non. Chaque commande parle à l’API, il lui faut donc une clé et une connexion. Pour un fichier isolé, sans rien envoyer, le convertisseur du site fonctionne directement dans votre navigateur.',
+        },
+        {
+          question: 'Renvoyer un fichier change-t-il un lien déjà envoyé ?',
+          answer: 'Pas sans que vous le demandiez. Un push simple crée un nouveau document avec un nouveau lien ; --update avec l’id du document est le seul moyen de mettre un nouveau texte derrière un lien existant.',
+        },
+        {
+          question: 'Comment garder la clé hors des journaux ?',
+          answer: 'Mettez-la dans TP_API_KEY plutôt que de passer --key ou de lancer tp login, et fournissez un mot de passe de partage par TP_SHARE_PASSWORD. Définies depuis un secret de CI ou un profil de shell, aucune des deux n’est tapée dans une commande, et aucune ne se retrouve donc dans l’historique du shell ni dans la liste des processus.',
+        },
+      ],
+    },
+    action: 'Lire la référence de la ligne de commande',
+    seo: {
+      title: 'Convertisseur Markdown en ligne de commande',
+      description:
+        'Un CLI sans dépendances qui envoie Markdown, HTML, CSV ou JSON dans votre compte et affiche un lien de partage. Dossiers, date de fin, mot de passe, JSON.',
+    },
+  },
+  'github-action': {
+    label: 'GitHub Action',
+    title: 'Prévisualiser le Markdown des pull requests avec une GitHub Action',
+    lede: 'Un relecteur devrait lire le document qu’une pull request modifie, pas un diff d’astérisques. Cette action publie chaque fichier Markdown modifié en page rendue et en commente les liens sur la pull request.',
+    sections: [
+      {
+        heading: 'Ce qu’elle fait',
+        body: [
+          'Sans liste de fichiers, l’action demande à git quels fichiers Markdown la pull request a touchés, publie chacun en page en lecture seule et commente un tableau des noms de fichiers, des nombres de mots et des liens. Les fichiers supprimés par la branche sont ignorés, si bien que retirer un document ne fait pas échouer l’exécution.',
+          'C’est une action composite, `action.yml` à la racine du dépôt public, et ce qu’elle exécute est le client en ligne de commande du même dépôt : aucun conteneur à télécharger, aucune dépendance à installer, et le même rendu que le site et l’API.',
+          'Le commentaire porte le titre Markdown preview. Un relecteur ouvre chaque lien dans un navigateur comme n’importe quelle page, sans application et, pour un lien, sans compte — ce qui permet à quelqu’un qui n’ouvre jamais le diff de relire les textes.',
+        ],
+      },
+      {
+        heading: 'Pourquoi une page rendue',
+        body: [
+          'Un diff est la bonne vue pour du code et la mauvaise pour de la prose. Il montre quels mots ont changé et cache si la section se lit encore, si un tableau tombe juste ou si une liste numérotée repart à un en plein milieu. La page rendue y répond d’un coup d’œil, et un relecteur qui n’écrit pas de Markdown peut tout simplement la lire.',
+        ],
+      },
+      {
+        heading: 'Le workflow',
+        body: [
+          'Un workflow complet à copier se trouve dans `examples/publish-markdown.yml`. Il s’exécute sur `pull_request` avec un filtre `paths` sur `**.md`, si bien qu’une pull request qui ne touche à aucun Markdown ne lance aucun runner. Le checkout a besoin de `fetch-depth: 0`, car les fichiers modifiés sont calculés par rapport au commit de base de la pull request, et le job a besoin de `pull-requests: write` pour publier le commentaire.',
+          'L’étape elle-même tient en `uses: raudarlabs/transformpipe@main` avec une seule entrée, `api-key: ${{ secrets.TP_API_KEY }}`. La clé est une clé API TransformPipe gardée en secret du dépôt, et l’action la transmet au client dans une variable d’environnement plutôt qu’en argument : elle ne fait donc pas partie de la commande écrite dans le journal.',
+        ],
+      },
+      {
+        heading: 'Entrées et sorties',
+        body: [
+          '`files` prend des chemins séparés par des espaces à la place de la liste des fichiers modifiés ; c’est ainsi que l’action publie lors d’un push sur une branche plutôt que pour une pull request. `share` vaut `link` par défaut, `people` pour des lecteurs nommés seulement, ou `none` pour garder les documents privés. `merge: true` enchaîne les fichiers en un seul document, nommé par `name`.',
+          '`replaces` enregistre un document unique comme nouvelle version d’un document antérieur, `comment: false` supprime le commentaire, et `host` pointe vers un autre déploiement.',
+          'Deux sorties reviennent pour les étapes suivantes : `urls`, les liens publiés à raison d’un par ligne, et `documents`, la réponse de l’API pour chaque document, en JSON. Sans rien à publier, l’action le dit, laisse `urls` vide et `documents` en liste vide, et se termine avec succès — une étape ultérieure peut donc se conditionner sur `urls` plutôt qu’échouer.',
+        ],
+      },
+      {
+        heading: 'Des liens qui restent vrais',
+        body: [
+          'Chaque exécution publie de nouveaux documents au lieu d’écraser les précédents, si bien que le lien d’un commentaire plus ancien montre toujours ce que disait ce commit. Le prix est un document par fichier et par exécution dans le compte, qui contient 5 000 documents et 250 Mo ; les anciens aperçus se suppriment depuis l’historique.',
+          'Publier un lien public demande une adresse e-mail confirmée sur le compte, et tant qu’elle ne l’est pas, l’étape échoue avec cette phrase. Une pull request venant d’un fork s’exécute sans les secrets du dépôt, l’étape n’y a donc pas de clé ; sautez-la avec `if: github.event.pull_request.head.repo.fork == false`.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions sur l’Action',
+      intro: 'Les réponses courtes. La documentation liste chaque entrée.',
+      items: [
+        {
+          question: 'Fonctionne-t-elle dans un dépôt privé ?',
+          answer: 'Oui, et c’est justement le cas auquel réfléchir : avec share sur link, la valeur par défaut, un document d’un dépôt privé devient une page que quiconque détient le lien peut ouvrir. Mettez share sur people pour le réserver à des lecteurs nommés, ou sur none pour le garder dans le compte.',
+        },
+        {
+          question: 'À quoi ressemble le commentaire ?',
+          answer: 'Un titre, Markdown preview, et un tableau avec une ligne par fichier : son nom, son nombre de mots et un lien pour le lire — ou « not shared » quand share vaut none.',
+        },
+        {
+          question: 'Met-elle à jour son commentaire au push suivant ?',
+          answer: 'Non. Chaque exécution publie son propre commentaire et laisse les précédents tels quels, chacun pointant vers les documents de son propre commit.',
+        },
+        {
+          question: 'Peut-elle publier plutôt lors d’un push sur main ?',
+          answer: 'Oui. Un push n’a pas de pull request à laquelle se comparer, donnez-lui donc files avec les chemins à publier. Elle ne commente que sur les événements de pull request ; lors d’un push, les liens reviennent dans la sortie urls pour l’étape suivante.',
+        },
+        {
+          question: 'Combien cela coûte-t-il ?',
+          answer: 'La clé et le compte sont gratuits, sans rien derrière une offre payante. Le temps de runner est décompté par GitHub, et le filtre paths de l’exemple le limite aux pull requests qui modifient du Markdown.',
+        },
+      ],
+    },
+    action: 'Lire la mise en place dans la documentation',
+    seo: {
+      title: 'GitHub Action : aperçu du Markdown dans les pull requests',
+      description:
+        'Publiez le Markdown modifié par une pull request en pages rendues et commentez les liens : les relecteurs lisent le document, pas le diff. Une étape, un secret.',
+    },
+  },
 };

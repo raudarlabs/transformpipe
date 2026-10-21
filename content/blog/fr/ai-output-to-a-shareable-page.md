@@ -1,7 +1,7 @@
 ---
 title: "Votre assistant IA écrit du Markdown. Vos collègues ne le lisent pas."
 description: "Pourquoi les assistants répondent en Markdown, ce qui survit au collage dans un courriel, Slack, Word ou un ticket, et la voie ennuyeuse qui tient"
-updated: 2026-09-09
+updated: 2026-10-21
 date: 2026-07-21
 tag: Workflow
 keywords: chatgpt markdown, convertir une réponse chatgpt en html, exporter du markdown depuis claude, sortie ia markdown, copier du markdown depuis un chat, coller du markdown dans word, astérisques réponse ia, signes dollar formule markdown
@@ -265,7 +265,7 @@ La conversion côté navigateur est la raison pour laquelle TransformPipe peut a
 
 ### Se passer entièrement de la copie
 
-Le presse-papiers est le maillon faible de tout cela, et on peut le supprimer. Un assistant relié à un service de conversion par un connecteur exécute toute la séquence à l’intérieur de la conversation : il prend le texte qu’il vient d’écrire, le convertit et vous rend un fichier ou un lien sans que rien de tout cela ne passe par un champ de texte. Rien n’a l’occasion d’être corrigé automatiquement, puisque rien n’a jamais été collé.
+Le presse-papiers est le maillon faible de tout cela, et on peut le supprimer. Un assistant relié à un service de conversion par [un connecteur](/agents) exécute toute la séquence à l’intérieur de la conversation : il prend le texte qu’il vient d’écrire, le convertit et vous rend un fichier ou un lien sans que rien de tout cela ne passe par un champ de texte. Rien n’a l’occasion d’être corrigé automatiquement, puisque rien n’a jamais été collé.
 
 Le mécanisme est un serveur MCP, ou un appel d’API, ou une invocation en ligne de commande depuis ce que l’assistant a le droit d’exécuter — la même conversion dans chaque cas, atteinte par une autre direction. [Convertir des documents depuis un assistant](/blog/converting-documents-from-an-assistant) traite de ce que chaque voie peut et ne peut pas faire. C’est la bonne réponse lorsque cela se produit assez souvent pour être une habitude plutôt qu’une corvée, et cela ne change rien à l’étape de relecture ci-dessus, qui reste la vôtre.
 

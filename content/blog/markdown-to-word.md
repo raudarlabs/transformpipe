@@ -1,6 +1,7 @@
 ---
 title: "Markdown to Word: How to Get a .docx Somebody Can Edit"
 description: Getting Markdown into a .docx a reviewer can edit: Pandoc with a reference document, the HTML route, Google Docs, and what the trip back to Markdown loses
+updated: 2026-10-21
 date: 2026-08-24
 tag: Publishing
 keywords: markdown to word, markdown to docx, convert markdown to word document, pandoc reference docx, md to docx, markdown to word online, pandoc markdown to word template
@@ -90,7 +91,7 @@ All of these are current Pandoc options (checked on pandoc.org, 8 September 2026
 
 Two Pandoc extras are genuinely useful once the basics work. A fenced div with a `custom-style` attribute applies any Word style you like to its contents — `::: {custom-style="Warning"}` wraps a block in your template's `Warning` paragraph style — and the bracketed-span equivalent does the same for character styles. And [tables](/blog/markdown-tables-that-survive-conversion) get the `Table` table style, which is the only table formatting you get, so define it properly and expect nothing clever about column widths.
 
-**Who it is for:** anybody who will do this conversion more than twice. The template is a fixed cost paid once and amortised across every document afterwards, and it is the only route here that produces a `.docx` a Word user can restyle from the Styles gallery.
+**Who it is for:** anybody who will do this conversion more than twice. The template is a fixed cost paid once and amortised across every document afterwards, and it is the only route here that produces a `.docx` already in your organisation's styles, which a Word user can go on restyling from the Styles gallery.
 
 ## The HTML route: convert to HTML, then open it in Word
 
@@ -113,6 +114,8 @@ It is genuinely the fastest route, needs no install beyond a browser-based conve
 For automation, the same route runs without Word at all: produce self-contained HTML, then `soffice --headless --convert-to docx report.html`. LibreOffice does a competent job and its interpretation of your CSS is its own, so test it once rather than trusting it.
 
 **Who it is for:** one-off documents where the reviewer will comment and not restyle — a two-page memo, a spec sent for a single round of remarks. Not for anything that enters a template-governed document set.
+
+The direct formatting comes from the HTML in the middle, not from converting in a browser. This site's own [Markdown to Word conversion](/markdown-to-word) writes the `.docx` in the browser straight from the Markdown, with no HTML step: headings are Word's built-in Heading 1 to 6 styles, lists use Word's own numbering, footnotes sit at the foot of the page, and tables carry the Table Grid style with a header row that repeats on every page. It takes no reference document, so the file arrives with its own default look rather than your organisation's; the styles carry Word's built-in names, so a house template applied in Word afterwards can restyle them, but for a document you produce every week Pandoc with a reference document is still less work.
 
 ## Google Docs as the intermediary
 
@@ -196,13 +199,13 @@ With the same flags on both sides, the diff shows the review and nothing else. W
 
 ## Conclusion
 
-The route that works is Pandoc with a reference document you built once and committed next to your Markdown, because it is the only one that produces a Word file carrying real styles rather than frozen formatting — and styles are what makes a `.docx` worth sending to somebody who is going to edit it. The HTML route is a reasonable shortcut for a short document, and it improves considerably if the HTML you start from is a complete, self-contained file rather than a fragment, which is what [TransformPipe's Markdown to HTML conversion](/) produces in the browser without uploading anything. Google Docs is the pragmatic choice inside Workspace and the wrong choice for anything confidential. Whichever you pick, decide the return path first: the conversion out is a command, and the conversion back is a conversation with a person about who applies their edits and which file is the truth.
+The route that works is Pandoc with a reference document you built once and committed next to your Markdown, because it is the only one that produces a Word file carrying your own styles rather than frozen formatting or somebody else's defaults — and styles are what makes a `.docx` worth sending to somebody who is going to edit it. The HTML route is a reasonable shortcut for a short document, and it improves considerably if the HTML you start from is a complete, self-contained file rather than a fragment, which is what [TransformPipe's Markdown to HTML conversion](/) produces in the browser without uploading anything. When the document needs real Word headings and lists but not your organisation's template, the same site's [Markdown to Word conversion](/markdown-to-word) skips HTML altogether and writes a styled `.docx` in the browser. Google Docs is the pragmatic choice inside Workspace and the wrong choice for anything confidential. Whichever you pick, decide the return path first: the conversion out is a command, and the conversion back is a conversation with a person about who applies their edits and which file is the truth.
 
 ## FAQ
 
 ### How do I convert Markdown to Word without installing anything?
 
-Upload the `.md` file to Google Docs — File, Open, Upload — then File, Download, Microsoft Word (.docx). It needs no install and no terminal, at the cost of the document passing through Google's servers and arriving with Google's styles rather than your organisation's. The alternative with no install is to convert to HTML in the browser and open the result in Word, which is quicker still and produces a file with no usable style set.
+Upload the `.md` file to Google Docs — File, Open, Upload — then File, Download, Microsoft Word (.docx). It needs no install and no terminal, at the cost of the document passing through Google's servers and arriving with Google's styles rather than your organisation's. The other routes with no install run in the browser: converting to HTML and opening the result in Word is quicker still and produces a file with no usable style set, while a converter that writes the `.docx` directly, as this site's does, gives you Word's built-in heading and list styles, though not your template.
 
 ### What is the best Pandoc command for Markdown to Word?
 

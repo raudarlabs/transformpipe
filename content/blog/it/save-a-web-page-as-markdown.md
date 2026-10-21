@@ -1,6 +1,7 @@
 ---
 title: "Come salvare una pagina web come Markdown che possiedi davvero"
 description: "Quattro modi per salvare una pagina web come Markdown — modalità lettura, HTML salvato, clipper e riga di comando — cosa conserva ognuno e cosa succede alle immagini"
+updated: 2026-10-21
 date: 2026-09-05
 tag: Conversione
 keywords: pagina web in markdown, salvare una pagina web come markdown, da url a markdown, convertire pagina web in markdown, salvare un articolo come markdown, web clipper markdown, readability markdown, scaricare pagina web come testo
@@ -103,6 +104,7 @@ Un clipper è estrazione e conversione unite dietro un pulsante solo della barra
 | MarkDownload | Un file `.md`, opzionalmente con front matter YAML che porta URL e titolo | La tua cartella download, o gli appunti | Qualunque cosa l'estrattore abbia scartato; le immagini restano link remoti a meno di chiedere altrimenti |
 | Obsidian Web Clipper | Markdown più proprietà della pagina, plasmate da un template che scrivi tu | Direttamente in una cartella del vault | Evidenziazioni e callout sono convenzioni proprie di Obsidian, quindi viaggiano male verso altri strumenti |
 | Notion Web Clipper | Blocchi Notion, non Markdown | Un database o una pagina Notion | Tutto ciò per cui Notion non ha un blocco; riottenere Markdown richiede un secondo export |
+| Estensione TransformPipe | Markdown dell'articolo estratto, oppure la pagina come un unico file `.html` autonomo | Gli appunti, la tua cartella download, o un account se accedi | Qualunque cosa l'estrattore abbia scartato; le immagini nel Markdown restano link remoti, riscritti come indirizzi assoluti |
 | Un'estensione generica "salva come Markdown" | Varia moltissimo | Download | Sconosciuto, che è il problema: non puoi verificare quello che non puoi leggere |
 
 MarkDownload è il cavallo da tiro onesto: fa girare Readability sulla pagina e poi Turndown sul risultato, che è la stessa pipeline a due stadi descritta sopra, già collegata per te. È gratis e open source sotto licenza Apache 2.0, il che significa che la pipeline è ispezionabile — puoi leggere esattamente quali regole hanno prodotto il file che hai ottenuto.
@@ -110,6 +112,8 @@ MarkDownload è il cavallo da tiro onesto: fa girare Readability sulla pagina e 
 Il Web Clipper di Obsidian è quello da usare se la destinazione è un vault, perché scrive la nota dove il vault se l'aspetta, con le proprietà su cui contano i tuoi template. È gratis e con licenza MIT. Due cose da tenere a mente. Primo, i suoi template sono una funzione vera e vale la pena configurarli una volta: una nota ritagliata con l'URL sorgente, l'autore e la data di recupero nelle sue proprietà è una nota che puoi ancora citare fra due anni. Secondo, il dialetto di Obsidian ha estensioni proprie — wikilink, callout, embed — e una nota piena di queste non è una nota che un altro strumento renderizzerà. [Cosa fa ognuna di queste applicazioni al Markdown in uscita](/blog/markdown-from-notion-obsidian-and-confluence) è una storia più lunga, e si applica alle pagine ritagliate tanto quanto a quelle scritte.
 
 Il clipper di Notion è l'eccezione e quello che coglie di sorpresa. Non salva Markdown. Salva la pagina in Notion come blocchi Notion, il che è genuinamente utile se Notion è dove leggi le cose, e un vicolo cieco se volevi un file. Per ottenere Markdown esporti la pagina da Notion in seguito, il che produce uno zip con id esadecimali aggiunti a ogni nome di file e i database come file CSV separati. Sono due conversioni con perdita dove ne avevi chiesta una.
+
+Il convertitore descritto più sotto esiste anche come [estensione del browser](/extension), ed è la stessa pipeline a due stadi: Readability trova l'articolo nella pagina in cui sei, il convertitore da HTML a Markdown del sito scrive il Markdown, e ogni indirizzo di link e di immagine viene riscritto come assoluto, così il file punta ancora a qualcosa quando esce dalla scheda — le immagini restano link al sito originale, non copie. Può anche salvare la pagina come un unico file `.html` con fogli di stile, immagini e font incorporati come URI data, e il suo menu contestuale converte una selezione invece dell'intera pagina. All'installazione non chiede alcun permesso sugli host, legge una pagina solo quando premi il suo pulsante o apri su di essa il suo pannello laterale, e da disconnesso non parla mai con i server del sito; si installa in Chrome e nei browser basati su Chromium, e in Firefox su desktop e su Android.
 
 **Per chi sono i clipper.** Per chi ritaglia pagine ogni giorno e vuole che la decisione sia già presa. Se ritagli due volte all'anno, il permesso dell'estensione non vale la pena e la strada in due passi va bene.
 

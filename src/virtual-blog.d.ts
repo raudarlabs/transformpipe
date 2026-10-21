@@ -18,6 +18,7 @@ declare module 'virtual:blog-index' {
       tag: string;
       keywords: string[];
       readingMinutes: number;
+      links: string[];
     }>
   >;
 }

@@ -1,6 +1,7 @@
 ---
 title: "Markdown vers HTML : ce qui arrive vraiment à votre fichier"
 description: "Ce qu’un convertisseur Markdown vers HTML fait de votre fichier — analyser, rendre, assainir, envelopper — et à quoi ressemble un échec à chacune des quatre étapes"
+updated: 2026-10-21
 date: 2026-09-08
 tag: Conversion
 keywords: markdown en html, md en html, convertir markdown en html, convertisseur markdown html en ligne, générateur html depuis markdown, afficher du markdown en html
@@ -157,7 +158,7 @@ Deux détails décident si un assainisseur tient la route en pratique.
 
 **Où il s’exécute.** Un assainisseur dans le navigateur s’appuie sur l’analyseur du navigateur lui-même, celui-là même qui restituera plus tard le document — un vrai avantage, car il voit le balisage comme le navigateur le verra. Un assainisseur sur un serveur doit analyser le HTML par ses propres moyens, avec sa propre idée de l’imbrication des balises mal formées. Si un outil convertit aux deux endroits, les deux doivent s’accorder, sans quoi le même document se restitue différemment selon qui l’a demandé. C’est aussi là que vivent les problèmes de mutation : si l’analyse de l’assainisseur et celle du navigateur divergent sur un cas d’imbrication limite, nettoyer le balisage peut produire quelque chose que le navigateur réanalysera en un balisage autre que celui qui avait été approuvé.
 
-**Les identifiants de titres, encore.** Un `id="title"` nu masque une propriété du DOM : un assainisseur de navigateur le retire là où un analyseur côté serveur le conserve — un document, deux formes, et des ancres qui fonctionnent d’un côté et pas de l’autre. Préfixer les identifiants répond aux deux problèmes d’un coup. TransformPipe assainit avec DOMPurify dans le navigateur et avec le paquet `xss` sur le serveur, contre une seule et même liste d’autorisation, et ses identifiants de titres portent un préfixe `doc-`. [Assainir le Markdown sans se tromper](/blog/sanitising-markdown-safely) demande plus que ce qui tient dans une étape de chaîne.
+**Les identifiants de titres, encore.** Un `id="title"` nu masque une propriété du DOM : un assainisseur de navigateur le retire là où un analyseur côté serveur le conserve — un document, deux formes, et des ancres qui fonctionnent d’un côté et pas de l’autre. Préfixer les identifiants répond aux deux problèmes d’un coup. TransformPipe assainit avec DOMPurify dans le navigateur et avec le paquet `xss` sur le serveur, contre une seule et même liste d’autorisation, et ses identifiants de titres portent un préfixe `doc-`.
 
 Un dernier mot sur cette étape : l’assainissement se voit. Il retire des choses. Les cases à cocher disparaissent si `input` n’est pas sur la liste, un bloc `<details>` s’aplatit en son contenu, un diagramme intégré ne devient plus rien du tout. Ce n’est pas un défaut — c’est la liste d’autorisation qui fait son travail — mais cela veut dire que la sortie doit être lue, et non supposée.
 
@@ -332,7 +333,7 @@ Quand la conversion doit se produire dans une demande de fusion, une compilation
 
 ### L’export d’un éditeur — commode, et l’enveloppe est une loterie
 
-VS Code livre un aperçu Markdown bâti sur markdown-it, et des extensions ajoutent l’export. Les éditeurs de bureau exportent aussi du HTML. Si le fichier est déjà ouvert devant vous, c’est le plus court chemin du texte à la page.
+VS Code livre un aperçu Markdown bâti sur markdown-it, et des extensions ajoutent l’export ; [Markdown vers HTML dans VS Code](/blog/markdown-to-html-in-vs-code) détaille ce que chacune écrit autour du fragment. Les éditeurs de bureau exportent aussi du HTML. Si le fichier est déjà ouvert devant vous, c’est le plus court chemin du texte à la page.
 
 | Avantages | Inconvénients |
 | --- | --- |

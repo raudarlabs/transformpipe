@@ -122,6 +122,14 @@ export function AppFooter({
         page('obsidian'),
         page('agents'),
         /*
+         * The four things it did with no page of their own until October 2026: sharing as a link, the
+         * API, the command line and the Action. A page nothing links to is a page nobody finds.
+         */
+        page('share-markdown'),
+        page('api'),
+        page('cli'),
+        page('github-action'),
+        /*
          * What this is, next to where to ask about it. `/about` had its own address and no way in
          * from the chrome — the only links to it were the sitemap and a sentence on a blog page.
          */

@@ -176,6 +176,15 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-10-21',
+    title: 'Every conversion says what it does to your file',
+    body:
+      'Under each converter, in all five languages: what comes across, what is left behind, an '
+      + 'example of the output, the limits, and the questions people ask about that conversion. '
+      + 'Sharing a document as a link, the API, the command line and the GitHub Action have pages '
+      + 'of their own. The converter loads about half as much script before it draws.',
+  },
+  {
     date: '2026-10-15',
     title: 'Every picture of an imported export comes across, and folders are a tree',
     body:

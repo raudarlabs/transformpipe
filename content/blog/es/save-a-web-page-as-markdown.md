@@ -1,6 +1,7 @@
 ---
 title: Cómo guardar una página web como Markdown que de verdad es tuyo
 description: Cuatro formas de convertir una página web en Markdown —modo lectura, HTML guardado, clippers y línea de comandos— qué conserva cada una y qué pasa con las imágenes
+updated: 2026-10-21
 date: 2026-09-05
 tag: Conversión
 keywords: pasar una pagina web a markdown, guardar pagina web como markdown, convertir url a markdown, guardar articulo como markdown, web clipper markdown, extension para guardar articulos, descargar pagina web como texto, readability markdown
@@ -103,6 +104,7 @@ Un clipper es extracción y conversión unidas detrás de un solo botón, y para
 | MarkDownload | Un archivo `.md`, opcionalmente con front matter YAML con la URL y el título | Tu carpeta de descargas, o el portapapeles | Lo que sea que el extractor descartara; las imágenes se quedan como enlaces remotos salvo que pidas otra cosa |
 | Obsidian Web Clipper | Markdown más propiedades de página, con la forma de una plantilla que escribes tú | Directamente en una carpeta de la bóveda | Los resaltados y callouts son convenciones propias de Obsidian, así que viajan mal a otras herramientas |
 | Notion Web Clipper | Bloques de Notion, no Markdown | Una base de datos o página de Notion | Todo lo que Notion no tiene bloque para representar; recuperar Markdown necesita una segunda exportación |
+| Extensión de TransformPipe | Markdown del artículo extraído, o la página como un único archivo `.html` autónomo | El portapapeles, tu carpeta de descargas, o una cuenta si inicias sesión | Lo que el extractor descartara; las imágenes del Markdown se quedan como enlaces remotos, reescritos como direcciones absolutas |
 | Una extensión genérica de «guardar como Markdown» | Varía enormemente | Descargas | Desconocido, que es el problema: no puedes auditar lo que no puedes leer |
 
 MarkDownload es el caballo de batalla honesto: ejecuta Readability sobre la página y luego Turndown sobre el resultado, el mismo pipeline de dos fases descrito arriba, ya montado por ti. Es gratis y de código abierto bajo licencia Apache 2.0, lo que significa que el pipeline es inspeccionable — puedes leer exactamente qué reglas produjeron el archivo que obtuviste.
@@ -110,6 +112,8 @@ MarkDownload es el caballo de batalla honesto: ejecuta Readability sobre la pág
 El Web Clipper de Obsidian es el que hay que usar si el destino es una bóveda, porque escribe la nota donde la bóveda la espera, con las propiedades que necesitan tus plantillas. Es gratis y con licencia MIT. Dos cosas que tener en cuenta. Primero, sus plantillas son una función real y merece la pena configurarlas una vez: una nota recortada con la URL de origen, el autor y la fecha de captura en sus propiedades es una nota que todavía podrás citar en dos años. Segundo, el sabor de Obsidian tiene sus propias extensiones — wikilinks, callouts, embeds — y una nota llena de ellas no es una nota que otra herramienta vaya a renderizar. [Lo que hace cada una de estas aplicaciones con el Markdown al exportarlo](/blog/markdown-from-notion-obsidian-and-confluence) es una historia más larga, y se aplica tanto a páginas recortadas como a notas escritas a mano.
 
 El clipper de Notion es la excepción y el que sorprende a la gente. No guarda Markdown. Guarda la página en Notion como bloques de Notion, lo que es genuinamente útil si Notion es donde lees las cosas, y un callejón sin salida si lo que querías era un archivo. Para sacar Markdown exportas la página desde Notion después, lo que produce un zip con ids hexadecimales pegados a cada nombre de archivo y las bases de datos como archivos CSV aparte. Son dos conversiones con pérdida cuando pediste una sola.
+
+El conversor que se describe más abajo también existe como [extensión del navegador](/extension), y es el mismo pipeline de dos fases: Readability encuentra el artículo en la página en la que estás, el conversor de HTML a Markdown del propio sitio escribe el Markdown, y cada dirección de enlace y de imagen se reescribe como absoluta para que el archivo siga apuntando a algún sitio cuando salga de la pestaña — las imágenes siguen siendo enlaces al sitio original, no copias. También puede guardar la página como un único archivo `.html` con sus hojas de estilo, imágenes y fuentes incrustadas como URI de datos, y su menú contextual convierte una selección en vez de la página entera. No pide ningún permiso de host al instalarla, solo lee una página cuando pulsas su botón o abres su panel lateral en ella, y sin sesión iniciada nunca contacta con los servidores del sitio; se instala en Chrome y en los navegadores basados en Chromium, y en Firefox para escritorio y para Android.
 
 **Para quién son los clippers.** Para quien recorta páginas todos los días y quiere que la decisión ya esté tomada. Si recortas dos veces al año, el permiso de la extensión no compensa y la ruta en dos pasos funciona bien.
 

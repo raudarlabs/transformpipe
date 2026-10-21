@@ -38,6 +38,10 @@ export type StaticPageId =
   | 'how-to-paste'
   | 'how-to-make-epub'
   | 'how-to-assistant'
+  | 'share-markdown'
+  | 'api'
+  | 'cli'
+  | 'github-action'
   | 'agents'
   | 'agents-claude'
   | 'agents-chatgpt';
@@ -264,6 +268,26 @@ export const STATIC_PAGES: StaticPage[] = [
    * something rather than drop something.
    */
   { id: 'how-to-assistant', path: '/how-to/assistant', group: 'how-to', action: '/docs' },
+
+  /*
+   * Four things this already does that had no page of their own: sharing a document as a link,
+   * the API, the command line and the GitHub Action. Each was a sentence in /docs or a changelog
+   * entry, which a search for "share markdown file" or "markdown to html api" cannot land on.
+   *
+   * In this group with `how-to-assistant`, which is the same kind of page — an answer to a search
+   * that ends on a button — rather than in `company`, whose pages the phone menu lists one by one.
+   * None of the buttons points at a conversion, so the converter screens do not mistake one of
+   * these for their guide (see `action` above).
+   *
+   * The API's page is `/markdown-api`, not `/api`. `/api` is the serverless function itself —
+   * `api/index.ts`, which vercel.json rewrites every `/api/*`, `/s/*` and `/f/*` request to — so a
+   * prerendered `/api/index.html` would sit at the same address as the function that answers the
+   * whole backend, and the service worker treats `/api` as the API already.
+   */
+  { id: 'share-markdown', path: '/share-markdown', group: 'how-to', action: '/history' },
+  { id: 'api', path: '/markdown-api', group: 'how-to', action: '/docs#api' },
+  { id: 'cli', path: '/cli', group: 'how-to', action: '/docs#cli' },
+  { id: 'github-action', path: '/github-action', group: 'how-to', action: '/docs#action' },
 
   /*
    * The same connector as `how-to-assistant`, from the other end: not how to add it but why

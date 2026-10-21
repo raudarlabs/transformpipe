@@ -1912,4 +1912,327 @@ export const pages: Content['pages'] = {
         'Publish any Obsidian note as a clean web page in one command. The link stays the same after every edit. Share with named people, or export Word and PDF.',
     },
   },
+  /*
+   * The four feature pages: sharing, the API, the command line and the GitHub Action. Each of them
+   * was one sentence inside /docs or a changelog entry, which is nothing a search can land on. The
+   * documentation stays the reference; these say what the thing is for and end on a link to it.
+   */
+  'share-markdown': {
+    label: 'Share Markdown',
+    title: 'Share a Markdown file as a link',
+    lede: 'Turn a .md file into a read-only page with an address you can send — with a password and an end date when you want them, a count of opens, and a link you can end at any moment.',
+    sections: [
+      {
+        heading: 'From a file to a link',
+        body: [
+          'Drop the `.md` file on the converter, or paste the text into the live preview and press Convert and keep. Signed in, press Save to keep the document in your account, then press Share, choose Anyone with the link, and copy the address it gives you: `/s/` and a token nobody can guess. That address is all your reader needs — no account, no app, nothing to install.',
+          'What opens there is the document, rendered by our server as a plain read-only page, with downloads of the self-contained HTML file and of the Markdown source for anybody who wants to keep working on it. Shared pages are served with `noindex`, so they stay out of search results, and each one carries a link for reporting it.',
+          'Publishing to a public link needs a confirmed email address on the account. Sharing with named people works either way.',
+        ],
+      },
+      {
+        heading: 'A password and an end date',
+        body: [
+          'A link can ask for a password of eight characters or more. The reader meets a short form before the page, and the right answer is remembered in that browser for a day. After ten wrong tries in a minute from one machine, or thirty for the link from everywhere at once, the form asks them to wait.',
+          'The password is kept only as a hash, so it can be changed or removed but never shown, and a new one ends every earlier entry at once. It can be set while the document is still private, so the link is protected from the moment it exists. Signed in as the owner, you are never asked for it.',
+          'A link can also end: in an hour, a day, seven days or thirty, or on a day you pick. After that the page and its downloads say the link has expired, and when, and Save a copy stops working too. A new end date, or none, opens the same link again.',
+        ],
+      },
+      {
+        heading: 'Who opened it',
+        body: [
+          'The Share dialog says how many times the link has been opened and when it last was. The Views tab beside Check lists the latest 200 opens, newest first and grouped by day, with whether each came through the shared page or the app.',
+          'It counts opens, not people, and your own are among them. For a link anyone can open, nothing is kept about who opened it: an open is recorded as its time and whether it came through the page or the app, no cookie is set to count it, and the bots that fetch a link to draw a preview in a chat are not counted. The opens belong to the link, so revoking it deletes them, and none is kept longer than a year.',
+        ],
+      },
+      {
+        heading: 'Only the people you name',
+        body: [
+          'For a document that should not travel, choose Specific people and add addresses one at a time. Each person is emailed the link, and opening it means signing in as that address, so anybody else who gets hold of the link is turned away. There is no password in this mode, because signing in is already the stronger check.',
+          'Because those readers signed in, the Views tab can say which of them opened the document, how often and when last, or that somebody has not opened it yet — and the page they read tells them that you can see this. Documents other people address to you appear in your history under Shared with me, with who shared each one.',
+        ],
+      },
+      {
+        heading: 'Make private ends the link',
+        body: [
+          'Switching a document back to Private deletes its token. The address you sent stops working for everybody, its end date and its count of opens go with it, and sharing again makes a different link: the old one never comes back. Because that cannot be undone, it is the one change the dialog asks you to confirm.',
+          'Revoking controls the address, not the copies: what a reader downloaded or printed stays with them. A public page may be cached at the edge for up to a minute, so a revoked link can take that long to stop everywhere; a page behind a password, or shared with named people, is never cached.',
+        ],
+      },
+      {
+        heading: 'Whole folders, and new text at the same address',
+        body: [
+          'A folder is shared the same way, from Share in its menu: the same three modes, the same end date and password, at an address under `/f/`. The reader gets the whole tree, every page opens inside it, and links between pages stay inside the shared folder. A reader who is signed in can press Save to my account and keep a copy of all of it — a copy, so what you change later does not reach theirs.',
+          'A document can also take new text without changing its address. Publishing in place — `PUT /api/v1/documents/:id` from a script, `tp push --update` from a terminal, the Obsidian plugin, or an assistant — replaces the text and keeps the link, the password, the end date and the named readers. The text it replaced is kept as a revision, the newest ten of them.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions about sharing',
+      intro: 'The short answers. The documentation has the rest, under Sharing.',
+      items: [
+        {
+          question: 'Does my reader need an account?',
+          answer: 'Not for a link: anybody holding it opens the page in a browser, with nothing to install. A document shared with specific people is different on purpose — each reader signs in with the address you added, which is what keeps the link theirs.',
+        },
+        {
+          question: 'Can I use it as a Markdown pastebin?',
+          answer: 'Yes. Paste the text into the live preview, press Convert and keep, then Save, and share the result. Unlike a pastebin, the page shows the rendered document — tables, task lists, code — and the link can carry a password or an end date, or be revoked. One kept document can be up to 4 MB.',
+        },
+        {
+          question: 'Is it free?',
+          answer: 'Yes. Sharing needs a free account, which holds 5,000 documents and 250 MB of Markdown. There is no plan to pick and no card to enter, and the reader pays nothing either.',
+        },
+        {
+          question: 'What happens to the link when I change the document?',
+          answer: 'Text published in place keeps the link: readers see the new text on their next visit, and the old text is kept as a revision. A new document gets a new link instead, which is how a link already sent keeps showing what it showed.',
+        },
+        {
+          question: 'Can I see who opened it?',
+          answer: 'For a link anyone can open, no: the count is of opens, and nothing about the reader is recorded. For a document shared with specific people, yes — each address, how often it opened the document and when, and the page tells those readers so.',
+        },
+        {
+          question: 'Can a script or an assistant share for me?',
+          answer: 'Yes. POST /api/v1/documents?share=link publishes in the same request and returns the address, tp push notes.md --share does it from a terminal, and an assistant connected over MCP asks before it publishes anything. A password is set only by you: no assistant tool takes one.',
+        },
+      ],
+    },
+    action: 'Share a document from your history',
+    seo: {
+      title: 'Share a Markdown file as a link, with a password',
+      description:
+        'Publish a .md file as a read-only page anyone with the link can open, or only named people. Add a password or an end date, count opens, revoke it.',
+    },
+  },
+  api: {
+    label: 'API',
+    title: 'A document conversion API for Markdown, HTML, Word and PDF',
+    lede: 'Post a Word file, a web page, a spreadsheet or plain Markdown, and it becomes a document in your account. Ask for it back as Markdown, HTML, Word or PDF, or as a link somebody can open.',
+    sections: [
+      {
+        heading: 'What it does',
+        body: [
+          'A script reaches the same account over HTTP. `POST /api/v1/documents` takes a file as the request body and converts it to Markdown on the way in. The result is kept in your account, where it can be fetched in another format, given new text, filed in a folder or shared.',
+          'Markdown is the shape everything is stored in, so one document reads back four ways. `GET /api/v1/documents/:id` answers JSON with the Markdown source and the document’s details; adding `.html`, `.docx` or `.pdf` to the same address returns a self-contained web page, a Word file or a PDF instead.',
+          'There is no separate convert-only call. A converted document is a document in the account and uses its room like any other, which is also what makes the result something a second request can find.',
+        ],
+      },
+      {
+        heading: 'What it converts',
+        body: [
+          '`?kind=` names the conversion, with the same names as the pages of this site; without it, the body is Markdown. `html-to-markdown`, `csv-to-markdown` — a `.tsv` too, by its name — `json-to-markdown`, `text-to-markdown` and `evernote-to-markdown` read the body as text.',
+          '`word-to-markdown`, `excel-to-markdown`, `powerpoint-to-markdown`, `epub-to-markdown`, `odt-to-markdown`, `rtf-to-markdown`, and `notion-to-markdown`, `confluence-to-markdown` and `obsidian-to-markdown` for export zips, read it as the file’s bytes, so a `.docx` or a `.zip` is posted exactly as it sits on disk.',
+          'Markdown going the other way is the read side. Post Markdown with no `kind`, then ask for `.html` for a finished page with its styles inside it — `?theme=dark` for the dark palette — `.docx` for Word with Word’s own heading styles, or `.pdf`.',
+          'One document carries at most 4 MB, whether that is the Markdown or the file being converted, and a larger one is answered with a 413.',
+        ],
+      },
+      {
+        heading: 'Keys',
+        body: [
+          'Create a key in the account menu under API keys and send it as `Authorization: Bearer tp_live_…`. It is shown once and stored only as a hash. A key reaches documents, folders and shares, and never the account or the keys themselves, so a leaked key cannot mint its own replacement or lock you out; revoking one stops it on the next request.',
+          'A signed-in browser session works on the same endpoints, so a `GET` can be tried in the browser before any key exists. The `tp_live_` prefix makes a key easy to find wherever it should not be — pasted into the wrong box, or committed to a repository.',
+        ],
+      },
+      {
+        heading: 'The endpoints',
+        body: [
+          '`POST /api/v1/documents` makes one. `?name=` names it, `?share=link` or `?share=people` publishes it in the same request and returns the address, `?expires_at=` ends that link at an ISO 8601 time, and `?folder=` files it in a folder.',
+          '`GET /api/v1/documents` lists the newest 5,000, and `?q=` searches their text. `PUT /api/v1/documents/:id` replaces a document’s text and keeps its id and its link, with the old text kept as one of ten revisions. `DELETE` moves a document to the Trash for 14 days, and `/api/v1/trash` lists and restores what is there.',
+          '`PUT /api/v1/documents/:id/share` sets the mode, the named addresses, an end date and a password, which travels in the body and never in the address. `GET …/views` lists the opens of the link, `/api/v1/folders` makes, renames, moves, shares and deletes folders, `POST /api/v1/documents/:id/summary` writes a short summary, and `GET /api/v1/usage` says how much room is left.',
+        ],
+      },
+      {
+        heading: 'Errors, limits and webhooks',
+        body: [
+          'An error is JSON, `{ "error": "…" }`, in a sentence meant to be read, under a status that means what it says: 400 for a request the endpoint cannot use, 401 for an unknown or revoked key, 403 when the account is out of room or may not publish yet, 404 for a document that is not yours, 410 for a source that has gone, 413 for a document over 4 MB, 429 for too many requests.',
+          'Each key may make 60 requests a minute, and past that the 429 carries a `Retry-After` header saying how long to wait. An account holds 5,000 documents and 250 MB. Reaching a limit refuses the write and says why; nothing older is deleted to make room.',
+          'A receiver can be told instead of polling. Webhooks, registered in the account menu, send a `POST` when a document is created or shared with named people, signed with HMAC-SHA256 in the `x-transformpipe-signature` header. They are managed from a signed-in session only, so a leaked key cannot turn itself into a feed of every future document.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions about the API',
+      intro: 'The short answers. The documentation lists every endpoint.',
+      items: [
+        {
+          question: 'Is the API free?',
+          answer: 'Yes. It is the same account as the site, with the same limits and nothing behind a plan: 5,000 documents, 250 MB, 60 requests a minute per key. An account whose address is not confirmed yet keeps ten documents and cannot publish a public link until it is.',
+        },
+        {
+          question: 'How do I convert HTML to Markdown through the API?',
+          answer: 'Post the HTML as the request body to /api/v1/documents?kind=html-to-markdown, then read the Markdown back from GET /api/v1/documents/:id. The same two requests convert a Word file, a spreadsheet, a deck or a JSON response; only the kind changes.',
+        },
+        {
+          question: 'And Markdown to HTML?',
+          answer: 'Post the Markdown with no kind, then fetch /api/v1/documents/:id.html: the same self-contained page the site downloads, with its styles inside it. Or add ?share=link to the post, and the answer carries an address where the rendered page is already published.',
+        },
+        {
+          question: 'Is posting the same file twice safe?',
+          answer: 'It makes two documents, with two ids and two links: POST is not idempotent and nothing removes duplicates. To change a document, send the new text to PUT /api/v1/documents/:id; sending the same text again changes nothing.',
+        },
+        {
+          question: 'Does a script get the same conversion as the site?',
+          answer: 'Yes. The converters are the same modules the browser runs, called on the server, so a table comes out of an API call the way it comes out of the dropzone.',
+        },
+      ],
+    },
+    action: 'Read the API reference',
+    seo: {
+      title: 'Document conversion API: Markdown, HTML, Word, PDF',
+      description:
+        'A REST API that turns Word, HTML, Excel, PowerPoint, CSV and JSON into Markdown, and Markdown into HTML, Word or PDF. A free key and plain JSON errors.',
+    },
+  },
+  cli: {
+    label: 'Command line',
+    title: 'A command-line tool to convert and publish Markdown',
+    lede: 'Push a Markdown file from a terminal and get its link back. One file of JavaScript with no dependencies, talking to the same API and the same converters as the site.',
+    sections: [
+      {
+        heading: 'One file, no dependencies',
+        body: [
+          '`cli/tp.mjs` in the public repository is a client for the same API. It is a single file with nothing to install beside it, because a tool that runs in CI should not drag a package tree behind it, and it needs Node 20 or later.',
+          'From a checkout it runs as `node cli/tp.mjs`; its package names the command `tp`, which is how the examples on this page are written. `tp --help` lists every command and flag.',
+          'It is also what the GitHub Action runs, so a command that works on your machine behaves the same way in a workflow.',
+        ],
+      },
+      {
+        heading: 'Converting and publishing',
+        body: [
+          '`tp push README.md --share` converts the file, keeps it in your account and prints its link. A pushed `.html`, `.csv`, `.tsv`, `.json` or Evernote `.enex` is converted to Markdown by the server on the way in, rather than stored as if it already were Markdown.',
+          'Files the API takes as bytes rather than text — `.docx`, `.xlsx`, `.pptx`, `.epub`, `.odt`, `.rtf` and export zips — are refused, with the address of the page on the site that reads them in a browser.',
+          '`--merge` chains several Markdown files into one document, in the order given, with a rule between them, and `--name` names it: `tp push docs/*.md --merge --share --name handbook.md`.',
+          '`--share` makes a link anybody holding it can open, and `--share people` keeps the document to named readers, whose addresses you add on the site. `--expires 7d`, `12h` or `2026-12-31` ends the link — a bare date at the end of that day where you are — and `--password` protects it with a password read from `TP_SHARE_PASSWORD`, never from an argument, where it would stay in your shell history.',
+        ],
+      },
+      {
+        heading: 'One link, kept up to date',
+        body: [
+          '`tp push notes.md --update <id>` sends new text to a document that already exists. Its id, its link, its password and its end date stay as they were, and the text it replaced is kept on the server as a revision, the newest ten of them. Pushing the same text again changes nothing.',
+          '`--replaces <id>` does the opposite on purpose: it makes a new document, with an id of its own and a link of its own when it is shared, and records it as the next version of an earlier one, which `tp versions <id>` lists as a chain. A link already sent keeps showing what it showed.',
+        ],
+      },
+      {
+        heading: 'Folders and the account',
+        body: [
+          '`tp list` shows what is in the account, and `--q` searches the documents’ text. `tp rm <id>` moves a document to the Trash, where it waits 14 days; `tp usage` prints how much of the 250 MB and the 5,000 documents is used; `tp summary <id>` asks for a short summary, made once and cached.',
+          '`--folder "Team/Notes"` on a push files the document by its path and makes any part of the path that is not there yet. `tp folders` prints the tree with ids, `tp mkdir` and `tp mv` make and move, `tp rmdir` removes a folder and moves what it held up a level, and `tp share-folder` shares a whole folder with `--link`, `--people` or `--private`, taking the same `--expires` and `--password`.',
+        ],
+      },
+      {
+        heading: 'Keys and scripts',
+        body: [
+          '`tp login tp_live_…` saves a key to `~/.config/tp/config.json`, readable only by you. A key can also come from `--key` or from `TP_API_KEY`, which are read first; the environment variable is the one for CI, since `tp login` leaves the key in your shell history.',
+          '`--json` prints the API’s own answer instead of the summary lines, which is what the Action reads, and `TP_HOST` points the tool at another deployment. A failure prints the API’s message with its status and exits non-zero, so a script or a pipeline stops where it should.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions about the command line',
+      intro: 'The short answers. The documentation has every flag.',
+      items: [
+        {
+          question: 'What do I need to run it?',
+          answer: 'Node 20 or later, the file, and an API key from the account menu. It has no dependencies of its own, so there is no package tree to install or audit.',
+        },
+        {
+          question: 'Which files can it convert?',
+          answer: 'Markdown, plus HTML, CSV, TSV, JSON and Evernote exports, which the server converts on the way in. Word, Excel, PowerPoint, EPUB, OpenDocument, rich text and export zips it refuses: convert them on the site and push the Markdown, or post them to the API, which takes them as bytes.',
+        },
+        {
+          question: 'Can it convert Markdown to HTML offline, without an account?',
+          answer: 'No. Every command talks to the API, so it needs a key and a connection. For one file with nothing uploaded, the converter on the site runs in your browser instead.',
+        },
+        {
+          question: 'Will pushing again change a link I already sent?',
+          answer: 'Not unless you ask. A plain push makes a new document with a new link; --update with the document’s id is the one way to put new text behind an existing link.',
+        },
+        {
+          question: 'How do I keep the key out of logs?',
+          answer: 'Put it in TP_API_KEY rather than passing --key or running tp login, and give a share password through TP_SHARE_PASSWORD. Set from a CI secret or a shell profile, neither is typed into a command, so neither ends up in your shell history or in the process list.',
+        },
+      ],
+    },
+    action: 'Read the command-line reference',
+    seo: {
+      title: 'Command-line Markdown converter and publisher',
+      description:
+        'A dependency-free CLI that pushes Markdown, HTML, CSV or JSON to your account and prints a share link. Folders, expiry dates, passwords, JSON output.',
+    },
+  },
+  'github-action': {
+    label: 'GitHub Action',
+    title: 'Preview Markdown in pull requests with a GitHub Action',
+    lede: 'A reviewer should read the document a pull request changes, not a diff of asterisks. This action publishes each changed Markdown file as a rendered page and comments the links on the pull request.',
+    sections: [
+      {
+        heading: 'What it does',
+        body: [
+          'Given no list of files, the action asks git which Markdown files the pull request touched, publishes each one as a read-only page, and comments a table of file names, word counts and links. Files the branch deleted are skipped, so removing a document does not fail the run.',
+          'It is a composite action, `action.yml` at the root of the public repository, and what it runs is the command-line client from the same repository: no container to pull, no dependencies to install, and the same rendering the site and the API give.',
+          'The comment is headed Markdown preview. A reviewer opens each link in a browser like any other page, with no app to install and, for a link, no account to make — which is what lets somebody who never opens the diff review the words.',
+        ],
+      },
+      {
+        heading: 'Why a rendered page',
+        body: [
+          'A diff is the right view for code and the wrong one for prose. It shows which words changed and hides whether the section still reads, whether a table lines up, or whether a numbered list restarts halfway down. The rendered page answers those at a glance, and a reviewer who does not write Markdown can read it at all.',
+        ],
+      },
+      {
+        heading: 'The workflow',
+        body: [
+          'A complete workflow to copy is in `examples/publish-markdown.yml`. It runs on `pull_request` with a `paths` filter for `**.md`, so a pull request that changes no Markdown starts no runner. The checkout needs `fetch-depth: 0`, because the changed files are worked out against the pull request’s base commit, and the job needs `pull-requests: write` to post the comment.',
+          'The step itself is `uses: raudarlabs/transformpipe@main` with one input, `api-key: ${{ secrets.TP_API_KEY }}`. The key is a TransformPipe API key kept as a repository secret, and the action passes it to the client in an environment variable rather than as an argument, so it is not part of the command written to the log.',
+        ],
+      },
+      {
+        heading: 'Inputs and outputs',
+        body: [
+          '`files` takes space-separated paths in place of the changed-files list, which is how the action publishes from a push to a branch rather than a pull request. `share` is `link` by default, `people` for named readers only, or `none` to keep the documents private. `merge: true` chains the files into one document, named by `name`.',
+          '`replaces` records a single document as a new version of an earlier one, `comment: false` skips the comment, and `host` points at another deployment.',
+          'Two outputs come back for the steps after it: `urls`, the published links one per line, and `documents`, the API’s answer for each document, as JSON. With nothing to publish the action says so, leaves `urls` empty and `documents` as an empty list, and exits successfully, so a later step can be guarded on `urls` rather than failing.',
+        ],
+      },
+      {
+        heading: 'Links that stay true',
+        body: [
+          'Every run publishes new documents rather than overwriting earlier ones, so the link in an older comment keeps showing what that commit said. The cost is a document per file per run in the account, which holds 5,000 documents and 250 MB; old previews can be deleted from the history.',
+          'Publishing a public link needs a confirmed email address on the account, and until it is confirmed the step fails with that sentence. A pull request from a fork runs without the repository’s secrets, so the step has no key there; skip it with `if: github.event.pull_request.head.repo.fork == false`.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Questions about the Action',
+      intro: 'The short answers. The documentation lists every input.',
+      items: [
+        {
+          question: 'Does it work in a private repository?',
+          answer: 'Yes, and that is the case to think about: with share set to link, the default, a document from a private repository becomes a page anybody holding the link can open. Set share to people to keep it to named readers, or to none to keep it in the account.',
+        },
+        {
+          question: 'What does the comment look like?',
+          answer: 'A heading, Markdown preview, and a table with one row per file: its name, its word count, and a link to read it — or “not shared” when share is none.',
+        },
+        {
+          question: 'Does it update its comment on the next push?',
+          answer: 'No. Each run posts a comment of its own and leaves the earlier ones as they were, each pointing at the documents of its own commit.',
+        },
+        {
+          question: 'Can it publish from a push to main instead?',
+          answer: 'Yes. A push has no pull request to compare against, so give it files with the paths to publish. It comments only on pull request events; on a push, the links come back in the urls output for the next step to use.',
+        },
+        {
+          question: 'What does it cost?',
+          answer: 'The key and the account are free, with nothing behind a plan. The runner time is counted by GitHub, and the paths filter in the example keeps it to pull requests that change Markdown.',
+        },
+      ],
+    },
+    action: 'Read the setup in the documentation',
+    seo: {
+      title: 'GitHub Action to preview Markdown in pull requests',
+      description:
+        'Publish the Markdown a pull request changed as rendered pages and comment the links, so reviewers read the document, not a diff. One step, one secret.',
+    },
+  },
 };

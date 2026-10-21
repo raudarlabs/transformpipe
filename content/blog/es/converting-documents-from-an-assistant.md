@@ -1,6 +1,7 @@
 ---
 title: "Conversor de documentos por MCP: convertir y compartir documentos desde una conversación"
-description: "Cómo un conversor por MCP convierte el Markdown de un asistente en una página enviable: las doce herramientas, el inicio de sesión sin clave y los riesgos reales"
+description: "Cómo un conversor MCP convierte el Markdown de un asistente en una página enviable: las diecinueve herramientas, el inicio de sesión sin clave y los riesgos reales"
+updated: 2026-10-21
 date: 2026-09-09
 tag: Automatización
 keywords: conversor de documentos mcp, servidor mcp markdown a html, conector personalizado para un asistente, convertir markdown dentro de un chat, mcp con oauth, compartir un documento desde una conversación
@@ -44,28 +45,35 @@ El argumento a favor de conectar un conversor de documentos no es que convertir 
 
 Cinco verbos cubren casi todo. Convertir, para que el Markdown se vuelva una página. Guardar, para que tenga una dirección en lugar de vivir en un búfer de scroll. Compartir, para que otra persona pueda abrirlo. Listar, para que el asistente pueda responder «qué tengo». Recuperar, para que un documento escrito hace tres semanas se pueda editar en lugar de reescribirse de memoria. Con esos cinco, el modelo termina el trabajo dentro de la conversación en lugar de entregarle al lector un muro de asteriscos y desearle suerte.
 
-El conector de TransformPipe expone doce herramientas, y el reparto es deliberado: cuatro hacen trabajo, seis responden preguntas, y dos cambian lo que otras personas pueden ver o si un documento existe siquiera.
+El conector de TransformPipe expone diecinueve herramientas, y el reparto es deliberado: ocho leen o convierten y no cambian nada, siete añaden, cambian o reorganizan lo que hay en la cuenta, y cuatro cambian quién puede leer algo o si ese algo existe siquiera.
 
 | Herramienta | Para qué sirve | Qué puede causar |
 | --- | --- | --- |
-| `tp_help` | Responde preguntas sobre cómo funciona el producto, a partir de su documentación y no de memoria | Nada. Lee secciones de documentación y las devuelve |
-| `tp_convert_markdown` | Markdown dentro, HTML saneado fuera; opcionalmente el documento completo autocontenido | No se guarda nada. La salida viaja de vuelta por la conversación, así que un documento largo cuesta contexto |
+| `tp_search_documentation` | Responde preguntas sobre cómo funciona el producto, a partir de su documentación y no de memoria | Nada. Lee secciones de documentación y las devuelve |
+| `tp_convert_from_markdown` | Markdown dentro; HTML saneado, formato de almacenamiento de Confluence, marcado wiki de Jira o mrkdwn de Slack fuera; opcionalmente un documento HTML completo autocontenido | No se guarda nada. La salida viaja de vuelta por la conversación, así que un documento largo cuesta contexto |
 | `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, texto plano, texto enriquecido o una exportación de Evernote dentro, Markdown fuera | No se guarda nada. El Markdown vuelve por la conversación, del mismo modo |
-| `tp_save_document` | Guarda Markdown en la cuenta, y lo publica en la misma llamada si se le pide | Escribe un documento. Con un modo de compartir, publica una página en la web pública |
+| `tp_save_document` | Guarda un documento nuevo —Markdown, o uno de esos formatos convertido al guardar— opcionalmente en una carpeta, y lo publica en la misma llamada si se le pide | Escribe un documento, y crea las carpetas que falten en su ruta. Publicarlo, o guardarlo en una carpeta compartida, exige una confirmación explícita |
 | `tp_update_document` | Texto nuevo para un documento que ya está en la cuenta — el mismo id y el mismo enlace, con el texto anterior guardado como revisión | Cambia lo que muestra un enlace. En un documento compartido, exige una confirmación explícita |
-| `tp_list_documents` | Qué hay en la cuenta —nombres, tamaños, fechas, si cada uno está compartido— con el id que aceptan las demás herramientas | Lee. Revela la lista de documentos a la conversación |
+| `tp_list_documents` | Qué hay en la cuenta —nombres, tamaños, fechas, carpetas, si cada uno está compartido— con el id que aceptan las demás herramientas | Lee. Revela la lista de documentos a la conversación |
+| `tp_list_folders` | Las carpetas de la cuenta como árbol, con el número de documentos y el estado de compartición de cada una, y los totales de la cuenta | Lee. Revela la estructura de carpetas a la conversación |
+| `tp_create_folder` | Una carpeta nueva en el nivel superior o dentro de otra; pedirla dos veces devuelve la que creó la primera llamada | Añade una carpeta. No cambia nada de lo que ya existe |
+| `tp_move_documents` | Mete documentos en una carpeta, o los saca de todas las carpetas | Reorganiza. Hacia una carpeta compartida, exige una confirmación explícita, porque sus lectores podrán leerlos |
 | `tp_get_document` | Un documento, por id, como su fuente en Markdown o como HTML renderizado | Lee. Trae un documento entero a la conversación |
-| `tp_summarize_document` | Un resumen breve de un documento, guardado en caché en la cuenta para que volver a pedirlo no cueste nada | Lee. Guarda el resumen junto al documento |
-| `tp_document_versions` | El historial de un documento: los textos que sustituyeron sus actualizaciones, cada uno legible de nuevo | Lee. Los textos anteriores vuelven a la conversación cuando se piden |
-| `tp_share_document` | Cambia quién puede abrir un documento: un enlace, direcciones concretas, o nadie — o añade o quita un solo lector | Publica o retira. Revocar rompe una URL ya enviada |
+| `tp_summarize_document` | Un resumen breve de un documento, guardado en caché en la cuenta para que volver a pedirlo no cueste nada | Guarda el resumen junto al documento. El texto se envía a la API Gemini de Google para escribirlo |
+| `tp_document_versions` | El historial de un documento: los textos que sustituyeron sus actualizaciones, cada uno legible de nuevo, y los documentos guardados como sus versiones posteriores | Lee. Los textos anteriores vuelven a la conversación cuando se piden |
+| `tp_share_document` | Cambia quién puede abrir un documento: un enlace, direcciones concretas, o nadie — o añade o quita un solo lector | Publica o retira. Publicar exige una confirmación explícita; revocar rompe una URL ya enviada |
+| `tp_share_folder` | Lo mismo para una carpeta y todo lo que hay en ella y en sus subcarpetas | Publica o retira de una vez cada documento que contiene, incluidos los que se guarden ahí más tarde |
+| `tp_update_folder` | Cambia el nombre de una carpeta, o la mueve con su contenido bajo otra carpeta o al nivel superior | Reorganiza. Bajo una carpeta compartida, exige una confirmación explícita |
+| `tp_delete_folder` | Borra una carpeta; lo que contiene sube un nivel, o se va con ella a la papelera si se pide | Elimina la carpeta para siempre y acaba con su enlace. Exige una confirmación explícita en cada llamada |
 | `tp_usage` | Qué está usando la cuenta contra sus límites | Lee. Merece preguntarse cuando se rechaza un guardado |
-| `tp_delete_document` | Borra un documento, de forma permanente | Destruye datos. Exige una confirmación explícita, y elimina exactamente uno |
+| `tp_delete_document` | Mueve un documento a la papelera, donde se conserva 14 días | Acaba con su enlace compartido al instante. Exige una confirmación explícita, y elimina exactamente uno |
+| `tp_restore_document` | Lista la papelera, o devuelve un documento borrado con su carpeta, su compartición y sus versiones | Recupera lo que se borró. No elimina nada |
 
 Dos detalles estructurales importan más que la lista en sí.
 
 El primero es que las herramientas no son una segunda implementación de nada. Cada una llama a la propia API pública de la aplicación, en el mismo proceso, con la credencial de quien llama reenviada, así que una conversación y un script reciben la misma respuesta del mismo código. Suena a un detalle interno de limpieza y no lo es. Una herramienta que consultara la base de datos directamente sería una segunda implementación de «de quién son estos documentos», y esa es la pregunta a la que menos conviene tener dos respuestas. El mismo razonamiento se aplica a la conversión en sí: el HTML que devuelve una herramienta es el HTML que produce la página del navegador, saneado contra la misma lista de permitidos, porque es el mismo renderizador.
 
-El segundo es `tp_help`. Un modelo al que se le pregunta cómo funciona un producto va a responder con lo que absorbió durante el entrenamiento, que para cualquier producto más joven que su fecha de corte es una descripción segura de algo que no existe. Una herramienta de documentación convierte eso en una consulta. Es la herramienta menos vistosa de la tabla y la que evita más respuestas equivocadas.
+El segundo es `tp_search_documentation`. Un modelo al que se le pregunta cómo funciona un producto va a responder con lo que absorbió durante el entrenamiento, que para cualquier producto más joven que su fecha de corte es una descripción segura de algo que no existe. Una herramienta de documentación convierte eso en una consulta. Es la herramienta menos vistosa de la tabla y la que evita más respuestas equivocadas.
 
 ## Añadirlo, y el inicio de sesión que no lleva clave
 
@@ -75,7 +83,7 @@ La dirección es el despliegue más `/api/mcp`:
 https://transformpipe.com/api/mcp
 ```
 
-En claude.ai eso va en Ajustes → Conectores → Añadir conector personalizado. Desde una terminal:
+En claude.ai el conector también figura en el directorio de conectores de Claude, así que añadirlo es pulsar Conectar e iniciar sesión; [la página del conector para Claude](/agents/claude) tiene los pasos, y una organización que mantiene el directorio desactivado pega la dirección en Ajustes → Conectores → Añadir conector personalizado. En [ChatGPT](/agents/chatgpt) se añade por su dirección como app MCP: Plugins, Add, Create MCP App. Desde una terminal:
 
 ```
 claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp
@@ -116,9 +124,9 @@ Un conector que guarda una clave de API de larga vida que pegaste es una credenc
 
 Un cliente aprobado es un objeto distinto. Tiene un nombre que puedes leer, un ámbito más estrecho que el de la cuenta, su propia caducidad, y un botón de revocar que no rompe nada más que sea tuyo. Cuando miras la lista en seis meses y no reconoces una entrada, puedes quitar solo esa entrada. Ese es todo el argumento, y merece el paso extra en el flujo.
 
-## Las dos herramientas hechas a medida del problema que pueden causar
+## Las cuatro herramientas hechas a medida del problema que pueden causar
 
-Diez de las doce herramientas son normales — `tp_update_document` pide una confirmación solo cuando el documento ya está compartido, porque su texto nuevo es entonces lo que lee cualquiera que tenga el enlace. Dos no lo son, y están escritas de forma distinta a propósito.
+Quince de las diecinueve herramientas son normales — las que guardan, actualizan o mueven piden una confirmación solo cuando el resultado lo va a leer otra persona: un documento publicado al guardarlo, texto nuevo en un documento compartido, un documento o una carpeta movidos adonde los ven los lectores de una carpeta compartida. Cuatro no lo son —las dos que comparten y las dos que borran—, y están escritas de forma distinta a propósito.
 
 **Compartir publica una página en la web pública.** Hay tres modos, y la transición entre ellos es la parte que la gente hace mal.
 
@@ -128,11 +136,11 @@ Diez de las doce herramientas son normales — `tp_update_document` pide una con
 | `link` | Cualquiera que tenga la URL | Está en la web pública. Una URL no es una contraseña, y los enlaces viajan |
 | `people` | Solo las direcciones dadas | `emails` sustituye la lista; `add` y `remove` la cambian en una dirección y dejan el resto. Solo una dirección nueva en la lista recibe un correo |
 
-Guardar puede publicar en la misma llamada, lo cual es cómodo y es justo por lo que las propias instrucciones del servidor al modelo dicen que solo se comparta un documento cuando la persona lo pidió. Una herramienta que guarda y publica en un solo paso es una herramienta que puede convertir «guarda esto» en «publica esto» a través de una sola frase mal leída. La mitigación no es ingeniosa: la descripción dice lo que hace en la primera línea, el modo es una enumeración explícita y no un booleano llamado `public`, y la respuesta al modelo dice en qué modo quedó el documento y cuál es su URL, así que el resumen del asistente hacia ti es una frase que puedes comprobar. Además, `link` y `people` exigen los dos `confirm: true`, al guardar igual que al compartir: sin él, la llamada dice qué se revelaría y a quién, y no cambia nada.
+`tp_share_folder` admite los mismos tres modos para una carpeta, y una carpeta compartida por enlace muestra cada documento que contiene, también en sus subcarpetas, incluidos los que se guarden ahí después. Guardar puede publicar en la misma llamada, lo cual es cómodo y es justo por lo que las propias instrucciones del servidor al modelo nombran cada llamada que revela algo y necesita antes una confirmación. Una herramienta que guarda y publica en un solo paso es una herramienta que puede convertir «guarda esto» en «publica esto» a través de una sola frase mal leída. La mitigación no es ingeniosa: la descripción dice lo que hace en la primera línea, el modo es una enumeración explícita y no un booleano llamado `public`, y la respuesta al modelo dice en qué modo quedó el documento y cuál es su URL, así que el resumen del asistente hacia ti es una frase que puedes comprobar. Además, `link` y `people` exigen los dos `confirm: true`, al guardar igual que al compartir, y también guardar en una carpeta compartida: sin él, la llamada dice qué se revelaría y a quién, y no cambia nada.
 
-**Borrar exige una confirmación explícita y elimina exactamente un documento.** `confirm: true` es obligatorio, y sin él la herramienta se niega y le dice al modelo que vaya a preguntar. No hay deshacer y no hay papelera. Y no hay ninguna herramienta que borre varios —ni comodín, ni «borra todos los compartidos», ni rango de fechas. Esa es una ausencia deliberada y no una función que falte. Un borrado masivo es la única herramienta donde una sola instrucción mal entendida destruye trabajo que no se puede recuperar, y un conector que no puede expresar la instrucción no puede llevarla a cabo.
+**Borrar exige una confirmación explícita, y un documento borrado espera en una papelera.** `confirm: true` es obligatorio en las dos herramientas de borrado, en cada llamada, y sin él la herramienta se niega, dice qué se eliminaría y le dice al modelo que vaya a preguntar. `tp_delete_document` elimina exactamente un documento y lo mueve a la papelera durante 14 días, desde donde `tp_restore_document` lo devuelve con su carpeta, su compartición y sus versiones; pasado ese plazo desaparece para siempre, y su enlace compartido deja de funcionar en el momento en que se borra. Sigue sin haber ninguna herramienta que borre por patrón —ni comodín, ni «borra todos los compartidos», ni rango de fechas. Esa es una ausencia deliberada y no una función que falte. La única forma de eliminar muchos documentos en una llamada es `tp_delete_folder` con `with_documents`, que está atada a una carpeta que alguien nombró, y cuyo rechazo dice cuántos documentos contiene la carpeta antes de que pase nada. Un borrado masivo es la única herramienta donde una sola instrucción mal entendida destruye muchísimo trabajo, y un conector que no puede expresar la instrucción no puede llevarla a cabo.
 
-La confirmación es una mitigación real y parcial, que es el tema de la siguiente sección. Detiene un borrado accidental, porque un accidente normalmente no incluye marcar una casilla de confirmación. No detiene un borrado al que el modelo fue convencido, porque un modelo al que se ha convencido de borrar algo va a pasar `confirm: true` con la misma facilidad con que pasa el id.
+La confirmación es una mitigación real y parcial, que es el tema de la siguiente sección. Detiene un borrado accidental, porque un accidente normalmente no incluye marcar una casilla de confirmación. No detiene un borrado al que el modelo fue convencido, porque un modelo al que se ha convencido de borrar algo va a pasar `confirm: true` con la misma facilidad con que pasa el id. Ese caso lo cubre la papelera, durante 14 días, siempre que alguien se dé cuenta dentro de ese plazo.
 
 ## Dónde falla un conector, y qué cuesta eso
 
@@ -145,9 +153,9 @@ Las mitigaciones son reales, y son parciales. Enunciarlas con honestidad signifi
 | Mitigación | Qué evita de verdad | Qué no evita |
 | --- | --- | --- |
 | Un token limitado a los datos de un producto | Llegar a tu correo, tus repositorios, tus otras cuentas, o las claves de API de la misma cuenta | Cualquier cosa dentro del ámbito: leer, publicar y borrar tus documentos |
-| Una confirmación explícita en la herramienta destructiva | El borrado accidental, y el borrado casual que la persona nunca pidió | Un borrado al que el modelo fue persuadido y que él mismo confirma |
+| Una confirmación explícita en las herramientas destructivas | El borrado accidental, y el borrado casual que la persona nunca pidió | Un borrado al que el modelo fue persuadido y que él mismo confirma |
 | Que compartir sea visible y revocable | Que una publicación se mantenga en secreto para ti, o que sea permanente | La ventana entre publicar y que te des cuenta. Una página copiada se queda copiada |
-| Sin operaciones masivas | Que una sola instrucción destruya muchos documentos | Llamadas individuales repetidas, si nadie está mirando la transcripción |
+| Sin borrado por patrón, y una papelera detrás de cada documento borrado | Que una sola instrucción destruya sin remedio muchos documentos | Una carpeta borrada con sus documentos, o llamadas individuales repetidas, si nadie mira la papelera en 14 días |
 | Que la persona lea lo que dice el asistente que hizo | La mayor parte, en la práctica, si la persona realmente lo lee | Cualquier cosa en una conversación que nadie revisó, que es la mayoría de las conversaciones largas |
 
 Esa última fila hace más trabajo que las demás, y es la menos fiable. El resumen honesto es que la seguridad de un conector descansa hoy en un ámbito estrecho más una persona que presta atención, y la segunda mitad se degrada justo con la carga de trabajo que hace que un conector merezca la pena.
@@ -156,7 +164,7 @@ Hay tres costes más que no tienen nada que ver con la inyección.
 
 **Es otro servicio guardando tus documentos.** Sin sesión iniciada, la conversión en el navegador de este sitio no envía nada a ningún sitio: el archivo se lee, convierte y renderiza en tu propia máquina, y puedes ver la pestaña de red quedarse vacía mientras pasa. Un conector es el arreglo opuesto por necesidad. Guardar un documento significa una cuenta, una cuenta significa almacenamiento, y almacenamiento significa una empresa guardando el texto que escribiste. Para un README, eso es irrelevante. Para un contrato, la nota de un paciente o un plan sin publicar, es la pregunta entera, y la respuesta correcta puede ser convertir en el navegador y no guardar nunca nada.
 
-**El documento entra en la conversación.** `tp_convert_markdown` devuelve la salida convertida por el mismo canal que todo lo demás, lo que significa que un documento largo pasa a formar parte de una transcripción guardada por quien sea que alberga el asistente. La herramienta recorta el texto devuelto a cuarenta mil caracteres y dice cuánto quitó, en lugar de truncar en silencio —el truncado silencioso se lee como algo completo, que es peor que un hueco visible—, pero recortar es una gentileza para la ventana de contexto, no un control de privacidad. Para cualquier cosa larga, guardarla y compartir el enlace es más barato y menos expuesto.
+**El documento entra en la conversación.** `tp_convert_from_markdown` devuelve la salida convertida por el mismo canal que todo lo demás, lo que significa que un documento largo pasa a formar parte de una transcripción guardada por quien sea que alberga el asistente. La herramienta recorta el texto devuelto a cuarenta mil caracteres y dice cuánto quitó, en lugar de truncar en silencio —el truncado silencioso se lee como algo completo, que es peor que un hueco visible—, pero recortar es una gentileza para la ventana de contexto, no un control de privacidad. Para cualquier cosa larga, guardarla y compartir el enlace es más barato y menos expuesto.
 
 **Sanear sigue siendo tu problema para entender, no para ejecutar.** El HTML sin procesar en una fuente Markdown pasa por un saneador con una lista fija de permitidos antes de llegar a una página, así que una etiqueta `<script>` en un archivo que te mandó alguien no sobrevive a la conversión. Eso es una propiedad del conversor y no del conector, y merece la pena leer [cómo funciona sanear y dónde tiene que pasar](/blog/sanitising-markdown-safely) si estás convirtiendo archivos que no escribiste. Lo que el saneador no puede hacer es decirte que la propia prosa iba dirigida a tu asistente.
 
@@ -166,13 +174,13 @@ El conector no es un producto aparte con techos aparte. Las mismas cifras se apl
 
 | Límite | Valor | Por qué es ese número |
 | --- | --- | --- |
-| Por conversión | 10 MB | La conversión corre en el navegador, así que esto es un juicio sobre la máquina de la persona y no una regla de la plataforma. Varios archivos soltados juntos cuentan como el único documento en que se convierten |
+| Por conversión | 10 MB de texto; 50 MB para un archivo de Word, PowerPoint o Excel; 250 MB para un .zip de exportación | La conversión corre en el navegador, así que esto es un juicio sobre la máquina de la persona y no una regla de la plataforma. Varios archivos soltados juntos cuentan como el único documento en que se convierten |
 | Por documento guardado | 4 MB | No es una política. La plataforma rechaza una petición o una respuesta de más de 4,5 MB antes de que se ejecute ningún código de la aplicación, así que un documento más grande no podría ni guardarse ni recuperarse |
-| Por cuenta | 100 MB, 500 documentos | Los bytes y las filas están limitados por separado: mil archivos diminutos cuestan filas reales |
+| Por cuenta | 250 MB, 5000 documentos | Los bytes y las filas están limitados por separado: mil archivos diminutos cuestan filas reales |
 | Por quien llama | 60 llamadas por minuto | Quien dispara esto está en bucle, no trabajando |
 | Texto devuelto | 40.000 caracteres | La respuesta de una herramienta tiene que viajar por la conversación, y un documento no debería devorarla |
 
-La cifra de 4 MB es la que merece entenderse, porque es el único límite que no es una elección. Está fijado por debajo de los 4,5 MB propios de la plataforma en lugar de en ese mismo punto, para que el rechazo llegue desde la aplicación con los dos tamaños nombrados dentro en lugar de como un rechazo desnudo desde más abajo —que es la diferencia entre un modelo que puede decirte qué hacer a continuación y uno que reporta un fallo que no puede explicar. Un documento por encima de ese tamaño sigue convirtiéndose, sigue previsualizándose y sigue descargándose —la conversión corre en tu navegador, donde no interviene ninguna petición—, solo se queda fuera del historial guardado, y la aplicación lo dice en lugar de reportar un guardado que no ocurrió. Un conector hereda eso exactamente: `tp_convert_markdown` va a manejar un archivo que `tp_save_document` rechaza.
+La cifra de 4 MB es la que merece entenderse, porque es el único límite que no es una elección. Está fijado por debajo de los 4,5 MB propios de la plataforma en lugar de en ese mismo punto, para que el rechazo llegue desde la aplicación con los dos tamaños nombrados dentro en lugar de como un rechazo desnudo desde más abajo —que es la diferencia entre un modelo que puede decirte qué hacer a continuación y uno que reporta un fallo que no puede explicar. Un documento por encima de ese tamaño sigue convirtiéndose, sigue previsualizándose y sigue descargándose —la conversión corre en tu navegador, donde no interviene ninguna petición—, solo se queda fuera del historial guardado, y la aplicación lo dice en lugar de reportar un guardado que no ocurrió. Un conector no tiene ese atajo: los argumentos de una herramienta llegan en el cuerpo de una petición como todo lo demás, así que `tp_convert_from_markdown` rechaza el Markdown de más de 4 MB igual que `tp_save_document`.
 
 Si un guardado se rechaza, `tp_usage` es la herramienta que dice por qué, en forma de bytes y documentos contados contra el techo de cada uno. Existe porque «no se guardó» es una frase que un modelo va a interpretar con creatividad si no se le da nada más.
 
@@ -196,7 +204,7 @@ Como referencia, los servidores MCP publicados junto al protocolo muestran cómo
 ## Cómo juzgar un conector de documentos
 
 1. **Comprueba si se puede revocar sin romper otra cosa.** Un conector que reutiliza tu clave de API ya existente significa que rotar esa clave también mata tus scripts de despliegue, y lo vas a descubrir en el peor momento; un conector que tiene su propia aprobación se puede quitar por una simple duda sin ninguna consecuencia.
-2. **Lee la descripción de la herramienta destructiva antes de añadirla.** Si borrar no exige confirmación, o si hay una herramienta que borra más de una cosa a la vez, entonces una sola instrucción mal leída en una conversación larga es una pérdida de datos irrecuperable en lugar de un error molesto.
+2. **Lee la descripción de la herramienta destructiva antes de añadirla.** Si borrar no exige confirmación, o si hay una herramienta que borra más de una cosa a la vez sin nada desde donde recuperarlas, entonces una sola instrucción mal leída en una conversación larga es una pérdida de datos irrecuperable en lugar de un error molesto.
 3. **Averigua si compartir es un paso aparte o una marca sobre guardar.** Cualquiera de las dos es defendible, pero un guardado que publica en la misma llamada necesita que el modo se nombre explícitamente en la respuesta, o «lo guardé» y «lo publiqué en internet» son la misma frase para quien lee el resumen.
 4. **Pregunta qué devuelven las herramientas a través de la conversación.** Una herramienta que entrega documentos enteros va a llenar la ventana de contexto y va a poner tu texto en la transcripción, así que un conector que devuelve una URL para cualquier cosa larga te está haciendo un favor que se nota en menos coste y menos exposición.
 5. **Confirma que los límites coinciden con el resto del producto.** Un conector con sus propios techos más bajos va a rechazar algo que el sitio web aceptó, y el fallo llega como una disculpa vaga del modelo en lugar de un error que puedas resolver.
@@ -204,7 +212,7 @@ Como referencia, los servidores MCP publicados junto al protocolo muestran cómo
 
 ## Conclusión
 
-Un conector se gana su lugar cuando el documento ya está dentro de la conversación y cualquier alternativa implica a una persona moviendo texto entre dos ventanas. Lo que lo hace valioso y no solo ingenioso es lo poco vistoso: un token que cubre los documentos de un solo producto y nada más, una aprobación con un nombre encima y un botón de revocar que no rompe nada, una herramienta destructiva que pregunta, y un compartir que dice en voz alta qué acaba de publicar. Esas son las propiedades que hay que comprobar en cualquier conector, no solo en este. Si prefieres mantener el documento en tu propia máquina, la misma conversión corre en el navegador y [no se sube nada cuando no has iniciado sesión](/) — y si el trabajo es un script, una carpeta o un repositorio, usa la API, la CLI o la Action en su lugar, y deja la conversación para los documentos que solo existen ahí.
+Un conector se gana su lugar cuando el documento ya está dentro de la conversación y cualquier alternativa implica a una persona moviendo texto entre dos ventanas. Lo que lo hace valioso y no solo ingenioso es lo poco vistoso: un token que cubre los documentos de un solo producto y nada más, una aprobación con un nombre encima y un botón de revocar que no rompe nada, herramientas destructivas que preguntan antes, con una papelera detrás, y un compartir que dice en voz alta qué acaba de publicar. Esas son las propiedades que hay que comprobar en cualquier conector, no solo en este. Si prefieres mantener el documento en tu propia máquina, la misma conversión corre en el navegador y [no se sube nada cuando no has iniciado sesión](/) — y si el trabajo es un script, una carpeta o un repositorio, usa la API, la CLI o la Action en su lugar, y deja la conversación para los documentos que solo existen ahí.
 
 ## Preguntas frecuentes
 
@@ -218,11 +226,11 @@ No. La primera llamada vuelve sin autorizar, el asistente sigue eso hasta una p�
 
 ### ¿Puede un asistente publicar mi documento sin preguntar?
 
-Puede, y por eso las herramientas están hechas como están: guardar puede publicar en la misma llamada, y las instrucciones del servidor le dicen al modelo que solo comparta cuando la persona lo pidió. Compartir es visible en tu lista de documentos y revocable, y poner un documento de nuevo en privado detiene que un enlace ya enviado se pueda abrir — pero una página que se copió mientras era pública se queda copiada.
+Puede, si él mismo pasa la confirmación, y por eso las herramientas están hechas como están: guardar puede publicar en la misma llamada, y publicar, al guardar o al compartir, exige `confirm: true`; sin él, la herramienta no cambia nada y dice qué se revelaría. Compartir es visible en tu lista de documentos y revocable, y poner un documento de nuevo en privado detiene que un enlace ya enviado se pueda abrir — pero una página que se copió mientras era pública se queda copiada.
 
 ### ¿Qué pasa si mi documento es más grande que el límite?
 
-La conversión tiene un tope de 10 MB y un documento guardado uno de 4 MB, así que un archivo entre esos dos tamaños se convierte y se descarga pero no se puede conservar en la cuenta. Ese segundo límite es de la plataforma y no una política: una función rechaza una petición o una respuesta de más de 4,5 MB antes de que corra nada del código de la aplicación, así que el documento no podría ni guardarse ni recuperarse.
+La conversión en el navegador tiene un tope de 10 MB para un archivo de texto y un documento guardado uno de 4 MB, así que un archivo entre esos dos tamaños se convierte y se descarga pero no se puede conservar en la cuenta. Ese segundo límite es de la plataforma y no una política: una función rechaza una petición o una respuesta de más de 4,5 MB antes de que corra nada del código de la aplicación, así que el documento no podría ni guardarse ni recuperarse.
 
 ### ¿Es un conector más seguro que pegar en un conversor online?
 

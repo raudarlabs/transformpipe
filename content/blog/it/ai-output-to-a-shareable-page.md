@@ -1,7 +1,7 @@
 ---
 title: "Il tuo assistente IA scrive Markdown. I tuoi colleghi non lo leggono."
 description: "Perché gli assistenti scrivono in Markdown, cosa sopravvive incollandolo in email, Slack, Word o Notion, e la via meno elegante che funziona: salva, converti, invia"
-updated: 2026-09-09
+updated: 2026-10-21
 date: 2026-07-21
 tag: Workflow
 keywords: copiare testo da chatgpt in word, convertire risposta ai in html, esportare markdown da claude, incollare markdown in slack, asterischi e cancelletti nel testo, formule con dollari markdown, condividere una risposta di chatgpt
@@ -265,7 +265,7 @@ La conversione lato browser è il motivo per cui TransformPipe può dire che non
 
 ### Saltare del tutto la copia
 
-Gli appunti sono l'anello debole di tutto questo, e si può eliminare. Un assistente con un connettore verso un servizio di conversione fa l'intera sequenza dentro la conversazione: prende il testo che ha appena scritto, lo converte, e ti restituisce un file o un link senza che niente di tutto ciò passi per un campo di testo. Niente ha la possibilità di subire una correzione automatica, perché niente è mai stato incollato.
+Gli appunti sono l'anello debole di tutto questo, e si può eliminare. Un assistente con [un connettore](/agents) verso un servizio di conversione fa l'intera sequenza dentro la conversazione: prende il testo che ha appena scritto, lo converte, e ti restituisce un file o un link senza che niente di tutto ciò passi per un campo di testo. Niente ha la possibilità di subire una correzione automatica, perché niente è mai stato incollato.
 
 Il meccanismo è un server MCP, oppure una chiamata a un'API, oppure un'invocazione da riga di comando da qualunque cosa l'assistente sia autorizzato a eseguire — la stessa conversione in ogni caso, raggiunta da una direzione diversa. [Convertire documenti dall'interno di un assistente](/blog/converting-documents-from-an-assistant) tratta cosa ogni strada può e non può fare. È la risposta giusta quando questo capita abbastanza spesso da diventare un'abitudine piuttosto che una commissione, e non cambia il passaggio di controllo qui sopra, che resta comunque tuo.
 

@@ -1,6 +1,7 @@
 ---
 title: "Markdown vers Word : comment obtenir une .docx que quelqu’un peut modifier"
 description: "Obtenir une .docx que quelqu’un peut modifier : Pandoc et son document de référence, le chemin HTML, Google Docs, et ce que perd le retour vers Markdown."
+updated: 2026-10-21
 date: 2026-08-24
 tag: Publication
 keywords: markdown vers word, markdown vers docx, convertir markdown en document word, pandoc docx de référence, md vers docx, markdown vers word en ligne, modèle word pandoc markdown
@@ -90,7 +91,7 @@ Toutes ces options sont actuelles chez Pandoc (vérifié sur pandoc.org, le 8 se
 
 Deux extras de Pandoc sont vraiment utiles une fois les bases acquises. Un div délimité portant un attribut `custom-style` applique le style Word de votre choix à son contenu — `::: {custom-style="Warning"}` enveloppe un bloc dans le style de paragraphe `Warning` de votre modèle — et l’équivalent en span entre crochets fait de même pour les styles de caractère. Et [les tableaux](/blog/markdown-tables-that-survive-conversion) reçoivent le style de tableau `Table`, qui est le seul formatage de tableau que vous obtiendrez, définissez-le donc correctement et n’attendez rien de subtil côté largeur des colonnes.
 
-**Pour qui ?** Quiconque fera cette conversion plus de deux fois. Le modèle est un coût fixe, payé une fois et amorti sur chaque document ensuite, et c’est le seul chemin ici qui produit une `.docx` qu’une utilisatrice de Word peut restyler depuis la galerie de styles.
+**Pour qui ?** Quiconque fera cette conversion plus de deux fois. Le modèle est un coût fixe, payé une fois et amorti sur chaque document ensuite, et c’est le seul chemin ici qui produit une `.docx` déjà aux styles de votre organisation, qu’une utilisatrice de Word peut ensuite continuer à restyler depuis la galerie de styles.
 
 ## Le chemin HTML : convertir en HTML, puis ouvrir dans Word
 
@@ -113,6 +114,8 @@ C’est réellement le chemin le plus rapide, il ne demande aucune installation 
 Pour l’automatisation, le même chemin fonctionne sans Word du tout : produisez du HTML autonome, puis `soffice --headless --convert-to docx report.html`. LibreOffice fait un travail compétent, et son interprétation de votre CSS lui appartient, testez-la donc une fois plutôt que de lui faire confiance.
 
 **Pour qui ?** Des documents ponctuels où le relecteur va commenter sans restyler — un mémo de deux pages, une spécification envoyée pour un seul tour de remarques. Pas pour ce qui entre dans un ensemble de documents régi par un modèle.
+
+Le formatage direct vient du HTML placé au milieu, pas du fait de convertir dans un navigateur. La [conversion Markdown vers Word](/markdown-to-word) de ce site écrit la `.docx` dans le navigateur directement à partir du Markdown, sans étape HTML : les titres utilisent les styles intégrés de Word Heading 1 à 6 (Titre 1 à 6 dans un Word en français), les listes la numérotation propre à Word, les notes se placent en bas de page, et les tableaux portent le style Table Grid (Grille du tableau) avec une ligne d’en-tête répétée sur chaque page. Elle ne prend pas de document de référence, si bien que le fichier arrive avec son propre aspect par défaut plutôt qu’avec celui de votre organisation ; comme les styles portent les noms intégrés de Word, un modèle maison appliqué ensuite dans Word peut les restyler, mais pour un document produit chaque semaine, Pandoc avec un document de référence reste moins de travail.
 
 ## Google Docs comme intermédiaire
 
@@ -196,13 +199,13 @@ Avec les mêmes options des deux côtés, le diff montre la relecture et rien d�
 
 ## Conclusion
 
-Le chemin qui fonctionne est Pandoc avec un document de référence construit une fois et committé à côté de votre Markdown, parce que c’est le seul qui produise un fichier Word portant de vrais styles plutôt qu’un formatage figé — et ce sont les styles qui rendent une `.docx` digne d’être envoyée à quelqu’un qui va la modifier. Le chemin HTML est un raccourci raisonnable pour un document court, et il s’améliore considérablement si le HTML de départ est un fichier complet et autonome plutôt qu’un fragment, ce que produit dans le navigateur, sans rien téléverser, [la conversion Markdown vers HTML de TransformPipe](/). Google Docs est le choix pragmatique à l’intérieur de Workspace, et le mauvais choix pour tout ce qui est confidentiel. Quel que soit votre choix, décidez d’abord du chemin de retour : la conversion à l’aller est une commande, et la conversion au retour est une conversation avec une personne sur qui applique ses corrections et quel fichier fait foi.
+Le chemin qui fonctionne est Pandoc avec un document de référence construit une fois et committé à côté de votre Markdown, parce que c’est le seul qui produise un fichier Word portant vos propres styles plutôt qu’un formatage figé ou les réglages par défaut de quelqu’un d’autre — et ce sont les styles qui rendent une `.docx` digne d’être envoyée à quelqu’un qui va la modifier. Le chemin HTML est un raccourci raisonnable pour un document court, et il s’améliore considérablement si le HTML de départ est un fichier complet et autonome plutôt qu’un fragment, ce que produit dans le navigateur, sans rien téléverser, [la conversion Markdown vers HTML de TransformPipe](/). Quand le document a besoin de vrais titres et de vraies listes Word mais pas du modèle de votre organisation, la [conversion Markdown vers Word](/markdown-to-word) du même site se passe entièrement du HTML et écrit dans le navigateur une `.docx` construite sur des styles. Google Docs est le choix pragmatique à l’intérieur de Workspace, et le mauvais choix pour tout ce qui est confidentiel. Quel que soit votre choix, décidez d’abord du chemin de retour : la conversion à l’aller est une commande, et la conversion au retour est une conversation avec une personne sur qui applique ses corrections et quel fichier fait foi.
 
 ## FAQ
 
 ### Comment convertir du Markdown en Word sans rien installer ?
 
-Importez le fichier `.md` dans Google Docs — Fichier, Ouvrir, Importer — puis Fichier, Télécharger, Microsoft Word (.docx). Cela ne demande ni installation ni terminal, au prix du passage du document par les serveurs de Google et de son arrivée avec les styles de Google plutôt que ceux de votre organisation. L’alternative sans installation est de convertir en HTML dans le navigateur et d’ouvrir le résultat dans Word, ce qui est encore plus rapide et produit un fichier sans jeu de styles utilisable.
+Importez le fichier `.md` dans Google Docs — Fichier, Ouvrir, Importer — puis Fichier, Télécharger, Microsoft Word (.docx). Cela ne demande ni installation ni terminal, au prix du passage du document par les serveurs de Google et de son arrivée avec les styles de Google plutôt que ceux de votre organisation. Les autres chemins sans installation passent par le navigateur : convertir en HTML et ouvrir le résultat dans Word est encore plus rapide et produit un fichier sans jeu de styles utilisable, tandis qu’un convertisseur qui écrit directement la `.docx`, comme celui de ce site, vous donne les styles intégrés de Word pour les titres et les listes, sans votre modèle pour autant.
 
 ### Quelle est la meilleure commande Pandoc pour passer de Markdown à Word ?
 

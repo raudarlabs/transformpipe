@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && npm run deploy:check && npm run blog:check && vite build && npm run prerender",
+    "build": "tsc -b && npm run deploy:check && npm run blog:check && npm run guides:check && vite build && npm run prerender",
     "ext": "vite build --config vite.extension.config.ts",
     "ext:firefox": "vite build --config vite.extension.config.ts --mode firefox",
     "ext:art": "node scripts/store-art.mjs",
@@ -16,6 +16,7 @@
     "preview": "vite preview",
     "check-types": "tsc -b",
     "blog:check": "node scripts/check-blog.mjs",
+    "guides:check": "node scripts/check-guides.mjs",
     "og": "node scripts/og-images.mjs",
     "icons": "node scripts/icons.mjs",
     "db:init": "node scripts/init-db.mjs",

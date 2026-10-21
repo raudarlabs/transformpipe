@@ -1,6 +1,7 @@
 ---
 title: "Da Markdown a HTML: cosa succede davvero al tuo file"
 description: Cosa fa un convertitore da Markdown a HTML al tuo file — parsing, rendering, sanificazione, wrapping — e come appare un fallimento in ciascuna fase
+updated: 2026-10-21
 date: 2026-09-08
 tag: Conversione
 keywords: markdown in html, md in html, convertire markdown in html, convertitore markdown html online, generatore html da markdown, renderizzare markdown come html
@@ -157,7 +158,7 @@ Due dettagli decidono se un sanificatore regge nella pratica.
 
 **Dove gira.** Un sanificatore nel browser si appoggia al parser stesso del browser, che è lo stesso parser che renderizzerà poi il documento — un vantaggio vero, perché vede il markup come lo vedrà il browser. Uno su un server deve analizzare l'HTML da sé, con una propria idea di come si annidano i tag malformati. Se uno strumento converte in entrambi i posti, i due devono essere d'accordo, altrimenti lo stesso documento si renderizza diversamente a seconda di chi lo ha richiesto. È anche qui che vivono i problemi di mutazione: se il parsing del sanificatore e quello del browser non sono d'accordo su un caso limite di annidamento, pulire il markup può produrre qualcosa che, ri-analizzato nel browser, risulta un markup diverso da quello approvato.
 
-**Di nuovo gli id dei titoli.** Un `id="title"` nudo fa ombra a una proprietà del DOM, quindi un sanificatore nel browser lo rimuove mentre un parser lato server lo tiene: un documento, due forme, e link ancora che funzionano in una e non nell'altra. Mettere un prefisso agli id risponde a entrambi i problemi insieme. TransformPipe sanifica con DOMPurify nel browser e il pacchetto `xss` sul server contro un'unica allow-list condivisa, e i suoi id dei titoli portano un prefisso `doc-`. C'è [più da sapere sul sanificare Markdown in sicurezza](/blog/sanitising-markdown-safely) di quanto stia in una sola fase di una pipeline.
+**Di nuovo gli id dei titoli.** Un `id="title"` nudo fa ombra a una proprietà del DOM, quindi un sanificatore nel browser lo rimuove mentre un parser lato server lo tiene: un documento, due forme, e link ancora che funzionano in una e non nell'altra. Mettere un prefisso agli id risponde a entrambi i problemi insieme. TransformPipe sanifica con DOMPurify nel browser e il pacchetto `xss` sul server contro un'unica allow-list condivisa, e i suoi id dei titoli portano un prefisso `doc-`.
 
 Un'ultima cosa su questa fase: la sanificazione è visibile. Rimuove cose. Le checkbox spariscono se `input` non è nella lista, un blocco `<details>` si appiattisce nel suo contenuto, un diagramma incorporato diventa niente del tutto. Non è un bug — è la allow-list che fa il suo lavoro — ma significa che l'output va letto, non dato per scontato.
 
@@ -332,7 +333,7 @@ Quando la conversione deve avvenire dentro una pull request, una build notturna 
 
 ### L'esportazione di un editor — comoda, e il wrapper è una lotteria
 
-VS Code distribuisce un'anteprima Markdown costruita su markdown-it, e le estensioni aggiungono l'esportazione. Anche gli editor desktop esportano HTML. Se il file è già aperto davanti a te, questa è la strada più corta dal testo alla pagina.
+VS Code distribuisce un'anteprima Markdown costruita su markdown-it, e le estensioni aggiungono l'esportazione; [Markdown in HTML in VS Code](/blog/markdown-to-html-in-vs-code) spiega cosa scrive ciascuna attorno al frammento. Anche gli editor desktop esportano HTML. Se il file è già aperto davanti a te, questa è la strada più corta dal testo alla pagina.
 
 | Pro | Contro |
 | --- | --- |

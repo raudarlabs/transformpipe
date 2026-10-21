@@ -1,6 +1,7 @@
 ---
 title: "Markdown a PDF: todas las vías y lo que cuesta cada una"
 description: Comparamos las vías de Markdown a PDF - imprimir desde el navegador, Pandoc con LaTeX, wkhtmltopdf, WeasyPrint, Chrome sin interfaz - y qué se rompe en cada una.
+updated: 2026-10-21
 date: 2026-09-01
 tag: Publicación
 keywords: markdown a pdf, convertir md a pdf, conversor de markdown a pdf, pandoc markdown a pdf, markdown a pdf linea de comandos, imprimir markdown a pdf, md a pdf sin instalar nada
@@ -165,6 +166,8 @@ La vía más corta de todas, cuando el archivo ya está abierto delante de ti. C
 
 Precios y condiciones comprobados en typora.io y obsidian.md, el 8 de septiembre de 2026.
 
+VS Code es el único editor de la tabla sin exportación a PDF propia. Markdown PDF es una de las extensiones que la añaden: maneja un navegador basado en Chromium a través de Puppeteer y escribe también HTML, PNG o JPEG con los mismos ajustes, y la hoja de estilos de la vista previa no es la que usa para imprimir — [Markdown a HTML en VS Code](/blog/markdown-to-html-in-vs-code) repasa esos ajustes y lo que cada vía de exportación pone alrededor de la página.
+
 | A favor | En contra |
 | --- | --- |
 | Un elemento de menú, sin terminal, sin arqueología de diálogos | El estilo es el del tema del editor, no el de tu documento |
@@ -172,7 +175,7 @@ Precios y condiciones comprobados en typora.io y obsidian.md, el 8 de septiembre
 | Marcadores y un esquema pulsable en los mejores | Atado a esa aplicación, en esa máquina |
 | El desvío por `.docx` deja un archivo que alguien puede editar | Cada salto a otro formato pierde algo |
 
-El desvío por `.docx` merece su propia nota, porque resuelve un problema que ninguna otra vía resuelve. Si la persona que recibe el documento va a querer cambiarlo, un PDF es un callejón sin salida y un archivo de Word no lo es. `pandoc report.md -o report.docx --reference-doc=house-style.docx` aplica tus propios estilos, y LibreOffice convertirá el resultado en un servidor con `soffice --headless --convert-to pdf report.docx`. Dos conversiones es una más de lo ideal, y es el precio de entregarle a alguien algo que puede editar — y si el `.docx` es el entregable en vez de una escala, [conseguir un archivo de Word que alguien pueda editar a partir de Markdown](/blog/markdown-to-word) es donde se trabaja bien el documento de referencia, los estilos que Pandoc busca y el coste del viaje de vuelta. [Qué editores manejan bien Markdown](/blog/best-markdown-editors) es una conversación más larga que el menú de exportar.
+El desvío por `.docx` merece su propia nota, porque resuelve un problema que ninguna otra vía resuelve. Si la persona que recibe el documento va a querer cambiarlo, un PDF es un callejón sin salida y un archivo de Word no lo es. `pandoc report.md -o report.docx --reference-doc=house-style.docx` aplica tus propios estilos, y LibreOffice convertirá el resultado en un servidor con `soffice --headless --convert-to pdf report.docx`. Dos conversiones es una más de lo ideal, y es el precio de entregarle a alguien algo que puede editar — y si el `.docx` es el entregable en vez de una escala, [conseguir un archivo de Word que alguien pueda editar a partir de Markdown](/blog/markdown-to-word) es donde se trabaja bien el documento de referencia, los estilos que Pandoc busca y el coste del viaje de vuelta.
 
 **¿Quién debería usarlo?** Escritores, para borradores y para cualquier cosa donde «se ve razonable» sea la vara de medir. No para builds, y no para documentos con un estilo corporativo que respetar.
 

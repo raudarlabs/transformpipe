@@ -1,6 +1,7 @@
 ---
 title: "Come aprire un file .md su Windows, macOS, Linux, iOS e Android"
 description: "Un file .md è testo semplice, ecco perché il doppio clic apre un editor di codice o niente: come leggerlo come testo, come formattato, e impostare l’app predefinita."
+updated: 2026-10-21
 date: 2026-09-02
 tag: Conversione
 keywords: come aprire un file md, cos'è un file md, visualizzatore file md, markdown viewer online, aprire md nel browser, lettore file markdown, estensione file markdown
@@ -257,7 +258,7 @@ VS Code ha un'anteprima Markdown integrata, su markdown-it. Apri il file e premi
 - Gestisce una cartella di file Markdown con ricerca su tutti
 - Mostra il front matter come fonte a meno che un'estensione non ci faccia qualcosa
 
-**Chi dovrebbe usarlo?** Gli sviluppatori il cui file è già nell'editor. Se stai aprendo VS Code apposta per leggere un allegato `.md`, una scheda del browser è più rapida.
+**Chi dovrebbe usarlo?** Gli sviluppatori il cui file è già nell'editor. Se stai aprendo VS Code apposta per leggere un allegato `.md`, una scheda del browser è più rapida. E se il passo successivo è un file `.html`, l'anteprima non te lo dà: [Markdown in HTML in VS Code](/blog/markdown-to-html-in-vs-code) passa in rassegna le estensioni che esportano e spiega perché nessuna eredita di default l'aspetto dell'anteprima.
 
 ### Obsidian — ideale per una cartella di Markdown a cui torni spesso
 
@@ -427,7 +428,7 @@ Il consiglio ovvio è “installa VS Code” o “apri semplicemente in Blocco n
 
 **Le estensioni del browser vogliono l'accesso al tuo disco.** Un'estensione che renderizza file `.md` locali può farlo solo con il permesso di leggere gli URL di file, e quel permesso non è ristretto. È uno scambio ragionevole se leggi Markdown di continuo e uno scarso per un singolo allegato.
 
-**I visualizzatori non sono d'accordo sul Markdown.** Tabelle, liste di attività, testo barrato e autolink vengono da GitHub Flavored Markdown piuttosto che dalla sintassi originale, quindi un visualizzatore CommonMark rigoroso mostra barre verticali grezze dove ti aspettavi una tabella. Il file va bene; il visualizzatore implementa una variante più piccola. È la segnalazione “il mio Markdown è rotto” più comune di tutte e quasi mai è il file. [Le varianti](/blog/commonmark-gfm-and-the-flavours) vale la pena conoscerle se gestisci Markdown da più di una fonte.
+**I visualizzatori non sono d'accordo sul Markdown.** Tabelle, liste di attività, testo barrato e autolink vengono da GitHub Flavored Markdown piuttosto che dalla sintassi originale, quindi un visualizzatore CommonMark rigoroso mostra barre verticali grezze dove ti aspettavi una tabella. Il file va bene; il visualizzatore implementa una variante più piccola. È la segnalazione “il mio Markdown è rotto” più comune di tutte e quasi mai è il file. Le varianti vale la pena conoscerle se gestisci Markdown da più di una fonte.
 
 **Le immagini non saranno nel file.** Markdown fa riferimento alle immagini per percorso; non le contiene. Apri un file `.md` esportato con una cartella `images/` accanto, in un visualizzatore che ha ricevuto solo il `.md`, e ogni immagine è un'icona rotta. Non è il visualizzatore che fallisce, è [cosa fanno i percorsi relativi quando un file si sposta](/blog/images-and-links-that-still-work).
 

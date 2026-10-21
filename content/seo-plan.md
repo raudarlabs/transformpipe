@@ -180,6 +180,31 @@ site than anything else in this plan.
 
 ### Phase 1 — Make the commercial pages worth ranking (weeks 2–8, about 12 days)
 
+**Status, 21 October 2026.**
+
+Shipped:
+- **Guides for every conversion** in `content/conversions/`, 20 conversions × 5 languages, held to
+  their shape by `scripts/check-guides.mjs` in the build. Each one was checked claim by claim against
+  the converter code, and most examples were run through the real converters. A conversion page
+  now carries about 1,000 crawlable words, up from about 200 (40–66 of its own).
+- **Articles about the format first** under each converter, instead of the six newest.
+- **Four new pages:** `/share-markdown`, `/markdown-api` (`/api` is the serverless function's
+  address), `/cli` and `/github-action`, in five languages, linked from both footers. About is in
+  the crawled footer.
+- **Main script** cut from 641 to 317 KB gzipped: the changelog, docs, assistant pages, history and
+  shared pages load when they are opened.
+- **Article links:** Markdown to Word links its tool page, the web-page article links the extension,
+  the assistant article lists the current 19 tools and links `/agents/*`, and the VS Code article
+  gains three inbound links.
+
+Not done:
+- `/markdown-to-pdf` needs a real PDF conversion first.
+- `/markdown-viewer` is still to be built, by thickening live preview.
+- The home head term change waits until about mid-November, as planned.
+- Hydrating the prerendered markup: React would mismatch the hand-written HTML.
+- The main script is still above the 200 KB target. The next cut is splitting the English catalogue
+  (`pages.ts` is 116 KB).
+
 **1. Give each conversion page its own 400–800 words.** *(tech H1, content §3)*
    - A template, filled with text specific to that conversion:
      - a short input → output example

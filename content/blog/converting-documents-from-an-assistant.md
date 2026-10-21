@@ -1,6 +1,7 @@
 ---
 title: "MCP Document Converter: Converting and Sharing Documents from a Conversation"
-description: How an MCP document converter turns Markdown an assistant just wrote into a page you can send — the twelve tools, the sign-in with no key, and the real risks
+description: How an MCP document converter turns Markdown an assistant just wrote into a page you can send — the nineteen tools, the sign-in with no key, and the real risks
+updated: 2026-10-21
 date: 2026-09-09
 tag: Automation
 keywords: mcp document converter, mcp server markdown to html, custom connector claude, convert markdown in an assistant, mcp oauth connector, share a document from a conversation
@@ -44,28 +45,35 @@ The case for connecting a document converter is not that conversion is difficult
 
 Five verbs cover almost all of it. Convert, so the Markdown becomes a page. Save, so it has an address instead of living in a scroll-back buffer. Share, so somebody else can open it. List, so the assistant can answer "what have I got". Fetch back, so a document written three weeks ago can be edited rather than rewritten from memory. With those five, the model finishes the job in the conversation rather than handing the reader a wall of asterisks and wishing them luck.
 
-TransformPipe's connector exposes twelve tools, and the split is deliberate: four do work, six answer questions, and two change what other people can see or whether a document exists at all.
+TransformPipe's connector exposes nineteen tools, and the split is deliberate: eight read or convert and change nothing, seven add, change or rearrange what is on the account, and four change who can read something or whether it exists at all.
 
 | Tool | What it is for | What it can cause |
 | --- | --- | --- |
-| `tp_help` | Answers questions about how the product works, from its documentation rather than from memory | Nothing. It reads documentation sections and returns them |
-| `tp_convert_markdown` | Markdown in, sanitised HTML out; optionally the whole self-contained document | Nothing is saved. The output travels back through the conversation, so a long document costs context |
+| `tp_search_documentation` | Answers questions about how the product works, from its documentation rather than from memory | Nothing. It reads documentation sections and returns them |
+| `tp_convert_from_markdown` | Markdown in; sanitised HTML, Confluence storage format, Jira wiki markup or Slack mrkdwn out; optionally a whole self-contained HTML document | Nothing is saved. The output travels back through the conversation, so a long document costs context |
 | `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, plain text, rich text or an Evernote export in, Markdown out | Nothing is saved. The Markdown comes back through the conversation, the same way |
-| `tp_save_document` | Saves Markdown to the account, and publishes it in the same call when asked | Writes a document. With a share mode, publishes a page on the public web |
+| `tp_save_document` | Saves a new document — Markdown, or one of those formats converted on save — optionally into a folder, and publishes it in the same call when asked | Writes a document, and any missing folders on its path. Publishing it, or saving into a shared folder, requires an explicit confirmation |
 | `tp_update_document` | New text for a document already on the account — the same id and the same link, the old text kept as a revision | Changes what a link shows. On a shared document, requires an explicit confirmation |
-| `tp_list_documents` | What is on the account — names, sizes, dates, whether each is shared — with the id the other tools take | Reads. Reveals the document list to the conversation |
+| `tp_list_documents` | What is on the account — names, sizes, dates, folders, whether each is shared — with the id the other tools take | Reads. Reveals the document list to the conversation |
+| `tp_list_folders` | The account's folders as a tree, with each one's document count and sharing state, and the account's totals | Reads. Reveals the folder structure to the conversation |
+| `tp_create_folder` | A new folder at the top level or inside another; asking twice returns the folder the first call made | Adds a folder. Nothing existing changes |
+| `tp_move_documents` | Files documents into a folder, or takes them out of all folders | Rearranges. Into a shared folder, requires an explicit confirmation, because its readers can then read them |
 | `tp_get_document` | One document, by id, as its Markdown source or as rendered HTML | Reads. Pulls a whole document into the conversation |
-| `tp_summarize_document` | A short summary of one document, cached on the account so asking again is free | Reads. Stores the summary beside the document |
-| `tp_document_versions` | A document's history: the texts its updates replaced, each readable again | Reads. Earlier texts come back into the conversation on request |
-| `tp_share_document` | Changes who may open a document: a link, named addresses, or nobody — or adds or removes one reader | Publishes or unpublishes. Revoking breaks a URL already sent |
+| `tp_summarize_document` | A short summary of one document, cached on the account so asking again is free | Stores the summary beside the document. The text is sent to Google's Gemini API to write it |
+| `tp_document_versions` | A document's history: the texts its updates replaced, each readable again, and the documents saved as its later versions | Reads. Earlier texts come back into the conversation on request |
+| `tp_share_document` | Changes who may open a document: a link, named addresses, or nobody — or adds or removes one reader | Publishes or unpublishes. Publishing requires an explicit confirmation; revoking breaks a URL already sent |
+| `tp_share_folder` | The same for a folder and everything in it and its subfolders | Publishes or unpublishes every document inside at once, including documents saved there later |
+| `tp_update_folder` | Renames a folder, or moves it with its contents under another folder or to the top level | Rearranges. Under a shared folder, requires an explicit confirmation |
+| `tp_delete_folder` | Deletes a folder; what it holds moves up a level, or goes to the Trash with it when asked | Removes the folder for good and ends its link. Requires an explicit confirmation on every call |
 | `tp_usage` | What the account is using against its limits | Reads. Worth asking when a save was refused |
-| `tp_delete_document` | Deletes one document, permanently | Destroys data. Requires an explicit confirmation, and removes exactly one |
+| `tp_delete_document` | Moves one document to the Trash, where it is kept for 14 days | Ends its share link at once. Requires an explicit confirmation, and removes exactly one |
+| `tp_restore_document` | Lists the Trash, or puts a deleted document back with its folder, sharing and versions | Brings back what was deleted. Removes nothing |
 
 Two structural details matter more than the list itself.
 
 The first is that the tools are not a second implementation of anything. Each one calls the application's own public API in process, with the caller's credential forwarded, so a conversation and a script get the same answer from the same code. That sounds like an internal tidiness point and it is not. A tool that queried the database directly would be a second implementation of "whose documents are these", and that is the question you least want two answers to. The same reasoning applies to the conversion itself: the HTML a tool returns is the HTML the browser page produces, sanitised against the same allow-list, because it is the same renderer.
 
-The second is `tp_help`. A model asked how a product works will answer from whatever it absorbed in training, which for any product younger than its cutoff is a confident description of something that does not exist. A documentation tool turns that into a lookup. It is the least glamorous tool in the table and the one that prevents the most wrong answers.
+The second is `tp_search_documentation`. A model asked how a product works will answer from whatever it absorbed in training, which for any product younger than its cutoff is a confident description of something that does not exist. A documentation tool turns that into a lookup. It is the least glamorous tool in the table and the one that prevents the most wrong answers.
 
 ## Adding it, and the sign-in that has no key in it
 
@@ -75,7 +83,7 @@ The address is the deployment plus `/api/mcp`:
 https://transformpipe.com/api/mcp
 ```
 
-On claude.ai that goes in Settings → Connectors → Add custom connector. From a terminal:
+On claude.ai the connector is also listed in Claude's connector directory, so adding it is Connect and a sign-in; [the Claude connector page](/agents/claude) has the steps, and an organisation that keeps the directory switched off pastes the address under Settings → Connectors → Add custom connector instead. In [ChatGPT](/agents/chatgpt) it goes in by address as an MCP app: Plugins, Add, Create MCP App. From a terminal:
 
 ```
 claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp
@@ -116,9 +124,9 @@ A connector holding a long-lived API key you pasted is a credential in a place y
 
 An approved client is a different object. It has a name you can read, a scope narrower than the account, its own expiry, and a revoke button that does not break anything else you own. When you look at the list in six months and do not recognise an entry, you can remove that entry alone. That is the whole argument, and it is worth the extra page in the flow.
 
-## The two tools shaped for the trouble they can cause
+## The four tools shaped for the trouble they can cause
 
-Ten of the twelve tools are ordinary — `tp_update_document` asks for a confirmation only when the document is already shared, because its new text is then what everyone holding the link reads. Two are not ordinary, and they are written differently on purpose.
+Fifteen of the nineteen tools are ordinary — the ones that save, update or move ask for a confirmation only when the result would be read by somebody else: a document published as it is saved, new text on a shared document, a document or a folder moved where a shared folder's readers can see it. Four are not ordinary — the two that share and the two that delete — and they are written differently on purpose.
 
 **Sharing publishes a page on the public web.** There are three modes, and the transition between them is the part people get wrong.
 
@@ -128,11 +136,11 @@ Ten of the twelve tools are ordinary — `tp_update_document` asks for a confirm
 | `link` | Anyone holding the URL | It is on the public web. A URL is not a password, and links travel |
 | `people` | Only the addresses given | `emails` replaces the list; `add` and `remove` change it by one address and leave the rest. Only an address new to the list is emailed |
 
-Saving can publish in the same call, which is convenient and is exactly why the server's own instructions to the model say to share a document only when the person asked for it. A tool that both stores and publishes in one step is a tool that can turn "keep this" into "post this" through a single misread sentence. The mitigation is not clever: the description says what it does in the first line, the mode is an explicit enumeration rather than a boolean called `public`, and the reply to the model says which mode the document is now in and what its URL is, so the assistant's summary to you is a statement you can check. On top of that, `link` and `people` both take `confirm: true`, on a save as on a share: without it the call says what would be disclosed and to whom, and changes nothing.
+`tp_share_folder` takes the same three modes for a folder, and a folder shared by link shows every document in it and in its subfolders, including documents saved there afterwards. Saving can publish in the same call, which is convenient and is exactly why the server's own instructions to the model name every call that discloses something and needs a confirmation first. A tool that both stores and publishes in one step is a tool that can turn "keep this" into "post this" through a single misread sentence. The mitigation is not clever: the description says what it does in the first line, the mode is an explicit enumeration rather than a boolean called `public`, and the reply to the model says which mode the document is now in and what its URL is, so the assistant's summary to you is a statement you can check. On top of that, `link` and `people` both take `confirm: true`, on a save as on a share, and so does saving into a shared folder: without it the call says what would be disclosed and to whom, and changes nothing.
 
-**Deleting takes an explicit confirmation and removes exactly one document.** `confirm: true` is required, and without it the tool refuses and tells the model to go and ask. There is no undo and no trash. And there is no tool that deletes several — no glob, no "delete all shared documents", no date range. That is a deliberate absence rather than a missing feature. A bulk delete is the one tool where a single misunderstood instruction destroys work that cannot be recovered, and a connector that cannot express the instruction cannot carry it out.
+**Deleting takes an explicit confirmation, and a deleted document waits in a Trash.** `confirm: true` is required on both delete tools, on every call, and without it the tool refuses, says what would be removed, and tells the model to go and ask. `tp_delete_document` removes exactly one document and moves it to the Trash for 14 days, where `tp_restore_document` puts it back with its folder, sharing and versions; after that it is gone for good, and its share link stops working the moment it is deleted. There is still no tool that deletes by pattern — no glob, no "delete all shared documents", no date range. That is a deliberate absence rather than a missing feature. The one way to remove many documents in a call is `tp_delete_folder` with `with_documents`, which is bound to a folder somebody named, and whose refusal states how many documents the folder holds before anything happens. A bulk delete is the one tool where a single misunderstood instruction destroys a great deal of work, and a connector that cannot express the instruction cannot carry it out.
 
-The confirmation is a real mitigation and a partial one, which is the theme of the next section. It stops an accidental deletion, because an accident does not usually include a confirmation flag. It does not stop a deletion the model was talked into, because a model that has been convinced to delete something will pass `confirm: true` as readily as it passes the id.
+The confirmation is a real mitigation and a partial one, which is the theme of the next section. It stops an accidental deletion, because an accident does not usually include a confirmation flag. It does not stop a deletion the model was talked into, because a model that has been convinced to delete something will pass `confirm: true` as readily as it passes the id. The Trash is what covers that case, for 14 days, provided somebody notices within them.
 
 ## Where a connector fails, and what that costs
 
@@ -145,9 +153,9 @@ The mitigations are real, and they are partial. Stating them honestly means stat
 | Mitigation | What it genuinely prevents | What it does not |
 | --- | --- | --- |
 | A token scoped to one product's data | Reaching your email, your repositories, your other accounts, or the API keys on the same account | Anything inside the scope: reading, publishing and deleting your documents |
-| An explicit confirmation on the destructive tool | Accidental deletion, and casual deletion the person never asked about | A deletion the model was persuaded to make and confirms itself |
+| An explicit confirmation on the destructive tools | Accidental deletion, and casual deletion the person never asked about | A deletion the model was persuaded to make and confirms itself |
 | Sharing being visible and revocable | A publication staying secret from you, or being permanent | The window between publishing and your noticing. A copied page stays copied |
-| No bulk operations | One instruction destroying many documents | Repeated single calls, if nobody is watching the transcript |
+| No delete by pattern, and a Trash behind every deleted document | One instruction destroying many documents beyond recovery | A folder deleted with its documents, or repeated single calls, if nobody looks in the Trash within 14 days |
 | The person reading what the assistant says it did | Most of it, in practice, if the person actually reads it | Anything in a conversation nobody reviewed, which is most long conversations |
 
 That last row is doing more work than the others, and it is the least reliable. The honest summary is that a connector's safety currently rests on a narrow scope plus a person paying attention, and the second half of that decays with exactly the workload that makes a connector worth having.
@@ -156,7 +164,7 @@ There are three further costs that are not about injection at all.
 
 **It is another service holding your documents.** Signed out, the browser conversion on this site sends nothing anywhere: the file is read, converted and rendered on your own machine, and you can watch the network tab stay empty while it happens. A connector is the opposite arrangement by necessity. Saving a document means an account, an account means storage, and storage means a company holding text you wrote. For a README that is irrelevant. For a contract, a patient note or an unreleased plan it is the whole question, and the right answer may be to convert in the browser and never save at all.
 
-**The document goes into the conversation.** `tp_convert_markdown` returns the converted output through the same channel as everything else, which means a long document is now part of a transcript held by whoever hosts the assistant. The tool clips returned text at forty thousand characters and says how much it dropped, rather than truncating silently — silent truncation reads as completeness, which is worse than a visible gap — but clipping is a context-window mercy, not a privacy control. For anything long, saving it and sharing the link is both cheaper and less exposed.
+**The document goes into the conversation.** `tp_convert_from_markdown` returns the converted output through the same channel as everything else, which means a long document is now part of a transcript held by whoever hosts the assistant. The tool clips returned text at forty thousand characters and says how much it dropped, rather than truncating silently — silent truncation reads as completeness, which is worse than a visible gap — but clipping is a context-window mercy, not a privacy control. For anything long, saving it and sharing the link is both cheaper and less exposed.
 
 **Sanitising is still your problem to understand, not to perform.** Raw HTML in a Markdown source goes through a sanitiser with a fixed allow-list before it reaches a page, so a `<script>` tag in a file somebody sent you does not survive the conversion. That is a property of the converter rather than of the connector, and it is worth reading [how sanitising works and where it has to happen](/blog/sanitising-markdown-safely) if you are converting files you did not write. What the sanitiser cannot do is tell you that the prose itself was addressed to your assistant.
 
@@ -166,13 +174,13 @@ The connector is not a separate product with separate ceilings. The same numbers
 
 | Limit | Value | Why it is that number |
 | --- | --- | --- |
-| Per conversion | 10 MB | The conversion runs in the browser, so this is a judgement about the machine in front of the person rather than a platform rule. Several files dropped together count as the one document they become |
+| Per conversion | 10 MB of text; 50 MB for a Word, PowerPoint or Excel file; 250 MB for an export .zip | The conversion runs in the browser, so this is a judgement about the machine in front of the person rather than a platform rule. Several files dropped together count as the one document they become |
 | Per kept document | 4 MB | Not a policy. The platform refuses a request or a response body over 4.5 MB before any of the application's code runs, so a larger document could be neither saved nor read back |
-| Per account | 100 MB, 500 documents | Bytes and rows are capped separately: a thousand tiny files cost real rows |
+| Per account | 250 MB, 5,000 documents | Bytes and rows are capped separately: a thousand tiny files cost real rows |
 | Per caller | 60 calls a minute | A caller that trips this is looping, not working |
 | Returned text | 40,000 characters | A tool reply has to travel through the conversation, and a document should not eat it |
 
-The 4 MB figure is the one worth understanding, because it is the only limit that is not a choice. It is set below the platform's own 4.5 MB rather than at it, so that the refusal arrives from the application with both sizes named in it rather than as a bare rejection from underneath — which is the difference between a model that can tell you what to do next and a model that reports a failure it cannot explain. A document over that size still converts, still previews and still downloads — the conversion runs in your browser, where no request body is involved — it just stays out of the stored history, and the application says so rather than reporting a save that did not happen. A connector inherits that exactly: `tp_convert_markdown` will handle a file `tp_save_document` refuses.
+The 4 MB figure is the one worth understanding, because it is the only limit that is not a choice. It is set below the platform's own 4.5 MB rather than at it, so that the refusal arrives from the application with both sizes named in it rather than as a bare rejection from underneath — which is the difference between a model that can tell you what to do next and a model that reports a failure it cannot explain. A document over that size still converts, still previews and still downloads — the conversion runs in your browser, where no request body is involved — it just stays out of the stored history, and the application says so rather than reporting a save that did not happen. A connector has no such way round it: a tool's arguments arrive in a request body like any other, so `tp_convert_from_markdown` refuses Markdown over 4 MB just as `tp_save_document` does.
 
 If a save is refused, `tp_usage` is the tool that says why, in the form of bytes and documents held against the ceiling on each. It exists because "it did not save" is a sentence a model will otherwise interpret creatively.
 
@@ -196,7 +204,7 @@ For context, the reference MCP servers published alongside the protocol show wha
 ## How to judge a document connector
 
 1. **Check whether it can be revoked without breaking something else.** A connector that reuses your existing API key means rotating that key kills your deploy scripts too, and you will find that out at the worst moment; a connector that holds its own approval can be removed on a hunch with no consequences.
-2. **Read the destructive tool's description before you add it.** If deleting takes no confirmation, or if there is a tool that deletes more than one thing at a time, then one misread instruction in a long conversation is unrecoverable data loss rather than an annoying mistake.
+2. **Read the destructive tool's description before you add it.** If deleting takes no confirmation, or if a tool deletes more than one thing at a time with nothing to restore from, then one misread instruction in a long conversation is unrecoverable data loss rather than an annoying mistake.
 3. **Find out whether sharing is a separate step or a flag on saving.** Either is defensible, but a save that publishes in the same call needs the mode named explicitly in the reply, otherwise "saved it" and "posted it on the internet" are the same sentence to the person reading the summary.
 4. **Ask what the tools return through the conversation.** A tool that hands back whole documents will fill the context window and put your text in the transcript, so a connector that returns a URL for anything long is doing you a favour that shows up as lower cost and less exposure.
 5. **Confirm the limits match the rest of the product.** A connector with its own quieter ceilings will refuse something the website accepted, and the failure arrives as a model apologising vaguely rather than as an error you can act on.
@@ -204,7 +212,7 @@ For context, the reference MCP servers published alongside the protocol show wha
 
 ## Conclusion
 
-A connector earns its place when the document is already inside the conversation and every alternative involves a person moving text between two windows. What makes it worth adding rather than merely clever is the boring part: a token that covers one product's documents and nothing else, an approval with a name on it and a revoke button that breaks nothing, a destructive tool that asks, and a share that says out loud what it just published. Those are the properties to check on any connector, not only this one. If you would rather keep the document on your own machine, the same conversion runs in the browser with [nothing uploaded when you are signed out](/) — and if the job is a script, a folder or a repository, use the API, the CLI or the Action instead, and leave the conversation for the documents that only exist there.
+A connector earns its place when the document is already inside the conversation and every alternative involves a person moving text between two windows. What makes it worth adding rather than merely clever is the boring part: a token that covers one product's documents and nothing else, an approval with a name on it and a revoke button that breaks nothing, destructive tools that ask first and a Trash behind them, and a share that says out loud what it just published. Those are the properties to check on any connector, not only this one. If you would rather keep the document on your own machine, the same conversion runs in the browser with [nothing uploaded when you are signed out](/) — and if the job is a script, a folder or a repository, use the API, the CLI or the Action instead, and leave the conversation for the documents that only exist there.
 
 ## FAQ
 
@@ -218,11 +226,11 @@ No. The first call comes back unauthorised, the assistant follows that to a page
 
 ### Can an assistant publish my document without asking?
 
-It can, which is why the tools are shaped the way they are: saving can publish in the same call, and the server's instructions tell the model to share only when the person asked. Sharing is visible in your document list and revocable, and setting a document back to private stops an already-sent link from opening — but a page that was copied while public stays copied.
+It can, if it passes the confirmation itself, which is why the tools are shaped the way they are: saving can publish in the same call, and publishing on a save or a share requires `confirm: true`, without which the tool changes nothing and says what would be disclosed. Sharing is visible in your document list and revocable, and setting a document back to private stops an already-sent link from opening — but a page that was copied while public stays copied.
 
 ### What happens if my document is larger than the limit?
 
-Conversion is capped at 10 MB and a stored document at 4 MB, so a file between those sizes converts and downloads but cannot be kept on the account. That second limit is the platform's rather than a policy: a function refuses a request or response body over 4.5 MB before any of the application's code runs, so the document could be neither saved nor read back.
+Conversion in the browser is capped at 10 MB for a text file and a stored document at 4 MB, so a file between those sizes converts and downloads but cannot be kept on the account. That second limit is the platform's rather than a policy: a function refuses a request or response body over 4.5 MB before any of the application's code runs, so the document could be neither saved nor read back.
 
 ### Is a connector safer than pasting into an online converter?
 

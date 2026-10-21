@@ -1,6 +1,7 @@
 ---
 title: "Convertitore di documenti MCP: convertire e condividere documenti da una conversazione"
-description: Come un convertitore di documenti MCP trasforma il Markdown di un assistente in una pagina da inviare — i dodici strumenti, l’accesso senza chiave e i rischi reali
+description: Come un convertitore di documenti MCP trasforma il Markdown di un assistente in una pagina da inviare: i diciannove strumenti, l’accesso senza chiave, i rischi veri
+updated: 2026-10-21
 date: 2026-09-09
 tag: Automazione
 keywords: convertitore documenti mcp, server mcp markdown html, connettore personalizzato claude, convertire markdown da un assistente, connettore oauth mcp, condividere un documento da una conversazione
@@ -44,28 +45,35 @@ L’argomento per collegare un convertitore di documenti non è che convertire s
 
 Cinque verbi coprono quasi tutto. Convertire, così il Markdown diventa una pagina. Salvare, così ha un indirizzo invece di vivere in un buffer di scroll-back. Condividere, così qualcun altro può aprirlo. Elencare, così l’assistente può rispondere a “cosa ho”. Recuperare, così un documento scritto tre settimane fa si può modificare invece di riscriverlo a memoria. Con questi cinque, il modello finisce il lavoro dentro la conversazione invece di consegnare al lettore un muro di asterischi e augurargli buona fortuna.
 
-Il connettore di TransformPipe espone dodici strumenti, e la divisione è deliberata: quattro lavorano, sei rispondono a domande, e due cambiano cosa possono vedere altre persone o se un documento esiste.
+Il connettore di TransformPipe espone diciannove strumenti, e la divisione è deliberata: otto leggono o convertono e non cambiano niente, sette aggiungono, modificano o riorganizzano ciò che c’è sull’account, e quattro cambiano chi può leggere qualcosa o se quella cosa esiste ancora.
 
 | Strumento | A cosa serve | Cosa può causare |
 | --- | --- | --- |
-| `tp_help` | Risponde a domande su come funziona il prodotto, dalla sua documentazione invece che dalla memoria | Niente. Legge sezioni di documentazione e le restituisce |
-| `tp_convert_markdown` | Markdown in ingresso, HTML sanitizzato in uscita; opzionalmente il documento completo autonomo | Niente viene salvato. L’output torna indietro attraverso la conversazione, quindi un documento lungo costa contesto |
+| `tp_search_documentation` | Risponde a domande su come funziona il prodotto, dalla sua documentazione invece che dalla memoria | Niente. Legge sezioni di documentazione e le restituisce |
+| `tp_convert_from_markdown` | Markdown in ingresso; HTML sanitizzato, formato di archiviazione Confluence, markup wiki di Jira o mrkdwn di Slack in uscita; opzionalmente un documento HTML completo e autonomo | Niente viene salvato. L’output torna indietro attraverso la conversazione, quindi un documento lungo costa contesto |
 | `tp_convert_to_markdown` | HTML, CSV, TSV, JSON, testo semplice, rich text o un’esportazione di Evernote in ingresso, Markdown in uscita | Niente viene salvato. Il Markdown torna attraverso la conversazione, allo stesso modo |
-| `tp_save_document` | Salva il Markdown sull’account, e lo pubblica nella stessa chiamata se richiesto | Scrive un documento. Con una modalità di condivisione, pubblica una pagina sul web pubblico |
+| `tp_save_document` | Salva un nuovo documento — Markdown, o uno di quei formati convertito al salvataggio — eventualmente in una cartella, e lo pubblica nella stessa chiamata se richiesto | Scrive un documento, e crea le cartelle mancanti sul suo percorso. Pubblicarlo, o salvarlo in una cartella condivisa, richiede una conferma esplicita |
 | `tp_update_document` | Nuovo testo per un documento già sull’account — lo stesso id e lo stesso link, con il vecchio testo conservato come revisione | Cambia ciò che mostra un link. Su un documento condiviso richiede una conferma esplicita |
-| `tp_list_documents` | Cosa c’è sull’account — nomi, dimensioni, date, se ognuno è condiviso — con l’id che gli altri strumenti usano | Legge. Rivela l’elenco dei documenti alla conversazione |
+| `tp_list_documents` | Cosa c’è sull’account — nomi, dimensioni, date, cartelle, se ognuno è condiviso — con l’id che gli altri strumenti usano | Legge. Rivela l’elenco dei documenti alla conversazione |
+| `tp_list_folders` | Le cartelle dell’account come albero, con il numero di documenti e lo stato di condivisione di ciascuna, e i totali dell’account | Legge. Rivela la struttura delle cartelle alla conversazione |
+| `tp_create_folder` | Una nuova cartella al livello principale o dentro un’altra; chiederla due volte restituisce quella creata dalla prima chiamata | Aggiunge una cartella. Niente di esistente cambia |
+| `tp_move_documents` | Mette documenti in una cartella, o li toglie da tutte le cartelle | Riorganizza. Verso una cartella condivisa richiede una conferma esplicita, perché i suoi lettori potranno leggerli |
 | `tp_get_document` | Un documento, per id, come sorgente Markdown o come HTML renderizzato | Legge. Porta un intero documento dentro la conversazione |
-| `tp_summarize_document` | Un breve riassunto di un documento, in cache sull’account così chiederlo di nuovo non costa nulla | Legge. Conserva il riassunto accanto al documento |
-| `tp_document_versions` | La cronologia di un documento: i testi che i suoi aggiornamenti hanno sostituito, ognuno di nuovo leggibile | Legge. I testi precedenti tornano nella conversazione su richiesta |
-| `tp_share_document` | Cambia chi può aprire un documento: un link, indirizzi nominati, o nessuno — oppure aggiunge o toglie un solo lettore | Pubblica o annulla la pubblicazione. Revocare rompe un URL già inviato |
+| `tp_summarize_document` | Un breve riassunto di un documento, in cache sull’account così chiederlo di nuovo non costa nulla | Conserva il riassunto accanto al documento. Il testo viene inviato all’API Gemini di Google per scriverlo |
+| `tp_document_versions` | La cronologia di un documento: i testi che i suoi aggiornamenti hanno sostituito, ognuno di nuovo leggibile, e i documenti salvati come sue versioni successive | Legge. I testi precedenti tornano nella conversazione su richiesta |
+| `tp_share_document` | Cambia chi può aprire un documento: un link, indirizzi nominati, o nessuno — oppure aggiunge o toglie un solo lettore | Pubblica o annulla la pubblicazione. Pubblicare richiede una conferma esplicita; revocare rompe un URL già inviato |
+| `tp_share_folder` | Lo stesso per una cartella e per tutto ciò che contiene, sottocartelle comprese | Pubblica o annulla la pubblicazione di ogni documento al suo interno in una volta, compresi quelli salvati lì in seguito |
+| `tp_update_folder` | Rinomina una cartella, o la sposta con il suo contenuto sotto un’altra cartella o al livello principale | Riorganizza. Sotto una cartella condivisa richiede una conferma esplicita |
+| `tp_delete_folder` | Elimina una cartella; ciò che contiene sale di un livello, oppure finisce con lei nel cestino se richiesto | Rimuove la cartella per sempre e chiude il suo link. Richiede una conferma esplicita a ogni chiamata |
 | `tp_usage` | Cosa sta usando l’account rispetto ai suoi limiti | Legge. Vale la pena chiederlo quando un salvataggio è stato rifiutato |
-| `tp_delete_document` | Elimina un documento, in modo permanente | Distrugge dati. Richiede una conferma esplicita, e rimuove esattamente uno |
+| `tp_delete_document` | Sposta un documento nel cestino, dove resta per 14 giorni | Chiude subito il suo link di condivisione. Richiede una conferma esplicita, e rimuove esattamente uno |
+| `tp_restore_document` | Elenca il cestino, oppure rimette al suo posto un documento eliminato con cartella, condivisione e versioni | Riporta ciò che era stato eliminato. Non rimuove niente |
 
 Due dettagli strutturali contano più della lista in sé.
 
 Il primo è che gli strumenti non sono una seconda implementazione di niente. Ognuno chiama l’API pubblica dell’applicazione stessa, in processo, con la credenziale di chi chiama passata avanti, così una conversazione e uno script ottengono la stessa risposta dallo stesso codice. Sembra un dettaglio di pulizia interna e non lo è. Uno strumento che interrogasse direttamente il database sarebbe una seconda implementazione di “di chi sono questi documenti”, ed è la domanda a cui vuoi meno di tutte due risposte diverse. Lo stesso ragionamento vale per la conversione stessa: l’HTML che uno strumento restituisce è l’HTML che produce la pagina del browser, sanitizzato contro la stessa lista consentita, perché è lo stesso motore di rendering.
 
-Il secondo è `tp_help`. Un modello a cui si chiede come funziona un prodotto risponderà con quello che ha assorbito durante l’addestramento, che per qualunque prodotto più giovane del suo taglio di conoscenza è una descrizione sicura di qualcosa che non esiste. Uno strumento di documentazione trasforma questo in una consultazione. È lo strumento meno affascinante della tabella e quello che previene il maggior numero di risposte sbagliate.
+Il secondo è `tp_search_documentation`. Un modello a cui si chiede come funziona un prodotto risponderà con quello che ha assorbito durante l’addestramento, che per qualunque prodotto più giovane del suo taglio di conoscenza è una descrizione sicura di qualcosa che non esiste. Uno strumento di documentazione trasforma questo in una consultazione. È lo strumento meno affascinante della tabella e quello che previene il maggior numero di risposte sbagliate.
 
 ## Aggiungerlo, e l’accesso che non ha nessuna chiave dentro
 
@@ -75,7 +83,7 @@ L’indirizzo è il deployment più `/api/mcp`:
 https://transformpipe.com/api/mcp
 ```
 
-Su claude.ai va in Impostazioni → Connettori → Aggiungi connettore personalizzato. Da un terminale:
+Su claude.ai il connettore è anche nella directory dei connettori di Claude, quindi aggiungerlo significa premere Connetti e accedere; [la pagina del connettore per Claude](/agents/claude) ha i passaggi, e un’organizzazione che tiene la directory disattivata incolla invece l’indirizzo in Impostazioni → Connettori → Aggiungi connettore personalizzato. In [ChatGPT](/agents/chatgpt) si aggiunge tramite indirizzo come app MCP: Plugins, Add, Create MCP App. Da un terminale:
 
 ```
 claude mcp add --transport http transformpipe https://transformpipe.com/api/mcp
@@ -116,9 +124,9 @@ Un connettore che tiene una chiave API a lunga vita che hai incollato è una cre
 
 Un client approvato è un oggetto diverso. Ha un nome che puoi leggere, un ambito più stretto dell’account, una propria scadenza, e un pulsante di revoca che non rompe niente altro che possiedi. Quando guardi l’elenco in sei mesi e non riconosci una voce, puoi rimuovere solo quella voce. È tutto l’argomento, e vale la pagina in più nel flusso.
 
-## I due strumenti fatti apposta per i guai che possono causare
+## I quattro strumenti fatti apposta per i guai che possono causare
 
-Dieci dei dodici strumenti sono ordinari — `tp_update_document` chiede una conferma solo quando il documento è già condiviso, perché il suo nuovo testo è allora ciò che legge chiunque abbia il link. Due non lo sono, e sono scritti diversamente apposta.
+Quindici dei diciannove strumenti sono ordinari — quelli che salvano, aggiornano o spostano chiedono una conferma solo quando il risultato sarebbe letto da qualcun altro: un documento pubblicato mentre viene salvato, un nuovo testo su un documento condiviso, un documento o una cartella spostati dove li vedono i lettori di una cartella condivisa. Quattro non lo sono — i due che condividono e i due che eliminano — e sono scritti diversamente apposta.
 
 **Condividere pubblica una pagina sul web pubblico.** Ci sono tre modalità, e la transizione fra loro è la parte che le persone sbagliano.
 
@@ -128,11 +136,11 @@ Dieci dei dodici strumenti sono ordinari — `tp_update_document` chiede una con
 | `link` | Chiunque abbia l’URL | È sul web pubblico. Un URL non è una password, e i link viaggiano |
 | `people` | Solo gli indirizzi indicati | `emails` sostituisce l’elenco; `add` e `remove` lo cambiano di un indirizzo e lasciano il resto. Riceve un’email solo un indirizzo nuovo nell’elenco |
 
-Salvare può pubblicare nella stessa chiamata, il che è comodo ed è esattamente il motivo per cui le istruzioni del server al modello dicono di condividere un documento solo quando la persona lo ha chiesto. Uno strumento che sia salva sia pubblica in un solo passaggio è uno strumento che può trasformare “tienilo” in “pubblicalo” con una singola frase letta male. Il rimedio non è sofisticato: la descrizione dice cosa fa nella prima riga, la modalità è un’enumerazione esplicita invece di un booleano chiamato `public`, e la risposta al modello dice in quale modalità è ora il documento e qual è il suo URL, così il riassunto dell’assistente per te è un’affermazione che puoi verificare. In più, `link` e `people` richiedono entrambi `confirm: true`, nel salvataggio come nella condivisione: senza, la chiamata dice cosa verrebbe rivelato e a chi, e non cambia nulla.
+`tp_share_folder` accetta le stesse tre modalità per una cartella, e una cartella condivisa tramite link mostra ogni documento al suo interno e nelle sottocartelle, compresi quelli salvati lì in seguito. Salvare può pubblicare nella stessa chiamata, il che è comodo ed è esattamente il motivo per cui le istruzioni del server al modello nominano ogni chiamata che rivela qualcosa e ha bisogno prima di una conferma. Uno strumento che sia salva sia pubblica in un solo passaggio è uno strumento che può trasformare “tienilo” in “pubblicalo” con una singola frase letta male. Il rimedio non è sofisticato: la descrizione dice cosa fa nella prima riga, la modalità è un’enumerazione esplicita invece di un booleano chiamato `public`, e la risposta al modello dice in quale modalità è ora il documento e qual è il suo URL, così il riassunto dell’assistente per te è un’affermazione che puoi verificare. In più, `link` e `people` richiedono entrambi `confirm: true`, nel salvataggio come nella condivisione, e così anche il salvataggio in una cartella condivisa: senza, la chiamata dice cosa verrebbe rivelato e a chi, e non cambia nulla.
 
-**Eliminare richiede una conferma esplicita e rimuove esattamente un documento.** `confirm: true` è obbligatorio, e senza di esso lo strumento si rifiuta e dice al modello di andare a chiedere. Non c’è annullamento e non c’è cestino. E non c’è nessuno strumento che ne elimina più di uno — nessun pattern generico, nessun “elimina tutti i documenti condivisi”, nessun intervallo di date. È un’assenza deliberata, non una funzione mancante. Un’eliminazione in massa è l’unico strumento in cui un singolo fraintendimento distrugge lavoro che non si può recuperare, e un connettore che non può esprimere l’istruzione non può eseguirla.
+**Eliminare richiede una conferma esplicita, e un documento eliminato aspetta nel cestino.** `confirm: true` è obbligatorio su entrambi gli strumenti di eliminazione, a ogni chiamata, e senza di esso lo strumento si rifiuta, dice cosa verrebbe rimosso e dice al modello di andare a chiedere. `tp_delete_document` rimuove esattamente un documento e lo sposta nel cestino per 14 giorni, da dove `tp_restore_document` lo rimette al suo posto con cartella, condivisione e versioni; dopo quel termine sparisce per sempre, e il suo link di condivisione smette di funzionare nel momento in cui viene eliminato. Continua a non esserci nessuno strumento che elimina per pattern — nessun pattern generico, nessun “elimina tutti i documenti condivisi”, nessun intervallo di date. È un’assenza deliberata, non una funzione mancante. L’unico modo per rimuovere molti documenti in una chiamata è `tp_delete_folder` con `with_documents`, che è legato a una cartella che qualcuno ha nominato, e il cui rifiuto dice quanti documenti contiene la cartella prima che succeda qualunque cosa. Un’eliminazione in massa è l’unico strumento in cui un singolo fraintendimento distrugge moltissimo lavoro, e un connettore che non può esprimere l’istruzione non può eseguirla.
 
-La conferma è un rimedio reale e parziale, che è il tema della sezione successiva. Impedisce un’eliminazione accidentale, perché un incidente di solito non include un flag di conferma. Non impedisce un’eliminazione a cui il modello è stato convinto, perché un modello che è stato persuaso a eliminare qualcosa passerà `confirm: true` con la stessa facilità con cui passa l’id.
+La conferma è un rimedio reale e parziale, che è il tema della sezione successiva. Impedisce un’eliminazione accidentale, perché un incidente di solito non include un flag di conferma. Non impedisce un’eliminazione a cui il modello è stato convinto, perché un modello che è stato persuaso a eliminare qualcosa passerà `confirm: true` con la stessa facilità con cui passa l’id. È il cestino a coprire questo caso, per 14 giorni, a patto che qualcuno se ne accorga entro quel termine.
 
 ## Dove un connettore fallisce, e cosa costa
 
@@ -145,9 +153,9 @@ I rimedi sono reali, e sono parziali. Dichiararli onestamente vuol dire dichiara
 | Rimedio | Cosa impedisce davvero | Cosa non impedisce |
 | --- | --- | --- |
 | Un token limitato ai dati di un solo prodotto | Raggiungere la tua email, i tuoi repository, i tuoi altri account, o le chiavi API dello stesso account | Qualunque cosa dentro l’ambito: leggere, pubblicare ed eliminare i tuoi documenti |
-| Una conferma esplicita sullo strumento distruttivo | L’eliminazione accidentale, e l’eliminazione casuale di cui la persona non ha mai chiesto | Un’eliminazione a cui il modello è stato persuaso e che conferma da solo |
+| Una conferma esplicita sugli strumenti distruttivi | L’eliminazione accidentale, e l’eliminazione casuale di cui la persona non ha mai chiesto | Un’eliminazione a cui il modello è stato persuaso e che conferma da solo |
 | La condivisione visibile e revocabile | Una pubblicazione che resta segreta per te, o che è permanente | La finestra tra la pubblicazione e il tuo accorgertene. Una pagina copiata resta copiata |
-| Nessuna operazione in massa | Un’istruzione sola che distrugge molti documenti | Chiamate singole ripetute, se nessuno guarda la trascrizione |
+| Nessuna eliminazione per pattern, e un cestino dietro ogni documento eliminato | Un’istruzione sola che distrugge senza rimedio molti documenti | Una cartella eliminata con i suoi documenti, o chiamate singole ripetute, se nessuno guarda nel cestino entro 14 giorni |
 | La persona che legge cosa dice di aver fatto l’assistente | Gran parte, in pratica, se la persona legge davvero | Qualunque cosa in una conversazione che nessuno ha rivisto, che è la maggior parte delle conversazioni lunghe |
 
 Quest’ultima riga fa più lavoro delle altre, ed è la meno affidabile. Il riassunto onesto è che la sicurezza di un connettore riposa oggi su un ambito ristretto più una persona che presta attenzione, e la seconda metà si degrada esattamente con il carico di lavoro che rende un connettore utile davvero.
@@ -156,7 +164,7 @@ Ci sono altri tre costi che non riguardano affatto l’injection.
 
 **È un altro servizio che tiene i tuoi documenti.** Senza aver fatto l’accesso, la conversione nel browser di questo sito non invia niente a nessuna parte: il file viene letto, convertito e renderizzato sulla tua macchina, e puoi guardare la scheda di rete restare vuota mentre succede. Un connettore è l’opposto per necessità. Salvare un documento significa un account, un account significa spazio di archiviazione, e lo spazio di archiviazione significa un’azienda che tiene testo che hai scritto tu. Per un README è irrilevante. Per un contratto, una nota su un paziente o un piano non ancora pubblico è tutta la domanda, e la risposta giusta potrebbe essere convertire nel browser e non salvare mai.
 
-**Il documento entra nella conversazione.** `tp_convert_markdown` restituisce l’output convertito attraverso lo stesso canale di tutto il resto, il che significa che un documento lungo diventa parte di una trascrizione tenuta da chiunque ospiti l’assistente. Lo strumento taglia il testo restituito a quarantamila caratteri e dice quanto ha tagliato, invece di troncare in silenzio — il troncamento silenzioso si legge come completezza, che è peggio di un vuoto visibile — ma tagliare è una gentilezza per la finestra di contesto, non un controllo di privacy. Per qualunque cosa lunga, salvarla e condividere il link è sia più economico sia meno esposto.
+**Il documento entra nella conversazione.** `tp_convert_from_markdown` restituisce l’output convertito attraverso lo stesso canale di tutto il resto, il che significa che un documento lungo diventa parte di una trascrizione tenuta da chiunque ospiti l’assistente. Lo strumento taglia il testo restituito a quarantamila caratteri e dice quanto ha tagliato, invece di troncare in silenzio — il troncamento silenzioso si legge come completezza, che è peggio di un vuoto visibile — ma tagliare è una gentilezza per la finestra di contesto, non un controllo di privacy. Per qualunque cosa lunga, salvarla e condividere il link è sia più economico sia meno esposto.
 
 **Sanitizzare resta un problema tuo da capire, non da eseguire.** L’HTML grezzo in una fonte Markdown passa attraverso un sanitizzatore con una lista consentita fissa prima di raggiungere una pagina, quindi un tag `<script>` in un file che qualcuno ti ha inviato non sopravvive alla conversione. È una proprietà del convertitore piuttosto che del connettore, e vale la pena leggere [come funziona la sanitizzazione e dove deve avvenire](/blog/sanitising-markdown-safely) se stai convertendo file che non hai scritto tu. Quello che il sanitizzatore non può fare è dirti che la prosa stessa era rivolta al tuo assistente.
 
@@ -166,13 +174,13 @@ Il connettore non è un prodotto separato con soglie separate. Gli stessi numeri
 
 | Limite | Valore | Perché è quel numero |
 | --- | --- | --- |
-| Per conversione | 10 MB | La conversione gira nel browser, quindi è un giudizio sulla macchina davanti alla persona piuttosto che una regola di piattaforma. Più file caricati insieme contano come l’unico documento che diventano |
+| Per conversione | 10 MB di testo; 50 MB per un file Word, PowerPoint o Excel; 250 MB per uno .zip di esportazione | La conversione gira nel browser, quindi è un giudizio sulla macchina davanti alla persona piuttosto che una regola di piattaforma. Più file caricati insieme contano come l’unico documento che diventano |
 | Per documento salvato | 4 MB | Non è una scelta di politica. La piattaforma rifiuta una richiesta o un corpo di risposta oltre 4,5 MB prima che qualunque codice dell’applicazione giri, quindi un documento più grande non potrebbe essere né salvato né letto di nuovo |
-| Per account | 100 MB, 500 documenti | Byte e righe sono limitati separatamente: mille file minuscoli costano righe vere |
+| Per account | 250 MB, 5000 documenti | Byte e righe sono limitati separatamente: mille file minuscoli costano righe vere |
 | Per chiamante | 60 chiamate al minuto | Chi supera questo limite sta girando a vuoto, non lavorando |
 | Testo restituito | 40.000 caratteri | Una risposta di uno strumento deve viaggiare attraverso la conversazione, e un documento non dovrebbe mangiarsela tutta |
 
-La cifra di 4 MB è quella che vale la pena capire, perché è l’unico limite che non è una scelta. È fissata sotto i 4,5 MB della piattaforma stessa piuttosto che al livello esatto, così che il rifiuto arrivi dall’applicazione con entrambe le dimensioni nominate invece che come un rigetto secco da sotto — che è la differenza fra un modello che può dirti cosa fare dopo e un modello che segnala un fallimento che non sa spiegare. Un documento oltre quella dimensione si convertirà comunque, avrà comunque un’anteprima e si scaricherà comunque — la conversione gira nel tuo browser, dove non è coinvolto nessun corpo di richiesta — resta solo fuori dallo storico salvato, e l’applicazione lo dice invece di segnalare un salvataggio che non è avvenuto. Un connettore eredita esattamente questo: `tp_convert_markdown` gestirà un file che `tp_save_document` rifiuta.
+La cifra di 4 MB è quella che vale la pena capire, perché è l’unico limite che non è una scelta. È fissata sotto i 4,5 MB della piattaforma stessa piuttosto che al livello esatto, così che il rifiuto arrivi dall’applicazione con entrambe le dimensioni nominate invece che come un rigetto secco da sotto — che è la differenza fra un modello che può dirti cosa fare dopo e un modello che segnala un fallimento che non sa spiegare. Un documento oltre quella dimensione si convertirà comunque, avrà comunque un’anteprima e si scaricherà comunque — la conversione gira nel tuo browser, dove non è coinvolto nessun corpo di richiesta — resta solo fuori dallo storico salvato, e l’applicazione lo dice invece di segnalare un salvataggio che non è avvenuto. Un connettore non ha questa scorciatoia: gli argomenti di uno strumento arrivano nel corpo di una richiesta come tutto il resto, quindi `tp_convert_from_markdown` rifiuta il Markdown oltre i 4 MB esattamente come `tp_save_document`.
 
 Se un salvataggio viene rifiutato, `tp_usage` è lo strumento che dice perché, in forma di byte e documenti tenuti contro il tetto di ciascuno. Esiste perché “non si è salvato” è una frase che un modello altrimenti interpreterà in modo creativo.
 
@@ -196,7 +204,7 @@ Per contesto, i server MCP di riferimento pubblicati insieme al protocollo mostr
 ## Come giudicare un connettore di documenti
 
 1. **Controlla se si può revocare senza rompere qualcosa altro.** Un connettore che riusa la tua chiave API esistente significa che ruotare quella chiave uccide anche i tuoi script di deploy, e lo scoprirai nel momento peggiore; un connettore che ha una propria approvazione si può rimuovere per un sospetto senza conseguenze.
-2. **Leggi la descrizione dello strumento distruttivo prima di aggiungerlo.** Se eliminare non richiede conferma, o se c’è uno strumento che elimina più di una cosa alla volta, allora un’istruzione fraintesa in una conversazione lunga è una perdita di dati irrecuperabile invece di un errore fastidioso.
+2. **Leggi la descrizione dello strumento distruttivo prima di aggiungerlo.** Se eliminare non richiede conferma, o se c’è uno strumento che elimina più di una cosa alla volta senza niente da cui ripristinarle, allora un’istruzione fraintesa in una conversazione lunga è una perdita di dati irrecuperabile invece di un errore fastidioso.
 3. **Scopri se condividere è un passaggio separato o un flag su salvare.** Entrambi sono difendibili, ma un salvataggio che pubblica nella stessa chiamata ha bisogno che la modalità sia nominata esplicitamente nella risposta, altrimenti “l’ho salvato” e “l’ho pubblicato su internet” sono la stessa frase per chi legge il riassunto.
 4. **Chiedi cosa restituiscono gli strumenti attraverso la conversazione.** Uno strumento che restituisce documenti interi riempirà la finestra di contesto e metterà il tuo testo nella trascrizione, quindi un connettore che restituisce un URL per qualunque cosa lunga ti sta facendo un favore che si traduce in costo più basso e minore esposizione.
 5. **Conferma che i limiti corrispondano al resto del prodotto.** Un connettore con soglie proprie più silenziose rifiuterà qualcosa che il sito web accetterebbe, e il fallimento arriva come un modello che si scusa vagamente invece che come un errore su cui puoi agire.
@@ -204,7 +212,7 @@ Per contesto, i server MCP di riferimento pubblicati insieme al protocollo mostr
 
 ## Conclusione
 
-Un connettore si guadagna il suo posto quando il documento è già dentro la conversazione e ogni alternativa comporta una persona che sposta testo fra due finestre. Quello che lo rende degno di essere aggiunto piuttosto che semplicemente ingegnoso è la parte noiosa: un token che copre i documenti di un solo prodotto e niente altro, un’approvazione con un nome sopra e un pulsante di revoca che non rompe niente altro, uno strumento distruttivo che chiede il permesso, e una condivisione che dice ad alta voce cosa ha appena pubblicato. Sono le proprietà da controllare su qualunque connettore, non solo su questo. Se preferisci tenere il documento sulla tua macchina, la stessa conversione gira nel browser con [niente caricato quando non hai fatto l’accesso](/) — e se il lavoro è uno script, una cartella o un repository, usa l’API, la CLI o l’Action invece, e lascia la conversazione ai documenti che esistono solo lì.
+Un connettore si guadagna il suo posto quando il documento è già dentro la conversazione e ogni alternativa comporta una persona che sposta testo fra due finestre. Quello che lo rende degno di essere aggiunto piuttosto che semplicemente ingegnoso è la parte noiosa: un token che copre i documenti di un solo prodotto e niente altro, un’approvazione con un nome sopra e un pulsante di revoca che non rompe niente altro, strumenti distruttivi che chiedono prima il permesso, con un cestino dietro, e una condivisione che dice ad alta voce cosa ha appena pubblicato. Sono le proprietà da controllare su qualunque connettore, non solo su questo. Se preferisci tenere il documento sulla tua macchina, la stessa conversione gira nel browser con [niente caricato quando non hai fatto l’accesso](/) — e se il lavoro è uno script, una cartella o un repository, usa l’API, la CLI o l’Action invece, e lascia la conversazione ai documenti che esistono solo lì.
 
 ## Domande frequenti
 
@@ -218,11 +226,11 @@ No. La prima chiamata torna non autorizzata, l’assistente segue quella traccia
 
 ### Un assistente può pubblicare il mio documento senza chiedere?
 
-Può, ed è per questo che gli strumenti sono fatti così: salvare può pubblicare nella stessa chiamata, e le istruzioni del server dicono al modello di condividere solo quando la persona lo ha chiesto. La condivisione è visibile nel tuo elenco di documenti e revocabile, e riportare un documento a privato blocca un link già inviato dall’apertura — ma una pagina che è stata copiata mentre era pubblica resta copiata.
+Può, se passa la conferma da solo, ed è per questo che gli strumenti sono fatti così: salvare può pubblicare nella stessa chiamata, e pubblicare, nel salvataggio come nella condivisione, richiede `confirm: true`, senza il quale lo strumento non cambia nulla e dice cosa verrebbe rivelato. La condivisione è visibile nel tuo elenco di documenti e revocabile, e riportare un documento a privato blocca un link già inviato dall’apertura — ma una pagina che è stata copiata mentre era pubblica resta copiata.
 
 ### Cosa succede se il mio documento è più grande del limite?
 
-La conversione è limitata a 10 MB e un documento salvato a 4 MB, quindi un file fra queste due dimensioni si convertirà e si scaricherà ma non potrà essere tenuto sull’account. Quel secondo limite è della piattaforma piuttosto che una scelta di politica: una funzione rifiuta una richiesta o un corpo di risposta oltre 4,5 MB prima che qualunque codice dell’applicazione giri, quindi il documento non potrebbe essere né salvato né letto di nuovo.
+Nel browser la conversione di un file di testo è limitata a 10 MB e un documento salvato a 4 MB, quindi un file fra queste due dimensioni si convertirà e si scaricherà ma non potrà essere tenuto sull’account. Quel secondo limite è della piattaforma piuttosto che una scelta di politica: una funzione rifiuta una richiesta o un corpo di risposta oltre 4,5 MB prima che qualunque codice dell’applicazione giri, quindi il documento non potrebbe essere né salvato né letto di nuovo.
 
 ### Un connettore è più sicuro che incollare in un convertitore online?
 

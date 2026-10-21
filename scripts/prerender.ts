@@ -41,12 +41,13 @@ import {
   CONVERSIONS,
   conversion,
   conversionForPath,
+  type ConversionId,
   DEFAULT_CONVERSION,
 } from '../shared/conversions.js';
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
-import { publishedStores, REPO_URL, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
+import { publishedStores, REPO_URL, STATIC_PAGES, type StaticPageId, X_URL } from '../src/lib/pages.js';
 import type { LandingWords, PageWords, PluginWords } from '../src/lib/i18n/content.js';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
 import { OBSIDIAN_DIRECTORY, OBSIDIAN_SOURCE } from '../src/lib/obsidian-facts.js';
@@ -146,6 +147,24 @@ function articleMarkdown(slug: string, locale: Locale = DEFAULT_LOCALE): string 
   const header = raw.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/);
 
   return header ? raw.slice(header[0].length) : raw;
+}
+
+/**
+ * The guide under a converter, from `content/conversions` (see `src/lib/conversion-guides.ts`),
+ * or an empty string where none is written. English stands in for a missing translation, which
+ * `scripts/check-guides.mjs` refuses at build time anyway.
+ */
+function guideMarkdown(id: ConversionId, locale: Locale): string {
+  for (const file of [
+    resolve('content/conversions', locale === DEFAULT_LOCALE ? '' : locale, `${id}.md`),
+    resolve('content/conversions', `${id}.md`),
+  ]) {
+    if (existsSync(file)) {
+      return readFileSync(file, 'utf8');
+    }
+  }
+
+  return '';
 }
 
 const escapeHtml = (value: string) =>
@@ -507,7 +526,7 @@ function render(page: Page): string {
  */
 function siteFooter(locale: Locale): string {
   const catalogue = CATALOGUES[locale];
-  const page = (id: 'extension' | 'obsidian' | 'agents' | 'support' | 'privacy' | 'terms' | 'cookies') => {
+  const page = (id: StaticPageId) => {
     const one = STATIC_PAGES.find((each) => each.id === id)!;
 
     return anchor(localePath(locale, one.path), catalogue.pages[id].label);
@@ -522,6 +541,12 @@ function siteFooter(locale: Locale): string {
     page('extension'),
     page('obsidian'),
     page('agents'),
+    page('share-markdown'),
+    page('api'),
+    page('cli'),
+    page('github-action'),
+    /* The app's footer has had About since it got its address back; the crawled copy had not. */
+    page('about'),
     page('support'),
     page('privacy'),
     page('terms'),
@@ -819,6 +844,15 @@ for (const article of articlesFor(DEFAULT_LOCALE)) {
   }
 }
 
+/** The guide as the page's own section, its links in the page's language. */
+const guideHtml = (id: ConversionId, locale: Locale) => {
+  const markdown = guideMarkdown(id, locale);
+
+  return markdown
+    ? `<article class="md-doc">${localiseLinks(markdownToHtml(markdown), locale)}</article>`
+    : '';
+};
+
 const anchor = (href: string, words: string) => `<a href="${href}">${escapeHtml(words)}</a>`;
 
 /**
@@ -870,14 +904,14 @@ for (const locale of LOCALES) {
         description: said.seo.description,
         url: `${SITE}${localePath(locale, one.path)}`,
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      }) + breadcrumbs(crumbsForConversion(one, words, locale)),
+      }) + breadcrumbs(crumbsForConversion(one, words, locale)) + DOC_STYLE,
       body: `<h1>${escapeHtml(said.title)}</h1><p>${escapeHtml(said.blurb)}</p><p>${escapeHtml(
         said.hint
       )}</p><p>${escapeHtml(
         words.ui['converter.dropzone.limits']
           .replace('{extensions}', one.extensions.join(', '))
           .replace('{limit}', formatBytes(uploadLimit(one.extensions), INTL_LOCALES[locale]))
-      )}</p>${(() => {
+      )}</p>${guideHtml(one.id, locale)}${(() => {
         const guide = guideFor(one.path);
         const written = aboutFirst(one.path, articlesLinkingTo.get(one.path) ?? [])
           .map((slug) => articlesFor(locale).find((article) => article.slug === slug))
@@ -985,7 +1019,7 @@ for (const locale of LOCALES) {
       name: entry.question,
       acceptedAnswer: { '@type': 'Answer', text: String(entry.answer) },
     })),
-  }) + breadcrumbs(crumbsForConversion(conversion(DEFAULT_CONVERSION), words, locale)),
+  }) + breadcrumbs(crumbsForConversion(conversion(DEFAULT_CONVERSION), words, locale)) + DOC_STYLE,
   /*
    * The other conversions, named and linked in this language.
    *
@@ -1001,7 +1035,7 @@ for (const locale of LOCALES) {
           words.conversions[each.id].title
         )}</a>`
     )
-    .join(', ')}</p>${asked
+    .join(', ')}</p>${guideHtml(DEFAULT_CONVERSION, locale)}${asked
     .map(
       (entry) =>
         `<section><h2>${escapeHtml(entry.question)}</h2><p>${escapeHtml(String(entry.answer))}</p></section>`

@@ -1,7 +1,7 @@
 ---
 title: Your AI assistant writes Markdown. Your colleagues do not read it.
 description: Why chat assistants answer in Markdown, what survives the paste into email, Slack, Word, Notion or a ticket, and the duller route that holds: save, convert, send
-updated: 2026-09-09
+updated: 2026-10-21
 date: 2026-07-21
 tag: Workflow
 keywords: chatgpt markdown, chatgpt output to html, claude markdown export, llm markdown output, ai generated documentation, copy markdown from chat, paste markdown into word, ai output asterisks, markdown dollar signs latex
@@ -265,7 +265,7 @@ Browser-side conversion is the reason TransformPipe can say that nothing is uplo
 
 ### Skipping the copy altogether
 
-The clipboard is the weak link in all of this, and it can be removed. An assistant with a connector to a conversion service does the whole sequence inside the conversation: it takes the text it just wrote, converts it, and gives you back a file or a link without any of it passing through a text field. Nothing gets a chance to autocorrect, because nothing was ever pasted.
+The clipboard is the weak link in all of this, and it can be removed. An assistant with [a connector](/agents) to a conversion service does the whole sequence inside the conversation: it takes the text it just wrote, converts it, and gives you back a file or a link without any of it passing through a text field. Nothing gets a chance to autocorrect, because nothing was ever pasted.
 
 The mechanism is an MCP server, or an API call, or a CLI invocation from whatever the assistant is allowed to run — the same conversion in each case, reached from a different direction. [Converting documents from inside an assistant](/blog/converting-documents-from-an-assistant) covers what each route can and cannot do. It is the right answer when this happens often enough to be a habit rather than an errand, and it does not change the review step above, which is still yours.
 

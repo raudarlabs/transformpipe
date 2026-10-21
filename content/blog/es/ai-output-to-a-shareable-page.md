@@ -1,7 +1,7 @@
 ---
 title: Tu asistente de IA escribe en Markdown. Tus compañeros no lo leen así.
 description: Por qué los asistentes de chat responden en Markdown, qué sobrevive al pegarlo en Word o Slack, y la vía aburrida que siempre funciona: guardar, convertir, enviar
-updated: 2026-09-09
+updated: 2026-10-21
 date: 2026-07-21
 tag: Workflow
 keywords: chatgpt markdown a word, exportar respuesta de chatgpt, convertir respuesta de claude a documento, salida markdown de un llm, documentacion generada por ia, pegar markdown en word, asteriscos en la respuesta de la ia, formulas con signos de dolar en markdown
@@ -265,7 +265,7 @@ La conversión del lado del navegador es la razón por la que TransformPipe pued
 
 ### Saltarse el pegado por completo
 
-El portapapeles es el eslabón débil de todo esto, y se puede quitar. Un asistente con un conector a un servicio de conversión hace la secuencia entera dentro de la propia conversación: toma el texto que acaba de escribir, lo convierte, y te devuelve un archivo o un enlace sin que nada de eso pase por un campo de texto. Nada tiene ocasión de autocorregirse, porque nada se pegó nunca.
+El portapapeles es el eslabón débil de todo esto, y se puede quitar. Un asistente con [un conector](/agents) a un servicio de conversión hace la secuencia entera dentro de la propia conversación: toma el texto que acaba de escribir, lo convierte, y te devuelve un archivo o un enlace sin que nada de eso pase por un campo de texto. Nada tiene ocasión de autocorregirse, porque nada se pegó nunca.
 
 El mecanismo es un servidor MCP, o una llamada de API, o una invocación de CLI desde lo que sea que el asistente pueda ejecutar — la misma conversión en cada caso, alcanzada desde una dirección distinta. [Convertir documentos desde dentro de un asistente](/blog/converting-documents-from-an-assistant) cubre qué puede y qué no puede hacer cada vía. Es la respuesta correcta cuando esto pasa lo bastante seguido como para ser un hábito y no un recado, y no cambia el paso de revisión de arriba, que sigue siendo tuyo.
 

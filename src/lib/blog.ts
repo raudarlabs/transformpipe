@@ -34,6 +34,8 @@ export interface Article {
   /** What the piece is aimed at, from content/keywords.md. Not rendered; kept for the writer. */
   keywords: string[];
   readingMinutes: number;
+  /** The site paths its prose links to. Read from the files at build time: see vite-plugin-blog.ts. */
+  links: string[];
 }
 
 /*
@@ -73,6 +75,27 @@ export function articlesFor(locale: Locale): Article[] {
  * Not called `hasTranslation`, because `src/lib/route.ts` has one of those and it answers a
  * different question: whether a path is one of the pages that exists in all five languages.
  */
+/**
+ * The articles about a page of the site, in this language: the ones whose English prose links to
+ * `path`, with the one whose slug names the format first. The prerenderer orders the list the same
+ * way (`aboutFirst` in scripts/prerender.ts).
+ *
+ * English decides for every language because a translation keeps its original's link targets.
+ */
+export function articlesAbout(path: string, locale: Locale): Article[] {
+  const format = path.replace('/', '').split('-to-')[0];
+  const linking = new Set(
+    ARTICLES.filter((article) => article.links.includes(path)).map((article) => article.slug)
+  );
+
+  return articlesFor(locale)
+    .filter((article) => linking.has(article.slug))
+    .sort(
+      (first, second) =>
+        Number(second.slug.includes(format)) - Number(first.slug.includes(format))
+    );
+}
+
 export function hasArticleIn(slug: string, locale: Locale): boolean {
   return articlesFor(locale).some((article) => article.slug === slug);
 }

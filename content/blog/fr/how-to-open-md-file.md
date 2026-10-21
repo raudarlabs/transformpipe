@@ -1,6 +1,7 @@
 ---
 title: "Comment ouvrir un fichier .md sous Windows, macOS, Linux, iOS et Android"
 description: "Un fichier .md est du texte brut : voilà pourquoi un double-clic ouvre un éditeur de code ou rien. Le lire tel quel, le lire mis en forme, fixer l’application"
+updated: 2026-10-21
 date: 2026-09-02
 tag: Conversion
 keywords: comment ouvrir un fichier md, ouvrir fichier .md windows, qu’est-ce qu’un fichier md, lire un fichier markdown, ouvrir fichier markdown mac, visionneuse md en ligne, ouvrir un fichier md dans le navigateur, lire un fichier md sur téléphone
@@ -257,7 +258,7 @@ VS Code intègre un aperçu Markdown, bâti sur markdown-it. Ouvrez le fichier e
 - Gère un dossier entier de fichiers Markdown, avec recherche dans l’ensemble
 - Affiche le front matter comme de la source, sauf si une extension en fait quelque chose
 
-**Pour qui ?** Pour les développeurs dont le fichier est déjà dans l’éditeur. Si vous ouvrez VS Code exprès pour lire une pièce jointe `.md`, un onglet de navigateur est plus rapide.
+**Pour qui ?** Pour les développeurs dont le fichier est déjà dans l’éditeur. Si vous ouvrez VS Code exprès pour lire une pièce jointe `.md`, un onglet de navigateur est plus rapide. Et si l’étape suivante est un fichier `.html`, l’aperçu ne vous en donnera pas : [Markdown vers HTML dans VS Code](/blog/markdown-to-html-in-vs-code) passe en revue les extensions qui exportent, et explique pourquoi aucune ne reprend par défaut l’apparence de l’aperçu.
 
 ### Obsidian — idéal pour un dossier de Markdown auquel vous revenez sans cesse
 
@@ -427,7 +428,7 @@ Le conseil évident est « installez VS Code » ou « ouvrez-le simplement dans 
 
 **Les extensions de navigateur veulent accéder à votre disque.** Une extension qui rend des fichiers `.md` locaux ne peut le faire qu’avec l’autorisation de lire les URL de fichiers, et cette autorisation n’est pas étroite. C’est un marché raisonnable si vous lisez du Markdown en permanence, et un mauvais marché pour une pièce jointe unique.
 
-**Les visionneuses ne sont pas d’accord sur Markdown.** Les tableaux, les listes de tâches, le texte barré et les liens automatiques viennent du GitHub Flavored Markdown et non de la syntaxe d’origine : une visionneuse strictement CommonMark affiche donc des barres verticales brutes là où vous attendiez un tableau. Le fichier va bien ; c’est la visionneuse qui met en œuvre une variante plus petite. C’est de loin le signalement « mon Markdown est cassé » le plus fréquent, et ce n’est presque jamais le fichier. [Les variantes](/blog/commonmark-gfm-and-the-flavours) valent la peine d’être connues si vous manipulez du Markdown venu de plusieurs sources.
+**Les visionneuses ne sont pas d’accord sur Markdown.** Les tableaux, les listes de tâches, le texte barré et les liens automatiques viennent du GitHub Flavored Markdown et non de la syntaxe d’origine : une visionneuse strictement CommonMark affiche donc des barres verticales brutes là où vous attendiez un tableau. Le fichier va bien ; c’est la visionneuse qui met en œuvre une variante plus petite. C’est de loin le signalement « mon Markdown est cassé » le plus fréquent, et ce n’est presque jamais le fichier. Les variantes valent la peine d’être connues si vous manipulez du Markdown venu de plusieurs sources.
 
 **Les images ne seront pas dans le fichier.** Markdown référence les images par leur chemin ; il ne les contient pas. Ouvrez un fichier `.md` exporté avec un dossier `images/` à côté de lui, dans une visionneuse qui n’a reçu que le `.md`, et chaque image devient une icône cassée. Ce n’est pas la visionneuse qui échoue, c’est [ce que font les chemins relatifs quand un fichier se déplace](/blog/images-and-links-that-still-work).
 

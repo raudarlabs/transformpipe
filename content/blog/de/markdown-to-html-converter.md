@@ -1,6 +1,7 @@
 ---
 title: "Markdown zu HTML: was mit Ihrer Datei tatsächlich passiert"
 description: "Was ein Markdown-zu-HTML-Konverter mit Ihrer Datei macht — parsen, ausgeben, bereinigen, verpacken — und wie ein Fehler in jeder der vier Stufen aussieht"
+updated: 2026-10-21
 date: 2026-09-08
 tag: Konvertieren
 keywords: markdown zu html, md zu html, markdown in html umwandeln, markdown zu html konverter online, markdown zu html generator, markdown als html darstellen
@@ -157,7 +158,7 @@ Zwei Details entscheiden, ob ein Bereiniger in der Praxis hält.
 
 **Wo er läuft.** Ein Bereiniger im Browser stützt sich auf den Parser des Browsers — denselben Parser, der das Dokument später darstellen wird. Das ist ein echter Vorteil, denn er sieht das Markup so, wie der Browser es sehen wird. Einer auf einem Server muss das HTML selbst parsen, mit seiner eigenen Vorstellung davon, wie fehlerhafte Tags sich verschachteln. Wenn ein Werkzeug an beiden Orten konvertiert, müssen die beiden übereinstimmen, sonst wird dasselbe Dokument unterschiedlich dargestellt, je nachdem, wer gefragt hat. Hier wohnen auch die Mutationsprobleme: wenn das Parsen des Bereinigers und das Parsen des Browsers sich über einen Verschachtelungsgrenzfall uneins sind, kann das Säubern des Markups etwas erzeugen, das im Browser als anderes Markup neu geparst wird als das, was freigegeben wurde.
 
-**Überschriften-IDs, noch einmal.** Ein nacktes `id="title"` überdeckt eine DOM-Eigenschaft, ein Browser-Bereiniger entfernt es also, während ein serverseitiger Parser es behält: ein Dokument, zwei Formen, und Anker-Links, die in der einen funktionieren und in der anderen nicht. Ein Präfix an den IDs beantwortet beide Probleme auf einmal. TransformPipe bereinigt mit DOMPurify im Browser und mit dem `xss`-Paket auf dem Server gegen eine gemeinsame Positivliste, und seine Überschriften-IDs tragen ein `doc-`-Präfix. Es gibt [mehr über das sichere Bereinigen von Markdown](/blog/sanitising-markdown-safely), als in eine Stufe einer Pipeline passt.
+**Überschriften-IDs, noch einmal.** Ein nacktes `id="title"` überdeckt eine DOM-Eigenschaft, ein Browser-Bereiniger entfernt es also, während ein serverseitiger Parser es behält: ein Dokument, zwei Formen, und Anker-Links, die in der einen funktionieren und in der anderen nicht. Ein Präfix an den IDs beantwortet beide Probleme auf einmal. TransformPipe bereinigt mit DOMPurify im Browser und mit dem `xss`-Paket auf dem Server gegen eine gemeinsame Positivliste, und seine Überschriften-IDs tragen ein `doc-`-Präfix.
 
 Noch eines zu dieser Stufe: Bereinigen ist sichtbar. Es entfernt Dinge. Checkboxen verschwinden, wenn `input` nicht auf der Liste steht, ein `<details>`-Block flacht zu seinem Inhalt ab, ein eingebettetes Diagramm wird zu gar nichts. Das ist kein Fehler — es ist die Positivliste bei der Arbeit — aber es heißt, dass die Ausgabe gelesen und nicht angenommen werden muss.
 
@@ -332,7 +333,7 @@ Wenn die Konvertierung in einem Pull Request, einem nächtlichen Build oder im W
 
 ### Der Export eines Editors — bequem, und die Verpackung ist ein Glücksspiel
 
-VS Code bringt eine Markdown-Vorschau auf Basis von markdown-it mit, Erweiterungen ergänzen den Export. Desktop-Editoren exportieren ebenfalls HTML. Wenn die Datei schon vor Ihnen offen ist, ist das der kürzeste Weg von Text zu Seite.
+VS Code bringt eine Markdown-Vorschau auf Basis von markdown-it mit, Erweiterungen ergänzen den Export; [Markdown zu HTML in VS Code](/blog/markdown-to-html-in-vs-code) zeigt, was jede von ihnen um das Fragment schreibt. Desktop-Editoren exportieren ebenfalls HTML. Wenn die Datei schon vor Ihnen offen ist, ist das der kürzeste Weg von Text zu Seite.
 
 | Vorteile | Nachteile |
 | --- | --- |

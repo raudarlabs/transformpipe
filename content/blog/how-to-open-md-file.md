@@ -1,6 +1,7 @@
 ---
 title: How to open a .md file on Windows, macOS, Linux, iOS and Android
 description: A .md file is plain text, which is why double-clicking opens a code editor or nothing — how to read it as text, read it rendered, and set the default app
+updated: 2026-10-21
 date: 2026-09-02
 tag: Converting
 keywords: how to open md file, what is an md file, md file viewer, markdown viewer online, view md file in browser, md reader, markdown file extension
@@ -257,7 +258,7 @@ VS Code has a Markdown preview built in, on markdown-it. Open the file and press
 - Handles a folder of Markdown files with search across all of them
 - Shows front matter as source unless an extension is doing something with it
 
-**Who should use it?** Developers whose file is already in the editor. If you are opening VS Code specifically to read one `.md` attachment, a browser tab is faster.
+**Who should use it?** Developers whose file is already in the editor. If you are opening VS Code specifically to read one `.md` attachment, a browser tab is faster. And if the next step is an `.html` file, the preview will not hand you one: [Markdown to HTML in VS Code](/blog/markdown-to-html-in-vs-code) covers the extensions that export and why none of them inherits the preview's look by default.
 
 ### Obsidian — best for a folder of Markdown you keep coming back to
 
@@ -427,7 +428,7 @@ The obvious advice is "install VS Code" or "just open it in Notepad", and both a
 
 **Browser extensions want access to your disk.** An extension that renders local `.md` files can only do so with permission to read file URLs, and that permission is not narrow. It is a reasonable trade if you read Markdown constantly and a poor one for a single attachment.
 
-**Viewers disagree about Markdown.** Tables, task lists, strikethrough and autolinks come from GitHub Flavored Markdown rather than the original syntax, so a strict CommonMark viewer shows raw pipes where you expected a table. The file is fine; the viewer implements a smaller flavour. This is the single most common "my Markdown is broken" report and it is almost never the file. [The flavours](/blog/commonmark-gfm-and-the-flavours) are worth knowing if you handle Markdown from more than one source.
+**Viewers disagree about Markdown.** Tables, task lists, strikethrough and autolinks come from GitHub Flavored Markdown rather than the original syntax, so a strict CommonMark viewer shows raw pipes where you expected a table. The file is fine; the viewer implements a smaller flavour. This is the single most common "my Markdown is broken" report and it is almost never the file. The flavours are worth knowing if you handle Markdown from more than one source.
 
 **Images will not be in the file.** Markdown references images by path; it does not contain them. Open a `.md` file that was exported with an `images/` folder beside it, in a viewer that only received the `.md`, and every picture is a broken icon. That is not the viewer failing, it is [what relative paths do when a file moves](/blog/images-and-links-that-still-work).
 

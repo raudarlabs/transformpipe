@@ -1,6 +1,7 @@
 ---
 title: "Markdown to HTML: what actually happens to your file"
 description: What a Markdown to HTML converter does to your file — parse, render, sanitise, wrap — and what a failure at each of the four stages looks like on screen
+updated: 2026-10-21
 date: 2026-09-08
 tag: Converting
 keywords: markdown to html, md to html, convert markdown to html, markdown to html converter online, markdown to html generator, render markdown as html
@@ -157,7 +158,7 @@ Two details decide whether a sanitiser holds up in practice.
 
 **Where it runs.** A sanitiser in the browser leans on the browser's own parser, which is the same parser that will later render the document — a real advantage, because it sees the markup as the browser will see it. One on a server has to parse the HTML itself, with its own idea of how malformed tags nest. If a tool converts in both places, the two must agree, or the same document renders differently depending on who asked for it. This is also where mutation problems live: if the sanitiser's parse and the browser's parse disagree about a nesting edge case, cleaning the markup can produce something that re-parses in the browser as different markup than was approved.
 
-**Heading ids again.** A bare `id="title"` shadows a DOM property, so a browser sanitiser strips it while a server-side parser keeps it: one document, two shapes, and anchor links that work in one and not the other. Prefixing the ids answers both problems at once. TransformPipe sanitises with DOMPurify in the browser and the `xss` package on the server against one shared allow-list, and its heading ids carry a `doc-` prefix. There is [more to sanitising Markdown safely](/blog/sanitising-markdown-safely) than fits in one stage of a pipeline.
+**Heading ids again.** A bare `id="title"` shadows a DOM property, so a browser sanitiser strips it while a server-side parser keeps it: one document, two shapes, and anchor links that work in one and not the other. Prefixing the ids answers both problems at once. TransformPipe sanitises with DOMPurify in the browser and the `xss` package on the server against one shared allow-list, and its heading ids carry a `doc-` prefix.
 
 One last thing about this stage: sanitising is visible. It removes things. Checkboxes disappear if `input` is not on the list, a `<details>` block flattens into its contents, an embedded diagram becomes nothing at all. That is not a bug — it is the allow-list doing its job — but it means the output has to be read, not assumed.
 
@@ -332,7 +333,7 @@ When the conversion has to happen inside a pull request, a nightly build or an a
 
 ### An editor's export — convenient, and the wrapper is a lottery
 
-VS Code ships a Markdown preview built on markdown-it, and extensions add export. Desktop editors export HTML too. If the file is already open in front of you, this is the shortest path from text to page.
+VS Code ships a Markdown preview built on markdown-it, and extensions add export; [Markdown to HTML in VS Code](/blog/markdown-to-html-in-vs-code) sets out what each of them writes around the fragment. Desktop editors export HTML too. If the file is already open in front of you, this is the shortest path from text to page.
 
 | Pros | Cons |
 | --- | --- |

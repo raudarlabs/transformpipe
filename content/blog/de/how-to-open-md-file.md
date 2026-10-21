@@ -1,6 +1,7 @@
 ---
 title: "So öffnen Sie eine .md-Datei unter Windows, macOS, Linux, iOS und Android"
 description: "Eine .md-Datei ist reiner Text — darum öffnet ein Doppelklick einen Code-Editor oder nichts: wie Sie sie als Text oder dargestellt lesen und die Standard-App setzen"
+updated: 2026-10-21
 date: 2026-09-02
 tag: Konvertieren
 keywords: md datei öffnen, was ist eine md datei, md datei öffnen windows, markdown datei öffnen, md datei anzeigen, md viewer online, md datei im browser öffnen, markdown datei lesen, md datei öffnen handy
@@ -257,7 +258,7 @@ VS Code bringt eine Markdown-Vorschau mit, auf Basis von markdown-it. Öffnen Si
 - Verkraftet einen Ordner voller Markdown-Dateien mit Suche über alle
 - Zeigt Frontmatter als Quelle, sofern nicht eine Erweiterung etwas damit tut
 
-**Wer sollte es verwenden?** Entwickler, deren Datei schon im Editor liegt. Wenn Sie VS Code eigens öffnen, um einen einzelnen `.md`-Anhang zu lesen, ist ein Browser-Tab schneller.
+**Wer sollte es verwenden?** Entwickler, deren Datei schon im Editor liegt. Wenn Sie VS Code eigens öffnen, um einen einzelnen `.md`-Anhang zu lesen, ist ein Browser-Tab schneller. Und wenn der nächste Schritt eine `.html`-Datei ist, liefert die Vorschau keine: [Markdown zu HTML in VS Code](/blog/markdown-to-html-in-vs-code) behandelt die Erweiterungen, die exportieren, und warum keine von ihnen von sich aus das Aussehen der Vorschau übernimmt.
 
 ### Obsidian — am besten für einen Ordner Markdown, zu dem Sie immer wieder zurückkehren
 
@@ -427,7 +428,7 @@ Der naheliegende Rat lautet „installieren Sie VS Code“ oder „öffnen Sie e
 
 **Browser-Erweiterungen wollen Zugriff auf Ihre Festplatte.** Eine Erweiterung, die lokale `.md`-Dateien darstellt, kann das nur mit der Berechtigung, Datei-URLs zu lesen, und diese Berechtigung ist nicht eng gefasst. Es ist ein vernünftiges Geschäft, wenn Sie ständig Markdown lesen, und ein schlechtes für einen einzelnen Anhang.
 
-**Betrachter sind sich über Markdown nicht einig.** Tabellen, Aufgabenlisten, Durchgestrichenes und Autolinks kommen aus GitHub Flavored Markdown und nicht aus der ursprünglichen Syntax, ein strenger CommonMark-Betrachter zeigt also rohe Pipes, wo Sie eine Tabelle erwartet haben. Die Datei ist in Ordnung; der Betrachter setzt einen kleineren Dialekt um. Das ist die mit Abstand häufigste Meldung „mein Markdown ist kaputt“, und es ist fast nie die Datei. Es lohnt sich, [die Dialekte](/blog/commonmark-gfm-and-the-flavours) zu kennen, wenn Sie Markdown aus mehr als einer Quelle bekommen.
+**Betrachter sind sich über Markdown nicht einig.** Tabellen, Aufgabenlisten, Durchgestrichenes und Autolinks kommen aus GitHub Flavored Markdown und nicht aus der ursprünglichen Syntax, ein strenger CommonMark-Betrachter zeigt also rohe Pipes, wo Sie eine Tabelle erwartet haben. Die Datei ist in Ordnung; der Betrachter setzt einen kleineren Dialekt um. Das ist die mit Abstand häufigste Meldung „mein Markdown ist kaputt“, und es ist fast nie die Datei. Es lohnt sich, die Dialekte zu kennen, wenn Sie Markdown aus mehr als einer Quelle bekommen.
 
 **Bilder stehen nicht in der Datei.** Markdown verweist auf Bilder über einen Pfad; es enthält sie nicht. Öffnen Sie eine `.md`-Datei, die mit einem Ordner `images/` daneben exportiert wurde, in einem Betrachter, der nur die `.md` bekommen hat, und jedes Bild ist ein kaputtes Symbol. Das ist nicht der Betrachter, der scheitert, das ist [was relative Pfade tun, wenn eine Datei umzieht](/blog/images-and-links-that-still-work).
 

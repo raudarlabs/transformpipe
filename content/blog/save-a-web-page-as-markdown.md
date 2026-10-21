@@ -1,6 +1,7 @@
 ---
 title: How to save a web page as Markdown you actually own
 description: Four ways to turn a web page into Markdown — reader mode, saved HTML, clipper extensions and the command line — what each keeps, and what happens to the images
+updated: 2026-10-21
 date: 2026-09-05
 tag: Converting
 keywords: web page to markdown, save a web page as markdown, url to markdown, convert web page to markdown, save article as markdown, web clipper markdown, readability markdown, download web page as text
@@ -103,6 +104,7 @@ A clipper is extraction and conversion stapled together behind one toolbar butto
 | MarkDownload | A `.md` file, optionally with YAML front matter carrying the URL and title | Your downloads folder, or the clipboard | Whatever the extractor dropped; images stay as remote links unless you ask otherwise |
 | Obsidian Web Clipper | Markdown plus page properties, shaped by a template you write | Straight into a vault folder | Highlights and callouts are Obsidian's own conventions, so they travel badly to other tools |
 | Notion Web Clipper | Notion blocks, not Markdown | A Notion database or page | Everything Notion has no block for; getting Markdown back needs a second export |
+| TransformPipe extension | Markdown of the extracted article, or the page as one self-contained `.html` file | The clipboard, your downloads folder, or an account if you sign in | Whatever the extractor dropped; pictures in the Markdown stay remote links, made absolute |
 | A generic "save as Markdown" extension | Varies wildly | Downloads | Unknown, which is the problem: you cannot audit what you cannot read |
 
 MarkDownload is the honest workhorse: it runs Readability over the page and then Turndown over the result, which is the same two-stage pipeline described above, wired up for you. It is free and open source under the Apache 2.0 licence, which means the pipeline is inspectable — you can read exactly which rules produced the file you got.
@@ -110,6 +112,8 @@ MarkDownload is the honest workhorse: it runs Readability over the page and then
 Obsidian's Web Clipper is the one to use if the destination is a vault, because it writes the note where the vault expects it, with the properties your templates rely on. It is free and MIT licensed. Two things to keep in mind. First, its templates are a real feature and worth setting up once: a clipped note with the source URL, the author and the retrieval date in its properties is a note you can still cite in two years. Second, Obsidian's flavour has extensions of its own — wikilinks, callouts, embeds — and a note full of them is not a note another tool will render. [What each of these applications does to Markdown on the way out](/blog/markdown-from-notion-obsidian-and-confluence) is a longer story, and it applies to clipped pages as much as to written ones.
 
 Notion's clipper is the outlier and the one that catches people. It does not save Markdown. It saves the page into Notion as Notion blocks, which is genuinely useful if Notion is where you read things, and a dead end if you wanted a file. To get Markdown out you export the page from Notion afterwards, which produces a zip with hexadecimal ids appended to every filename and databases as separate CSV files. That is two lossy conversions where you asked for one.
+
+The converter described further down also comes as [the browser extension](/extension), and it is the same two-stage pipeline: Readability finds the article in the page you are on, the site's own HTML to Markdown converter writes the Markdown, and every link and picture address is rewritten as an absolute one so the file still points somewhere once it leaves the tab — the pictures stay links to the original site rather than copies. It can also save the page as one `.html` file with its stylesheets, images and fonts inlined as data URIs, and its right-click menu converts a selection instead of the whole page. It asks for no host permission at install, reads a page only when you press its button or open its side panel on it, and never talks to the site's servers while you are signed out; it installs in Chrome and the browsers built on Chromium, and in Firefox on the desktop and on Android.
 
 **Who clippers are for.** People who keep pages every day and want the decision made for them. If you clip twice a year, the extension permission is not worth it and the two-step route is fine.
 

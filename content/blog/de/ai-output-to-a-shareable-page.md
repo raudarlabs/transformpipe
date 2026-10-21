@@ -1,7 +1,7 @@
 ---
 title: "Ihr KI-Assistent schreibt Markdown. Ihre Kollegen lesen es nicht."
 description: "Warum Chat-Assistenten in Markdown antworten, was das Einfügen in E-Mail, Slack, Word oder ein Ticket übersteht, und der langweilige Weg, der hält"
-updated: 2026-09-09
+updated: 2026-10-21
 date: 2026-07-21
 tag: Workflow
 keywords: chatgpt markdown, chatgpt ausgabe in html umwandeln, claude markdown exportieren, ki antwort formatieren, markdown aus chat kopieren, markdown in word einfügen, ki ausgabe sternchen, dollarzeichen markdown formel
@@ -179,7 +179,7 @@ Die pragmatische Antwort für die meisten Geschäftsdokumente ist die erste Zeil
 
 KI-erzeugte Dokumentation ist Dokumentation. Sie geht unter Ihrem Namen hinaus, und der Leser wird Sie daran festhalten, nicht das Modell.
 
-Tun Sie das vor dem Umwandeln, nicht danach. Eine dargestellte Seite sieht fertig aus, und was fertig aussieht, wird gelesen, als hätte es jemand geprüft.
+Tun Sie das vor dem Umwandeln, nicht danach. Eine dargestellte Seite sieht fertig aus, und was fertig aussieht, wird gelesen, als hätte es jemand geprüft. Das Lesen ist der Teil, den ein Modell Ihnen hier nicht abnehmen kann — [eine KI-Zusammenfassung des Dokuments](/blog/free-ai-document-summarizer) sagt Ihnen, was es zu sagen behauptet, und das ist eine andere Frage als die, ob irgendetwas davon stimmt.
 
 - [ ] Jede Zahl: Können Sie sagen, woher sie kommt?
 - [ ] Jeder Link: Öffnen Sie ihn. Plausible URLs, die nirgendwohin führen, sind ein häufiges Scheitern.
@@ -265,7 +265,7 @@ Die Konvertierung im Browser ist der Grund, warum TransformPipe sagen kann, dass
 
 ### Das Kopieren ganz auslassen
 
-Die Zwischenablage ist das schwache Glied in all dem, und man kann sie entfernen. Ein Assistent mit einem Konnektor zu einem Konvertierungsdienst erledigt die ganze Folge innerhalb des Gesprächs: er nimmt den Text, den er gerade geschrieben hat, wandelt ihn um und gibt Ihnen eine Datei oder einen Link zurück, ohne dass etwas davon durch ein Textfeld läuft. Nichts bekommt die Gelegenheit zur Autokorrektur, weil nie etwas eingefügt wurde.
+Die Zwischenablage ist das schwache Glied in all dem, und man kann sie entfernen. Ein Assistent mit [einem Konnektor](/agents) zu einem Konvertierungsdienst erledigt die ganze Folge innerhalb des Gesprächs: er nimmt den Text, den er gerade geschrieben hat, wandelt ihn um und gibt Ihnen eine Datei oder einen Link zurück, ohne dass etwas davon durch ein Textfeld läuft. Nichts bekommt die Gelegenheit zur Autokorrektur, weil nie etwas eingefügt wurde.
 
 Der Mechanismus ist ein MCP-Server, oder ein API-Aufruf, oder ein CLI-Aufruf aus dem, was der Assistent ausführen darf — dieselbe Konvertierung in jedem Fall, von einer anderen Seite her erreicht. [Dokumente aus einem Assistenten heraus umwandeln](/blog/converting-documents-from-an-assistant) behandelt, was jeder Weg kann und was nicht. Es ist die richtige Antwort, wenn das oft genug vorkommt, um eine Gewohnheit statt einer Besorgung zu sein, und es ändert nichts an dem Schritt der Prüfung darüber, der weiterhin Ihrer ist.
 

@@ -1910,4 +1910,328 @@ export const pages: Content['pages'] = {
         'Publica cualquier nota de Obsidian como página web limpia con un comando. El enlace no cambia al editarla. Compártela con quien elijas o expórtala a Word y PDF.',
     },
   },
+  /*
+   * Las cuatro páginas de funciones: compartir, la API, la línea de comandos y la GitHub Action.
+   * Cada una era hasta ahora una frase dentro de /docs o una entrada del changelog, y en eso no puede
+   * aterrizar ninguna búsqueda. La documentación sigue siendo la referencia; estas páginas dicen para
+   * qué sirve cada cosa y terminan en un enlace a ella.
+   */
+  'share-markdown': {
+    label: 'Compartir Markdown',
+    title: 'Compartir un archivo Markdown con un enlace',
+    lede: 'Convierte un archivo .md en una página de solo lectura con una dirección que puedes enviar — con contraseña y fecha de caducidad si las quieres, recuento de aperturas, y un enlace que puedes cortar en cualquier momento.',
+    sections: [
+      {
+        heading: 'Del archivo al enlace',
+        body: [
+          'Suelta el archivo `.md` en el conversor, o pega el texto en la vista previa en vivo y pulsa Convertir y guardar. Con la sesión iniciada, pulsa Guardar para conservar el documento en tu cuenta y después Compartir; elige Cualquiera con el enlace y copia la dirección que te da: `/s/` y un token que nadie puede adivinar. Es todo lo que necesita quien lo lea: ni cuenta, ni app, nada que instalar.',
+          'Lo que se abre ahí es el documento, renderizado por nuestro servidor como una página sencilla de solo lectura, con descargas del archivo HTML autónomo y de la fuente Markdown para quien quiera seguir trabajando en él. Las páginas compartidas se sirven con `noindex`, así que quedan fuera de los resultados de búsqueda, y cada una lleva un enlace para denunciarla.',
+          'Publicar un enlace público requiere una dirección de correo confirmada en la cuenta. Compartir con personas concretas funciona en ambos casos.',
+        ],
+      },
+      {
+        heading: 'Una contraseña y una fecha de caducidad',
+        body: [
+          'Un enlace puede pedir una contraseña de ocho caracteres o más. Quien lo abre ve un formulario breve antes de la página, y ese navegador recuerda la respuesta correcta durante un día. Tras diez intentos fallidos en un minuto desde una misma máquina, o treinta para el enlace desde todas partes a la vez, el formulario pide esperar.',
+          'La contraseña se guarda solo como hash: se puede cambiar o quitar, pero nunca mostrar, y una nueva anula de golpe todas las entradas anteriores. Puedes ponerla mientras el documento aún es privado, de modo que el enlace está protegido desde que existe. Con tu sesión iniciada como propietario, nunca se te pide.',
+          'Un enlace también puede terminar: en una hora, un día, siete o treinta días, o en la fecha que elijas. Después, la página y sus descargas dicen que el enlace ha caducado, y desde cuándo, y Guardar una copia también deja de funcionar. Una nueva fecha, o ninguna, vuelve a abrir el mismo enlace.',
+        ],
+      },
+      {
+        heading: 'Quién lo ha abierto',
+        body: [
+          'El diálogo Compartir dice cuántas veces se ha abierto el enlace y cuándo fue la última. La pestaña Vistas, junto a Revisión, enumera las últimas 200 aperturas, de la más reciente a la más antigua y agrupadas por día, indicando si llegó por la página compartida o por la aplicación.',
+          'Cuenta aperturas, no personas, y las tuyas están entre ellas. En un enlace que cualquiera puede abrir no se guarda nada sobre quién lo abrió: de una apertura solo se guardan su hora y si llegó por la página o por la aplicación, no se pone ninguna cookie para contarla, y los bots que piden un enlace para dibujar su vista previa en un chat no cuentan. Las aperturas pertenecen al enlace, así que revocarlo las borra, y ninguna se guarda más de un año.',
+        ],
+      },
+      {
+        heading: 'Solo para las personas que nombres',
+        body: [
+          'Para un documento que no debe circular, elige Personas concretas y añade direcciones de una en una. Cada persona recibe el enlace por correo, y abrirlo exige iniciar sesión con esa dirección, así que cualquier otra persona que consiga el enlace se queda fuera. En este modo no hay contraseña, porque iniciar sesión ya es la comprobación más fuerte.',
+          'Como esos lectores iniciaron sesión, la pestaña Vistas puede decir cuál de ellos abrió el documento, cuántas veces y cuándo por última vez, o que alguien aún no lo ha abierto — y la página que leen les avisa de que tú puedes verlo. Los documentos que otras personas te dirigen aparecen en tu historial bajo Compartido conmigo, con quién compartió cada uno.',
+        ],
+      },
+      {
+        heading: 'Hacer privado termina el enlace',
+        body: [
+          'Volver a poner un documento en Privado borra su token. La dirección que enviaste deja de funcionar para todo el mundo, su fecha de caducidad y su recuento de aperturas se van con ella, y volver a compartir crea otro enlace distinto: el antiguo no vuelve nunca. Como no se puede deshacer, es el único cambio que el diálogo te pide confirmar.',
+          'Revocar controla la dirección, no las copias: lo que alguien descargó o imprimió se queda con esa persona. Una página pública puede quedar en la caché del borde hasta un minuto, así que un enlace revocado puede tardar eso en dejar de funcionar en todas partes; una página con contraseña, o compartida con personas concretas, nunca se guarda en caché.',
+        ],
+      },
+      {
+        heading: 'Carpetas enteras, y texto nuevo en la misma dirección',
+        body: [
+          'Una carpeta se comparte igual, desde Compartir en su menú: los mismos tres modos, la misma fecha de caducidad y la misma contraseña, en una dirección bajo `/f/`. Quien la abre recibe el árbol entero, cada página se abre dentro de él, y los enlaces entre páginas se quedan dentro de la carpeta compartida. Con la sesión iniciada, puede pulsar Guardar en mi cuenta y quedarse una copia de todo — una copia, así que lo que cambies después no le llega.',
+          'Un documento también puede recibir texto nuevo sin cambiar de dirección. Publicar sobre el mismo documento — `PUT /api/v1/documents/:id` desde un script, `tp push --update` desde un terminal, el plugin de Obsidian o un asistente — sustituye el texto y conserva el enlace, la contraseña, la fecha de caducidad y los lectores nombrados. El texto sustituido se guarda como revisión, las diez más recientes.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Preguntas sobre compartir',
+      intro: 'Las respuestas cortas. La documentación tiene el resto, en Compartir.',
+      items: [
+        {
+          question: '¿Quien lo lea necesita una cuenta?',
+          answer: 'Para un enlace, no: quien lo tenga abre la página en un navegador, sin instalar nada. Un documento compartido con personas concretas es distinto a propósito — cada lector inicia sesión con la dirección que añadiste, y eso es lo que mantiene el enlace en sus manos.',
+        },
+        {
+          question: '¿Sirve como pastebin de Markdown?',
+          answer: 'Sí. Pega el texto en la vista previa en vivo, pulsa Convertir y guardar, después Guardar, y comparte el resultado. A diferencia de un pastebin, la página muestra el documento renderizado — tablas, listas de tareas, código — y el enlace puede llevar contraseña o fecha de caducidad, o revocarse. Un documento guardado puede ocupar hasta 4 MB.',
+        },
+        {
+          question: '¿Es gratis?',
+          answer: 'Sí. Para compartir hace falta una cuenta gratuita, que guarda 5.000 documentos y 250 MB de Markdown. No hay plan que elegir ni tarjeta que introducir, y quien lee tampoco paga nada.',
+        },
+        {
+          question: '¿Qué pasa con el enlace cuando cambio el documento?',
+          answer: 'El texto publicado sobre el mismo documento conserva el enlace: los lectores ven el texto nuevo en su siguiente visita, y el antiguo se guarda como revisión. Un documento nuevo recibe en cambio un enlace nuevo, y así un enlace ya enviado sigue mostrando lo que mostraba.',
+        },
+        {
+          question: '¿Puedo ver quién lo ha abierto?',
+          answer: 'En un enlace que cualquiera puede abrir, no: se cuentan aperturas y no se registra nada sobre el lector. En un documento compartido con personas concretas, sí — cada dirección, cuántas veces abrió el documento y cuándo, y la página se lo dice a esos lectores.',
+        },
+        {
+          question: '¿Puede un script o un asistente compartir por mí?',
+          answer: 'Sí. POST /api/v1/documents?share=link publica en la misma petición y devuelve la dirección, tp push notes.md --share lo hace desde un terminal, y un asistente conectado por MCP pregunta antes de publicar nada. La contraseña solo la pones tú: ninguna herramienta de un asistente la acepta.',
+        },
+      ],
+    },
+    action: 'Compartir un documento de tu historial',
+    seo: {
+      title: 'Compartir un archivo Markdown con enlace y contraseña',
+      description:
+        'Publica un archivo .md como página de solo lectura para quien tenga el enlace o solo para personas concretas. Con contraseña, caducidad y recuento de aperturas.',
+    },
+  },
+  api: {
+    label: 'API',
+    title: 'Una API de conversión de documentos para Markdown, HTML, Word y PDF',
+    lede: 'Envía un archivo de Word, una página web, una hoja de cálculo o Markdown sin más, y se convierte en un documento de tu cuenta. Pídelo de vuelta en Markdown, HTML, Word o PDF, o como un enlace que alguien pueda abrir.',
+    sections: [
+      {
+        heading: 'Qué hace',
+        body: [
+          'Un script llega a la misma cuenta por HTTP. `POST /api/v1/documents` recibe un archivo como cuerpo de la petición y lo convierte a Markdown al llegar. El resultado se guarda en tu cuenta, donde se puede pedir en otro formato, recibir texto nuevo, archivarse en una carpeta o compartirse.',
+          'Todo se guarda como Markdown, así que un documento se lee de cuatro maneras. `GET /api/v1/documents/:id` responde con JSON que trae la fuente Markdown y los datos del documento; añadir `.html`, `.docx` o `.pdf` a la misma dirección devuelve en su lugar una página web autónoma, un archivo de Word o un PDF.',
+          'No hay una llamada aparte que solo convierta. Un documento convertido es un documento de la cuenta y ocupa su espacio como cualquier otro, y eso mismo es lo que hace del resultado algo que una segunda petición puede encontrar.',
+        ],
+      },
+      {
+        heading: 'Qué convierte',
+        body: [
+          '`?kind=` nombra la conversión, con los mismos nombres que las páginas de este sitio; sin él, el cuerpo es Markdown. `html-to-markdown`, `csv-to-markdown` — también un `.tsv`, por su nombre —, `json-to-markdown`, `text-to-markdown` y `evernote-to-markdown` leen el cuerpo como texto.',
+          '`word-to-markdown`, `excel-to-markdown`, `powerpoint-to-markdown`, `epub-to-markdown`, `odt-to-markdown`, `rtf-to-markdown`, y `notion-to-markdown`, `confluence-to-markdown` y `obsidian-to-markdown` para los zips de exportación, lo leen como los bytes del archivo, así que un `.docx` o un `.zip` se envía tal como está en el disco.',
+          'El Markdown en sentido contrario es el lado de lectura. Envía Markdown sin `kind` y pide después `.html` para una página terminada con sus estilos dentro — `?theme=dark` para la paleta oscura —, `.docx` para un Word con los estilos de título propios de Word, o `.pdf`.',
+          'Un documento ocupa como mucho 4 MB, sea el Markdown o el archivo que se convierte; uno mayor recibe un 413.',
+        ],
+      },
+      {
+        heading: 'Las claves',
+        body: [
+          'Crea una clave en el menú de la cuenta, en Claves API, y envíala como `Authorization: Bearer tp_live_…`. Se muestra una sola vez y se guarda solo como hash. Una clave llega a los documentos, las carpetas y los enlaces compartidos, y nunca a la cuenta ni a las propias claves, así que una clave filtrada no puede fabricarse su sustituta ni dejarte fuera; revocarla la detiene en la siguiente petición.',
+          'Una sesión de navegador iniciada funciona en los mismos endpoints, así que un `GET` se puede probar en el navegador antes de que exista ninguna clave. El prefijo `tp_live_` hace que una clave sea fácil de encontrar donde no debería estar: pegada en la casilla equivocada o subida a un repositorio.',
+        ],
+      },
+      {
+        heading: 'Los endpoints',
+        body: [
+          '`POST /api/v1/documents` crea uno. `?name=` le pone nombre, `?share=link` o `?share=people` lo publica en la misma petición y devuelve la dirección, `?expires_at=` termina ese enlace a una hora en ISO 8601, y `?folder=` lo archiva en una carpeta.',
+          '`GET /api/v1/documents` enumera los 5.000 más recientes, y `?q=` busca en su texto. `PUT /api/v1/documents/:id` sustituye el texto de un documento y conserva su id y su enlace, con el texto antiguo guardado como una de diez revisiones. `DELETE` manda un documento a la Papelera durante 14 días, y `/api/v1/trash` enumera y restaura lo que hay en ella.',
+          '`PUT /api/v1/documents/:id/share` fija el modo, las direcciones nombradas, una fecha de caducidad y una contraseña, que viaja en el cuerpo y nunca en la dirección. `GET …/views` enumera las aperturas del enlace, `/api/v1/folders` crea, renombra, mueve, comparte y borra carpetas, `POST /api/v1/documents/:id/summary` escribe un resumen breve, y `GET /api/v1/usage` dice cuánto espacio queda.',
+        ],
+      },
+      {
+        heading: 'Errores, límites y webhooks',
+        body: [
+          'Un error es JSON, `{ "error": "…" }`, con una frase pensada para leerse y un estado que significa lo que dice: 400 para una petición que el endpoint no puede usar, 401 para una clave desconocida o revocada, 403 cuando la cuenta no tiene espacio o aún no puede publicar, 404 para un documento que no es tuyo, 410 para una fuente que ya no está, 413 para un documento de más de 4 MB, 429 para demasiadas peticiones.',
+          'Cada clave puede hacer 60 peticiones por minuto; pasado eso, el 429 lleva una cabecera `Retry-After` que dice cuánto esperar. Una cuenta guarda 5.000 documentos y 250 MB. Llegar a un límite hace que se rechace la escritura y se diga por qué; no se borra nada antiguo para hacer sitio.',
+          'Un receptor puede recibir avisos en lugar de preguntar. Los webhooks, registrados en el menú de la cuenta, envían un `POST` cuando se crea un documento o se comparte con personas concretas, firmado con HMAC-SHA256 en la cabecera `x-transformpipe-signature`. Solo se gestionan desde una sesión iniciada, para que una clave filtrada no pueda convertirse en un canal de todos los documentos futuros.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Preguntas sobre la API',
+      intro: 'Las respuestas cortas. La documentación enumera cada endpoint.',
+      items: [
+        {
+          question: '¿La API es gratuita?',
+          answer: 'Sí. Es la misma cuenta que el sitio, con los mismos límites y nada detrás de un plan: 5.000 documentos, 250 MB, 60 peticiones por minuto y clave. Una cuenta cuya dirección aún no está confirmada guarda diez documentos y no puede publicar un enlace público hasta que lo esté.',
+        },
+        {
+          question: '¿Cómo convierto HTML a Markdown con la API?',
+          answer: 'Envía el HTML como cuerpo de la petición a /api/v1/documents?kind=html-to-markdown y lee después el Markdown con GET /api/v1/documents/:id. Las mismas dos peticiones convierten un archivo de Word, una hoja de cálculo, una presentación o una respuesta JSON; solo cambia kind.',
+        },
+        {
+          question: '¿Y Markdown a HTML?',
+          answer: 'Envía el Markdown sin kind y pide después /api/v1/documents/:id.html: la misma página autónoma que descarga el sitio, con sus estilos dentro. O añade ?share=link al envío, y la respuesta trae una dirección donde la página renderizada ya está publicada.',
+        },
+        {
+          question: '¿Es seguro enviar el mismo archivo dos veces?',
+          answer: 'Crea dos documentos, con dos id y dos enlaces: POST no es idempotente y nada elimina duplicados. Para cambiar un documento, envía el texto nuevo a PUT /api/v1/documents/:id; enviar el mismo texto otra vez no cambia nada.',
+        },
+        {
+          question: '¿Un script obtiene la misma conversión que el sitio?',
+          answer: 'Sí. Los conversores son los mismos módulos que ejecuta el navegador, llamados en el servidor, así que una tabla sale de una llamada a la API igual que sale de la zona de arrastre.',
+        },
+      ],
+    },
+    action: 'Leer la referencia de la API',
+    seo: {
+      title: 'API de conversión de documentos: Markdown, HTML, Word, PDF',
+      description:
+        'Una API REST que convierte Word, HTML, Excel, PowerPoint, CSV y JSON a Markdown, y Markdown a HTML, Word o PDF. Clave gratuita y errores claros en JSON.',
+    },
+  },
+  cli: {
+    label: 'Línea de comandos',
+    title: 'Una herramienta de línea de comandos para convertir y publicar Markdown',
+    lede: 'Sube un archivo Markdown desde un terminal y recibe su enlace. Un solo archivo de JavaScript sin dependencias, que habla con la misma API y los mismos conversores que el sitio.',
+    sections: [
+      {
+        heading: 'Un archivo, sin dependencias',
+        body: [
+          '`cli/tp.mjs`, en el repositorio público, es un cliente de la misma API. Es un único archivo sin nada que instalar a su lado — una herramienta que se ejecuta en CI no debería arrastrar un árbol de paquetes detrás —, y necesita Node 20 o posterior.',
+          'Desde una copia del repositorio se ejecuta como `node cli/tp.mjs`; su paquete llama al comando `tp`, y así están escritos los ejemplos de esta página. `tp --help` enumera cada comando y cada opción.',
+          'Es también lo que ejecuta la GitHub Action, así que un comando que funciona en tu máquina se comporta igual en un workflow.',
+        ],
+      },
+      {
+        heading: 'Convertir y publicar',
+        body: [
+          '`tp push README.md --share` convierte el archivo, lo guarda en tu cuenta e imprime su enlace. Un `.html`, `.csv`, `.tsv`, `.json` o `.enex` de Evernote que subas lo convierte a Markdown el servidor al llegar, en lugar de guardarlo como si ya fuera Markdown.',
+          'Los archivos que la API recibe como bytes y no como texto — `.docx`, `.xlsx`, `.pptx`, `.epub`, `.odt`, `.rtf` y los zips de exportación — se rechazan, con la dirección de la página del sitio que los lee en el navegador.',
+          '`--merge` encadena varios archivos Markdown en un solo documento, en el orden dado, con una línea entre ellos, y `--name` le pone nombre: `tp push docs/*.md --merge --share --name handbook.md`.',
+          '`--share` crea un enlace que puede abrir cualquiera que lo tenga, y `--share people` deja el documento solo para lectores nombrados, cuyas direcciones añades en el sitio. `--expires 7d`, `12h` o `2026-12-31` termina el enlace — una fecha sola vale el final de ese día donde tú estás —, y `--password` lo protege con una contraseña leída de `TP_SHARE_PASSWORD`, nunca de un argumento, donde se quedaría en el historial de tu shell.',
+        ],
+      },
+      {
+        heading: 'Un enlace, siempre al día',
+        body: [
+          '`tp push notes.md --update <id>` envía texto nuevo a un documento que ya existe. Su id, su enlace, su contraseña y su fecha de caducidad siguen como estaban, y el texto sustituido se guarda en el servidor como revisión, las diez más recientes. Subir el mismo texto otra vez no cambia nada.',
+          '`--replaces <id>` hace a propósito lo contrario: crea un documento nuevo, con su propio id y, cuando se comparte, su propio enlace, y lo registra como la siguiente versión de uno anterior, lo que `tp versions <id>` enumera como una cadena. Un enlace ya enviado sigue mostrando lo que mostraba.',
+        ],
+      },
+      {
+        heading: 'Carpetas y la cuenta',
+        body: [
+          '`tp list` muestra lo que hay en la cuenta, y `--q` busca en el texto de los documentos. `tp rm <id>` manda un documento a la Papelera, donde espera 14 días; `tp usage` imprime cuánto se usa de los 250 MB y los 5.000 documentos; `tp summary <id>` pide un resumen breve, hecho una vez y guardado en caché.',
+          '`--folder "Team/Notes"` al subir archiva el documento por su ruta y crea cualquier parte de la ruta que aún no exista. `tp folders` imprime el árbol con los id, `tp mkdir` y `tp mv` crean y mueven, `tp rmdir` quita una carpeta y sube un nivel lo que contenía, y `tp share-folder` comparte una carpeta entera con `--link`, `--people` o `--private`, con los mismos `--expires` y `--password`.',
+        ],
+      },
+      {
+        heading: 'Claves y scripts',
+        body: [
+          '`tp login tp_live_…` guarda una clave en `~/.config/tp/config.json`, legible solo por ti. Una clave también puede venir de `--key` o de `TP_API_KEY`, que se leen primero; la variable de entorno es la indicada para CI, porque `tp login` deja la clave en el historial de tu shell.',
+          '`--json` imprime la respuesta de la propia API en lugar de las líneas de resumen, que es lo que lee la Action, y `TP_HOST` apunta la herramienta a otro despliegue. Un fallo imprime el mensaje de la API con su estado y sale con un código distinto de cero, para que un script o una pipeline se detenga donde debe.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Preguntas sobre la línea de comandos',
+      intro: 'Las respuestas cortas. La documentación tiene cada opción.',
+      items: [
+        {
+          question: '¿Qué necesito para ejecutarla?',
+          answer: 'Node 20 o posterior, el archivo y una clave API del menú de la cuenta. No tiene dependencias propias, así que no hay árbol de paquetes que instalar ni que auditar.',
+        },
+        {
+          question: '¿Qué archivos puede convertir?',
+          answer: 'Markdown, y además HTML, CSV, TSV, JSON y exportaciones de Evernote, que el servidor convierte al llegar. Rechaza Word, Excel, PowerPoint, EPUB, OpenDocument, RTF y los zips de exportación: conviértelos en el sitio y sube el Markdown, o envíalos a la API, que los acepta como bytes.',
+        },
+        {
+          question: '¿Convierte Markdown a HTML sin conexión y sin cuenta?',
+          answer: 'No. Cada comando habla con la API, así que necesita una clave y conexión. Para un único archivo sin subir nada, el conversor del sitio funciona directamente en tu navegador.',
+        },
+        {
+          question: '¿Subir otra vez cambia un enlace que ya envié?',
+          answer: 'Solo si lo pides. Un push normal crea un documento nuevo con un enlace nuevo; --update con el id del documento es la única forma de poner texto nuevo detrás de un enlace existente.',
+        },
+        {
+          question: '¿Cómo mantengo la clave fuera de los registros?',
+          answer: 'Ponla en TP_API_KEY en vez de pasar --key o ejecutar tp login, y da una contraseña de enlace con TP_SHARE_PASSWORD. Si se definen desde un secreto de CI o un perfil de shell, ninguna de las dos se escribe en un comando, así que ninguna acaba en el historial de tu shell ni en la lista de procesos.',
+        },
+      ],
+    },
+    action: 'Leer la referencia de la línea de comandos',
+    seo: {
+      title: 'Conversor de Markdown para la línea de comandos',
+      description:
+        'Una CLI sin dependencias que sube Markdown, HTML, CSV o JSON a tu cuenta e imprime un enlace para compartir. Carpetas, caducidad, contraseñas y salida JSON.',
+    },
+  },
+  'github-action': {
+    label: 'GitHub Action',
+    title: 'Vista previa del Markdown de los pull requests con una GitHub Action',
+    lede: 'Quien revisa debería leer el documento que cambia un pull request, no un diff de asteriscos. Esta acción publica cada archivo Markdown modificado como página renderizada y comenta los enlaces en el pull request.',
+    sections: [
+      {
+        heading: 'Qué hace',
+        body: [
+          'Si no se le da una lista de archivos, la acción pregunta a git qué archivos Markdown tocó el pull request, publica cada uno como página de solo lectura y comenta una tabla con nombres de archivo, número de palabras y enlaces. Los archivos que la rama borró se saltan, así que quitar un documento no hace fallar la ejecución.',
+          'Es una acción compuesta, `action.yml` en la raíz del repositorio público, y lo que ejecuta es el cliente de línea de comandos del mismo repositorio: ningún contenedor que descargar, ninguna dependencia que instalar, y el mismo renderizado que dan el sitio y la API.',
+          'El comentario lleva el título Markdown preview. Quien revisa abre cada enlace en un navegador como cualquier otra página, sin app y, en un enlace, sin cuenta — y así alguien que nunca abre el diff puede revisar los textos.',
+        ],
+      },
+      {
+        heading: 'Por qué una página renderizada',
+        body: [
+          'Un diff es la vista correcta para el código y la equivocada para la prosa. Enseña qué palabras cambiaron y oculta si la sección se sigue leyendo bien, si una tabla cuadra o si una lista numerada vuelve a empezar en uno a mitad de camino. La página renderizada responde a eso de un vistazo, y quien no escribe Markdown puede, por fin, leerla.',
+        ],
+      },
+      {
+        heading: 'El workflow',
+        body: [
+          'Hay un workflow completo para copiar en `examples/publish-markdown.yml`. Se ejecuta con `pull_request` y un filtro `paths` para `**.md`, así que un pull request que no cambia Markdown no arranca ningún runner. El checkout necesita `fetch-depth: 0`, porque los archivos modificados se calculan frente al commit base del pull request, y el job necesita `pull-requests: write` para publicar el comentario.',
+          'El paso en sí es `uses: raudarlabs/transformpipe@main` con una sola entrada, `api-key: ${{ secrets.TP_API_KEY }}`. La clave es una clave API de TransformPipe guardada como secreto del repositorio, y la acción se la pasa al cliente en una variable de entorno y no como argumento, así que no forma parte del comando que se escribe en el registro.',
+        ],
+      },
+      {
+        heading: 'Entradas y salidas',
+        body: [
+          '`files` recibe rutas separadas por espacios en lugar de la lista de archivos modificados; así publica la acción en un push a una rama en vez de en un pull request. `share` es `link` por defecto, `people` solo para lectores nombrados, o `none` para mantener privados los documentos. `merge: true` encadena los archivos en un solo documento, con el nombre que dé `name`.',
+          '`replaces` registra un único documento como nueva versión de uno anterior, `comment: false` omite el comentario, y `host` apunta a otro despliegue.',
+          'Vuelven dos salidas para los pasos siguientes: `urls`, los enlaces publicados uno por línea, y `documents`, la respuesta de la API para cada documento, en JSON. Si no hay nada que publicar, la acción lo dice, deja `urls` vacía y `documents` como lista vacía, y termina con éxito, así que un paso posterior se puede condicionar a `urls` en vez de fallar.',
+        ],
+      },
+      {
+        heading: 'Enlaces que siguen siendo ciertos',
+        body: [
+          'Cada ejecución publica documentos nuevos en lugar de sobrescribir los anteriores, así que el enlace de un comentario más antiguo sigue mostrando lo que decía ese commit. El precio es un documento por archivo y ejecución en la cuenta, que guarda 5.000 documentos y 250 MB; las vistas previas antiguas se pueden borrar desde el historial.',
+          'Publicar un enlace público requiere una dirección de correo confirmada en la cuenta, y hasta que lo esté, el paso falla con esa frase. Un pull request que viene de un fork se ejecuta sin los secretos del repositorio, así que ahí el paso no tiene clave; sáltalo con `if: github.event.pull_request.head.repo.fork == false`.',
+        ],
+      },
+    ],
+    faq: {
+      heading: 'Preguntas sobre la Action',
+      intro: 'Las respuestas cortas. La documentación enumera cada entrada.',
+      items: [
+        {
+          question: '¿Funciona en un repositorio privado?',
+          answer: 'Sí, y ese es el caso en el que pensar: con share en link, el valor por defecto, un documento de un repositorio privado se convierte en una página que puede abrir cualquiera que tenga el enlace. Pon share en people para dejarlo a lectores nombrados, o en none para guardarlo en la cuenta.',
+        },
+        {
+          question: '¿Cómo es el comentario?',
+          answer: 'Un título, Markdown preview, y una tabla con una fila por archivo: su nombre, su número de palabras y un enlace para leerlo — o «not shared» cuando share es none.',
+        },
+        {
+          question: '¿Actualiza su comentario en el siguiente push?',
+          answer: 'No. Cada ejecución publica su propio comentario y deja los anteriores como estaban, cada uno apuntando a los documentos de su propio commit.',
+        },
+        {
+          question: '¿Puede publicar en un push a main?',
+          answer: 'Sí. Un push no tiene pull request con el que comparar, así que dale files con las rutas que hay que publicar. Solo comenta en eventos de pull request; en un push, los enlaces vuelven en la salida urls para el paso siguiente.',
+        },
+        {
+          question: '¿Cuánto cuesta?',
+          answer: 'La clave y la cuenta son gratuitas, sin nada detrás de un plan. El tiempo del runner lo cuenta GitHub, y el filtro paths del ejemplo lo limita a los pull requests que cambian Markdown.',
+        },
+      ],
+    },
+    action: 'Leer la configuración en la documentación',
+    seo: {
+      title: 'GitHub Action: vista previa de Markdown en pull requests',
+      description:
+        'Publica el Markdown que cambió un pull request como páginas renderizadas y comenta los enlaces: quien revisa lee el documento, no el diff. Un paso, un secreto.',
+    },
+  },
 };

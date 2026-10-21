@@ -33,6 +33,12 @@ interface Entry {
   tag: string;
   keywords: string[];
   readingMinutes: number;
+  /**
+   * The site paths the prose links to, such as `/word-to-markdown`. A converter page lists the
+   * articles that link to it (`articlesAbout` in `src/lib/blog.ts`), and the index is the only
+   * place that can say so without the app fetching every body.
+   */
+  links: string[];
 }
 
 function frontmatter(raw: string): {
@@ -83,6 +89,7 @@ function read(dir: string): Entry[] {
           1,
           Math.round(body.trim().split(/\s+/).length / 220)
         ),
+        links: [...new Set([...body.matchAll(/\]\((\/[a-z0-9-]+)\)/g)].map((match) => match[1]))],
       };
     })
     // Newest first; the file name decides ties, so the order never depends on the filesystem.

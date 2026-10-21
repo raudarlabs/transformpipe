@@ -43,7 +43,8 @@ import {
   type ConversionId,
   DEFAULT_CONVERSION,
 } from '@shared/conversions';
-import { articlePath, articlesFor, formatArticleDate } from '@/lib/blog';
+import { articlePath, articlesAbout, articlesFor, formatArticleDate } from '@/lib/blog';
+import { ConversionGuide } from '@/components/ConversionGuide';
 import { FAQ_FLAGS } from '@/lib/faq';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
@@ -540,6 +541,8 @@ export function ConverterPage({
           onChange={onConversionChange}
         />
 
+        <ConversionGuide id={conversion.id} />
+
         {/* Below the fold: two bands, each opening with a pill, so the page stops reading as one sheet. */}
         {articlesFor(locale).length > 0 && (
           <section className="mt-6 flex flex-col items-center gap-6 border-stroke border-t pt-12">
@@ -551,9 +554,17 @@ export function ConverterPage({
               description={t('converter.blog.blurb')}
             />
 
-            {/* Six: two full rows of three, so the last row is never one card on its own. */}
+            {/*
+              * Six: two full rows of three, so the last row is never one card on its own. The ones
+              * about this conversion come first, the newest fill the rest.
+              */}
             <div className="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {articlesFor(locale)
+              {[
+                ...new Set([
+                  ...articlesAbout(conversion.path, locale),
+                  ...articlesFor(locale),
+                ]),
+              ]
                 .slice(0, 6)
                 .map((article) => (
                   <ArticleCard

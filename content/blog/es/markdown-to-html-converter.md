@@ -1,6 +1,7 @@
 ---
 title: "De Markdown a HTML: qué le pasa realmente a tu archivo"
 description: "Qué hace un conversor de Markdown a HTML con tu archivo — analizar, renderizar, sanear, envolver — y cómo se ve un fallo en cada una de las cuatro etapas."
+updated: 2026-10-21
 date: 2026-09-08
 tag: Conversión
 keywords: markdown a html, convertir markdown a html, conversor markdown a html online, generador de markdown a html, renderizar markdown como html, pasar md a html
@@ -157,7 +158,7 @@ Dos detalles decides si un sanitizador aguanta en la práctica.
 
 **Dónde se ejecuta.** Un sanitizador en el navegador se apoya en el propio analizador del navegador, que es el mismo que después renderizará el documento — una ventaja real, porque ve el marcado como lo va a ver el navegador. Uno en el servidor tiene que analizar el HTML por su cuenta, con su propia idea de cómo se anidan las etiquetas malformadas. Si una herramienta convierte en ambos sitios, los dos tienen que coincidir, o el mismo documento se renderiza distinto según quién lo pidió. Aquí también viven los problemas de mutación: si el análisis del sanitizador y el del navegador no coinciden en un caso límite de anidamiento, limpiar el marcado puede producir algo que, al volver a analizarse en el navegador, se convierte en un marcado distinto del que se aprobó.
 
-**Los ids de encabezado, otra vez.** Un `id="title"` desnudo sombrea una propiedad del DOM, así que un sanitizador de navegador lo elimina mientras que un analizador del lado del servidor lo conserva: un documento, dos formas, y enlaces de anclaje que funcionan en uno y no en el otro. Prefijar los ids resuelve ambos problemas a la vez. TransformPipe sanea con DOMPurify en el navegador y con el paquete `xss` en el servidor contra una misma lista blanca compartida, y sus ids de encabezado llevan un prefijo `doc-`. [Hay más sobre sanear Markdown de forma segura](/blog/sanitising-markdown-safely) de lo que cabe en una sola etapa de una cadena.
+**Los ids de encabezado, otra vez.** Un `id="title"` desnudo sombrea una propiedad del DOM, así que un sanitizador de navegador lo elimina mientras que un analizador del lado del servidor lo conserva: un documento, dos formas, y enlaces de anclaje que funcionan en uno y no en el otro. Prefijar los ids resuelve ambos problemas a la vez. TransformPipe sanea con DOMPurify en el navegador y con el paquete `xss` en el servidor contra una misma lista blanca compartida, y sus ids de encabezado llevan un prefijo `doc-`.
 
 Una última cosa sobre esta etapa: sanear es visible. Elimina cosas. Las casillas desaparecen si `input` no está en la lista, un bloque `<details>` se aplana en su contenido, un diagrama incrustado se convierte en nada. Eso no es un fallo — es la lista blanca haciendo su trabajo — pero significa que el resultado hay que leerlo, no suponerlo.
 
@@ -332,7 +333,7 @@ Cuando la conversión tiene que ocurrir dentro de una pull request, una compilac
 
 ### La exportación de un editor — conveniente, y la envoltura es una lotería
 
-VS Code trae una vista previa de Markdown construida sobre markdown-it, y las extensiones añaden exportación. Los editores de escritorio también exportan HTML. Si el archivo ya está abierto delante de ti, este es el camino más corto de texto a página.
+VS Code trae una vista previa de Markdown construida sobre markdown-it, y las extensiones añaden exportación; [Markdown a HTML en VS Code](/blog/markdown-to-html-in-vs-code) explica qué escribe cada una alrededor del fragmento. Los editores de escritorio también exportan HTML. Si el archivo ya está abierto delante de ti, este es el camino más corto de texto a página.
 
 | Pros | Cons |
 | --- | --- |

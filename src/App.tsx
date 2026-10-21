@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { AppFooter } from './components/AppFooter';
 import { BreadcrumbSlotProvider } from './components/BreadcrumbSlot';
 import { ConnectGate } from './components/ConnectGate';
@@ -25,18 +25,10 @@ import { SPLITTABLE } from './lib/split';
 import { ConverterPage } from './features/ConverterPage';
 import { ArticlePage } from './features/ArticlePage';
 import { BlogPage } from './features/BlogPage';
-import { DocsPage } from './features/DocsPage';
 import { EmbedPage } from './features/EmbedPage';
-import { HistoryPage } from './features/HistoryPage';
-import { ChangelogEntryPage } from './features/ChangelogEntryPage';
-import { ChangelogPage } from './features/ChangelogPage';
 import { LivePreviewPage } from './features/LivePreviewPage';
 import { NotFoundPage } from './features/NotFoundPage';
-import { SharedDocumentPage } from './features/SharedDocumentPage';
-import { SharedFolderPage } from './features/SharedFolderPage';
 import { StaticPage } from './features/StaticPage';
-import { AgentsPage } from './features/AgentsPage';
-import { ObsidianPage } from './features/ObsidianPage';
 import { staticPage, type StaticPageId } from './lib/pages';
 import { api } from './lib/api';
 import { AuthProvider, useAuth } from './lib/auth';
@@ -71,6 +63,41 @@ import type { ConvertedDoc } from './lib/types';
 import { count, countView } from './lib/usage';
 import { useHistory } from './lib/use-history';
 import { toast, Toaster } from './ui/components/Toast';
+
+/*
+ * Pages fetched when they are opened, not with the converter.
+ *
+ * The changelog carries every entry page's text in five languages, and on its own it was 877 kB of
+ * the 2 MB script every visitor downloaded before the converter could draw (October 2026). The
+ * docs and the assistants' pages are the next largest that a converter visit never shows. Each
+ * prerendered page already has its words for a crawler and for the first paint, so the wait is only
+ * on the move from one screen to another.
+ */
+const ChangelogPage = lazy(() =>
+  import('./features/ChangelogPage').then((module) => ({ default: module.ChangelogPage }))
+);
+const ChangelogEntryPage = lazy(() =>
+  import('./features/ChangelogEntryPage').then((module) => ({ default: module.ChangelogEntryPage }))
+);
+const DocsPage = lazy(() =>
+  import('./features/DocsPage').then((module) => ({ default: module.DocsPage }))
+);
+const AgentsPage = lazy(() =>
+  import('./features/AgentsPage').then((module) => ({ default: module.AgentsPage }))
+);
+const ObsidianPage = lazy(() =>
+  import('./features/ObsidianPage').then((module) => ({ default: module.ObsidianPage }))
+);
+/* The history is for an account, and a shared link is its own entry: neither is a converter visit. */
+const HistoryPage = lazy(() =>
+  import('./features/HistoryPage').then((module) => ({ default: module.HistoryPage }))
+);
+const SharedDocumentPage = lazy(() =>
+  import('./features/SharedDocumentPage').then((module) => ({ default: module.SharedDocumentPage }))
+);
+const SharedFolderPage = lazy(() =>
+  import('./features/SharedFolderPage').then((module) => ({ default: module.SharedFolderPage }))
+);
 import { TooltipProvider } from './ui/components/Tooltip';
 
 function convert(
@@ -758,14 +785,20 @@ function Shell() {
       <main className="mx-auto w-full max-w-content flex-1 px-6 py-8">
         {view === 'page' && pageId ? (
           pageId === 'obsidian' ? (
-            <ObsidianPage page={staticPage(pageId)} onGoToConverter={startOver} />
+            <Suspense fallback={null}>
+              <ObsidianPage page={staticPage(pageId)} onGoToConverter={startOver} />
+            </Suspense>
           ) : staticPage(pageId).group === 'agents' ? (
-            <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
+            <Suspense fallback={null}>
+              <AgentsPage page={staticPage(pageId)} onGoToConverter={startOver} />
+            </Suspense>
           ) : (
             <StaticPage page={staticPage(pageId)} onGoToConverter={startOver} />
           )
         ) : view === 'docs' ? (
-          <DocsPage onGoToConverter={startOver} />
+          <Suspense fallback={null}>
+            <DocsPage onGoToConverter={startOver} />
+          </Suspense>
         ) : view === 'blog' ? (
           articleSlug ? (
             <ArticlePage
@@ -798,16 +831,17 @@ function Shell() {
             onGoToConverter={startOver}
           />
         ) : view === 'changelog' ? (
-          <ChangelogPage
-            onGoToConverter={startOver}
-            onOpenEntry={openChangelogEntry}
-          />
+          <Suspense fallback={null}>
+            <ChangelogPage onGoToConverter={startOver} onOpenEntry={openChangelogEntry} />
+          </Suspense>
         ) : view === 'changelogEntry' ? (
-          <ChangelogEntryPage
-            slug={changelogSlug ?? ''}
-            onBack={() => setView('changelog')}
-            onGoToConverter={startOver}
-          />
+          <Suspense fallback={null}>
+            <ChangelogEntryPage
+              slug={changelogSlug ?? ''}
+              onBack={() => setView('changelog')}
+              onGoToConverter={startOver}
+            />
+          </Suspense>
         ) : view === 'notFound' ? (
           <NotFoundPage
             onGoToConverter={startOver}
@@ -852,26 +886,28 @@ function Shell() {
             onOpenArticle={openArticle}
           />
         ) : (
-          <HistoryPage
-            entries={history.entries}
-            isSynced={Boolean(user)}
-            onOpen={handleOpenFromHistory}
-            onFiles={handleFiles}
-            onDownload={(entry, format) =>
-              void handleDownloadFromHistory(entry, format)
-            }
-            onDownloadMany={(entries, format) =>
-              void handleDownloadMany(entries, format)
-            }
-            onMerge={(entries) => void handleMergeFromHistory(entries)}
-            onRemove={(id) => handleRemoveMany([id])}
-            onRemoveMany={(ids) => handleRemoveMany(ids)}
-            onClear={() => void handleClear()}
-            onGoToConverter={() => setView('converter')}
-            onGoToLivePreview={() => setView('livePreview')}
-            onRefresh={() => void history.refresh()}
-            initialFolder={historyFolder}
-          />
+          <Suspense fallback={null}>
+            <HistoryPage
+              entries={history.entries}
+              isSynced={Boolean(user)}
+              onOpen={handleOpenFromHistory}
+              onFiles={handleFiles}
+              onDownload={(entry, format) =>
+                void handleDownloadFromHistory(entry, format)
+              }
+              onDownloadMany={(entries, format) =>
+                void handleDownloadMany(entries, format)
+              }
+              onMerge={(entries) => void handleMergeFromHistory(entries)}
+              onRemove={(id) => handleRemoveMany([id])}
+              onRemoveMany={(ids) => handleRemoveMany(ids)}
+              onClear={() => void handleClear()}
+              onGoToConverter={() => setView('converter')}
+              onGoToLivePreview={() => setView('livePreview')}
+              onRefresh={() => void history.refresh()}
+              initialFolder={historyFolder}
+            />
+          </Suspense>
         )}
       </main>
 
@@ -985,9 +1021,13 @@ export default function App() {
           <ConsentProvider>
             <TooltipProvider delayDuration={200}>
               {token ? (
-                <SharedDocumentPage token={token} />
+                <Suspense fallback={null}>
+                  <SharedDocumentPage token={token} />
+                </Suspense>
               ) : folderToken ? (
-                <SharedFolderPage token={folderToken} />
+                <Suspense fallback={null}>
+                  <SharedFolderPage token={folderToken} />
+                </Suspense>
               ) : (
                 <Shell />
               )}

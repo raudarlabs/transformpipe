@@ -1,6 +1,7 @@
 ---
 title: "Markdown a Word: cómo conseguir un .docx que alguien pueda editar"
 description: Pasar Markdown a un .docx editable por un revisor - Pandoc con documento de referencia, la vía HTML, Google Docs, y qué se pierde al volver a Markdown.
+updated: 2026-10-21
 date: 2026-08-24
 tag: Publicación
 keywords: markdown a word, markdown a docx, convertir markdown a documento word, pandoc reference docx, md a docx, markdown a word online, plantilla pandoc markdown a word
@@ -90,7 +91,7 @@ Todas estas son opciones actuales de Pandoc (comprobado en pandoc.org, el 8 de s
 
 Dos extras de Pandoc son genuinamente útiles una vez que lo básico funciona. Un `div` delimitado con un atributo `custom-style` aplica cualquier estilo de Word que quieras a su contenido —`::: {custom-style="Warning"}` envuelve un bloque en el estilo de párrafo `Warning` de tu plantilla— y el equivalente de span entre corchetes hace lo mismo para estilos de carácter. Y [las tablas](/blog/markdown-tables-that-survive-conversion) reciben el estilo de tabla `Table`, que es el único formato de tabla que consigues, así que defínelo bien y no esperes nada elegante sobre el ancho de las columnas.
 
-**¿Para quién es?** Para cualquiera que vaya a hacer esta conversión más de dos veces. La plantilla es un coste fijo pagado una vez y amortizado en cada documento después, y es la única vía de aquí que produce un `.docx` que un usuario de Word puede restilizar desde la galería de estilos.
+**¿Para quién es?** Para cualquiera que vaya a hacer esta conversión más de dos veces. La plantilla es un coste fijo pagado una vez y amortizado en cada documento después, y es la única vía de aquí que produce un `.docx` ya con los estilos de tu organización, que un usuario de Word puede seguir restilizando desde la galería de estilos.
 
 ## La vía HTML: convertir a HTML, y luego abrirlo en Word
 
@@ -113,6 +114,8 @@ Es de verdad la vía más rápida, no necesita más instalación que un converso
 Para automatizar, la misma vía corre sin Word en absoluto: produce HTML autónomo, y luego `soffice --headless --convert-to docx informe.html`. LibreOffice hace un trabajo competente y su interpretación de tu CSS es la suya, así que pruébala una vez en vez de confiar en ella.
 
 **¿Para quién es?** Documentos puntuales donde el revisor va a comentar y no a restilizar — una nota de dos páginas, una especificación enviada para una sola ronda de observaciones. No para nada que entre en un conjunto de documentos gobernado por plantilla.
+
+El formato directo viene del HTML que queda en medio, no de convertir en un navegador. La [conversión de Markdown a Word](/markdown-to-word) de este mismo sitio escribe el `.docx` en el navegador directamente a partir del Markdown, sin paso por HTML: los títulos usan los estilos integrados de Word Heading 1 a 6 (Título 1 a 6 en un Word en español), las listas usan la numeración propia de Word, las notas quedan al pie de la página, y las tablas llevan el estilo Table Grid (Tabla con cuadrícula) con una fila de encabezado que se repite en cada página. No admite documento de referencia, así que el archivo llega con su propio aspecto por defecto y no con el de tu organización; como los estilos llevan los nombres integrados de Word, una plantilla de la casa aplicada después en Word puede restilizarlos, pero para un documento que produces cada semana Pandoc con un documento de referencia sigue siendo menos trabajo.
 
 ## Google Docs como intermediario
 
@@ -196,13 +199,13 @@ Con los mismos parámetros en los dos lados, el diff muestra la revisión y nada
 
 ## Conclusión
 
-La vía que funciona es Pandoc con un documento de referencia que construiste una vez y subiste al repositorio junto a tu Markdown, porque es la única que produce un archivo de Word con estilos de verdad en vez de formato congelado — y los estilos son lo que hace que valga la pena enviarle un `.docx` a alguien que va a editar. La vía HTML es un atajo razonable para un documento corto, y mejora bastante si el HTML del que partes es un archivo completo y autónomo en vez de un fragmento, que es lo que produce [la conversión de Markdown a HTML de TransformPipe](/) en el navegador sin subir nada. Google Docs es la opción pragmática dentro de Workspace y la equivocada para cualquier cosa confidencial. Sea cual sea la que elijas, decide primero la ruta de vuelta: la conversión de ida es un comando, y la conversión de vuelta es una conversación con una persona sobre quién aplica sus ediciones y qué archivo es la verdad.
+La vía que funciona es Pandoc con un documento de referencia que construiste una vez y subiste al repositorio junto a tu Markdown, porque es la única que produce un archivo de Word con tus propios estilos en vez de formato congelado o los valores por defecto de otro — y los estilos son lo que hace que valga la pena enviarle un `.docx` a alguien que va a editar. La vía HTML es un atajo razonable para un documento corto, y mejora bastante si el HTML del que partes es un archivo completo y autónomo en vez de un fragmento, que es lo que produce [la conversión de Markdown a HTML de TransformPipe](/) en el navegador sin subir nada. Cuando el documento necesita títulos y listas de Word de verdad pero no la plantilla de tu organización, la [conversión de Markdown a Word](/markdown-to-word) del mismo sitio prescinde del HTML por completo y escribe en el navegador un `.docx` construido con estilos. Google Docs es la opción pragmática dentro de Workspace y la equivocada para cualquier cosa confidencial. Sea cual sea la que elijas, decide primero la ruta de vuelta: la conversión de ida es un comando, y la conversión de vuelta es una conversación con una persona sobre quién aplica sus ediciones y qué archivo es la verdad.
 
 ## Preguntas frecuentes
 
 ### ¿Cómo convierto Markdown a Word sin instalar nada?
 
-Sube el archivo `.md` a Google Docs — Archivo, Abrir, Subir archivo— y luego Archivo, Descargar, Microsoft Word (.docx). No necesita instalación ni terminal, al coste de que el documento pase por los servidores de Google y llegue con los estilos de Google en vez de los de tu organización. La alternativa sin instalar nada es convertir a HTML en el navegador y abrir el resultado en Word, que es todavía más rápido y produce un archivo sin ningún conjunto de estilos usable.
+Sube el archivo `.md` a Google Docs — Archivo, Abrir, Subir archivo— y luego Archivo, Descargar, Microsoft Word (.docx). No necesita instalación ni terminal, al coste de que el documento pase por los servidores de Google y llegue con los estilos de Google en vez de los de tu organización. Las otras vías sin instalar nada pasan por el navegador: convertir a HTML y abrir el resultado en Word es todavía más rápido y produce un archivo sin ningún conjunto de estilos usable, mientras que un conversor que escribe el `.docx` directamente, como el de este sitio, te da los estilos integrados de Word para títulos y listas, aunque no tu plantilla.
 
 ### ¿Cuál es el mejor comando de Pandoc para Markdown a Word?
 
