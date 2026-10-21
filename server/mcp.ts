@@ -149,7 +149,7 @@ const utf8Length = (text: string) => new TextEncoder().encode(text).length;
 
 const INSTRUCTIONS = `These tools act on the TransformPipe account of the person who authorised this connector, and have no access to any other account.
 
-Eight tools take a \`confirm\` boolean, because they can disclose content, change what other people read, or delete data. Without \`confirm: true\` they change nothing and return what would happen and to whom. tp_save_document, tp_share_document and tp_share_folder require it for the mode "link", which publishes a page on the public web that anyone with the URL can open, and for "people", which emails a link to each address not already on the list. A shared folder shows everything in it and in its subfolders, so tp_save_document and tp_move_documents also require it when the destination folder is shared or inside a shared folder, and tp_update_folder requires it when it moves a folder under a shared one. tp_update_document requires it when the document is shared, because its readers see the new text. tp_delete_document and tp_delete_folder require it on every call; deletion is permanent, with no undo and no trash. Without \`with_documents\`, tp_delete_folder removes only the folder and moves its contents up one level; with it, the documents are deleted too. The mode "private" discloses nothing and needs no confirmation. On tp_share_document and tp_share_folder, \`emails\` replaces the reader list, and \`add\` and \`remove\` change individual addresses.
+Eight tools take a \`confirm\` boolean, because they can disclose content, change what other people read, or delete data. Without \`confirm: true\` they change nothing and return what would happen and to whom. tp_save_document, tp_share_document and tp_share_folder require it for the mode "link", which publishes a page on the public web that anyone with the URL can open, and for "people", which emails a link to each address not already on the list. A shared folder shows everything in it and in its subfolders, so tp_save_document and tp_move_documents also require it when the destination folder is shared or inside a shared folder, and tp_update_folder requires it when it moves a folder under a shared one. tp_update_document requires it when the document is shared, because its readers see the new text. tp_delete_document and tp_delete_folder require it on every call. A deleted document goes to the Trash for 14 days, where tp_restore_document puts it back; its share link stops working at once. Without \`with_documents\`, tp_delete_folder removes only the folder and moves its contents up one level; with it, the documents go to the Trash too. The mode "private" discloses nothing and needs no confirmation. On tp_share_document and tp_share_folder, \`emails\` replaces the reader list, and \`add\` and \`remove\` change individual addresses.
 
 Each answer is also shown to the person as a card: a document, a list, a conversion, a summary, a folder, the account, a share, a confirmation with its button, or the documentation it came from. The card already shows its content, so do not repeat it in text — as a list, a summary or a restatement of its numbers and names. Write what the card does not show: the answer to the question asked, an observation, or the next step; write nothing when the card answers the question. Where no card can be shown, summarise the result briefly in text.
 
@@ -2905,7 +2905,7 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Delete a folder',
       readOnlyHint: false,
-      /* With its documents it is tp_delete_document many times over: no undo, no trash. */
+      /* With its documents it is tp_delete_document many times over: they go to the Trash. */
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
@@ -2920,7 +2920,7 @@ const TOOLS: Record<McpToolName, Tool> = {
         with_documents: {
           type: 'boolean',
           description:
-            'Also permanently delete every document in the folder and its subfolders. Default false: they move up one level.',
+            'Also move every document in the folder and its subfolders to the Trash, where they are kept 14 days. Default false: they move up one level.',
         },
         confirm: {
           type: 'boolean',
@@ -2969,7 +2969,7 @@ const TOOLS: Record<McpToolName, Tool> = {
           `Not deleted. ${path} holds ${holds}.`,
           withDocuments
             ? total
-              ? `Deleting it with its documents deletes ${total === 1 ? 'that document' : `all ${total} of them`} for good: no undo, no trash.`
+              ? `Deleting it with its documents moves ${total === 1 ? 'that document' : `all ${total} of them`} to the Trash for 14 days; the folder itself does not come back.`
               : 'There are no documents in it to delete.'
             : total || under.length
               ? `Deleting the folder alone moves what it holds up to ${goesTo}; nothing is lost.`
@@ -2992,7 +2992,7 @@ const TOOLS: Record<McpToolName, Tool> = {
                 ? `Delete folder and its ${total} document${total === 1 ? '' : 's'}`
                 : 'Delete folder',
             note: withDocuments && total
-              ? `The folder and the ${total} document${total === 1 ? '' : 's'} under it are deleted for good. There is no undo.`
+              ? `The folder is deleted and the ${total} document${total === 1 ? '' : 's'} under it go to the Trash for 14 days.`
               : total || under.length
                 ? `Only the folder goes; the ${holds} in it move up to ${goesTo}.`
                 : 'The folder is empty; deleting it loses nothing.',
@@ -3076,12 +3076,12 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_delete_document: {
     description:
-      'Permanently deletes one document and its stored source from the user\'s TransformPipe account. Use it when the user asks to delete or remove a specific document. Deletion cannot be undone, and a shared link to the document stops working. `confirm: true` is required and is set after the user has named the document and agreed to delete it; without it nothing is deleted and the response shows which document would be deleted. To delete a folder together with its documents, call tp_delete_folder with `with_documents: true`.',
+      'Moves one document to the Trash of the user\'s TransformPipe account, where it is kept for 14 days and then deleted for good. Use it when the user asks to delete or remove a specific document. A shared link to the document stops working at once; tp_restore_document puts the document back, link and all, within the 14 days. `confirm: true` is required and is set after the user has named the document and agreed to delete it; without it nothing is deleted and the response shows which document would be deleted. To delete a folder together with its documents, call tp_delete_folder with `with_documents: true`.',
     ui: DELETE_CONFIRM_URI,
     annotations: {
       title: 'Delete a document',
       readOnlyHint: false,
-      /* The one that cannot be taken back: no undo, no trash. */
+      /* Taken back only from the Trash, and only for 14 days; a share link stops at once. */
       destructiveHint: true,
       idempotentHint: true,
       openWorldHint: false,
@@ -3127,7 +3127,7 @@ const TOOLS: Record<McpToolName, Tool> = {
               type: 'text',
               text: `Not deleted. ${found.body.document.name} is ${bytes(
                 found.body.document.size
-              )} and deleting it cannot be undone — ask the person, then call this again with confirm: true.\n\n(The card shows the person the document with a button to delete it. Do not repeat it; one line asking them to decide is enough.)`,
+              )}; deleting it moves it to the Trash for 14 days and stops its share link — ask the person, then call this again with confirm: true.\n\n(The card shows the person the document with a button to delete it. Do not repeat it; one line asking them to decide is enough.)`,
             },
           ],
           structuredContent: forCard(c, found.body.document),
@@ -3154,11 +3154,74 @@ const TOOLS: Record<McpToolName, Tool> = {
        * confirmation view is drawn beside the result; given no data it would keep offering to
        * delete a document that is already gone.
        */
-      return card(`Deleted. ${id} and its source are gone.`, {
+      return card(`Moved to the Trash. It is kept for 14 days; tp_restore_document with id ${id} puts it back.`, {
         id,
         name: named.status === 200 ? named.body.document.name : undefined,
         deleted: true,
+        trashed: true,
+        days: 14,
       });
+    },
+  },
+
+  tp_restore_document: {
+    description:
+      'Puts a deleted document back from the Trash of the user\'s TransformPipe account, with its text, its folder, its sharing and its earlier versions. Use it when the user asks to undo a deletion, restore or recover a document, or see what was deleted. Deleted documents are kept for 14 days. Without `id` it lists what is in the Trash, newest first, with ids and how long each has left; with `id` it restores that one. A document whose folder was deleted with it comes back outside any folder.',
+    ui: DOCUMENT_LIST_URI,
+    annotations: {
+      title: 'Restore a deleted document',
+      readOnlyHint: false,
+      /* Brings back what was there; removes nothing. */
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    writes: true,
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        id: { type: 'string', description: 'Id of a document in the Trash, from this tool without an id or from tp_delete_document.' },
+      },
+    },
+    run: async (c, args) => {
+      const id = String(args.id ?? '').trim();
+
+      if (!id) {
+        const listed = await callApi(c, '/api/v1/trash');
+
+        if (listed.status !== 200) return say(listed.body?.error ?? `The Trash could not be read (${listed.status}).`, true);
+
+        const documents = (listed.body.documents ?? []) as Array<{ id: string; name: string; size: number; folder_path: string; deleted_at: string; purge_at: string; kind: string }>;
+
+        if (documents.length === 0) return say('The Trash is empty. Deleted documents are kept for 14 days.');
+
+        const days = (at: string) => Math.max(0, Math.ceil((new Date(at).getTime() - Date.now()) / 86_400_000));
+
+        return card(
+          [
+            `${documents.length} document${documents.length === 1 ? '' : 's'} in the Trash:`,
+            ...documents.slice(0, 50).map(
+              (one) => `- ${one.name}${one.folder_path ? ` (was in ${one.folder_path})` : ''} · id ${one.id} · ${days(one.purge_at)} days left`
+            ),
+          ].join('\n'),
+          {
+            documents: documents.slice(0, 50).map((one) => ({ id: one.id, name: one.name, size: one.size, kind: one.kind, created_at: one.deleted_at })),
+            trash: true,
+          }
+        );
+      }
+
+      const done = await callApi(c, `/api/v1/trash/${segment(id)}/restore`, { method: 'POST' });
+
+      if (done.status !== 200) return say(done.body?.error ?? `That document is not in the Trash (${done.status}).`, true);
+
+      const back = await callApi(c, `/api/v1/documents/${segment(id)}`);
+
+      return card(
+        `Restored ${done.body.name}.`,
+        back.status === 200 ? forCard(c, back.body.document) : { id, name: done.body.name }
+      );
     },
   },
 };

@@ -834,6 +834,7 @@ try {
   }
 
   await sql`delete from m2h_document where id = any(${made.documents}::uuid[])`;
+  await sql`delete from m2h_trash where id = any(${made.documents}::uuid[])`;
   await sql`delete from m2h_oauth_token where token_hash = any(${made.tokens})`;
 }
 

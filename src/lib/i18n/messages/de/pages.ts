@@ -93,7 +93,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'Laden Sie meine Datei hoch?',
-          answer: 'Abgemeldet nicht. Die Umwandlung läuft in Ihrem Browser und die Datei verlässt den Rechner nie, was Sie im Netzwerk-Tab oder durch Trennen der Verbindung prüfen können. Angemeldet wird das Markdown — nicht die ursprüngliche Datei — in Ihrem Konto gespeichert, damit es auf Ihren anderen Geräten da ist; Sie können es löschen, was die Zeile und die gespeicherte Quelle zugleich entfernt.',
+          answer: 'Abgemeldet nicht. Die Umwandlung läuft in Ihrem Browser und die Datei verlässt den Rechner nie, was Sie im Netzwerk-Tab oder durch Trennen der Verbindung prüfen können. Angemeldet wird das Markdown — nicht die ursprüngliche Datei — in Ihrem Konto gespeichert, damit es auf Ihren anderen Geräten da ist; Sie können es löschen: Es wartet 14 Tage im Papierkorb, dann gehen die Zeile und die gespeicherte Quelle zusammen.',
         },
         {
           question: 'Welche Formate liest es?',
@@ -144,7 +144,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Datenschutz und Rechtliches',
         body: [
-          'Fragen dazu, was gespeichert wird, oder die Bitte, ein Konto samt allem darin zu löschen, gehen an dieselben Issues. Angemeldet können Sie jedes Dokument auch selbst löschen — das entfernt den Eintrag und die gespeicherte Quelle zusammen.',
+          'Fragen dazu, was gespeichert wird, oder die Bitte, ein Konto samt allem darin zu löschen, gehen an dieselben Issues. Angemeldet können Sie jedes Dokument auch selbst löschen — es wartet 14 Tage im Papierkorb, dann gehen der Eintrag und die gespeicherte Quelle zusammen.',
         ],
       },
     ],
@@ -284,7 +284,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Dinge löschen',
         body: [
-          'Ein Dokument zu löschen löscht die Zeile und das gespeicherte Markdown zusammen, sofort, nicht nach einem Zeitplan. Ein Widerruf einer Freigabe verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren.',
+          'Ein gelöschtes Dokument kommt in den Papierkorb und wartet dort 14 Tage, falls Sie es zurückhaben möchten; danach werden die Zeile und das gespeicherte Markdown zusammen gelöscht. Wer den Papierkorb leert oder ein Dokument daraus löscht, löscht es sofort. Ein Widerruf einer Freigabe verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren.',
           'Um ein Konto samt allem darin zu entfernen, fragen Sie nach — siehe die Support-Seite. Eine erreichte Speichergrenze weist den Schreibvorgang ab; sie löscht nie etwas, das Sie behalten wollten, um Platz zu machen.',
         ],
       },
@@ -1027,7 +1027,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Was er dann kann',
         body: [
-          'Achtzehn Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_from_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können — oder einen einzelnen Leser hinzufügt oder entfernt.',
+          'Neunzehn Werkzeuge, alle mit `tp_` benannt. Die, auf die es in einem Gespräch ankommt, sind `tp_convert_from_markdown`, das aus Markdown ein fertiges HTML-Dokument macht, `tp_convert_to_markdown` für eine Datei in die andere Richtung, `tp_save_document`, das das Ergebnis in Ihrem Konto behält, und `tp_share_document`, das es veröffentlicht und einen Link zurückgibt, den Sie verschicken können — oder einen einzelnen Leser hinzufügt oder entfernt.',
           'Der Rest sind die, nach denen ein Assistent von sich aus greift: `tp_list_documents` und `tp_get_document`, um etwas wiederzufinden, das Sie früher gemacht haben, `tp_summarize_document`, um zu sagen, was in einem langen steht, `tp_update_document`, um eines zu ändern und seinen Link zu behalten, `tp_document_versions`, um zu zeigen, was was ersetzt hat, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` und `tp_move_documents`, um Dokumente in Ordnern abzulegen, `tp_share_folder`, um einen ganzen Ordner so zu teilen, wie man ein Dokument teilt, `tp_usage`, um zu prüfen, wie viel Platz noch bleibt, `tp_delete_document` und `tp_search_documentation`, das Fragen zu TransformPipe aus der Dokumentation beantwortet.',
           'In der Praxis ist der nützliche Satz kurz. Bitten Sie ihn, die Release Notes zu schreiben, und dann, sie zu veröffentlichen — der Assistent wandelt um, speichert und teilt und antwortet mit der Adresse.',
         ],
@@ -1051,7 +1051,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Ein Dokument aus einem KI-Assistenten umwandeln und teilen — TransformPipe',
       description:
-        'Wie man TransformPipe per MCP zu Claude oder ChatGPT hinzufügt, was die achtzehn Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
+        'Wie man TransformPipe per MCP zu Claude oder ChatGPT hinzufügt, was die neunzehn Werkzeuge tun und woran ein Assistent in Ihrem Konto kommt und woran nicht.',
     },
   },
 
@@ -1694,7 +1694,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Warum fragt ChatGPT vor dem Veröffentlichen oder Löschen?',
             answer:
-              'Weil TransformPipe angibt, dass diese Werkzeuge etwas außerhalb des Chats ändern: Veröffentlichen stellt eine Seite ins Netz, das Teilen mit Personen verschickt eine Mail, und Löschen lässt sich nicht rückgängig machen. Vor jedem solchen Aufruf fragt ChatGPT Sie. Ein privates Dokument speichern, auflisten und lesen veröffentlicht nichts.',
+              'Weil TransformPipe angibt, dass diese Werkzeuge etwas außerhalb des Chats ändern: Veröffentlichen stellt eine Seite ins Netz, das Teilen mit Personen verschickt eine Mail, und Löschen nimmt ein Dokument aus dem Konto. Vor jedem solchen Aufruf fragt ChatGPT Sie. Ein privates Dokument speichern, auflisten und lesen veröffentlicht nichts.',
           },
           {
             question: 'Wie teile ich, was ChatGPT schreibt, als Link?',

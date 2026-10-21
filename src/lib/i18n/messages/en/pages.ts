@@ -91,7 +91,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'Do you upload my file?',
-          answer: 'Signed out, no. The conversion runs in your browser and the file never leaves the machine, which you can check in the network tab or by disconnecting. Signed in, the Markdown — not the original file — is stored in your account so it is there on your other devices, and you can delete it, which removes the row and the stored source together.',
+          answer: 'Signed out, no. The conversion runs in your browser and the file never leaves the machine, which you can check in the network tab or by disconnecting. Signed in, the Markdown — not the original file — is stored in your account so it is there on your other devices, and you can delete it: it waits in the Trash for 14 days, then the row and the stored source go together.',
         },
         {
           question: 'What formats does it read?',
@@ -142,7 +142,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Privacy and legal',
         body: [
-          'Questions about what is stored, or a request to delete an account and everything in it, go to the same issues. Signed in, you can also delete any document yourself — that removes the row and the stored source together.',
+          'Questions about what is stored, or a request to delete an account and everything in it, go to the same issues. Signed in, you can also delete any document yourself — it waits in the Trash for 14 days, then the row and the stored source go together.',
         ],
       },
     ],
@@ -282,7 +282,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Deleting things',
         body: [
-          'Deleting a document deletes the row and the stored Markdown together, at once, not on a schedule. Revoking a share drops the token, so a link already sent stops working.',
+          'Deleting a document moves it to the Trash, where it waits for 14 days in case you want it back; then the row and the stored Markdown are deleted together. Emptying the Trash, or deleting a document from it, deletes it at once. Revoking a share drops the token, so a link already sent stops working.',
           'To remove an account and everything in it, ask — see the support page. Reaching a storage limit refuses the write; it never deletes something you chose to keep to make room.',
         ],
       },
@@ -1025,7 +1025,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'What it can then do',
         body: [
-          'Eighteen tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_from_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send — or adds or removes one reader.',
+          'Nineteen tools, all named `tp_`. The ones that matter in a conversation are `tp_convert_from_markdown`, which turns Markdown into a finished HTML document, `tp_convert_to_markdown` for a file going the other way, `tp_save_document`, which keeps the result in your account, and `tp_share_document`, which publishes it and returns a link you can send — or adds or removes one reader.',
           'The rest are the ones an assistant reaches for on its own: `tp_list_documents` and `tp_get_document` to find something you made earlier, `tp_summarize_document` to say what a long one contains, `tp_update_document` to change one and keep its link, `tp_document_versions` to show what replaced what, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` and `tp_move_documents` to keep documents in folders, `tp_share_folder` to share a whole folder the way a document is shared, `tp_usage` to check how much room is left, `tp_delete_document`, and `tp_search_documentation`, which answers questions about TransformPipe from its documentation.',
           'In practice the useful sentence is short. Ask it to write the release notes, then ask it to publish them — the assistant converts, saves and shares, and answers with the address.',
         ],
@@ -1049,7 +1049,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convert and share a document from an AI assistant — TransformPipe',
       description:
-        'How to add TransformPipe to Claude or ChatGPT over MCP, what its eighteen tools do, and what an assistant can and cannot reach in your account.',
+        'How to add TransformPipe to Claude or ChatGPT over MCP, what its nineteen tools do, and what an assistant can and cannot reach in your account.',
     },
   },
 
@@ -1692,7 +1692,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Why does ChatGPT ask before publishing or deleting?',
             answer:
-              'Because TransformPipe says those tools change something outside the chat: publishing puts a page on the web, sharing with people sends an email, and deleting cannot be undone. ChatGPT asks you before each such call. Saving a private document, listing and reading publish nothing.',
+              'Because TransformPipe says those tools change something outside the chat: publishing puts a page on the web, sharing with people sends an email, and deleting takes a document out of the account. ChatGPT asks you before each such call. Saving a private document, listing and reading publish nothing.',
           },
           {
             question: 'How do I share ChatGPT’s output as a link?',

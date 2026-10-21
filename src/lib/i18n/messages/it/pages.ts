@@ -84,7 +84,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'Caricate il mio file?',
-          answer: 'Da disconnesso, no. La conversione gira nel tuo browser e il file non lascia mai la macchina, cosa che puoi verificare nella scheda di rete o staccando la connessione. Da connesso viene salvato il Markdown — non il file originale — nel tuo account perché sia lì sugli altri dispositivi, e puoi cancellarlo, il che rimuove la riga e la fonte conservata insieme.',
+          answer: 'Da disconnesso, no. La conversione gira nel tuo browser e il file non lascia mai la macchina, cosa che puoi verificare nella scheda di rete o staccando la connessione. Da connesso viene salvato il Markdown — non il file originale — nel tuo account perché sia lì sugli altri dispositivi, e puoi cancellarlo; resta 14 giorni nel cestino, poi la riga e la fonte conservata se ne vanno insieme.',
         },
         {
           question: 'Quali formati legge?',
@@ -135,7 +135,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Privacy e questioni legali',
         body: [
-          'Le domande su che cosa viene conservato, o la richiesta di cancellare un account e tutto quello che contiene, vanno alle stesse segnalazioni. Con l’accesso fatto puoi anche cancellare da solo qualsiasi documento: questo rimuove la riga e la sorgente salvata insieme.',
+          'Le domande su che cosa viene conservato, o la richiesta di cancellare un account e tutto quello che contiene, vanno alle stesse segnalazioni. Con l’accesso fatto puoi anche cancellare da solo qualsiasi documento: resta 14 giorni nel cestino, poi la riga e la sorgente salvata se ne vanno insieme.',
         ],
       },
     ],
@@ -275,7 +275,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Eliminare le cose',
         body: [
-          'Eliminare un documento elimina insieme la riga e il Markdown conservato, subito, non secondo una pianificazione. Revocare una condivisione elimina il token, così un link già inviato smette di funzionare.',
+          'Un documento eliminato finisce nel cestino, dove resta 14 giorni nel caso tu lo voglia indietro; poi la riga e il Markdown conservato vengono eliminati insieme. Svuotare il cestino, o eliminarvi un documento, lo elimina subito. Revocare una condivisione elimina il token, così un link già inviato smette di funzionare.',
           'Per rimuovere un account e tutto quello che contiene, basta chiederlo — vedi la pagina di assistenza. Raggiungere un limite di spazio rifiuta la scrittura; non elimina mai qualcosa che hai scelto di conservare per fare spazio.',
         ],
       },
@@ -1018,7 +1018,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Cosa può fare a quel punto',
         body: [
-          'Diciotto strumenti, tutti con il prefisso `tp_`. Quelli che contano in una conversazione sono `tp_convert_from_markdown`, che trasforma il Markdown in un documento HTML finito, `tp_convert_to_markdown` per un file che fa il percorso inverso, `tp_save_document`, che conserva il risultato nel tuo account, e `tp_share_document`, che lo pubblica e restituisce un link da mandare — oppure aggiunge o toglie un lettore.',
+          'Diciannove strumenti, tutti con il prefisso `tp_`. Quelli che contano in una conversazione sono `tp_convert_from_markdown`, che trasforma il Markdown in un documento HTML finito, `tp_convert_to_markdown` per un file che fa il percorso inverso, `tp_save_document`, che conserva il risultato nel tuo account, e `tp_share_document`, che lo pubblica e restituisce un link da mandare — oppure aggiunge o toglie un lettore.',
           'Gli altri sono quelli a cui un assistente ricorre da sé: `tp_list_documents` e `tp_get_document` per ritrovare qualcosa fatto prima, `tp_summarize_document` per dire cosa contiene un documento lungo, `tp_update_document` per modificarne uno e tenere il suo link, `tp_document_versions` per mostrare cosa ha sostituito cosa, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` e `tp_move_documents` per tenere i documenti in cartelle, `tp_share_folder` per condividere un’intera cartella come si condivide un documento, `tp_usage` per controllare quanto spazio resta, `tp_delete_document`, e `tp_search_documentation`, che risponde alle domande su TransformPipe partendo dalla sua documentazione.',
           'In pratica la frase utile è breve. Chiedigli di scrivere le note di rilascio, poi chiedigli di pubblicarle — l’assistente converte, salva e condivide, e risponde con l’indirizzo.',
         ],
@@ -1042,7 +1042,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convertire e condividere un documento da un assistente AI — TransformPipe',
       description:
-        'Come aggiungere TransformPipe a Claude o a ChatGPT via MCP, cosa fanno i diciotto strumenti e cosa un assistente può e non può raggiungere nel tuo account.',
+        'Come aggiungere TransformPipe a Claude o a ChatGPT via MCP, cosa fanno i diciannove strumenti e cosa un assistente può e non può raggiungere nel tuo account.',
     },
   },
 
@@ -1685,7 +1685,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Perché ChatGPT chiede prima di pubblicare o eliminare?',
             answer:
-              'Perché TransformPipe dichiara che quegli strumenti cambiano qualcosa fuori dalla chat: pubblicare mette una pagina sul web, condividere con persone invia una mail ed eliminare non si può annullare. ChatGPT ti chiede prima di ognuna di queste chiamate. Salvare un documento privato, elencare e leggere non pubblicano nulla.',
+              'Perché TransformPipe dichiara che quegli strumenti cambiano qualcosa fuori dalla chat: pubblicare mette una pagina sul web, condividere con persone invia una mail ed eliminare toglie un documento dall’account. ChatGPT ti chiede prima di ognuna di queste chiamate. Salvare un documento privato, elencare e leggere non pubblicano nulla.',
           },
           {
             question: 'Come condivido quello che scrive ChatGPT come link?',

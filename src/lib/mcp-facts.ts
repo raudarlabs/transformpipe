@@ -44,6 +44,7 @@ export const MCP_TOOL_NAMES = [
   'tp_delete_folder',
   'tp_usage',
   'tp_delete_document',
+  'tp_restore_document',
 ] as const;
 
 export type McpToolName = (typeof MCP_TOOL_NAMES)[number];
@@ -88,8 +89,10 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
   tp_update_folder:
     'Renames a folder or moves it, with its contents, under another folder or to the top level. Moving it under a shared folder requires an explicit confirmation.',
   tp_delete_folder:
-    'Deletes a folder — moving its contents up a level, or deleting its documents permanently with it. Always requires an explicit confirmation.',
+    'Deletes a folder — moving its contents up a level, or sending its documents to the Trash with it. Always requires an explicit confirmation.',
   tp_usage: 'Returns the account\'s storage and document count against their limits.',
   tp_delete_document:
-    'Permanently deletes one document. Always requires an explicit confirmation.',
+    'Moves one document to the Trash, where it is kept for 14 days. Always requires an explicit confirmation.',
+  tp_restore_document:
+    'Lists the Trash, or puts a deleted document back with its folder, sharing and versions.',
 };

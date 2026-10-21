@@ -666,7 +666,7 @@ check(
 check(
   'the instructions state the gate on publishing and deleting',
   /public web/.test(hello.body?.result?.instructions ?? '') &&
-    /no undo/.test(hello.body?.result?.instructions ?? '') &&
+    /Trash for 14 days/.test(hello.body?.result?.instructions ?? '') &&
     /confirm/.test(hello.body?.result?.instructions ?? '')
 );
 
@@ -838,6 +838,7 @@ const EXPECTED = {
   tp_share_document: 'FTTT',
   tp_share_folder: 'FTTT',
   tp_delete_document: 'FTTF',
+  tp_restore_document: 'FFTF',
   tp_delete_folder: 'FTTF',
   tp_summarize_document: 'FFFT',
 };
@@ -1208,7 +1209,16 @@ if (blobless) {
   skip('and with it, the document goes', why);
 } else {
   const deleted = await tool(tokens.access_token, 'tp_delete_document', { id: savedId, confirm: true });
-  check('and with it, the document goes', /Deleted/.test(deleted.text), deleted.text);
+  check('and with it, the document goes — to the Trash', /Moved to the Trash/.test(deleted.text), deleted.text);
+
+  const listed = await tool(tokens.access_token, 'tp_restore_document', {});
+  check('the Trash lists it', listed.text.includes(savedId), listed.text.slice(0, 200));
+
+  const back = await tool(tokens.access_token, 'tp_restore_document', { id: savedId });
+  check('and it comes back', /^Restored /.test(back.text) && back.data?.id === savedId, back.text);
+
+  const again = await tool(tokens.access_token, 'tp_delete_document', { id: savedId, confirm: true });
+  check('and goes again, for the checks after this one', /Moved to the Trash/.test(again.text), again.text);
   /*
    * With data for the view beside it. ChatGPT asks the person before a destructive tool and then
    * calls it with confirm: true the first time, so the confirmation view is drawn next to a
@@ -1727,6 +1737,8 @@ await sql`delete from m2h_oauth_code where client_id = ${client.client_id}`;
 await sql`delete from m2h_oauth_pending where id = ${pendingId}`;
 await sql`delete from m2h_oauth_client where id = ${client.client_id}`;
 await sql`delete from m2h_document where name in ('mcp-e2e.md', 'no.md')`;
+// Deleting moves to the Trash now, so what the checks deleted waits there; it goes too.
+await sql`delete from m2h_trash where name in ('mcp-e2e.md', 'no.md', 'probe.md')`;
 
 console.log(
   `

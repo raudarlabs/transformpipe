@@ -550,6 +550,11 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
                 text: t('docs.api.delete'),
               },
               {
+                key: 'trash',
+                term: <InlineCode>GET /api/v1/trash · POST /api/v1/trash/:id/restore · DELETE /api/v1/trash/:id</InlineCode>,
+                text: <Rich text={t('docs.api.trash')} parts={{ empty: <InlineCode>DELETE /api/v1/trash</InlineCode> }} />,
+              },
+              {
                 key: 'share',
                 term: <InlineCode>GET | PUT /api/v1/documents/:id/share</InlineCode>,
                 text: (

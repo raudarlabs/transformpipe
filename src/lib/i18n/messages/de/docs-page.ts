@@ -193,7 +193,8 @@ export const docsPage = {
     'Die neuesten 5000, mit Größe, Statistik, Freigabestatus und dem Ordner, in dem jedes liegt. ?folder=<id> beschränkt auf einen Ordner und alle Ordner darunter, ?folder=none auf Dokumente ohne Ordner.',
   'docs.api.one': 'Metadaten und der Markdown-Quelltext.',
   'docs.api.html': 'Das eigenständige Dokument. {theme} optional.',
-  'docs.api.delete': 'Entfernt die Zeile und die gespeicherte Quelle.',
+  'docs.api.delete': 'Verschiebt das Dokument für 14 Tage in den Papierkorb; sein Freigabelink hört sofort auf.',
+  'docs.api.trash': 'Was im Papierkorb liegt, eines mit Ordner, Freigabe und Versionen zurückholen oder eines endgültig löschen. {empty} leert ihn.',
   'docs.api.update':
     'Neuer Text für dasselbe Dokument: Markdown als Body oder JSON mit markdown und name. Id, Link und alles, was daran eingestellt ist, bleiben; der ersetzte Text wird als Revision aufgehoben, die neuesten zehn. Derselbe Text noch einmal ändert nichts.',
   'docs.api.revisions':

@@ -38,6 +38,7 @@ import { StaticPage } from './features/StaticPage';
 import { AgentsPage } from './features/AgentsPage';
 import { ObsidianPage } from './features/ObsidianPage';
 import { staticPage, type StaticPageId } from './lib/pages';
+import { api } from './lib/api';
 import { AuthProvider, useAuth } from './lib/auth';
 import { ConsentProvider } from './lib/consent';
 import { ThemeProvider, useTheme } from './lib/theme';
@@ -695,14 +696,38 @@ function Shell() {
 
   const handleRemoveMany = useCallback(
     async (ids: string[]) => {
+      /*
+       * What was in the account goes to its trash (server/trash.ts) and can come back from the
+       * notice that says so; what was only in this browser is gone, as before.
+       */
+      const saved = ids.filter((id) => history.entries.find((one) => one.id === id)?.remote);
+
       // Only claim success when the store says the delete actually stuck.
-      if (await history.removeMany(ids)) {
+      if (!(await history.removeMany(ids))) return;
+
+      if (saved.length === 0) {
         toast.info(
           ids.length === 1
             ? t('history.removed.one')
             : t('history.removed.many', { count: ids.length })
         );
+
+        return;
       }
+
+      toast.info(
+        saved.length === 1 ? t('trash.moved.one') : t('trash.moved.many', { count: saved.length }),
+        {
+          description: t('trash.moved.detail', { days: 14 }),
+          duration: 8000,
+          action: {
+            label: t('trash.undo'),
+            onClick: () => {
+              void Promise.allSettled(saved.map((id) => api.restoreFromTrash(id))).then(() => history.refresh());
+            },
+          },
+        }
+      );
     },
     [history, t]
   );
@@ -839,10 +864,11 @@ function Shell() {
               void handleDownloadMany(entries, format)
             }
             onMerge={(entries) => void handleMergeFromHistory(entries)}
-            onRemove={(id) => void history.remove(id)}
-            onRemoveMany={(ids) => void handleRemoveMany(ids)}
+            onRemove={(id) => handleRemoveMany([id])}
+            onRemoveMany={(ids) => handleRemoveMany(ids)}
             onClear={() => void handleClear()}
             onGoToConverter={() => setView('converter')}
+            onGoToLivePreview={() => setView('livePreview')}
             onRefresh={() => void history.refresh()}
             initialFolder={historyFolder}
           />

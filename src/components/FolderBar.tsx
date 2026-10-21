@@ -437,8 +437,16 @@ function NameField({ initial, onDone }: { initial: string; onDone: (name: string
   );
 }
 
-export function FolderTree(props: Shared & { /** Every document of the account. */ total: number }) {
-  const { folders, current, counts, total, onOpen, onDropDocuments } = props;
+export function FolderTree(
+  props: Shared & {
+    /** Every document of the account. */
+    total: number;
+    /** The account's trash: its count, whether it is the open one, and where a drop sends documents. */
+    trash?: { count: number; isOpen: boolean; onOpen: () => void; onDrop: (ids: string[]) => void };
+  }
+) {
+  const { folders, current, counts, total, onOpen, onDropDocuments, trash } = props;
+  const [overTrash, setOverTrash] = useState(false);
   const t = useT();
   const actions = useFolderActions(props);
   const [open, setOpen] = useState<Set<string>>(() => {
@@ -618,7 +626,7 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
           <ChevronDown className={cn('size-4 shrink-0 transition-transform lg:hidden', !shown && '-rotate-90')} />
           <span className="font-semibold">{t('folders.trail')}</span>
           {/* Folded on a phone, the line still says where you are. */}
-          <span className="truncate normal-case lg:hidden">· {here?.name ?? t('folders.all')}</span>
+          <span className="truncate normal-case lg:hidden">· {trash?.isOpen ? t('trash.title') : (here?.name ?? t('folders.all'))}</span>
         </button>
         {/*
           * Words as well as the icon, and a border: on the page itself rather than inside the card,
@@ -665,6 +673,51 @@ export function FolderTree(props: Shared & { /** Every document of the account. 
           <span className="ml-auto pl-1 text-ink-secondary text-xs">{total}</span>
         </button>
         {branch(null, 0)}
+
+        {/*
+          * Below the folders and apart from them: not a folder, but the place a drag of documents
+          * can end, as a desktop's trash is.
+          */}
+        {trash && (
+          <div className="mt-1.5 border-stroke border-t pt-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                trash.onOpen();
+                setShown(false);
+              }}
+              onDragOver={(event) => {
+                if (!event.dataTransfer.types.includes(DRAG_DOCUMENTS)) return;
+
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                setOverTrash(true);
+              }}
+              onDragLeave={() => setOverTrash(false)}
+              onDrop={(event) => {
+                event.preventDefault();
+                setOverTrash(false);
+
+                try {
+                  const ids = JSON.parse(event.dataTransfer.getData(DRAG_DOCUMENTS) || '[]') as string[];
+
+                  if (ids.length > 0) trash.onDrop(ids);
+                } catch {
+                  // Not ours.
+                }
+              }}
+              className={cn(
+                'flex h-8 w-full items-center gap-1.5 rounded-md pr-2 pl-2 text-left text-sm',
+                trash.isOpen ? 'bg-surface-accent font-medium text-ink-primary' : 'text-ink-body hover:bg-surface-chips',
+                overTrash && 'ring-2 ring-fb-error ring-inset'
+              )}
+            >
+              <Trash2 className="size-4 shrink-0 text-ink-secondary" />
+              <span className="truncate">{t('trash.title')}</span>
+              {trash.count > 0 && <span className="ml-auto pl-1 text-ink-secondary text-xs">{trash.count}</span>}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* The right-click menu opens where the pointer was, from a trigger with no size of its own. */}

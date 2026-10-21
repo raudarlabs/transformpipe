@@ -179,7 +179,8 @@ export const docsPage = {
     'Los 5000 más recientes, con tamaños, recuentos, estado de lo compartido y la carpeta de cada uno. ?folder=<id> lo limita a una carpeta y todas las que tiene debajo; ?folder=none, a los documentos sin carpeta.',
   'docs.api.one': 'Los metadatos y el Markdown de origen.',
   'docs.api.html': 'El documento autónomo. {theme} es opcional.',
-  'docs.api.delete': 'Elimina la fila y el original guardado.',
+  'docs.api.delete': 'Pasa el documento a la papelera durante 14 días; su enlace compartido deja de funcionar en el momento.',
+  'docs.api.trash': 'Lo que hay en la papelera, restaurar uno con su carpeta, su compartición y sus versiones, o borrar uno para siempre. {empty} la vacía.',
   'docs.api.update':
     'Texto nuevo para el mismo documento: Markdown como cuerpo, o JSON con markdown y name. El id, el enlace y todo lo que tenga configurado se mantienen; el texto sustituido se guarda como revisión, las diez más recientes. El mismo texto otra vez no cambia nada.',
   'docs.api.revisions':

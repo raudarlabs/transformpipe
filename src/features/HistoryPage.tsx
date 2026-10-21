@@ -27,6 +27,7 @@ import { recentFolders, rememberFolder } from '@/lib/recent-folders';
 import { ListSelectionBar } from '@/components/ListSelectionBar';
 import { ShareDialog } from '@/components/ShareDialog';
 import { StartChecklist, StartTiles } from '@/components/StartHere';
+import { TrashView } from '@/components/TrashView';
 import { VersionsDialog } from '@/components/VersionsDialog';
 import {
   ALL_EXTENSIONS,
@@ -51,7 +52,7 @@ import {
   formatRelative,
   toFileName,
 } from '@/lib/format';
-import { api, type Folder, type SharedFolderEntry, type Usage } from '@/lib/api';
+import { api, type Folder, type SharedFolderEntry, type TrashEntry, type Usage } from '@/lib/api';
 import { toast } from '@/ui/components/Toast';
 import { readRoute, replaceFilter } from '@/lib/route';
 import type { HistoryEntry } from '@/lib/history';
@@ -228,10 +229,13 @@ interface HistoryPageProps {
   onDownload: (entry: HistoryEntry, format: DocFormat) => void;
   onDownloadMany: (entries: HistoryEntry[], format: DocFormat) => void;
   onMerge: (entries: HistoryEntry[]) => void;
-  onRemove: (id: string) => void;
-  onRemoveMany: (ids: string[]) => void;
+  /** Resolves once the server has answered, so the trash's count is read after the move. */
+  onRemove: (id: string) => void | Promise<void>;
+  onRemoveMany: (ids: string[]) => void | Promise<void>;
   onClear: () => void;
   onGoToConverter: () => void;
+  /** The live preview, where pasted Markdown is drawn as it is typed — the empty history's Paste text. */
+  onGoToLivePreview: () => void;
   /** The account's documents changed on the server — a folder moved, documents were moved into one. */
   onRefresh: () => void;
   /** The folder to open on, when the page was reached from somewhere that just made one. */
@@ -252,6 +256,7 @@ export function HistoryPage({
   onRemoveMany,
   onClear,
   onGoToConverter,
+  onGoToLivePreview,
   onRefresh,
   initialFolder = null,
 }: HistoryPageProps) {
@@ -297,6 +302,50 @@ export function HistoryPage({
   const filePicker = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [sharing, setSharing] = useState<{ id: string; name: string } | null>(null);
+  /* The account's trash (server/trash.ts): shown in place of a folder's documents when opened. */
+  const [inTrash, setInTrash] = useState(false);
+  const [trash, setTrash] = useState<TrashEntry[]>([]);
+  const [trashDays, setTrashDays] = useState(14);
+  const loadTrash = useCallback(() => {
+    if (!isSynced) return;
+
+    api
+      .listTrash()
+      .then((got) => {
+        setTrash(got.documents);
+        setTrashDays(got.days);
+      })
+      .catch(() => undefined);
+  }, [isSynced]);
+
+  // Asked again whenever the list changes, since a delete is a move into the trash.
+  useEffect(() => loadTrash(), [loadTrash, entries.length]);
+
+  /* And once a delete has been answered: the list shrinks before the server has moved anything. */
+  const remove = (id: string) => void Promise.resolve(onRemove(id)).then(loadTrash);
+  const removeMany = (ids: string[]) => void Promise.resolve(onRemoveMany(ids)).then(loadTrash);
+
+  /* One at a time, so a restore the account has no room for stops there and says so. */
+  const restore = async (picked: TrashEntry[]) => {
+    let back = 0;
+
+    try {
+      for (const entry of picked) {
+        await api.restoreFromTrash(entry.id);
+        back += 1;
+      }
+
+      toast.success(
+        picked.length === 1 ? t('trash.restored', { name: picked[0].name }) : t('trash.restored.many', { count: back })
+      );
+    } catch (cause) {
+      toast.error(t('trash.restore.error'), { description: cause instanceof Error ? cause.message : undefined });
+    } finally {
+      onRefresh();
+      loadTrash();
+    }
+  };
+
   /* Bumped each time the share dialog closes, so the first-steps list reads its steps again. */
   const [sharesClosed, setSharesClosed] = useState(0);
   const [viewingVersionsOf, setViewingVersionsOf] = useState<HistoryEntry | null>(
@@ -658,9 +707,40 @@ export function HistoryPage({
         : [...current, id]
     );
 
+  /*
+   * Picking as a file browser does: a plain click on a box ticks that one; Shift ticks every row
+   * from the last one picked to this one, in the order the list shows them, and keeps what was
+   * already ticked; Cmd or Ctrl on a row ticks or unticks it instead of opening it.
+   */
+  const anchor = useRef<string | null>(null);
+  const pick = (id: string, event: { shiftKey: boolean }) => {
+    if (event.shiftKey && anchor.current && anchor.current !== id) {
+      const pickable = new Set(selectableIds);
+      const order = rows.filter((entry) => pickable.has(entry.id)).map((entry) => entry.id);
+      const from = order.indexOf(anchor.current);
+      const to = order.indexOf(id);
+
+      if (from >= 0 && to >= 0) {
+        const span = order.slice(Math.min(from, to), Math.max(from, to) + 1);
+
+        setSelected((current) => [...new Set([...current, ...span])]);
+        anchor.current = id;
+
+        return;
+      }
+    }
+
+    toggle(id);
+    anchor.current = id;
+  };
+
+  /** A click on a row with Shift, Cmd or Ctrl picks it; any other click opens it. */
+  const picking = (event: { shiftKey: boolean; metaKey: boolean; ctrlKey: boolean }) =>
+    !isShared && (event.shiftKey || event.metaKey || event.ctrlKey);
+
   /* Nothing converted yet: the three ways in, rather than a sentence saying there is nothing. */
-  if (entries.length === 0 && shared.length === 0 && sharedFolders.length === 0) {
-    return <StartTiles isSynced={isSynced} onFiles={onFiles} onPaste={onGoToConverter} />;
+  if (entries.length === 0 && shared.length === 0 && sharedFolders.length === 0 && trash.length === 0 && !inTrash) {
+    return <StartTiles isSynced={isSynced} onFiles={onFiles} onPaste={onGoToLivePreview} />;
   }
 
   return (
@@ -760,15 +840,42 @@ export function HistoryPage({
       {isSynced && (
         <FolderTree
           folders={folders}
-          current={isShared ? null : folder}
+          /* An id no folder has, while the trash is open, so neither a folder nor All documents is lit. */
+          current={inTrash ? 'trash' : isShared ? null : folder}
           counts={folderCounts}
           total={entries.length}
-          onOpen={openFolder}
+          onOpen={(id) => {
+            setInTrash(false);
+            openFolder(id);
+          }}
+          trash={{
+            count: trash.length,
+            isOpen: inTrash,
+            onOpen: () => setInTrash(true),
+            onDrop: (ids) => removeMany(ids),
+          }}
           onChanged={folderChanged}
           onDropDocuments={(ids, target) => void moveDocuments(ids, target)}
         />
       )}
       <div className="flex min-w-0 flex-col gap-4">
+      {inTrash ? (
+        <TrashView
+          entries={trash}
+          days={trashDays}
+          onRestore={(picked) => void restore(picked)}
+          onDelete={(picked) =>
+            void Promise.allSettled(picked.map((entry) => api.deleteFromTrash(entry.id))).then(loadTrash)
+          }
+          onEmpty={() =>
+            void api
+              .emptyTrash()
+              .then(loadTrash)
+              .catch((cause: Error) => toast.error(cause.message))
+          }
+        />
+      ) : (
+      <>
       {/*
         * The same row in both views, so switching to Shared with me moves nothing below it: a
         * folder's trail and actions here, the view's own name there.
@@ -1050,7 +1157,7 @@ export function HistoryPage({
                 size="xs"
                 className="!px-1.5 !py-1"
                 leftSlot={<Trash2 />}
-                onClick={() => onRemoveMany(selected)}
+                onClick={() => removeMany(selected)}
               >
                 {t('history.delete')}
               </Button>
@@ -1103,7 +1210,11 @@ export function HistoryPage({
                       aria-label={t('history.row.select', { name: entry.name })}
                       checked={isSelected}
                       disabled={!isReopenable}
-                      onCheckedChange={() => toggle(entry.id)}
+                      onClick={(event) => {
+                        // Handled here rather than by the box itself, which never says Shift was held.
+                        event.preventDefault();
+                        pick(entry.id, event);
+                      }}
                     />
                   </span>
                 )}
@@ -1111,7 +1222,19 @@ export function HistoryPage({
                 <button
                   type="button"
                   disabled={!isReopenable}
-                  onClick={() => isReopenable && onOpen(entry)}
+                  onMouseDown={(event) => {
+                  // Shift would otherwise select the text of every row between the two clicks.
+                  if (event.shiftKey && picking(event)) event.preventDefault();
+                }}
+                onClick={(event) => {
+                  if (picking(event)) {
+                    if (isReopenable) pick(entry.id, event);
+
+                    return;
+                  }
+
+                  if (isReopenable) onOpen(entry);
+                }}
                   className={cn(
                     'flex min-w-0 flex-1 flex-col items-start gap-1 text-left',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-offset-2',
@@ -1150,7 +1273,7 @@ export function HistoryPage({
                   onShare={setSharing}
                   onVersions={setViewingVersionsOf}
                   onDownload={onDownload}
-                  onRemove={onRemove}
+                  onRemove={remove}
                   onLeave={(entry) => void leaveShared({ id: entry.id, name: entry.name, owner: entry.sharedBy })}
                 />
               </div>
@@ -1251,7 +1374,19 @@ export function HistoryPage({
                   isReopenable &&
                     'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-inset'
                 )}
-                onClick={() => isReopenable && onOpen(entry)}
+                onMouseDown={(event) => {
+                  // Shift would otherwise select the text of every row between the two clicks.
+                  if (event.shiftKey && picking(event)) event.preventDefault();
+                }}
+                onClick={(event) => {
+                  if (picking(event)) {
+                    if (isReopenable) pick(entry.id, event);
+
+                    return;
+                  }
+
+                  if (isReopenable) onOpen(entry);
+                }}
                 onKeyDown={(event) => {
                   if (isReopenable && (event.key === 'Enter' || event.key === ' ')) {
                     event.preventDefault();
@@ -1265,7 +1400,11 @@ export function HistoryPage({
                     aria-label={t('history.row.select', { name: entry.name })}
                     checked={isSelected}
                     disabled={!isReopenable}
-                    onCheckedChange={() => toggle(entry.id)}
+                    onClick={(event) => {
+                      // Handled here rather than by the box itself, which never says Shift was held.
+                      event.preventDefault();
+                      pick(entry.id, event);
+                    }}
                   />
                 </TableCell>
                 )}
@@ -1337,7 +1476,7 @@ export function HistoryPage({
                     onShare={setSharing}
                     onVersions={setViewingVersionsOf}
                     onDownload={onDownload}
-                    onRemove={onRemove}
+                    onRemove={remove}
                     onLeave={(entry) => void leaveShared({ id: entry.id, name: entry.name, owner: entry.sharedBy })}
                   />
                 </TableCell>
@@ -1352,6 +1491,8 @@ export function HistoryPage({
             {t('history.more', { shown: drawn, total: rows.length })}
           </Button>
         </div>
+      )}
+      </>
       )}
       </div>
       </div>

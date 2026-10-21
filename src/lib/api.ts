@@ -101,6 +101,17 @@ function toEntry(doc: ServerDocument): HistoryEntry {
   };
 }
 
+export interface TrashEntry {
+  id: string;
+  name: string;
+  kind: string;
+  size: number;
+  /** The folders it was in, as words: they may be gone by now. */
+  folder_path: string;
+  deleted_at: string;
+  purge_at: string;
+}
+
 export interface Onboarding {
   show: boolean;
   steps: { saved: boolean; shared: boolean; connected: boolean };
@@ -551,6 +562,16 @@ export const api = {
   },
 
   usage: () => request<Usage>('/api/usage'),
+
+  /** Deleted documents, kept TRASH_DAYS — see server/trash.ts. */
+  listTrash: () => request<{ documents: TrashEntry[]; days: number }>('/api/trash'),
+
+  restoreFromTrash: (id: string) =>
+    request<{ ok: true; id: string; name: string }>(`/api/trash/${encodeURIComponent(id)}/restore`, { method: 'POST' }),
+
+  deleteFromTrash: (id: string) => request<{ ok: true }>(`/api/trash/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  emptyTrash: () => request<{ ok: true; deleted: number }>('/api/trash', { method: 'DELETE' }),
 
   /** A new account's first three steps — see server/onboarding.ts. */
   onboarding: () => request<Onboarding>('/api/onboarding'),

@@ -214,6 +214,16 @@ const ENTRIES: ChangelogEntry[] = [
   },
   {
     date: '2026-10-21',
+    title: 'Deleted documents wait in a Trash for 14 days',
+    body:
+      'Deleting a document — from the history, the API, the CLI or an assistant — now moves it to a '
+      + 'Trash below your folders, and the notice that says so has an Undo. Restore puts it back with '
+      + 'its folder, sharing and versions; after 14 days it goes for good. The Trash does not count '
+      + 'against your storage. Assistants get tp_restore_document to undo a delete themselves. And '
+      + 'the history picks like a file browser: Shift for a run of rows, Cmd or Ctrl for one more.',
+  },
+  {
+    date: '2026-10-21',
     title: 'A history of a thousand documents opens at once',
     body:
       'The history drew every row before showing any, and with a thousand documents that held the '

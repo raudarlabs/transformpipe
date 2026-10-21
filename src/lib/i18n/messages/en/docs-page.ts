@@ -190,7 +190,8 @@ export const docsPage = {
     'The newest 5000, with sizes, stats, share state and the folder each is in. ?folder=<id> narrows it to a folder and every folder under it; ?folder=none to the documents filed nowhere.',
   'docs.api.one': 'Metadata and the Markdown source.',
   'docs.api.html': 'The standalone document. {theme} optional.',
-  'docs.api.delete': 'Removes the row and its stored source.',
+  'docs.api.delete': 'Moves the document to the Trash for 14 days; its share link stops at once.',
+  'docs.api.trash': 'What is in the Trash, put one back with its folder, sharing and versions, or delete one for good. {empty} empties it.',
   'docs.api.update':
     'New text for the same document: Markdown as the body, or JSON with markdown and name. The id, the link and everything set on it stay; the text it replaces is kept as a revision, the newest ten. The same text again changes nothing.',
   'docs.api.revisions':

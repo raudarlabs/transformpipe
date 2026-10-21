@@ -9,6 +9,10 @@
     {
       "path": "/api/cron/brevo",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/trash",
+      "schedule": "17 3 * * *"
     }
   ],
   "redirects": [

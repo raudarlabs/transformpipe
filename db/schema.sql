@@ -539,3 +539,27 @@ alter table m2h_user
 -- it may still be shown; it is shown only to accounts made after ONBOARDING_SINCE anyway.
 alter table m2h_user
   add column if not exists onboarding_hidden_at timestamptz;
+
+-- Deleted documents, kept for TRASH_DAYS (server/trash.ts) before they go for good.
+--
+-- A separate table rather than a `deleted_at` on the document, so that nothing which reads documents
+-- — lists, search, shared pages, folders, exports, the connector, the quota — can show a deleted one
+-- by forgetting a filter: a trashed document is simply not in m2h_document. The row is kept whole,
+-- with who it was shared with and its kept versions, so a restore puts back exactly what was there.
+-- Its files stay in the store until the purge. It does not count against the account's room.
+create table if not exists m2h_trash (
+  id          uuid        primary key,
+  user_id     uuid        not null,
+  name        text        not null,
+  kind        text        not null default '',
+  size        bigint      not null default 0,
+  -- Where it was, as words, for the list — the folders themselves may be gone by then.
+  folder_path text        not null default '',
+  deleted_at  timestamptz not null default now(),
+  document    jsonb       not null,
+  shares      jsonb       not null default '[]'::jsonb,
+  revisions   jsonb       not null default '[]'::jsonb
+);
+
+create index if not exists m2h_trash_user on m2h_trash (user_id, deleted_at desc);
+create index if not exists m2h_trash_age on m2h_trash (deleted_at);

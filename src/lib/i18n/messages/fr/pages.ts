@@ -85,7 +85,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: 'Téléversez-vous mon fichier ?',
-          answer: 'Déconnecté, non. La conversion tourne dans votre navigateur et le fichier ne quitte jamais la machine, ce que vous pouvez vérifier dans l\'onglet réseau ou en vous déconnectant du réseau. Connecté, c\'est le Markdown — pas le fichier d\'origine — qui est stocké dans votre compte pour être là sur vos autres appareils, et vous pouvez le supprimer, ce qui retire la ligne et la source conservée ensemble.',
+          answer: 'Déconnecté, non. La conversion tourne dans votre navigateur et le fichier ne quitte jamais la machine, ce que vous pouvez vérifier dans l\'onglet réseau ou en vous déconnectant du réseau. Connecté, c\'est le Markdown — pas le fichier d\'origine — qui est stocké dans votre compte pour être là sur vos autres appareils, et vous pouvez le supprimer : il attend 14 jours dans la corbeille, puis la ligne et la source conservée partent ensemble.',
         },
         {
           question: 'Quels formats lit-il ?',
@@ -136,7 +136,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Vie privée et questions légales',
         body: [
-          'Les questions sur ce qui est conservé, ou une demande de suppression d’un compte et de tout ce qu’il contient, vont aux mêmes tickets. Connecté, vous pouvez aussi supprimer n’importe quel document vous-même — cela retire la ligne et la source stockée ensemble.',
+          'Les questions sur ce qui est conservé, ou une demande de suppression d’un compte et de tout ce qu’il contient, vont aux mêmes tickets. Connecté, vous pouvez aussi supprimer n’importe quel document vous-même — il attend 14 jours dans la corbeille, puis la ligne et la source stockée partent ensemble.',
         ],
       },
     ],
@@ -276,7 +276,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Supprimer des choses',
         body: [
-          'Supprimer un document supprime la ligne et le Markdown conservé ensemble, tout de suite, pas selon un calendrier. Révoquer un partage abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner.',
+          'Un document supprimé part dans la corbeille, où il attend 14 jours au cas où vous le voudriez de retour ; ensuite la ligne et le Markdown conservé sont supprimés ensemble. Vider la corbeille, ou y supprimer un document, le supprime tout de suite. Révoquer un partage abandonne le jeton, de sorte qu’un lien déjà envoyé cesse de fonctionner.',
           'Pour retirer un compte et tout ce qu’il contient, demandez-le — voir la page d’assistance. Atteindre une limite de stockage refuse l’écriture ; cela ne supprime jamais quelque chose que vous avez choisi de garder pour faire de la place.',
         ],
       },
@@ -1019,7 +1019,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Ce qu’il peut alors faire',
         body: [
-          'Dix-huit outils, tous nommés `tp_`. Ceux qui comptent dans une conversation sont `tp_convert_from_markdown`, qui transforme du Markdown en document HTML fini, `tp_convert_to_markdown` pour un fichier qui fait le chemin inverse, `tp_save_document`, qui garde le résultat dans votre compte, et `tp_share_document`, qui le publie et renvoie un lien que vous pouvez envoyer — ou ajoute ou retire un lecteur.',
+          'Dix-neuf outils, tous nommés `tp_`. Ceux qui comptent dans une conversation sont `tp_convert_from_markdown`, qui transforme du Markdown en document HTML fini, `tp_convert_to_markdown` pour un fichier qui fait le chemin inverse, `tp_save_document`, qui garde le résultat dans votre compte, et `tp_share_document`, qui le publie et renvoie un lien que vous pouvez envoyer — ou ajoute ou retire un lecteur.',
           'Les autres sont ceux qu’un assistant emploie de lui-même : `tp_list_documents` et `tp_get_document` pour retrouver quelque chose que vous avez fait plus tôt, `tp_summarize_document` pour dire ce que contient un document long, `tp_update_document` pour en modifier un en gardant son lien, `tp_document_versions` pour montrer ce qui a remplacé quoi, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` et `tp_move_documents` pour ranger les documents dans des dossiers, `tp_share_folder` pour partager un dossier entier comme on partage un document, `tp_usage` pour vérifier la place qu’il reste, `tp_delete_document`, et `tp_search_documentation`, qui répond aux questions sur TransformPipe à partir de sa documentation.',
           'En pratique, la phrase utile est courte. Demandez-lui d’écrire les notes de version, puis demandez-lui de les publier — l’assistant convertit, enregistre et partage, et répond avec l’adresse.',
         ],
@@ -1043,7 +1043,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convertir et partager un document depuis un assistant IA — TransformPipe',
       description:
-        'Comment ajouter TransformPipe à Claude ou à ChatGPT via MCP, ce que font les dix-huit outils, et ce qu’un assistant peut atteindre ou non dans votre compte.',
+        'Comment ajouter TransformPipe à Claude ou à ChatGPT via MCP, ce que font les dix-neuf outils, et ce qu’un assistant peut atteindre ou non dans votre compte.',
     },
   },
 
@@ -1687,7 +1687,7 @@ export const pages: Content['pages'] = {
           {
             question: 'Pourquoi ChatGPT demande-t-il avant de publier ou de supprimer ?',
             answer:
-              'Parce que TransformPipe indique que ces outils changent quelque chose hors de la conversation : publier met une page en ligne, partager avec des personnes envoie un mail, et supprimer ne s’annule pas. ChatGPT vous demande avant chacun de ces appels. Enregistrer un document privé, lister et lire ne publient rien.',
+              'Parce que TransformPipe indique que ces outils changent quelque chose hors de la conversation : publier met une page en ligne, partager avec des personnes envoie un mail, et supprimer retire un document du compte. ChatGPT vous demande avant chacun de ces appels. Enregistrer un document privé, lister et lire ne publient rien.',
           },
           {
             question: 'Comment partager ce qu’écrit ChatGPT sous forme de lien ?',

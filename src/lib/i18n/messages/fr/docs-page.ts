@@ -179,7 +179,8 @@ export const docsPage = {
     'Les 5000 plus récents, avec tailles, statistiques, état du partage et dossier de chacun. ?folder=<id> limite à un dossier et à tous ceux en dessous ; ?folder=none aux documents rangés nulle part.',
   'docs.api.one': 'Les métadonnées et la source Markdown.',
   'docs.api.html': 'Le document autonome. {theme} en option.',
-  'docs.api.delete': 'Retire la ligne et sa source conservée.',
+  'docs.api.delete': 'Place le document dans la corbeille pour 14 jours ; son lien de partage s’arrête tout de suite.',
+  'docs.api.trash': 'Ce que contient la corbeille, en restaurer un avec son dossier, son partage et ses versions, ou en supprimer un définitivement. {empty} la vide.',
   'docs.api.update':
     'Un nouveau texte pour le même document : du Markdown dans le corps, ou du JSON avec markdown et name. L’id, le lien et tout ce qui y est réglé restent ; le texte remplacé est gardé comme révision, les dix plus récentes. Le même texte une seconde fois ne change rien.',
   'docs.api.revisions':

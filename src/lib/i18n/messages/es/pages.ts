@@ -89,7 +89,7 @@ export const pages: Content['pages'] = {
         },
         {
           question: '¿Subís mi archivo?',
-          answer: 'Sin sesión iniciada, no. La conversión corre en tu navegador y el archivo nunca sale de la máquina, lo que puedes comprobar en la pestaña de red o desconectándote. Con sesión iniciada se guarda el Markdown — no el archivo original — en tu cuenta para que esté en tus otros dispositivos, y puedes borrarlo, lo que elimina la fila y la fuente guardada a la vez.',
+          answer: 'Sin sesión iniciada, no. La conversión corre en tu navegador y el archivo nunca sale de la máquina, lo que puedes comprobar en la pestaña de red o desconectándote. Con sesión iniciada se guarda el Markdown — no el archivo original — en tu cuenta para que esté en tus otros dispositivos, y puedes borrarlo: espera 14 días en la papelera y después la fila y la fuente guardada se van a la vez.',
         },
         {
           question: '¿Qué formatos lee?',
@@ -140,7 +140,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Privacidad y cuestiones legales',
         body: [
-          'Las preguntas sobre qué se guarda, o la petición de borrar una cuenta y todo lo que contiene, van a las mismas incidencias. Con la sesión iniciada también puedes borrar cualquier documento tú mismo: eso elimina la fila y la fuente guardada a la vez.',
+          'Las preguntas sobre qué se guarda, o la petición de borrar una cuenta y todo lo que contiene, van a las mismas incidencias. Con la sesión iniciada también puedes borrar cualquier documento tú mismo: espera 14 días en la papelera y después la fila y la fuente guardada se van a la vez.',
         ],
       },
     ],
@@ -280,7 +280,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Eliminar cosas',
         body: [
-          'Eliminar un documento elimina la fila y el Markdown guardado a la vez, en el momento y no según un calendario. Revocar una compartición descarta el token, así que un enlace ya enviado deja de funcionar.',
+          'Un documento eliminado pasa a la papelera, donde espera 14 días por si lo quieres recuperar; después la fila y el Markdown guardado se borran a la vez. Vaciar la papelera, o borrar un documento desde ella, lo borra en el momento. Revocar una compartición descarta el token, así que un enlace ya enviado deja de funcionar.',
           'Para eliminar una cuenta y todo lo que contiene, pídelo — mira la página de soporte. Llegar a un límite de almacenamiento rechaza la escritura; nunca elimina algo que decidiste conservar para hacer sitio.',
         ],
       },
@@ -1023,7 +1023,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Qué puede hacer entonces',
         body: [
-          'Dieciocho herramientas, todas con nombre `tp_`. Las que importan en una conversación son `tp_convert_from_markdown`, que vuelve documento HTML terminado un texto en Markdown, `tp_convert_to_markdown` para un archivo que va en sentido contrario, `tp_save_document`, que guarda el resultado en tu cuenta, y `tp_share_document`, que lo publica y devuelve un enlace que puedes enviar — o añade o quita un lector.',
+          'Diecinueve herramientas, todas con nombre `tp_`. Las que importan en una conversación son `tp_convert_from_markdown`, que vuelve documento HTML terminado un texto en Markdown, `tp_convert_to_markdown` para un archivo que va en sentido contrario, `tp_save_document`, que guarda el resultado en tu cuenta, y `tp_share_document`, que lo publica y devuelve un enlace que puedes enviar — o añade o quita un lector.',
           'Las demás son a las que un asistente recurre por su cuenta: `tp_list_documents` y `tp_get_document` para encontrar algo que hiciste antes, `tp_summarize_document` para decir qué contiene uno largo, `tp_update_document` para cambiar uno y conservar su enlace, `tp_document_versions` para enseñar qué sustituyó a qué, `tp_list_folders`, `tp_create_folder`, `tp_update_folder`, `tp_delete_folder` y `tp_move_documents` para ordenar los documentos en carpetas, `tp_share_folder` para compartir una carpeta entera igual que se comparte un documento, `tp_usage` para comprobar cuánto sitio queda, `tp_delete_document`, y `tp_search_documentation`, que responde a preguntas sobre TransformPipe a partir de su documentación.',
           'En la práctica la frase útil es corta. Pídele que escriba las notas de la versión y luego pídele que las publique — el asistente convierte, guarda y comparte, y responde con la dirección.',
         ],
@@ -1047,7 +1047,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Convertir y compartir un documento desde un asistente de IA — TransformPipe',
       description:
-        'Cómo añadir TransformPipe a Claude o a ChatGPT por MCP, qué hacen las dieciocho herramientas y hasta dónde puede llegar un asistente dentro de tu cuenta.',
+        'Cómo añadir TransformPipe a Claude o a ChatGPT por MCP, qué hacen las diecinueve herramientas y hasta dónde puede llegar un asistente dentro de tu cuenta.',
     },
   },
 
@@ -1690,7 +1690,7 @@ export const pages: Content['pages'] = {
           {
             question: '¿Por qué ChatGPT pregunta antes de publicar o borrar?',
             answer:
-              'Porque TransformPipe indica que esas herramientas cambian algo fuera del chat: publicar pone una página en la web, compartir con personas envía un correo y borrar no se puede deshacer. ChatGPT te pregunta antes de cada una de esas llamadas. Guardar un documento privado, listar y leer no publican nada.',
+              'Porque TransformPipe indica que esas herramientas cambian algo fuera del chat: publicar pone una página en la web, compartir con personas envía un correo y borrar saca un documento de la cuenta. ChatGPT te pregunta antes de cada una de esas llamadas. Guardar un documento privado, listar y leer no publican nada.',
           },
           {
             question: '¿Cómo comparto lo que escribe ChatGPT como enlace?',

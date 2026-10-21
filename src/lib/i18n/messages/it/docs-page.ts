@@ -172,7 +172,8 @@ export const docsPage = {
     'I 5000 più recenti, con dimensioni, statistiche, stato della condivisione e la cartella di ciascuno. ?folder=<id> limita a una cartella e a tutte quelle sotto; ?folder=none ai documenti senza cartella.',
   'docs.api.one': 'I metadati e il sorgente Markdown.',
   'docs.api.html': 'Il documento autosufficiente. {theme} è opzionale.',
-  'docs.api.delete': 'Elimina la riga e il sorgente conservato.',
+  'docs.api.delete': 'Sposta il documento nel cestino per 14 giorni; il suo link di condivisione smette subito di funzionare.',
+  'docs.api.trash': 'Cosa c’è nel cestino, ripristinarne uno con cartella, condivisione e versioni, o eliminarne uno per sempre. {empty} lo svuota.',
   'docs.api.update':
     'Nuovo testo per lo stesso documento: Markdown come corpo, o JSON con markdown e name. L’id, il link e tutto ciò che vi è impostato restano; il testo sostituito viene conservato come revisione, le dieci più recenti. Lo stesso testo una seconda volta non cambia nulla.',
   'docs.api.revisions':

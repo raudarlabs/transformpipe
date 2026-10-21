@@ -62,6 +62,7 @@ import { registerFolders } from './folders.js';
 import { registerFolderSharing, registerSharedFolders } from './folder-share.js';
 import { registerFolderPages } from './folder-page.js';
 import { registerOnboarding } from './onboarding.js';
+import { registerTrash, TRASH_DAYS, trashDocuments } from './trash.js';
 import { linkSharedMarkdown, linkSharedPages } from './page-links.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import {
@@ -1204,31 +1205,24 @@ api.delete('/documents/:id/share/people', async (c) => {
   return state ? c.json(state) : c.json({ error: 'Not found' }, 404);
 });
 
+/* To the trash, for TRASH_DAYS — see server/trash.ts. Deleting for good is done from there. */
 api.delete('/documents/:id', async (c) => {
-  const revisions = await revisionFiles(c.get('user').id, c.req.param('id'));
-  const removed = (await sql()`
-    delete from m2h_document
-    where user_id = ${c.get('user').id} and id = ${c.req.param('id')}
-    returning blob_path
-  `) as Array<{ blob_path: string | null }>;
+  const moved = await trashDocuments(c.get('user').id, [c.req.param('id')]);
 
-  await deleteSources([...removed.map((row) => row.blob_path), ...(removed.length ? revisions : [])]);
-
-  return c.json({ ok: true });
+  return c.json({ ok: true, trashed: moved, days: TRASH_DAYS });
 });
 
 api.delete('/documents', async (c) => {
-  const revisions = await revisionFiles(c.get('user').id);
-  const removed = (await sql()`
-    delete from m2h_document
-    where user_id = ${c.get('user').id}
-    returning blob_path
-  `) as Array<{ blob_path: string | null }>;
+  const userId = c.get('user').id;
+  const ids = (await sql()`select id::text from m2h_document where user_id = ${userId}`) as Array<{ id: string }>;
+  const moved = await trashDocuments(userId, ids.map((row) => row.id));
 
-  await deleteSources([...removed.map((row) => row.blob_path), ...revisions]);
-
-  return c.json({ ok: true });
+  return c.json({ ok: true, trashed: moved, days: TRASH_DAYS });
 });
+
+api.use('/trash', requireUser);
+api.use('/trash/*', requireUser);
+registerTrash(api, (c) => c.get('user').id);
 
 /*
  * The page a share link opens.

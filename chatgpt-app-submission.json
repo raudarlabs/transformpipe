@@ -148,7 +148,7 @@
       "justifications": {
         "read_only_justification": "It deletes one folder from the connected account, and with with_documents=true every document in it.",
         "open_world_justification": "Deletion is limited to the connected account and does not contact anyone or publish anything.",
-        "destructive_justification": "The folder is deleted with no undo; with with_documents=true its documents are permanently deleted, and a shared folder's link stops working. Every call requires confirm=true.",
+        "destructive_justification": "The folder is deleted and does not come back; with with_documents=true its documents go to the Trash for 14 days, and a shared folder's link stops working. Every call requires confirm=true.",
         "idempotent_justification": "Once the folder is deleted, repeating the call finds no folder and changes nothing further."
       }
     },
@@ -164,10 +164,19 @@
     "tp_delete_document": {
       "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": true, "idempotentHint": true },
       "justifications": {
-        "read_only_justification": "With confirm=true it permanently deletes one document and its stored source from the connected account.",
+        "read_only_justification": "With confirm=true it removes one document from the connected account into its Trash, where it is kept for 14 days and then deleted for good.",
         "open_world_justification": "Deletion is limited to one document in the connected account and contacts no one.",
-        "destructive_justification": "Deletion has no undo or trash, and a shared link to the document stops working; it requires confirm=true.",
+        "destructive_justification": "The document leaves the account and its shared link stops working at once; it can be restored for 14 days, after which it is deleted for good. It requires confirm=true.",
         "idempotent_justification": "Once the document is deleted, repeating the call finds no document and changes nothing further."
+      }
+    },
+    "tp_restore_document": {
+      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
+      "justifications": {
+        "read_only_justification": "With an id it puts a deleted document back into the connected account, with its folder, sharing and versions; without one it only lists the Trash.",
+        "open_world_justification": "It reads and restores only the connected account's own Trash and contacts no one.",
+        "destructive_justification": "It removes nothing: it brings back a document exactly as it was before it was deleted.",
+        "idempotent_justification": "Once a document is restored it is no longer in the Trash, so repeating the call changes nothing further."
       }
     }
   },
@@ -220,7 +229,7 @@
       "description": "The server can delete only one document by id per call and has no bulk-delete tool. Decline an account-wide wipe without looking up ids or issuing deletion calls.",
       "user_prompt": "Wipe every document in my TransformPipe account in one operation, without showing me what would be deleted.",
       "tools_triggered": null,
-      "expected_output": "Explain that there is no bulk-delete operation and that each permanent deletion requires a specific document and explicit confirmation."
+      "expected_output": "Explain that there is no bulk-delete operation and that each deletion requires a specific document and explicit confirmation."
     }
   ]
 }

@@ -5,6 +5,7 @@ import { clientLabel, type ClientLabel } from './client-label.js';
 import { looksLikeId, sql } from './db.js';
 import { QUOTA } from './limits.js';
 import { deleteSources } from './source.js';
+import { purgeExpired } from './trash.js';
 import { brevoEnabled, forgetContact, syncToBrevo } from './brevo.js';
 import { OAUTH_STEPS } from '../shared/usage.js';
 
@@ -1393,6 +1394,9 @@ async function deleteAccount(id: string): Promise<{ documents: number; files: nu
        where document_id in (select id from m2h_document where user_id = ${id})
        returning blob_path`,
     db`delete from m2h_document where user_id = ${id} returning blob_path`,
+    // The trash goes too, and its files: an account deleted keeps nothing for a fortnight.
+    db`delete from m2h_trash where user_id = ${id}
+       returning coalesce(document->>'blob_path', '') as blob_path, revisions`,
     db`delete from m2h_api_key where user_id = ${id}`,
     db`delete from m2h_webhook where user_id = ${id}`,
     db`delete from m2h_oauth_token where user_id = ${id}`,
@@ -1409,7 +1413,12 @@ async function deleteAccount(id: string): Promise<{ documents: number; files: nu
     db`delete from neon_auth."user" where id = ${id}`,
   ])) as unknown as Array<Array<{ blob_path?: string | null }>>;
 
-  const files = [...results[0], ...results[1]].map((row) => row.blob_path ?? null);
+  const trashed = results[2] as unknown as Array<{ blob_path: string; revisions: Array<{ blob_path?: string | null }> }>;
+  const files = [
+    ...results[0],
+    ...results[1],
+    ...trashed.flatMap((row) => [{ blob_path: row.blob_path || null }, ...row.revisions.map((one) => ({ blob_path: one.blob_path ?? null }))]),
+  ].map((row) => row.blob_path ?? null);
 
   await deleteSources(files);
 
@@ -1610,6 +1619,24 @@ admin.post('/admin/brevo-sync', async (c) => {
   }
 
   return c.redirect(`/admin?synced=${encodeURIComponent(said)}`, 303);
+});
+
+/*
+ * The daily run that empties every account's trash of what is older than TRASH_DAYS, from
+ * vercel.json's `crons` — the same secret as the Brevo run below.
+ */
+admin.get('/api/cron/trash', async (c) => {
+  const secret = process.env.CRON_SECRET;
+
+  if (!secret || c.req.header('authorization') !== `Bearer ${secret}`) {
+    return c.text('Unauthorized', 401);
+  }
+
+  const purged = await purgeExpired();
+
+  console.info(`trash: ${purged} purged`);
+
+  return c.json({ ok: true, purged });
 });
 
 /*

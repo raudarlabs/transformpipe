@@ -2,6 +2,7 @@ import type { Hono } from 'hono';
 import { CONVERSIONS, DEFAULT_CONVERSION } from '../shared/conversions.js';
 import { looksLikeId, sql, searchText } from './db.js';
 import { QUOTA, UNVERIFIED, cleanStats, isVerified, usageOf } from './limits.js';
+import { trashFolderContents } from './trash.js';
 import { deleteSources, putSource, readSource } from './source.js';
 
 /*
@@ -224,20 +225,12 @@ export function registerFolders(api: Api) {
       return c.json({ ok: true, deleted: 0 });
     }
 
+    // Its documents to the trash first, so each remembers the folder path it lived under.
     const folders = await subtree(userId, id);
-    const revisions = (await sql()`
-      select r.blob_path from m2h_document_revision r
-      join m2h_document d on d.id = r.document_id
-      where d.user_id = ${userId} and d.folder_id = any(${folders}::uuid[])
-    `) as Array<{ blob_path: string | null }>;
-    const removed = (await sql()`
-      delete from m2h_document
-      where user_id = ${userId} and folder_id = any(${folders}::uuid[])
-      returning blob_path
-    `) as Array<{ blob_path: string | null }>;
+    const moved = await trashFolderContents(userId, folders);
+    const removed = { length: moved };
 
     await sql()`delete from m2h_folder where id = ${id} and user_id = ${userId}`;
-    await deleteSources([...removed.map((row) => row.blob_path), ...revisions.map((row) => row.blob_path)]);
 
     return c.json({ ok: true, deleted: removed.length });
   });

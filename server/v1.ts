@@ -37,6 +37,7 @@ import { markdownToHtml } from './render.js';
 import { forgetRevision, keepRevision, listRevisions, pruneRevisions, readRevision, revisionFiles } from './revisions.js';
 import { deleteSources, putSource, readSource } from './source.js';
 import { registerFolders } from './folders.js';
+import { registerTrash, TRASH_DAYS, trashDocuments } from './trash.js';
 import { linkSharedMarkdown } from './page-links.js';
 import { registerFolderSharing } from './folder-share.js';
 import { namedOpens, readExpiry, recentViews, VIEW_LIST_LIMIT } from './share-gate.js';
@@ -1261,21 +1262,17 @@ v1.delete('/documents/:id', async (c) => {
     return c.json({ error: 'Not found' }, 404);
   }
 
-  const revisions = await revisionFiles(c.get('caller').id, c.req.param('id'));
-  const removed = (await sql()`
-    delete from m2h_document
-    where user_id = ${c.get('caller').id} and id = ${c.req.param('id')}
-    returning blob_path
-  `) as Array<{ blob_path: string | null }>;
+  /* To the trash for TRASH_DAYS, where `POST /trash/:id/restore` puts it back (server/trash.ts). */
+  const moved = await trashDocuments(c.get('caller').id, [c.req.param('id')]);
 
-  if (removed.length === 0) {
+  if (moved === 0) {
     return c.json({ error: 'Not found' }, 404);
   }
 
-  await deleteSources([...removed.map((row) => row.blob_path), ...revisions]);
-
-  return c.json({ ok: true });
+  return c.json({ ok: true, trashed: true, days: TRASH_DAYS });
 });
+
+registerTrash(v1, (c) => c.get('caller').id);
 
 v1.get('/documents/:id/share', async (c) => {
   const row = await findDocument(c.get('caller').id, c.req.param('id'));

@@ -1,6 +1,6 @@
 # Roadmap
 
-**Updated 16 October 2026.** Next up: **Comparing** — see Next, in order.
+**Updated 21 October 2026.** Next up: **Comparing** — see Next, in order.
 
 A shipping schedule, not a wish list. Every item is one week of work that somebody using
 TransformPipe would notice, which is the bar `src/lib/changelog.ts` sets — an item that cannot be
@@ -63,8 +63,6 @@ Cursor comes in with the sign-in work because it needs the same thing.
       · the image is the interesting half: a per-document card drawn the way the blog covers are
 - [ ] **Tags in the history**, filterable beside the existing chips
       · the chip plumbing exists; this adds a source of chips
-- [ ] **A trash** — deletes recoverable for thirty days, and **drop a folder** to get a zip back
-      · `deleted_at` rather than a delete, and one honest sentence in the privacy page
 
 ---
 
@@ -95,6 +93,17 @@ spreadsheets, HTML, CSV, JSON and more" and sat on the same store page. It reads
 
 Newest first. Dates are the changelog's; everything here is on `main` and on production unless it
 says otherwise.
+
+### 21 October
+
+- [x] **A trash** — a delete from anywhere waits 14 days (the owner's choice, not thirty) and does
+      not count against storage; Undo on the notice, restore with folder, sharing and versions,
+      `tp_restore_document` for assistants, the privacy page saying so in five languages. A table of
+      its own rather than `deleted_at`, so no query can forget to hide it. The folder as a zip
+      shipped on 16 October
+- [x] **A start for a new account** — three ways in on an empty history, a sample that is the
+      product's guide, first steps ticked by what the account does, things to ask on the consent page
+- [x] **The history at a thousand documents** — opens at once; picking with Shift and Cmd/Ctrl
 
 ### 16 October
 
