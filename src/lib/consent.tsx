@@ -1,3 +1,4 @@
+import { clarityConsent } from './clarity';
 import {
   createContext,
   type ReactNode,
@@ -84,6 +85,9 @@ function read(): Stored | null {
 function tell(consent: Consent) {
   const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void })
     .gtag;
+
+  /* The same switch starts or stops Clarity: see src/lib/clarity.ts. */
+  clarityConsent(consent.analytics);
 
   gtag?.('consent', 'update', {
     analytics_storage: consent.analytics ? 'granted' : 'denied',

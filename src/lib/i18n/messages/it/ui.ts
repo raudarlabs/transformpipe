@@ -211,7 +211,7 @@ export const ui: Content['ui'] = {
   'cookies.settings.necessary': 'Necessari',
   'cookies.settings.necessary.detail': 'La sessione di accesso e il tema scelto. Rifiutarli significherebbe rinunciare ad accedere, quindi non si possono disattivare.',
   'cookies.settings.analytics': 'Statistiche',
-  'cookies.settings.analytics.detail': 'Google Analytics, tramite Google Tag Manager: quante persone arrivano e quali pagine leggono. Spente finché non le consenti — e finché lo sono, i tag di Google non scrivono nulla nel browser.',
+  'cookies.settings.analytics.detail': 'Google Analytics, tramite Google Tag Manager: quante persone arrivano e quali pagine leggono. Microsoft Clarity: dove cliccano e scorrono, con ogni parola e ogni immagine mascherate. Spente finché non le consenti — e finché lo sono, nessuno dei due scrive nulla nel browser.',
   'cookies.settings.save': 'Salva le scelte',
   'cookies.settings.open': 'Impostazioni dei cookie',
   'header.account': 'Account',

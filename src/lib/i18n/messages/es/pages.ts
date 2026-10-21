@@ -258,7 +258,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Lo que no hacemos',
         body: [
-          'No hay publicidad, ni píxel de seguimiento, y nada se vende. Se carga un único script de terceros — Google Tag Manager — y solo trae Google Analytics si lo permitiste en el aviso de cookies; si lo rechazas o no respondes, las etiquetas de Google no escriben nada en tu navegador. Nada se comparte con nadie salvo con la infraestructura que hace funcionar el servicio: la base de datos, el almacén de blobs, el proveedor de autenticación, los dos proveedores de correo y el alojamiento.',
+          'No hay publicidad, ni píxel de seguimiento, y nada se vende. Google Tag Manager se carga en todas las páginas, y solo trae Google Analytics si permitiste la analítica en el aviso de cookies. Microsoft Clarity, que muestra dónde se hace clic y desplazamiento, se carga con la misma respuesta y solo cuando la página ha terminado de cargar: cada palabra y cada imagen se ocultan en tu navegador antes de enviar nada, y nunca funciona en un documento o carpeta compartidos. Si lo rechazas o no respondes, las etiquetas de Google no escriben nada en tu navegador y Clarity no se carga en absoluto. Nada se comparte con nadie salvo con la infraestructura que hace funcionar el servicio: la base de datos, el almacén de blobs, el proveedor de autenticación, los dos proveedores de correo y el alojamiento.',
           'Nosotros no leemos tus documentos, y no se usan para entrenar nada.',
         ],
       },
@@ -300,7 +300,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Privacidad — TransformPipe',
       description:
-        'Sin sesión iniciada, ningún archivo sale de tu navegador. Con sesión guardamos el documento, sus metadatos y tu identidad de cuenta: Google Analytics solo si lo permites, sin píxeles de seguimiento y sin vender nada.',
+        'Sin sesión iniciada, ningún archivo sale de tu navegador. Con sesión guardamos el documento, sus metadatos y tu identidad de cuenta: Google Analytics y Microsoft Clarity solo si los permites, sin píxeles de seguimiento y sin vender nada.',
     },
   },
   terms: {
@@ -363,7 +363,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Lo único que eliges',
         body: [
-          'La mayoría de las páginas de cookies existen para que puedas rechazar la analítica y la publicidad. Aquí no hay publicidad ninguna. La analítica es Google Analytics, cargado mediante Google Tag Manager, y es el único interruptor del sitio: el aviso pregunta en la primera visita, el botón al pie de esta página reabre la respuesta, y hasta que la permitas las etiquetas de Google no escriben nada en tu navegador y envían como mucho pings sin cookies.',
+          'La mayoría de las páginas de cookies existen para que puedas rechazar la analítica y la publicidad. Aquí no hay publicidad ninguna. La analítica es Google Analytics, cargado mediante Google Tag Manager, y Microsoft Clarity, que muestra dónde se hace clic y desplazamiento con todo el texto y las imágenes ocultos. Los dos dependen del único interruptor del sitio: el aviso pregunta en la primera visita, el botón al pie de esta página reabre la respuesta, y hasta que la permitas las etiquetas de Google no escriben nada en tu navegador y envían como mucho pings sin cookies, y Clarity no se carga.',
           'Sin la sesión iniciada, y con la analítica rechazada o sin responder, este sitio no pone ninguna cookie — salvo si escribes la contraseña de un enlace compartido, que pone la que se describe abajo.',
         ],
       },
@@ -381,6 +381,18 @@ export const pages: Content['pages'] = {
         heading: 'Una para un enlace con contraseña',
         body: [
           'tp_unlock_ seguido de un código del enlace — se pone cuando escribes la contraseña de un enlace compartido, para que la siguiente carga de página no vuelva a pedirla. Es propia y HttpOnly, y dura un día. Guarda una firma que demuestra que se escribió la contraseña, nunca la contraseña, y una contraseña nueva en el enlace la deja sin valor.',
+        ],
+      },
+      {
+        heading: 'Solo si permites la analítica',
+        body: [
+          'Google Analytics y Microsoft Clarity guardan estas, y solo después de que permitas la analítica. Rechazarla después las detiene; borrar los datos del sitio en tu navegador las elimina.',
+        ],
+        items: [
+          '_ga y _ga_3WW403TWDN: Google Analytics, para reconocer una visita posterior como el mismo navegador. Hasta dos años.',
+          '_clck: Microsoft Clarity, lo mismo para Clarity. Hasta un año.',
+          '_clsk: Microsoft Clarity, une las páginas de una visita en una sola grabación. Un día.',
+          'MUID: la guarda Microsoft en su propio dominio, clarity.ms, no en este sitio. Hasta un año.',
         ],
       },
       {

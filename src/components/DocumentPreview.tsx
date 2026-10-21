@@ -308,7 +308,8 @@ export function DocumentPreview({ html, className, book: wantsBook = false }: Do
 
       {wantsBook && <style>{BOOK_STYLE}</style>}
 
-      <div className={cn('md-sheet', className)}>
+      {/* data-clarity-mask: a document is never part of a recording, whatever the project's mode. */}
+      <div className={cn('md-sheet', className)} data-clarity-mask="true">
         <div
           ref={sheet}
           className={cn(wantsBook && 'md-book')}

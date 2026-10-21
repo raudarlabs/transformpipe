@@ -260,7 +260,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'What we do not do',
         body: [
-          'There is no advertising, no tracking pixel and nothing sold. One third-party script loads at all — Google Tag Manager — and it brings Google Analytics only if you allowed it in the cookie banner; refused or unanswered, Google’s tags write nothing to your browser. Nothing is shared with anyone except the infrastructure that runs the service: the database, the blob store, the authentication provider, the two email providers and the host.',
+          'There is no advertising, no tracking pixel and nothing sold. Google Tag Manager loads on every page, and brings Google Analytics only if you allowed analytics in the cookie banner. Microsoft Clarity, which shows where people click and scroll, loads on the same answer and only once the page has finished loading — with every word and picture masked in your browser before anything is sent, and never on a shared document or folder. Refused or unanswered, Google’s tags write nothing to your browser and Clarity does not load at all. Nothing is shared with anyone except the infrastructure that runs the service: the database, the blob store, the authentication provider, the two email providers and the host.',
           'Your documents are not read by us, and they are not used to train anything.',
         ],
       },
@@ -302,7 +302,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Privacy — TransformPipe',
       description:
-        'Signed out, no file leaves your browser. Signed in, we store the document, its metadata and your account identity — Google Analytics only if you allow it, no tracking pixels, nothing sold.',
+        'Signed out, no file leaves your browser. Signed in, we store the document, its metadata and your account identity — Google Analytics and Microsoft Clarity only if you allow them, no tracking pixels, nothing sold.',
     },
   },
   terms: {
@@ -365,7 +365,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'The one thing you choose',
         body: [
-          'Most cookie pages exist to let you decline analytics and advertising. There is no advertising here at all. Analytics is Google Analytics, loaded through Google Tag Manager, and it is the single switch on this site: the banner asks on a first visit, the button at the foot of this page reopens the answer, and until you allow it Google’s tags write nothing to your browser and send cookieless pings at most.',
+          'Most cookie pages exist to let you decline analytics and advertising. There is no advertising here at all. Analytics is Google Analytics, loaded through Google Tag Manager, and Microsoft Clarity, which shows where people click and scroll with all text and pictures masked. Both sit behind the single switch on this site: the banner asks on a first visit, the button at the foot of this page reopens the answer, and until you allow it Google’s tags write nothing to your browser and send cookieless pings at most, and Clarity does not load.',
           'Signed out, with analytics refused or unanswered, this site sets no cookies at all — unless you enter the password of a shared link, which sets the one below.',
         ],
       },
@@ -383,6 +383,18 @@ export const pages: Content['pages'] = {
         heading: 'One for a link with a password',
         body: [
           'tp_unlock_ followed by a code for the link — set when you enter the password of a shared link, so the next page load does not ask again. It is first-party and HttpOnly, and lasts a day. It holds a signature that proves the password was entered, never the password itself, and a new password on the link makes it worthless.',
+        ],
+      },
+      {
+        heading: 'Set only if you allow analytics',
+        body: [
+          'Google Analytics and Microsoft Clarity set these, and only after you allow analytics. Refusing later stops them; clearing site data in your browser removes them.',
+        ],
+        items: [
+          '_ga and _ga_3WW403TWDN — Google Analytics, so a later visit is recognised as the same browser. Up to two years.',
+          '_clck — Microsoft Clarity, the same for Clarity. Up to a year.',
+          '_clsk — Microsoft Clarity, joins the pages of one visit into one recording. A day.',
+          'MUID — set by Microsoft on its own domain, clarity.ms, not on this site. Up to a year.',
         ],
       },
       {

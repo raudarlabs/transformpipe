@@ -262,7 +262,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Was wir nicht tun',
         body: [
-          'Es gibt keine Werbung, kein Tracking-Pixel und nichts wird verkauft. Genau ein Skript von Dritten lädt überhaupt — der Google Tag Manager — und es bringt Google Analytics nur mit, wenn Sie im Cookie-Banner zugestimmt haben; bei Ablehnung oder ohne Antwort schreiben Googles Tags nichts in Ihren Browser. Nichts wird mit irgendjemandem geteilt außer mit der Infrastruktur, die den Dienst betreibt: der Datenbank, dem Blob-Speicher, dem Authentifizierungsanbieter, den beiden E-Mail-Anbietern und dem Hoster.',
+          'Es gibt keine Werbung, kein Tracking-Pixel und nichts wird verkauft. Der Google Tag Manager lädt auf jeder Seite und bringt Google Analytics nur mit, wenn Sie im Cookie-Banner der Analyse zugestimmt haben. Microsoft Clarity, das zeigt, wo geklickt und gescrollt wird, lädt mit derselben Zustimmung und erst, wenn die Seite fertig geladen ist — jedes Wort und jedes Bild wird schon in Ihrem Browser unkenntlich gemacht, bevor etwas gesendet wird, und auf einem geteilten Dokument oder Ordner läuft es nie. Bei Ablehnung oder ohne Antwort schreiben Googles Tags nichts in Ihren Browser, und Clarity lädt gar nicht. Nichts wird mit irgendjemandem geteilt außer mit der Infrastruktur, die den Dienst betreibt: der Datenbank, dem Blob-Speicher, dem Authentifizierungsanbieter, den beiden E-Mail-Anbietern und dem Hoster.',
           'Ihre Dokumente werden von uns nicht gelesen, und sie werden nicht dazu benutzt, irgendetwas zu trainieren.',
         ],
       },
@@ -304,7 +304,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Datenschutz — TransformPipe',
       description:
-        'Abgemeldet verlässt keine Datei den Browser. Angemeldet speichern wir Dokument, Metadaten und Konto-Identität — Google Analytics nur mit Ihrer Zustimmung, keine Tracking-Pixel, nichts wird verkauft.',
+        'Abgemeldet verlässt keine Datei den Browser. Angemeldet speichern wir Dokument, Metadaten und Konto-Identität — Google Analytics und Microsoft Clarity nur mit Ihrer Zustimmung, keine Tracking-Pixel, nichts wird verkauft.',
     },
   },
   terms: {
@@ -367,7 +367,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Das eine, das Sie wählen',
         body: [
-          'Die meisten Cookie-Seiten bestehen, damit man Analyse und Werbung ablehnen kann. Werbung gibt es hier überhaupt nicht. Die Analyse ist Google Analytics, geladen über den Google Tag Manager, und sie ist der einzige Schalter dieser Seite: Beim ersten Besuch fragt das Banner, der Knopf am Fuß dieser Seite öffnet die Antwort wieder, und bis Sie zustimmen schreiben Googles Tags nichts in Ihren Browser und senden höchstens cookielose Pings.',
+          'Die meisten Cookie-Seiten bestehen, damit man Analyse und Werbung ablehnen kann. Werbung gibt es hier überhaupt nicht. Die Analyse ist Google Analytics, geladen über den Google Tag Manager, und Microsoft Clarity, das zeigt, wo geklickt und gescrollt wird — mit unkenntlich gemachtem Text und Bildern. Beide hängen am einzigen Schalter dieser Seite: Beim ersten Besuch fragt das Banner, der Knopf am Fuß dieser Seite öffnet die Antwort wieder, und bis Sie zustimmen schreiben Googles Tags nichts in Ihren Browser und senden höchstens cookielose Pings, und Clarity lädt nicht.',
           'Abgemeldet und mit abgelehnter oder unbeantworteter Analyse setzt diese Seite überhaupt keine Cookies — es sei denn, Sie geben das Passwort eines geteilten Links ein, das setzt das eine unten.',
         ],
       },
@@ -385,6 +385,18 @@ export const pages: Content['pages'] = {
         heading: 'Eines für einen Link mit Passwort',
         body: [
           'tp_unlock_ gefolgt von einem Code für den Link — gesetzt, wenn Sie das Passwort eines geteilten Links eingeben, damit der nächste Seitenaufruf nicht erneut fragt. Es ist First-Party und HttpOnly und gilt einen Tag. Es enthält eine Signatur, die belegt, dass das Passwort eingegeben wurde, nie das Passwort selbst, und ein neues Passwort am Link macht es wertlos.',
+        ],
+      },
+      {
+        heading: 'Nur gesetzt, wenn Sie der Analyse zustimmen',
+        body: [
+          'Google Analytics und Microsoft Clarity setzen diese, und erst nachdem Sie der Analyse zugestimmt haben. Ein späteres Ablehnen stoppt sie; das Löschen der Website-Daten im Browser entfernt sie.',
+        ],
+        items: [
+          '_ga und _ga_3WW403TWDN — Google Analytics, damit ein späterer Besuch als derselbe Browser erkannt wird. Bis zu zwei Jahre.',
+          '_clck — Microsoft Clarity, dasselbe für Clarity. Bis zu ein Jahr.',
+          '_clsk — Microsoft Clarity, fasst die Seiten eines Besuchs zu einer Aufzeichnung zusammen. Ein Tag.',
+          'MUID — von Microsoft auf der eigenen Domain clarity.ms gesetzt, nicht auf dieser Website. Bis zu ein Jahr.',
         ],
       },
       {

@@ -254,7 +254,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Ce que nous ne faisons pas',
         body: [
-          'Il n’y a ni publicité, ni pixel de suivi, et rien n’est vendu. Un seul script tiers se charge — Google Tag Manager — et il n’apporte Google Analytics que si vous l’avez autorisé dans la bannière cookies ; refusé ou sans réponse, les balises de Google n’écrivent rien dans votre navigateur. Rien n’est communiqué à personne en dehors de l’infrastructure qui fait tourner le service : la base de données, le stockage d’objets, le prestataire d’authentification, les deux prestataires d’e-mail et l’hébergeur.',
+          'Il n’y a ni publicité, ni pixel de suivi, et rien n’est vendu. Google Tag Manager se charge sur chaque page, et n’apporte Google Analytics que si vous avez autorisé la mesure d’audience dans la bannière cookies. Microsoft Clarity, qui montre où l’on clique et fait défiler, se charge avec la même réponse et seulement une fois la page entièrement chargée — chaque mot et chaque image sont masqués dans votre navigateur avant tout envoi, et il ne tourne jamais sur un document ou un dossier partagé. Refusé ou sans réponse, les balises de Google n’écrivent rien dans votre navigateur et Clarity ne se charge pas du tout. Rien n’est communiqué à personne en dehors de l’infrastructure qui fait tourner le service : la base de données, le stockage d’objets, le prestataire d’authentification, les deux prestataires d’e-mail et l’hébergeur.',
           'Vos documents ne sont pas lus par nous, et ils ne servent pas à entraîner quoi que ce soit.',
         ],
       },
@@ -296,7 +296,7 @@ export const pages: Content['pages'] = {
     seo: {
       title: 'Confidentialité — TransformPipe',
       description:
-        'Déconnecté, rien ne quitte le navigateur. Connecté, nous conservons le document, ses métadonnées et votre identité de compte — Google Analytics seulement si vous l’autorisez, aucun pixel de suivi, rien de vendu.',
+        'Déconnecté, rien ne quitte le navigateur. Connecté, nous conservons le document, ses métadonnées et votre identité de compte — Google Analytics et Microsoft Clarity seulement si vous les autorisez, aucun pixel de suivi, rien de vendu.',
     },
   },
   terms: {
@@ -359,7 +359,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'La seule chose que vous choisissez',
         body: [
-          'La plupart des pages cookies existent pour vous laisser refuser la mesure d’audience et la publicité. Ici, il n’y a aucune publicité. La mesure d’audience, c’est Google Analytics chargé via Google Tag Manager, et c’est le seul interrupteur du site : la bannière pose la question à la première visite, le bouton au bas de cette page rouvre la réponse, et tant que vous n’autorisez rien les balises de Google n’écrivent rien dans votre navigateur et envoient tout au plus des pings sans cookie.',
+          'La plupart des pages cookies existent pour vous laisser refuser la mesure d’audience et la publicité. Ici, il n’y a aucune publicité. La mesure d’audience, c’est Google Analytics chargé via Google Tag Manager, et Microsoft Clarity, qui montre où l’on clique et fait défiler, tout texte et toute image masqués. Les deux dépendent du seul interrupteur du site : la bannière pose la question à la première visite, le bouton au bas de cette page rouvre la réponse, et tant que vous n’autorisez rien les balises de Google n’écrivent rien dans votre navigateur et envoient tout au plus des pings sans cookie, et Clarity ne se charge pas.',
           'Déconnecté, et avec la mesure d’audience refusée ou sans réponse, ce site ne pose aucun cookie — sauf si vous saisissez le mot de passe d’un lien partagé, qui pose celui décrit plus bas.',
         ],
       },
@@ -377,6 +377,18 @@ export const pages: Content['pages'] = {
         heading: 'Un pour un lien protégé par un mot de passe',
         body: [
           'tp_unlock_ suivi d’un code propre au lien — posé quand vous saisissez le mot de passe d’un lien partagé, pour que le chargement suivant ne le redemande pas. Il est propriétaire et HttpOnly, et dure une journée. Il contient une signature qui prouve que le mot de passe a été saisi, jamais le mot de passe lui-même, et un nouveau mot de passe sur le lien le rend inutile.',
+        ],
+      },
+      {
+        heading: 'Déposés seulement si vous autorisez la mesure d’audience',
+        body: [
+          'Google Analytics et Microsoft Clarity déposent ceux-ci, et seulement après que vous avez autorisé la mesure d’audience. Refuser ensuite les arrête ; effacer les données du site dans votre navigateur les supprime.',
+        ],
+        items: [
+          '_ga et _ga_3WW403TWDN — Google Analytics, pour reconnaître une visite ultérieure comme le même navigateur. Jusqu’à deux ans.',
+          '_clck — Microsoft Clarity, la même chose pour Clarity. Jusqu’à un an.',
+          '_clsk — Microsoft Clarity, réunit les pages d’une visite en un seul enregistrement. Un jour.',
+          'MUID — déposé par Microsoft sur son propre domaine, clarity.ms, et non sur ce site. Jusqu’à un an.',
         ],
       },
       {

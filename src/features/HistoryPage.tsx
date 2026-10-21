@@ -744,7 +744,7 @@ export function HistoryPage({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-clarity-mask="true">
       <div className="flex flex-col gap-1">
         <Typography variant="h4" weight="semibold" textColor="primary">
           {t('history.title')}

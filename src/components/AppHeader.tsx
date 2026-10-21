@@ -134,7 +134,7 @@ export function AppHeader({
   }, []);
 
   return (
-    <header className="sticky top-0 z-20">
+    <header className="sticky top-0 z-20" data-clarity-unmask="true">
       {/* The one bright thing on the bar, and it is two pixels tall. */}
       <div
         aria-hidden="true"

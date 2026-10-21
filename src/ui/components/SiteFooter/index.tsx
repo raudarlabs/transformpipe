@@ -72,6 +72,7 @@ export function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer
+      data-clarity-unmask="true"
       className={cn(
         'mt-16 border-stroke border-t bg-surface-card2/40',
         className

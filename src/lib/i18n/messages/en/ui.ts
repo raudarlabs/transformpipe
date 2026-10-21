@@ -223,7 +223,7 @@ export const ui: Content['ui'] = {
   'cookies.settings.necessary': 'Necessary',
   'cookies.settings.necessary.detail': 'The sign-in session and the theme you picked. Refusing them would mean refusing to sign in, so they cannot be switched off.',
   'cookies.settings.analytics': 'Analytics',
-  'cookies.settings.analytics.detail': 'Google Analytics, through Google Tag Manager: how many people arrive and which pages they read. Off unless you allow it, and while it is off Google’s tags write nothing to your browser.',
+  'cookies.settings.analytics.detail': 'Google Analytics, through Google Tag Manager: how many people arrive and which pages they read. Microsoft Clarity: where they click and scroll, with every word and picture masked. Off unless you allow it, and while it is off neither writes anything to your browser.',
   'cookies.settings.save': 'Save choices',
   'cookies.settings.open': 'Cookie settings',
   'header.account': 'Account',

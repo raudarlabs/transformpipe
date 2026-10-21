@@ -111,6 +111,7 @@ export function PasteBox({
        * no preview beside it is the worst of both: `/markdown-live-preview` is where typing belongs.
        */}
       <textarea
+        data-clarity-mask="true"
         ref={field}
         value={text}
         onChange={(event) => setText(event.target.value)}

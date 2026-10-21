@@ -177,6 +177,15 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-10-21',
+    title: 'Analytics includes Microsoft Clarity, behind the same switch',
+    body:
+      'Allowing analytics in the cookie banner now also allows Microsoft Clarity, which shows where '
+      + 'people click and scroll. It loads only after the page has, every word and picture is masked '
+      + 'in the browser before anything is sent, and it never runs on a shared document or folder. '
+      + 'Refused or unanswered, it does not load at all. The privacy and cookies pages list what it sets.',
+  },
+  {
+    date: '2026-10-21',
     title: 'Every conversion says what it does to your file',
     body:
       'Under each converter, in all five languages: what comes across, what is left behind, an '

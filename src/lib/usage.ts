@@ -138,9 +138,14 @@ export function count(event: BrowserEvent, key: string): void {
  * The same moment, told to Google Analytics as an event of the same name, so GA4 can mark it as a
  * key event and tie it to the search that brought the visit.
  *
- * Visits and views are not repeated: GA counts its own page views. `gtag` is defined in index.html
- * before the tag manager loads, and the consent state it set decides whether anything leaves the
- * page. Nothing here sets a cookie or changes that state.
+ * Pushed as a tag-manager event (`{ event, tp_key }`), not as `gtag('event')`: GA4 is a tag inside
+ * the GTM container, and that tag never reads gtag commands from the page: the first version sent
+ * them that way on 21 October 2026, and GA4 Realtime showed none arrive. In the container, the
+ * trigger "TP · counted action" matches these four names and the tag "GA4 · TP counted action"
+ * sends them on, with tp_key as `key`. Consent still decides: the tag needs analytics_storage,
+ * which index.html denies until somebody allows it.
+ *
+ * Visits and views are not repeated: GA counts its own page views.
  */
 const ANALYTICS_EVENTS: ReadonlySet<BrowserEvent> = new Set(['convert', 'download', 'save', 'share']);
 
@@ -149,9 +154,9 @@ function tellAnalytics(event: BrowserEvent, key: string) {
     return;
   }
 
-  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+  const layer = (window as unknown as { dataLayer?: unknown[] }).dataLayer;
 
-  gtag?.('event', event, { key });
+  layer?.push({ event, tp_key: key });
 }
 
 /*

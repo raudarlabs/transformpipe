@@ -969,7 +969,7 @@ export function ConverterPage({
           </div>
         </TabsContent>
 
-        <TabsContent value="source" className="outline-none">
+        <TabsContent value="source" className="outline-none" data-clarity-mask="true">
           {isTextExport(primary) && exportFailed ? (
             <div className="rounded-xl border border-stroke bg-surface-page p-6" role="alert">
               <Typography variant="p" textColor="secondary">

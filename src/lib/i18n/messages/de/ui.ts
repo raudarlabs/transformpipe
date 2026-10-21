@@ -227,7 +227,7 @@ export const ui: Content['ui'] = {
   'cookies.settings.necessary': 'Notwendig',
   'cookies.settings.necessary.detail': 'Die Anmeldesitzung und das gewählte Design. Sie abzulehnen hieße, sich nicht anzumelden — deshalb lassen sie sich nicht abschalten.',
   'cookies.settings.analytics': 'Analyse',
-  'cookies.settings.analytics.detail': 'Google Analytics über den Google Tag Manager: wie viele Menschen kommen und welche Seiten sie lesen. Aus, solange Sie nicht zustimmen — und solange schreiben Googles Tags nichts in Ihren Browser.',
+  'cookies.settings.analytics.detail': 'Google Analytics über den Google Tag Manager: wie viele Menschen kommen und welche Seiten sie lesen. Microsoft Clarity: wo sie klicken und scrollen, mit unkenntlich gemachtem Text und Bildern. Aus, solange Sie nicht zustimmen — und solange schreibt keines von beiden etwas in Ihren Browser.',
   'cookies.settings.save': 'Auswahl speichern',
   'cookies.settings.open': 'Cookie-Einstellungen',
   'header.account': 'Konto',
