@@ -128,9 +128,30 @@ export function count(event: BrowserEvent, key: string): void {
     }
 
     send(JSON.stringify(body));
+    tellAnalytics(event, key);
   } catch {
     /* See above. */
   }
+}
+
+/*
+ * The same moment, told to Google Analytics as an event of the same name, so GA4 can mark it as a
+ * key event and tie it to the search that brought the visit.
+ *
+ * Visits and views are not repeated: GA counts its own page views. `gtag` is defined in index.html
+ * before the tag manager loads, and the consent state it set decides whether anything leaves the
+ * page. Nothing here sets a cookie or changes that state.
+ */
+const ANALYTICS_EVENTS: ReadonlySet<BrowserEvent> = new Set(['convert', 'download', 'save', 'share']);
+
+function tellAnalytics(event: BrowserEvent, key: string) {
+  if (!ANALYTICS_EVENTS.has(event)) {
+    return;
+  }
+
+  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+
+  gtag?.('event', event, { key });
 }
 
 /*

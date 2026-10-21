@@ -436,8 +436,13 @@ interface SourceRow {
   n: number;
 }
 
+interface KeyRow {
+  key: string;
+  n: number;
+}
+
 async function loadCounters(days: number) {
-  const [funnel, sources, ratings, named] = await Promise.all([
+  const [funnel, sources, ratings, named, searchSteps, searchLanding] = await Promise.all([
     rows<FunnelRow>(sql()`
       select source as client, key as step, sum(count)::int as n
       from m2h_usage_daily
@@ -470,9 +475,29 @@ async function loadCounters(days: number) {
       order by r.updated_at desc
       limit 100
     `).catch(() => [] as NamedRating[]),
+    /*
+     * What a visit from a search engine went on to do: the question SEO is for. The engines are
+     * the counter's own source names (shared/usage.ts), written into both queries.
+     */
+    rows<KeyRow>(sql()`
+      select event as key, sum(count)::int as n
+      from m2h_usage_daily
+      where source in ('google', 'bing', 'duckduckgo', 'yandex', 'ecosia', 'brave') and day > current_date - ${days}::int
+        and event in ('visit', 'convert', 'download', 'save', 'share')
+      group by 1
+    `),
+    /* Where those visits landed. A visit's key is the page it arrived on. */
+    rows<KeyRow>(sql()`
+      select key, sum(count)::int as n
+      from m2h_usage_daily
+      where source in ('google', 'bing', 'duckduckgo', 'yandex', 'ecosia', 'brave') and event = 'visit' and day > current_date - ${days}::int
+      group by 1
+      order by 2 desc
+      limit 15
+    `),
   ]);
 
-  return { funnel, sources, ratings, named };
+  return { funnel, sources, ratings, named, searchSteps, searchLanding };
 }
 
 /* ------------------------------------------------------------------------------------ the pages */
@@ -799,6 +824,22 @@ function barList(items: Array<{ label: string; n: number; tip?: string }>, total
     .join('')}</div>`;
 }
 
+/** Visits from a search engine, what they went on to do, and the pages they landed on. */
+function searchCard(steps: KeyRow[], landing: KeyRow[]): string {
+  const at = (key: string) => steps.find((one) => one.key === key)?.n ?? 0;
+  const order = ['visit', 'convert', 'download', 'save', 'share'];
+  const head = order.map((key) => `<th class="n">${key}</th>`).join('');
+  const cells = order.map((key) => `<td class="n">${at(key)}</td>`).join('');
+
+  return `<table><tr>${head}</tr><tr>${cells}</tr></table>
+      <p class="note">Google, Bing, DuckDuckGo, Yandex, Ecosia and Brave. An action counts toward the source of the page load
+      it happened in, so a conversion here is one made in a visit that arrived from a search. Daily totals, not people.</p>
+      <h3>Landing pages</h3>${barList(
+        landing.map((one) => ({ label: escapeHtml(one.key || '—'), n: one.n })),
+        landing.reduce((sum, one) => sum + one.n, 0)
+      )}`;
+}
+
 function funnelTable(rows: FunnelRow[]): string {
   const clients = [...new Set(rows.map((one) => one.client))];
   const at = (client: string, step: string) =>
@@ -1022,6 +1063,7 @@ function overviewPage(
         counters.sources.reduce((sum, one) => sum + one.n, 0)
       )}
     </div>
+    <div class="card"><h2>From search engines, last ${days} days</h2>${searchCard(counters.searchSteps, counters.searchLanding)}</div>
   </section>
 
   <section class="card">

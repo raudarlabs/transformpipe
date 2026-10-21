@@ -67,14 +67,26 @@ format this now converts, a thing it now does. Not for a fix.
 `changelogProblems()` enforces all of that and the prerenderer throws on it, so a bad entry fails
 the build rather than shipping an empty page.
 
-**An entry page is indexed unless it is about a conversion.** From 24 September 2026 only a
-chosen few were — the rest served `noindex, follow`, because fifty-three pages in five languages
-were a third of the sitemap and the Search Console report showed them queued ahead of the
-conversion pages. On 30 September 2026 the owner reversed most of that: every entry page is listed
-and indexed except the ones in `CONVERSION_ENTRIES` in `src/lib/changelog.ts` — the entries about a
-conversion that has a page of its own, since `/changelog/epub-to-markdown` would compete with
-`/epub-to-markdown` for the same search. A new entry about a new conversion goes in that set; any
-other entry with a slug is indexed as it stands.
+**An entry page is indexed only when it answers a search nothing else on the site answers.**
+`entryIndexedIn()` in `src/lib/changelog.ts` decides, and the prerenderer, the sitemap and the
+`hreflang` sets all follow it. Two sets serve `noindex, follow`:
+
+- `CONVERSION_ENTRIES`: entries about a conversion with a page of its own, since
+  `/changelog/epub-to-markdown` would compete with `/epub-to-markdown`.
+- `QUIET_ENTRIES`: entries a tool page or an article already answers (the connector, the extension,
+  live preview, sharing), and entries about the site itself (deploys, logo, cookie banner,
+  languages).
+
+Every other entry is indexed in English, and in another language only where that language's
+`detail` is written. The English fallback at `/de/…` is a copy, not a page.
+
+A new entry with a slug goes in one of the two sets unless it is the only page for something a
+reader would search for. The history of this rule:
+
+- 24 September 2026: noindex on most entry pages.
+- 30 September 2026: reversed by the owner.
+- 21 October 2026: reversed again by the owner, on Search Console's word. 173 of 258 "discovered,
+  not indexed" pages were entry pages, queued ahead of `/word-to-markdown` (`content/seo-plan.md`).
 
 **Detail pages may be translated, and entries themselves still may not.** The reason the rule
 exists — five translations per entry, per release, forever — does not apply to a handful of pages

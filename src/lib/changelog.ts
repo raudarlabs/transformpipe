@@ -78,6 +78,63 @@ export const CONVERSION_ENTRIES = new Set([
   'markdown-to-word-styles',
 ]);
 
+/*
+ * The other entry pages kept out of search, in every language. The owner's call, 21 October 2026,
+ * which reverses most of 30 September.
+ *
+ * The reason is what Search Console reported on 12 October: 258 pages "discovered, not indexed",
+ * 173 of them entry pages, and `/word-to-markdown` and the `/agents` pages waiting in the same
+ * queue. Each one listed here does one of two things. It answers the same search as a tool page or
+ * an article (the connector, the extension, live preview, AI summary, highlighting, pictures in an
+ * export, sharing). Or it is about the site rather than about something a reader would search for.
+ * The pages stay readable and linked, and serve `noindex, follow` like the conversion ones.
+ */
+export const QUIET_ENTRIES = new Set([
+  // The assistant connector, which /agents/claude and /agents/chatgpt answer for.
+  'connector-oauth',
+  'connector-consent-page',
+  'assistant-connector-cards',
+  'connector-identity',
+  'client-id-metadata',
+  // A tool page or an article already answers the same search.
+  'pictures-survive-an-export',
+  'ai-summary',
+  'paste-and-live-preview',
+  'browser-extension',
+  'browser-extension-in-both-stores',
+  'syntax-highlighting',
+  'shared-document-provenance',
+  'folders-and-exports-as-pages',
+  // About the site itself rather than something a reader would search for.
+  'deploy-checks',
+  'email-deliverability',
+  'cookie-consent',
+  'new-logo',
+  'not-found-page',
+  'support-page',
+  'the-changelog',
+  'five-languages',
+  'blog-in-german',
+  'blog-in-french',
+  'share-notice-limits',
+  'public-links-need-a-confirmed-address',
+]);
+
+/**
+ * Whether one entry's page in one language is listed and indexed.
+ *
+ * Never for an entry in either set above. Otherwise always in English, and in another language
+ * only when somebody wrote that language's `detail`: the English fallback served under `/de/…` is
+ * a copy of the English page, and a copy at a second address is not a page in German.
+ */
+export function entryIndexedIn(entry: ChangelogEntry, locale: Locale): boolean {
+  if (!entry.slug || CONVERSION_ENTRIES.has(entry.slug) || QUIET_ENTRIES.has(entry.slug)) {
+    return false;
+  }
+
+  return locale === 'en' || entry.detail?.[locale] !== undefined;
+}
+
 /** One entry's page, in English and in whatever else somebody has written. */
 export type ChangelogDetail = { en: ChangelogDetailText } & Partial<
   Record<Locale, ChangelogDetailText>

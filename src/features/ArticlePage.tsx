@@ -140,7 +140,8 @@ export function ArticlePage({
       return;
     }
 
-    document.title = `${article.title} — TransformPipe`;
+    // The headline alone, as the prerendered page has it: see the articles in scripts/prerender.ts.
+    document.title = article.title;
 
     return () => {
       document.title = DEFAULT_TITLE;

@@ -17,6 +17,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { markdownToHtml } from '../server/render.js';
 import { MD_DOC_STYLE, mdDocTheme } from '../shared/md-doc-css.js';
+import { uploadLimit } from '../shared/limits.js';
 import {
   ARTICLES,
   articlePath,
@@ -25,11 +26,13 @@ import {
   formatArticleDate,
   hasArticleIn,
 } from '../src/lib/blog.js';
-import { formatDate, formatMonth } from '../src/lib/format.js';
+import { formatBytes, formatDate, formatMonth } from '../src/lib/format.js';
 import {
   CHANGELOG_UPDATED,
   changelogByYear,
   CONVERSION_ENTRIES,
+  QUIET_ENTRIES,
+  entryIndexedIn,
   CHANGELOG_PAGES,
   changelogProblems,
   detailIn,
@@ -43,7 +46,7 @@ import {
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
-import { publishedStores, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
+import { publishedStores, REPO_URL, STATIC_PAGES, X_URL } from '../src/lib/pages.js';
 import type { LandingWords, PageWords, PluginWords } from '../src/lib/i18n/content.js';
 import { CHATGPT_PLUGINS, CLAUDE_DIRECTORY } from '../src/lib/mcp-facts.js';
 import { OBSIDIAN_DIRECTORY, OBSIDIAN_SOURCE } from '../src/lib/obsidian-facts.js';
@@ -74,6 +77,20 @@ import {
 } from '../src/lib/breadcrumbs.js';
 
 const SITE = process.env.SITE_URL ?? 'https://transformpipe.com';
+
+/*
+ * The publisher and author of every article and entry page, and the organization the front page
+ * describes in full. One `@id` with the same name everywhere, so it reads as one entity: until
+ * 21 October 2026 the front page called it Raudar Labs and the 665 other pages TransformPipe. The
+ * name stays beside the id because a page is parsed on its own, and an author with no name is an
+ * error there.
+ */
+const ORGANIZATION_REF = {
+  '@type': 'Organization',
+  '@id': `${SITE}/#organization`,
+  name: 'TransformPipe',
+  url: SITE,
+};
 const DIST = resolve('dist');
 
 /*
@@ -629,7 +646,11 @@ for (const locale of LOCALES) {
       path: articlePath(article.slug, locale),
       locale,
       languages: LOCALES.filter((one) => hasArticleIn(article.slug, one)),
-      title: `${article.title} — TransformPipe`,
+      /*
+       * The headline alone. The suffix pushed 66 of 70 English titles past what a result shows,
+       * and the name is already in the address, the breadcrumb and the publisher.
+       */
+      title: article.title,
       description: article.description,
       image: articleCover(article.slug),
       lastmod: article.updated ?? article.date,
@@ -652,8 +673,8 @@ for (const locale of LOCALES) {
           articleSection: article.tag,
           inLanguage: locale,
           mainEntityOfPage: `${SITE}${articlePath(article.slug, locale)}`,
-          publisher: { '@type': 'Organization', name: 'TransformPipe', url: SITE },
-          author: { '@type': 'Organization', name: 'TransformPipe', url: SITE },
+          publisher: ORGANIZATION_REF,
+          author: ORGANIZATION_REF,
         }),
         DOC_STYLE,
       ].join('\n    '),
@@ -853,7 +874,9 @@ for (const locale of LOCALES) {
       body: `<h1>${escapeHtml(said.title)}</h1><p>${escapeHtml(said.blurb)}</p><p>${escapeHtml(
         said.hint
       )}</p><p>${escapeHtml(
-        words.ui['converter.dropzone.limits'].replace('{extensions}', one.extensions.join(', '))
+        words.ui['converter.dropzone.limits']
+          .replace('{extensions}', one.extensions.join(', '))
+          .replace('{limit}', formatBytes(uploadLimit(one.extensions), INTL_LOCALES[locale]))
       )}</p>${(() => {
         const guide = guideFor(one.path);
         const written = aboutFirst(one.path, articlesLinkingTo.get(one.path) ?? [])
@@ -939,11 +962,16 @@ for (const locale of LOCALES) {
           publisher: { '@id': `${SITE}/#organization` },
         },
         {
-          '@type': 'Organization',
-          '@id': `${SITE}/#organization`,
-          name: 'Raudar Labs',
-          url: SITE,
-          brand: { '@type': 'Brand', name: 'TransformPipe' },
+          ...ORGANIZATION_REF,
+          logo: `${SITE}/icon-512.png`,
+          parentOrganization: { '@type': 'Organization', name: 'Raudar Labs' },
+          sameAs: [
+            REPO_URL,
+            X_URL,
+            ...publishedStores().map((store) => store.url),
+            OBSIDIAN_DIRECTORY,
+            CLAUDE_DIRECTORY,
+          ],
         },
       ],
         })
@@ -1256,10 +1284,10 @@ if (changelogFaults.length > 0) {
   );
 }
 
-/* A name in the set with no page behind it is a typo that would quietly keep nothing out. */
-for (const slug of CONVERSION_ENTRIES) {
+/* A name in either set with no page behind it is a typo that would quietly keep nothing out. */
+for (const slug of [...CONVERSION_ENTRIES, ...QUIET_ENTRIES]) {
   if (!CHANGELOG_PAGES.some((entry) => entry.slug === slug)) {
-    throw new Error(`CONVERSION_ENTRIES names ${slug}, and no changelog entry has that slug`);
+    throw new Error(`The changelog's noindex sets name ${slug}, and no entry has that slug`);
   }
 }
 
@@ -1269,15 +1297,18 @@ for (const entry of CHANGELOG_PAGES) {
     const dates = INTL_LOCALES[locale];
     const path = localePath(locale, `/changelog/${entry.slug}`);
     const piece = detailIn(entry.detail!, locale);
+    const indexed = entryIndexedIn(entry, locale);
 
     pages.push({
       locale,
       path,
+      /* The alternates name only the languages that are indexed: see entryIndexedIn. */
+      languages: LOCALES.filter((one) => entryIndexedIn(entry, one)),
       title: `${piece.title ?? entry.title} — TransformPipe`,
       description: piece.description,
-      // Indexed unless it is about a conversion with a page of its own — see CONVERSION_ENTRIES.
-      listed: !CONVERSION_ENTRIES.has(entry.slug!),
-      noindex: CONVERSION_ENTRIES.has(entry.slug!),
+      // See CONVERSION_ENTRIES, QUIET_ENTRIES and entryIndexedIn.
+      listed: indexed,
+      noindex: !indexed,
       lastmod: entry.date,
       head: [
         `<meta name="keywords" content="${escapeHtml(piece.keywords)}" />`,
@@ -1296,8 +1327,8 @@ for (const entry of CHANGELOG_PAGES) {
           ...(entry.version ? { version: entry.version } : {}),
           inLanguage: locale,
           mainEntityOfPage: `${SITE}${path}`,
-          publisher: { '@type': 'Organization', name: 'TransformPipe', url: SITE },
-          author: { '@type': 'Organization', name: 'TransformPipe', url: SITE },
+          publisher: ORGANIZATION_REF,
+          author: ORGANIZATION_REF,
         }),
         DOC_STYLE,
       ].join('\n    '),
@@ -1400,6 +1431,7 @@ writeFileSync(
     'User-agent: *',
     'Allow: /',
     'Disallow: /open/',
+    'Disallow: /open-folder/',
     'Disallow: /report/',
     'Disallow: /api/',
     'Disallow: /history',
