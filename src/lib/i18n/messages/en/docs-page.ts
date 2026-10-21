@@ -111,11 +111,13 @@ export const docsPage = {
   'docs.history.downloading':
     'Downloading is a menu rather than a chip: only the Markdown is ever stored, and the HTML and the plain text are built on the spot, so one row can hand over any of the three without keeping three copies.',
   'docs.history.selection':
-    'Tick rows and the selection bar appears: merge them into one document, download them, or delete them. Merging keeps the order of the list.',
+    'Tick rows and the selection bar appears: merge them into one document, download them, or delete them. Merging keeps the order of the list. Shift ticks every row between two, as in a file browser, and Cmd or Ctrl on a row ticks just that one.',
   'docs.history.folders':
-    'Signed in, documents can live in folders. The tree sits beside the list: {all} is everything, a folder shows what is in it and in every folder below it, and the number beside each says how much it holds. The + over the tree makes a folder inside the one you are looking at, typed where it will go. Right-click a folder to make one inside it, rename it, move it, share it or delete it. Deleting asks which kind you mean: the folder alone, whose contents move up a level, or the folder with everything in it.',
+    'Signed in, documents can live in folders. The tree sits beside the list: {all} is everything, a folder shows what is in it and in every folder below it, and the number beside each says how much it holds. New folder over the tree makes a folder inside the one you are looking at, typed where it will go. Right-click a folder to make one inside it, rename it, move it, share it or delete it. Deleting asks which kind you mean: the folder alone, whose contents move up a level, or the folder with everything in it.',
   'docs.history.folders.moving':
     'Documents move by dragging rows onto a folder in the tree or in the trail over the list, and every ticked row goes along. {moveto} in the selection bar does the same from a menu: the folders used last, one click each, and a window that searches every folder by name and shows where each one sits. A folder drags onto another the same way, but never into itself.',
+  'docs.history.trash':
+    'Deleting moves a document to {trash}, below the folders, where it waits for 14 days and does not count against your storage. The notice that says so has {undo}; in {trash} you can search, tick several, and restore them with their folder, sharing and earlier versions, or delete them for good. A document deleted by an assistant, the API or the CLI goes there too.',
   'docs.history.folders.imports':
     'A Confluence, Notion or Obsidian export comes in as a folder of its own: every page a document, every section a folder, the export’s order kept, and links between pages pointing at the saved pages.',
   'docs.history.shot.selection.alt':

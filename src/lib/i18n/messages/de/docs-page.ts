@@ -113,11 +113,13 @@ export const docsPage = {
   'docs.history.downloading':
     'Das Herunterladen ist ein Menü und kein Chip: gespeichert wird immer nur das Markdown, HTML und reiner Text entstehen an der Stelle, sodass eine Zeile alle drei herausgeben kann, ohne drei Kopien zu halten.',
   'docs.history.selection':
-    'Zeilen anhaken, und die Auswahlleiste erscheint: sie zu einem Dokument zusammenfügen, herunterladen oder löschen. Das Zusammenfügen behält die Reihenfolge der Liste.',
+    'Zeilen anhaken, und die Auswahlleiste erscheint: sie zu einem Dokument zusammenfügen, herunterladen oder löschen. Das Zusammenfügen behält die Reihenfolge der Liste. Mit Umschalt werden alle Zeilen zwischen zwei markiert, wie im Dateimanager, und Cmd oder Strg auf einer Zeile markiert nur diese.',
   'docs.history.folders':
-    'Angemeldet lassen sich Dokumente in Ordnern ablegen. Der Baum steht neben der Liste: {all} ist alles, ein Ordner zeigt, was in ihm und in allen Ordnern darunter liegt, und die Zahl daneben sagt, wie viel er enthält. Das + über dem Baum legt einen Ordner in dem an, den Sie gerade ansehen – benannt wird er dort, wo er hinkommt. Ein Rechtsklick auf einen Ordner legt darin einen neuen an, benennt ihn um, verschiebt, teilt oder löscht ihn. Beim Löschen wird gefragt, was gemeint ist: nur der Ordner, dessen Inhalt eine Ebene nach oben rückt, oder der Ordner mit allem darin.',
+    'Angemeldet lassen sich Dokumente in Ordnern ablegen. Der Baum steht neben der Liste: {all} ist alles, ein Ordner zeigt, was in ihm und in allen Ordnern darunter liegt, und die Zahl daneben sagt, wie viel er enthält. Neuer Ordner über dem Baum legt einen Ordner in dem an, den Sie gerade ansehen – benannt wird er dort, wo er hinkommt. Ein Rechtsklick auf einen Ordner legt darin einen neuen an, benennt ihn um, verschiebt, teilt oder löscht ihn. Beim Löschen wird gefragt, was gemeint ist: nur der Ordner, dessen Inhalt eine Ebene nach oben rückt, oder der Ordner mit allem darin.',
   'docs.history.folders.moving':
     'Dokumente verschieben Sie, indem Sie Zeilen auf einen Ordner im Baum oder im Pfad über der Liste ziehen; alle markierten Zeilen gehen mit. {moveto} in der Auswahlleiste erledigt dasselbe über ein Menü: die zuletzt genutzten Ordner mit einem Klick und ein Fenster, das alle Ordner nach Namen durchsucht und zeigt, wo jeder liegt. Ein Ordner lässt sich ebenso auf einen anderen ziehen, nur nie in sich selbst.',
+  'docs.history.trash':
+    'Löschen verschiebt ein Dokument in den {trash} unter den Ordnern; dort wartet es 14 Tage und zählt nicht zum Speicher. Die Meldung dazu hat {undo}; im {trash} können Sie suchen, mehrere auswählen und sie mit Ordner, Freigabe und früheren Versionen wiederherstellen oder endgültig löschen. Was ein Assistent, die API oder die CLI löscht, landet ebenfalls dort.',
   'docs.history.folders.imports':
     'Ein Export aus Confluence, Notion oder Obsidian kommt als eigener Ordner an: jede Seite ein Dokument, jeder Abschnitt ein Ordner, die Reihenfolge des Exports bleibt, und Links zwischen den Seiten zeigen auf die gespeicherten Seiten.',
   'docs.history.shot.selection.alt':

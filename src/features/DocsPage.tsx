@@ -380,6 +380,12 @@ export function DocsPage({ onGoToConverter }: { onGoToConverter: () => void }) {
           <p>{t('docs.history.folders.imports')}</p>
           <p>
             <Rich
+              text={t('docs.history.trash')}
+              parts={{ trash: <strong>{t('trash.title')}</strong>, undo: <strong>{t('trash.undo')}</strong> }}
+            />
+          </p>
+          <p>
+            <Rich
               text={t('docs.sharing.folders')}
               parts={{
                 share: <strong>{t('folders.share.dialog')}</strong>,

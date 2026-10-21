@@ -93,11 +93,13 @@ export const docsPage = {
   'docs.history.downloading':
     'Scaricare è un menu e non un pulsante secco: viene conservato solo il Markdown, mentre l’HTML e il testo semplice si costruiscono sul momento, così una riga può consegnare uno qualsiasi dei tre senza tenere tre copie.',
   'docs.history.selection':
-    'Spuntando delle righe compare la barra della selezione: unirle in un solo documento, scaricarle o eliminarle. L’unione rispetta l’ordine dell’elenco.',
+    'Spuntando delle righe compare la barra della selezione: unirle in un solo documento, scaricarle o eliminarle. L’unione rispetta l’ordine dell’elenco. Maiusc spunta tutte le righe tra due, come in un file manager, e Cmd o Ctrl su una riga spunta solo quella.',
   'docs.history.folders':
-    'Dopo l’accesso, i documenti possono stare in cartelle. L’albero è accanto all’elenco: {all} è tutto, una cartella mostra ciò che contiene e ciò che c’è in tutte le cartelle sotto di essa, e il numero accanto dice quanto contiene. Il + sopra l’albero crea una cartella dentro quella che stai guardando, e il nome si scrive lì dove andrà. Con il clic destro su una cartella puoi crearne una dentro, rinominarla, spostarla, condividerla o eliminarla. Quando elimini, ti viene chiesto cosa intendi: solo la cartella, il cui contenuto sale di un livello, oppure la cartella con tutto ciò che contiene.',
+    'Dopo l’accesso, i documenti possono stare in cartelle. L’albero è accanto all’elenco: {all} è tutto, una cartella mostra ciò che contiene e ciò che c’è in tutte le cartelle sotto di essa, e il numero accanto dice quanto contiene. Nuova cartella, sopra l’albero, crea una cartella dentro quella che stai guardando, e il nome si scrive lì dove andrà. Con il clic destro su una cartella puoi crearne una dentro, rinominarla, spostarla, condividerla o eliminarla. Quando elimini, ti viene chiesto cosa intendi: solo la cartella, il cui contenuto sale di un livello, oppure la cartella con tutto ciò che contiene.',
   'docs.history.folders.moving':
     'I documenti si spostano trascinando le righe su una cartella dell’albero o del percorso sopra l’elenco, e tutte le righe selezionate vanno insieme. {moveto} nella barra di selezione fa lo stesso da un menu: le ultime cartelle usate, con un clic, e una finestra che cerca in tutte le cartelle per nome e mostra dove si trova ciascuna. Una cartella si trascina allo stesso modo su un’altra, ma mai dentro sé stessa.',
+  'docs.history.trash':
+    'Eliminare sposta un documento nel {trash}, sotto le cartelle, dove resta 14 giorni senza contare nello spazio. L’avviso che lo dice ha {undo}; nel {trash} puoi cercare, spuntarne più di uno e ripristinarli con cartella, condivisione e versioni, o eliminarli per sempre. Anche ciò che elimina un assistente, l’API o la CLI finisce lì.',
   'docs.history.folders.imports':
     'Un’esportazione di Confluence, Notion o Obsidian arriva in una cartella tutta sua: ogni pagina diventa un documento, ogni sezione una cartella, l’ordine dell’esportazione resta, e i collegamenti tra le pagine puntano alle pagine salvate.',
   'docs.history.shot.selection.alt':

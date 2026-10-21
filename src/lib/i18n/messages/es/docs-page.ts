@@ -100,11 +100,13 @@ export const docsPage = {
   'docs.history.downloading':
     'Descargar es un menú y no un filtro: solo se guarda el Markdown, y el HTML y el texto plano se construyen al momento, así que una misma fila puede entregar cualquiera de los tres sin guardar tres copias.',
   'docs.history.selection':
-    'Marca filas y aparece la barra de selección: unirlas en un solo documento, descargarlas o eliminarlas. Al unirlas se respeta el orden de la lista.',
+    'Marca filas y aparece la barra de selección: unirlas en un solo documento, descargarlas o eliminarlas. Al unirlas se respeta el orden de la lista. Mayús marca todas las filas entre dos, como en un explorador de archivos, y Cmd o Ctrl sobre una fila marca solo esa.',
   'docs.history.folders':
-    'Con la sesión iniciada, los documentos pueden ir en carpetas. El árbol está junto a la lista: {all} es todo, una carpeta muestra lo que contiene y lo que hay en todas las carpetas por debajo, y el número al lado indica cuánto guarda. El + sobre el árbol crea una carpeta dentro de la que estás viendo, y se nombra allí donde irá. Con clic derecho en una carpeta puedes crear otra dentro, cambiarle el nombre, moverla, compartirla o eliminarla. Al eliminar se pregunta qué quieres: solo la carpeta, cuyo contenido sube un nivel, o la carpeta con todo lo que contiene.',
+    'Con la sesión iniciada, los documentos pueden ir en carpetas. El árbol está junto a la lista: {all} es todo, una carpeta muestra lo que contiene y lo que hay en todas las carpetas por debajo, y el número al lado indica cuánto guarda. Nueva carpeta, sobre el árbol, crea una carpeta dentro de la que estás viendo, y se nombra allí donde irá. Con clic derecho en una carpeta puedes crear otra dentro, cambiarle el nombre, moverla, compartirla o eliminarla. Al eliminar se pregunta qué quieres: solo la carpeta, cuyo contenido sube un nivel, o la carpeta con todo lo que contiene.',
   'docs.history.folders.moving':
     'Los documentos se mueven arrastrando filas sobre una carpeta del árbol o de la ruta sobre la lista, y todas las filas marcadas van juntas. {moveto} en la barra de selección hace lo mismo desde un menú: las carpetas usadas por última vez, con un clic, y una ventana que busca en todas las carpetas por nombre y muestra dónde está cada una. Una carpeta se arrastra igual sobre otra, pero nunca dentro de sí misma.',
+  'docs.history.trash':
+    'Borrar pasa un documento a la {trash}, debajo de las carpetas, donde espera 14 días sin contar en tu almacenamiento. El aviso que lo dice tiene {undo}; en la {trash} puedes buscar, marcar varios y restaurarlos con su carpeta, su compartición y sus versiones, o borrarlos para siempre. Lo que borra un asistente, la API o la CLI también llega ahí.',
   'docs.history.folders.imports':
     'Una exportación de Confluence, Notion u Obsidian llega en su propia carpeta: cada página es un documento, cada sección una carpeta, se mantiene el orden de la exportación y los enlaces entre páginas apuntan a las páginas guardadas.',
   'docs.history.shot.selection.alt':
