@@ -148,6 +148,14 @@ const ENTRIES: ChangelogEntry[] = [
       + 'large space is read.',
   },
   {
+    date: '2026-10-21',
+    title: 'A downloaded .zip opens in Windows whatever its pages are called',
+    body:
+      'Windows refused a whole .zip as invalid when one path inside it ran past 260 bytes — about '
+      + '130 letters of a Cyrillic title. Long page and folder names are now shortened to fit, two '
+      + 'that come out the same are numbered, and links between the pages follow the shorter names.',
+  },
+  {
     date: '2026-10-16',
     title: 'Linked Obsidian notes become linked pages',
     slug: 'obsidian-linked-notes',

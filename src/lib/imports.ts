@@ -30,6 +30,31 @@ const fileName = (title: string) =>
       .trim() || 'Untitled'
   }.md`;
 
+/*
+ * Windows opens a .zip itself, and refuses the whole archive — "the Compressed (zipped) Folder is
+ * invalid" — when any one path inside it is 260 bytes or more. Bytes, not letters: names are UTF-8,
+ * so a Cyrillic title gets there at about 130. Folders share part of the room, so a deep tree still
+ * leaves a page some of its title; what is cut stays unique, numbered like any two pages of one name.
+ */
+const PATH_BYTES = 240;
+const FOLDERS_BYTES = 180;
+const FOLDER_BYTES = 80;
+
+const utf8 = new TextEncoder();
+const bytesOf = (text: string) => utf8.encode(text).length;
+
+/** At most `max` bytes, on a whole character, with no space or dot at the end — Windows drops those. */
+const cut = (text: string, max: number) => {
+  let out = '';
+
+  for (const char of text) {
+    if (bytesOf(out + char) > max) break;
+    out += char;
+  }
+
+  return out.replace(/[\s.]+$/, '') || 'Untitled';
+};
+
 const BATCH_BYTES = 3 * 1024 * 1024;
 const BATCH_PAGES = 200;
 
@@ -133,12 +158,22 @@ export async function downloadImport(
 
   /* Where each page lands first, so a link between two pages can be a path from one to the other. */
   const paths = split.pages.map((page) => {
-    const folder = [split.title, ...page.folder].map((one) => fileName(one).replace(/\.md$/, '')).join('/');
-    let path = `${folder}/${fileName(page.title)}`;
+    // Each folder is cut by what lies above it alone, so its pages and its subfolders agree on its name.
+    const folder = [split.title, ...page.folder].reduce(
+      (above, one) => {
+        const name = cut(fileName(one).replace(/\.md$/, ''), Math.max(8, Math.min(FOLDER_BYTES, FOLDERS_BYTES - bytesOf(above))));
+
+        return above ? `${above}/${name}` : name;
+      },
+      ''
+    );
+    const named = (suffix: string) =>
+      `${folder}/${cut(fileName(page.title).replace(/\.md$/, ''), PATH_BYTES - bytesOf(`${folder}/${suffix}.md`))}${suffix}.md`;
+    let path = named('');
 
     // Two pages of one name in one folder keep both, numbered.
     for (let n = 2; used.has(path); n += 1) {
-      path = `${folder}/${fileName(`${page.title} ${n}`)}`;
+      path = named(` ${n}`);
     }
 
     used.add(path);
