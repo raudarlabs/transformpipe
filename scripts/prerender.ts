@@ -45,6 +45,7 @@ import {
   DEFAULT_CONVERSION,
 } from '../shared/conversions.js';
 import { DOCS_SECTION_IDS } from '../src/lib/docs-sections.js';
+import { plainAnswer, splitGuide } from '../src/lib/guide-questions.js';
 import { FAQ_FLAGS } from '../src/lib/faq.js';
 import { articleCtaHtml, ctaConversionFor, withArticleCta } from '../src/lib/article-cta.js';
 import { publishedStores, REPO_URL, STATIC_PAGES, type StaticPageId, X_URL } from '../src/lib/pages.js';
@@ -904,7 +905,30 @@ for (const locale of LOCALES) {
         description: said.seo.description,
         url: `${SITE}${localePath(locale, one.path)}`,
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      }) + breadcrumbs(crumbsForConversion(one, words, locale)) + DOC_STYLE,
+      }) +
+        /*
+         * The page's FAQ as the running page asks it: this conversion's own questions, from its
+         * guide, then the three every conversion page shares. Answers a visitor can open, so the
+         * markup describes what is on the page and nothing else.
+         */
+        jsonLd({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          inLanguage: locale,
+          mainEntity: [
+            ...splitGuide(guideMarkdown(one.id, locale)).questions.map((entry) => ({
+              question: entry.question,
+              answer: plainAnswer(entry.answer),
+            })),
+            ...words.faq.filter((_, index) => FAQ_FLAGS[index]?.everywhere),
+          ].map((entry) => ({
+            '@type': 'Question',
+            name: entry.question,
+            acceptedAnswer: { '@type': 'Answer', text: String(entry.answer) },
+          })),
+        }) +
+        breadcrumbs(crumbsForConversion(one, words, locale)) +
+        DOC_STYLE,
       body: `<h1>${escapeHtml(said.title)}</h1><p>${escapeHtml(said.blurb)}</p><p>${escapeHtml(
         said.hint
       )}</p><p>${escapeHtml(
@@ -961,7 +985,14 @@ for (const locale of LOCALES) {
    * `FAQ_FLAGS` says which entries the front page carries and the catalogue says what they say —
    * position is the only id a question has, which is why the two are zipped rather than joined.
    */
-  const asked = words.faq.filter((_, index) => !FAQ_FLAGS[index]?.detail);
+  const asked = [
+    // The front page's own guide asks first, as the running page does (ConverterPage's `questions`).
+    ...splitGuide(guideMarkdown(DEFAULT_CONVERSION, locale)).questions.map((one) => ({
+      question: one.question,
+      answer: plainAnswer(one.answer),
+    })),
+    ...words.faq.filter((_, index) => !FAQ_FLAGS[index]?.detail),
+  ];
 
   pages.push({
   locale,

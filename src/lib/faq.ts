@@ -24,6 +24,11 @@ export interface FaqFlags {
    * documentation, where the whole list is shown.
    */
   detail?: boolean;
+  /**
+   * True when a conversion page asks it too, below its own questions about that one format: the
+   * doubts that stop somebody dropping any file at all — where it goes, how big, what it costs.
+   */
+  everywhere?: boolean;
 }
 
 /** One question, ready to render: the flags from this file, the words from the catalogue. */
@@ -39,13 +44,13 @@ export interface FaqEntry extends FaqFlags {
  */
 export const FAQ_FLAGS: FaqFlags[] = [
   {},
-  {},
+  { everywhere: true },
   { detail: true },
   {},
   {},
+  { everywhere: true },
   {},
-  {},
-  {},
+  { everywhere: true },
 ];
 
 /*

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ConversionId } from '@shared/conversions';
 import { DocumentPreview } from '@/components/DocumentPreview';
 import { conversionGuide } from '@/lib/conversion-guides';
+import { type GuideQuestion, splitGuide } from '@/lib/guide-questions';
 import { useI18n } from '@/lib/i18n/context';
 import { markdownToHtml } from '@/lib/markdown';
 
@@ -12,7 +13,14 @@ import { markdownToHtml } from '@/lib/markdown';
  * drawn by the same preview an article is drawn by. Nothing is shown until it arrives. The
  * prerendered page already carries the same text for anybody who has not run the script.
  */
-export function ConversionGuide({ id }: { id: ConversionId }) {
+export function ConversionGuide({
+  id,
+  onQuestions,
+}: {
+  id: ConversionId;
+  /** The guide's questions, handed to the page's FAQ, which asks them above the shared ones. */
+  onQuestions?: (questions: GuideQuestion[]) => void;
+}) {
   const { locale } = useI18n();
   const [markdown, setMarkdown] = useState<string | null>(null);
 
@@ -31,7 +39,13 @@ export function ConversionGuide({ id }: { id: ConversionId }) {
     };
   }, [id, locale]);
 
-  const html = useMemo(() => (markdown ? markdownToHtml(markdown) : ''), [markdown]);
+  /* The guide without its last section: the questions go to the page's FAQ instead (guide-questions.ts). */
+  const split = useMemo(() => (markdown ? splitGuide(markdown) : null), [markdown]);
+  const html = useMemo(() => (split ? markdownToHtml(split.body) : ''), [split]);
+
+  useEffect(() => {
+    onQuestions?.(split?.questions ?? []);
+  }, [split, onQuestions]);
 
   if (!html) {
     return null;

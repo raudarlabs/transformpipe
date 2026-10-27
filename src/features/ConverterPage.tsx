@@ -46,6 +46,7 @@ import {
 import { articlePath, articlesAbout, articlesFor, formatArticleDate } from '@/lib/blog';
 import { ConversionGuide } from '@/components/ConversionGuide';
 import { FAQ_FLAGS } from '@/lib/faq';
+import type { GuideQuestion } from '@/lib/guide-questions';
 import { useI18n, useT } from '@/lib/i18n/context';
 import { INTL_LOCALES } from '@/lib/i18n/locales';
 import { ArticleCard } from '@/ui/components/ArticleCard';
@@ -336,13 +337,29 @@ export function ConverterPage({
    * and the flags do not — `FAQ_FLAGS[n]` is about `content.faq[n]`, position being the only id a
    * question has. See `src/lib/faq.ts`.
    */
-  const questions = useMemo(
-    () =>
-      content.faq
-        .map((one, index) => ({ ...one, ...FAQ_FLAGS[index] }))
-        .filter((one) => !one.detail),
-    [content.faq]
-  );
+  const [guideQuestions, setGuideQuestions] = useState<GuideQuestion[]>([]);
+
+  /*
+   * One FAQ per page: the questions about this conversion first, from its guide (they used to be a
+   * second list of questions further up the same page), then the shared ones — all the doubts on
+   * the front page, and on any other only the three that stop somebody dropping any file at all.
+   */
+  const questions = useMemo(() => {
+    const shared = content.faq
+      .map((one, index) => ({ ...one, ...FAQ_FLAGS[index] }))
+      .filter((one) => (conversion.id === DEFAULT_CONVERSION ? !one.detail : one.everywhere));
+    const own = guideQuestions
+      .filter((one) => !shared.some((other) => other.question === one.question))
+      .map((one) => ({
+        question: one.question,
+        answer: (
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: the guide's own Markdown, through the same sanitising renderer as every document
+          <div className="[&_a]:text-brand-tertiary [&_a]:underline [&_p]:m-0 [&_p+p]:mt-2" dangerouslySetInnerHTML={{ __html: markdownToHtml(one.answer) }} />
+        ),
+      }));
+
+    return [...own, ...shared];
+  }, [content.faq, conversion.id, guideQuestions]);
 
   const standalone = useMemo(
     () =>
@@ -541,7 +558,7 @@ export function ConverterPage({
           onChange={onConversionChange}
         />
 
-        <ConversionGuide id={conversion.id} />
+        <ConversionGuide id={conversion.id} onQuestions={setGuideQuestions} />
 
         {/* Below the fold: two bands, each opening with a pill, so the page stops reading as one sheet. */}
         {articlesFor(locale).length > 0 && (
@@ -599,7 +616,11 @@ export function ConverterPage({
             description={t('converter.faq.blurb')}
           />
 
-          <Faq items={questions} className="max-w-3xl" />
+          {/*
+            * Keyed by the first question, so the list opens on it once the guide's questions have
+            * arrived — the accordion takes its open item once, from whatever was first at the time.
+            */}
+          <Faq key={questions[0]?.question} items={questions} className="max-w-3xl" />
         </section>
       </div>
     );
