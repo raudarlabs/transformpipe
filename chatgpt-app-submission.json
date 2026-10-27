@@ -171,10 +171,10 @@
       }
     },
     "tp_restore_document": {
-      "annotations": { "readOnlyHint": false, "openWorldHint": false, "destructiveHint": false, "idempotentHint": true },
+      "annotations": { "readOnlyHint": false, "openWorldHint": true, "destructiveHint": false, "idempotentHint": true },
       "justifications": {
         "read_only_justification": "With an id it puts a deleted document back into the connected account, with its folder, sharing and versions; without one it only lists the Trash.",
-        "open_world_justification": "It reads and restores only the connected account's own Trash and contacts no one.",
+        "open_world_justification": "A restored document comes back with the sharing it had: if it was shared by link, that public page opens again for anyone who holds the URL, and named readers can open it again.",
         "destructive_justification": "It removes nothing: it brings back a document exactly as it was before it was deleted.",
         "idempotent_justification": "Once a document is restored it is no longer in the Trash, so repeating the call changes nothing further."
       }

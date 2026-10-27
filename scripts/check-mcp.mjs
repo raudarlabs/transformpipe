@@ -838,7 +838,7 @@ const EXPECTED = {
   tp_share_document: 'FTTT',
   tp_share_folder: 'FTTT',
   tp_delete_document: 'FTTF',
-  tp_restore_document: 'FFTF',
+  tp_restore_document: 'FFTT',
   tp_delete_folder: 'FTTF',
   tp_summarize_document: 'FFFT',
 };

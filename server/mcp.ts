@@ -3166,7 +3166,7 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_restore_document: {
     description:
-      'Puts a deleted document back from the Trash of the user\'s TransformPipe account, with its text, its folder, its sharing and its earlier versions. Use it when the user asks to undo a deletion, restore or recover a document, or see what was deleted. Deleted documents are kept for 14 days. Without `id` it lists what is in the Trash, newest first, with ids and how long each has left; with `id` it restores that one. A document whose folder was deleted with it comes back outside any folder.',
+      'Puts a deleted document back from the Trash of the user\'s TransformPipe account, with its text, its folder, its sharing and its earlier versions. Use it when the user asks to undo a deletion, restore or recover a document, or see what was deleted. Deleted documents are kept for 14 days. Without `id` it lists what is in the Trash, newest first, with ids and how long each has left; with `id` it restores that one. A document whose folder was deleted with it comes back outside any folder. A document that was shared comes back shared: its link opens again for anyone who has it, and the people it was shared with can read it again.',
     ui: DOCUMENT_LIST_URI,
     annotations: {
       title: 'Restore a deleted document',
@@ -3174,7 +3174,8 @@ const TOOLS: Record<McpToolName, Tool> = {
       /* Brings back what was there; removes nothing. */
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: false,
+      /* A document that was shared comes back shared: its public link opens again for whoever holds it. */
+      openWorldHint: true,
     },
     writes: true,
     inputSchema: {
