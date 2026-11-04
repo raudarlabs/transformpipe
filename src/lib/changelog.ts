@@ -120,19 +120,33 @@ export const QUIET_ENTRIES = new Set([
   'public-links-need-a-confirmed-address',
 ]);
 
+/*
+ * The only entry pages offered to search, and only in English. The owner's call, 4 November 2026.
+ *
+ * Search Console had dropped most of the site from its index by then (content/gsc/2026-11-04.md),
+ * and in the three months before, every entry page together had earned eleven impressions. So an
+ * entry page is now kept out of search unless it is listed here. These three are the only page on
+ * the site for something people search for: versions and the line diff, maths, and Mermaid. Every
+ * other entry is answered by a page that does it better — /share-markdown, /markdown-api,
+ * /agents/obsidian, a conversion's own page, an article — or is about the site itself.
+ *
+ * The two sets above still say why their entries are out, and still win over this one.
+ */
+export const INDEXED_ENTRIES = new Set(['document-versions', 'math-in-markdown', 'mermaid-diagrams']);
+
 /**
  * Whether one entry's page in one language is listed and indexed.
  *
- * Never for an entry in either set above. Otherwise always in English, and in another language
- * only when somebody wrote that language's `detail`: the English fallback served under `/de/…` is
- * a copy of the English page, and a copy at a second address is not a page in German.
+ * Only for an entry in INDEXED_ENTRIES and in neither set above, and only in English: no
+ * translated entry page had a search impression of its own, and the English fallback served under
+ * `/de/…` is a copy of the English page, not a page in German.
  */
 export function entryIndexedIn(entry: ChangelogEntry, locale: Locale): boolean {
   if (!entry.slug || CONVERSION_ENTRIES.has(entry.slug) || QUIET_ENTRIES.has(entry.slug)) {
     return false;
   }
 
-  return locale === 'en' || entry.detail?.[locale] !== undefined;
+  return locale === 'en' && INDEXED_ENTRIES.has(entry.slug);
 }
 
 /** One entry's page, in English and in whatever else somebody has written. */

@@ -83,6 +83,31 @@ signed up or connected an assistant cannot be answered today.
 
 ---
 
+## 4 November 2026: Google dropped most of the site, and the index was cut
+
+From 27 October impressions fell from about 160 a day to about 20 (`content/gsc/2026-11-04.md`).
+The articles that had carried the site were marked "crawled, currently not indexed" without having
+been crawled since late September: a judgement of the whole site, not an error on a page.
+
+The response was to offer search fewer, stronger pages. The cut was made by what each page had
+earned in the three months before.
+
+- 54 of 70 English articles stay indexed.
+- 57 of 280 translations stay indexed.
+- 3 changelog entry pages stay indexed.
+- Every conversion, tool and feature page stays, in all five languages.
+- Everything else is `noindex, follow`.
+- The sitemap went from 698 to 384 URLs.
+- The rules are in `CLAUDE.md` ("Which article pages are offered to search").
+
+What this changes in the phases below:
+
+- **Phase 2 (links)** matters more than before and runs in its own session.
+- **Phase 3 (consolidation)** is now also the way a page comes back into search: merge, source,
+  rewrite, then move it into its set.
+- **No new articles until the index recovers.** Writing more is the opposite of what Google has just
+  asked for.
+
 ## The plan
 
 Six months in four phases, which overlap. Each item is sized in days of work so it can sit next to

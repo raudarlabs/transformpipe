@@ -17,6 +17,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { markdownToHtml } from '../server/render.js';
 import { MD_DOC_STYLE, mdDocTheme } from '../shared/md-doc-css.js';
+import { articleIndexedIn, INDEXED_TRANSLATIONS, QUIET_ARTICLES } from '../src/lib/article-index.js';
 import { uploadLimit } from '../shared/limits.js';
 import {
   ARTICLES,
@@ -32,6 +33,7 @@ import {
   changelogByYear,
   CONVERSION_ENTRIES,
   QUIET_ENTRIES,
+  INDEXED_ENTRIES,
   entryIndexedIn,
   CHANGELOG_PAGES,
   changelogProblems,
@@ -291,8 +293,13 @@ function alternates(rest: string, languages?: Locale[]): string {
       (locale) =>
         `<link rel="alternate" hreflang="${locale}" href="${href(locale)}" />`
     ),
-    /* English is the source in both cases, and it is always in the group when there is one. */
-    `<link rel="alternate" hreflang="x-default" href="${href(DEFAULT_LOCALE)}" />`,
+    /*
+     * English is the source, and the default whenever it is in the group. An article whose English
+     * page is kept out of search (src/lib/article-index.ts) has no default to name.
+     */
+    ...(group.includes(DEFAULT_LOCALE)
+      ? [`<link rel="alternate" hreflang="x-default" href="${href(DEFAULT_LOCALE)}" />`]
+      : []),
   ].join('\n    ');
 }
 
@@ -651,6 +658,22 @@ const DOC_STYLE = `<style>${mdDocTheme('dark')}\n${MD_DOC_STYLE}</style>`;
 const pages: Page[] = [];
 
 // ---------------------------------------------------------------- articles
+
+/* A name in either list with no article behind it is a typo that would quietly change nothing. */
+for (const slug of QUIET_ARTICLES) {
+  if (!hasArticleIn(slug, DEFAULT_LOCALE)) {
+    throw new Error(`QUIET_ARTICLES names ${slug}, and there is no such article`);
+  }
+}
+
+for (const key of INDEXED_TRANSLATIONS) {
+  const [locale, slug] = key.split('/') as [Locale, string];
+
+  if (!LOCALES.includes(locale) || locale === DEFAULT_LOCALE || !hasArticleIn(slug, locale)) {
+    throw new Error(`INDEXED_TRANSLATIONS names ${key}, and there is no such translation`);
+  }
+}
+
 for (const locale of LOCALES) {
   const catalogue = CATALOGUES[locale];
   const dates = INTL_LOCALES[locale];
@@ -668,10 +691,22 @@ for (const locale of LOCALES) {
       .replace('{date}', formatArticleDate(article.date, dates))
       .replace('{minutes}', String(article.readingMinutes));
 
+    /* See src/lib/article-index.ts: a page is offered to search only where it has earned it. */
+    const indexed = articleIndexedIn(article.slug, locale);
+
     pages.push({
       path: articlePath(article.slug, locale),
       locale,
-      languages: LOCALES.filter((one) => hasArticleIn(article.slug, one)),
+      /*
+       * The alternates name only the indexed languages, and a page kept out of search names none:
+       * an hreflang set is a claim that each member is the same page for another reader, and a
+       * member that asks not to be indexed breaks the claim for all of them.
+       */
+      languages: indexed
+        ? LOCALES.filter((one) => hasArticleIn(article.slug, one) && articleIndexedIn(article.slug, one))
+        : [locale],
+      listed: indexed,
+      noindex: !indexed,
       /*
        * The headline alone. The suffix pushed 66 of 70 English titles past what a result shows,
        * and the name is already in the address, the breadcrumb and the publisher.
@@ -680,7 +715,6 @@ for (const locale of LOCALES) {
       description: article.description,
       image: articleCover(article.slug),
       lastmod: article.updated ?? article.date,
-      listed: true,
       head: [
         `<meta property="article:published_time" content="${article.date}" />`,
         ...(article.updated
@@ -1350,9 +1384,9 @@ if (changelogFaults.length > 0) {
 }
 
 /* A name in either set with no page behind it is a typo that would quietly keep nothing out. */
-for (const slug of [...CONVERSION_ENTRIES, ...QUIET_ENTRIES]) {
+for (const slug of [...CONVERSION_ENTRIES, ...QUIET_ENTRIES, ...INDEXED_ENTRIES]) {
   if (!CHANGELOG_PAGES.some((entry) => entry.slug === slug)) {
-    throw new Error(`The changelog's noindex sets name ${slug}, and no entry has that slug`);
+    throw new Error(`The changelog's indexing sets name ${slug}, and no entry has that slug`);
   }
 }
 

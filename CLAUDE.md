@@ -67,26 +67,28 @@ format this now converts, a thing it now does. Not for a fix.
 `changelogProblems()` enforces all of that and the prerenderer throws on it, so a bad entry fails
 the build rather than shipping an empty page.
 
-**An entry page is indexed only when it answers a search nothing else on the site answers.**
-`entryIndexedIn()` in `src/lib/changelog.ts` decides, and the prerenderer, the sitemap and the
-`hreflang` sets all follow it. Two sets serve `noindex, follow`:
+**An entry page is kept out of search unless `INDEXED_ENTRIES` names it.** That set lives in
+`src/lib/changelog.ts`, and it holds the few entries that are the only page on the site for
+something people search for: versions and the diff, maths, Mermaid.
 
-- `CONVERSION_ENTRIES`: entries about a conversion with a page of its own, since
-  `/changelog/epub-to-markdown` would compete with `/epub-to-markdown`.
-- `QUIET_ENTRIES`: entries a tool page or an article already answers (the connector, the extension,
-  live preview, sharing), and entries about the site itself (deploys, logo, cookie banner,
-  languages).
+- `entryIndexedIn()` decides, and the prerenderer, the sitemap and the `hreflang` sets follow it.
+- An indexed entry is indexed in English only. No translated entry page ever earned a search
+  impression, and the English fallback at `/de/…` is a copy, not a page.
+- Every other entry page is readable and linked, and serves `noindex, follow`.
+- `CONVERSION_ENTRIES` (an entry about a conversion that has its own page) and `QUIET_ENTRIES` (an
+  entry a tool page or an article already answers, or one about the site itself) still record why
+  an entry is out, and they win over `INDEXED_ENTRIES`.
 
-Every other entry is indexed in English, and in another language only where that language's
-`detail` is written. The English fallback at `/de/…` is a copy, not a page.
-
-A new entry with a slug goes in one of the two sets unless it is the only page for something a
-reader would search for. The history of this rule:
+A new entry with a slug is therefore out of search by default. Put it in `INDEXED_ENTRIES` only
+when no other page answers its search. The history of this rule:
 
 - 24 September 2026: noindex on most entry pages.
 - 30 September 2026: reversed by the owner.
 - 21 October 2026: reversed again by the owner, on Search Console's word. 173 of 258 "discovered,
   not indexed" pages were entry pages, queued ahead of `/word-to-markdown` (`content/seo-plan.md`).
+- 4 November 2026: noindex by default, after Google dropped most of the site from its index
+  (`content/gsc/2026-11-04.md`). Every entry page together had earned eleven impressions in
+  three months.
 
 **Detail pages may be translated, and entries themselves still may not.** The reason the rule
 exists — five translations per entry, per release, forever — does not apply to a handful of pages
@@ -111,6 +113,34 @@ decision nobody ever makes on purpose.
 
 The backlog stays as it is. It is translated when somebody chooses to, in whatever order they
 choose; the rule is about not growing it.
+
+### Which article pages are offered to search
+
+Not all of them, since 4 November 2026. On that day Google had dropped most of the blog from its
+index (`content/gsc/2026-11-04.md`): 350 articles in five languages, published within weeks on a
+two-month-old site with few links pointing at it. `articleIndexedIn()` in `src/lib/article-index.ts`
+decides, and the prerenderer, the sitemap and the `hreflang` sets follow it.
+
+- **An English article is indexed unless `QUIET_ARTICLES` names it.** The set holds those that had
+  fewer than 20 impressions and no click in the three months before the decision.
+- **A translation is indexed only when `INDEXED_TRANSLATIONS` names it.** The set holds those that
+  had 10 impressions or a click of their own in the same months: 57 of 280.
+- A page that is out stays readable and linked. It serves `noindex, follow`, and it is left out of
+  the sitemap and out of every `hreflang` set.
+
+The rule for writing in five languages is unchanged. A reader in German still gets the German
+article; the switch is about what is offered to search, not about what is written.
+
+Two cases follow from the rule:
+
+- **A new English article** is indexed by default, which is how it gets its chance.
+- **A new translation** is not indexed. It goes into `INDEXED_TRANSLATIONS` on purpose, when its
+  English page earns clicks and Search Console shows queries in that language.
+
+A page that is out comes back by being made better (merged with its competitor, given sources,
+rewritten) and then moved out of `QUIET_ARTICLES` or into `INDEXED_TRANSLATIONS`. It does not come
+back because time has passed: a noindexed page earns no impressions, so waiting proves nothing. The
+monthly snapshot in `content/gsc/` is where the evidence comes from.
 
 ### What a translation is here
 
