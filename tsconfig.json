@@ -26,8 +26,10 @@
     "extension",
     "server",
     "api",
+    "tests",
     "scripts/prerender.ts",
     "vite.config.ts",
+    "vitest.config.ts",
     "vite.extension.config.ts",
     "tailwind.config.ts",
     "tailwind.ui.config.ts"

@@ -183,3 +183,17 @@ The two lists answer different questions and neither replaces the other: `src/li
 tells somebody using TransformPipe what changed, `ROADMAP.md` says what is coming and what came of
 what was promised. A roadmap nobody updates is a document people stop believing, which is why the
 first version of this one — twenty-six weeks of plan and no record — was rewritten.
+
+## Unit tests
+
+`npm test` runs Vitest over `tests/*.test.ts`, and `npm run build` runs it after the type check, so a
+failing test stops a deploy. They cover pure functions only — no server, no database, no browser —
+and take well under a second. `scripts/check-*.mjs` remain what exercises a running server, and the
+interface is still checked by hand on localhost.
+
+- A bug fixed in a pure function gets a test that fails without the fix, in the same commit.
+- A function that reads the database is tested with `server/db.js` mocked, the way
+  `tests/page-links.test.ts` does it.
+- A test should fail when the code is broken, not only pass when it works: break the line by hand
+  once and watch it go red. A mutation tester (Stryker) is the automated form of that, and worth
+  adding once there is enough here for it to grade.

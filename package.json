@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && npm run deploy:check && npm run blog:check && npm run guides:check && vite build && npm run prerender",
+    "build": "tsc -b && npm test && npm run deploy:check && npm run blog:check && npm run guides:check && vite build && npm run prerender",
     "ext": "vite build --config vite.extension.config.ts",
     "ext:firefox": "vite build --config vite.extension.config.ts --mode firefox",
     "ext:art": "node scripts/store-art.mjs",
@@ -15,6 +15,8 @@
     "prerender": "vite build --ssr scripts/prerender.ts --outDir .prerender --emptyOutDir && node .prerender/prerender.js",
     "preview": "vite preview",
     "check-types": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "blog:check": "node scripts/check-blog.mjs",
     "guides:check": "node scripts/check-guides.mjs",
     "og": "node scripts/og-images.mjs",
@@ -96,6 +98,7 @@
     "tailwindcss": "^3.4.7",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
-    "vite-plugin-svgr": "^4.5.0"
+    "vite-plugin-svgr": "^4.5.0",
+    "vitest": "^5.0.5"
   }
 }
