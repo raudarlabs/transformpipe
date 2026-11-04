@@ -34,7 +34,7 @@ inputs:
     required: false
     default: ''
   comment:
-    description: Comment the links on the pull request. Needs `permissions: pull-requests: write`.
+    description: 'Comment the links on the pull request. Needs `permissions: pull-requests: write`.'
     required: false
     default: 'true'
   host:

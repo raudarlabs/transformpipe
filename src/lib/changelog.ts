@@ -190,6 +190,15 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-11-04',
+    version: '2.2.1',
+    title: 'The GitHub Action loads again',
+    body:
+      'The Action’s action.yml had a line GitHub could not read, so a workflow using '
+      + 'raudarlabs/transformpipe stopped before it published anything. It reads now, and the Action '
+      + 'is on the GitHub Marketplace.',
+  },
+  {
     date: '2026-10-21',
     title: 'Analytics includes Microsoft Clarity, behind the same switch',
     body:
