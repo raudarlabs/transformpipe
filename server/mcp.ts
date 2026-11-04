@@ -3415,6 +3415,14 @@ mcp.post('/', async (c) => {
     );
   }
 
+  /*
+   * None: every resource has a fixed address. Asked anyway by clients that see the `resources`
+   * capability — Glama's inspector among them — and an empty list is the answer, not -32601.
+   */
+  if (method === 'resources/templates/list') {
+    return c.json(rpc(id ?? null, { resourceTemplates: [] }));
+  }
+
   if (method === 'resources/read') {
     const uri = String((params as { uri?: unknown }).uri ?? '');
     /*
