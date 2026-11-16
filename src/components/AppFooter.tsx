@@ -1,10 +1,13 @@
+import type { MouseEvent } from 'react';
 import { CONVERSIONS, type ConversionId } from '@shared/conversions';
 import { Logo } from '@/components/Logo';
+import { blogPath } from '@/lib/blog';
 import { useI18n, useT } from '@/lib/i18n/context';
-import { boundArrow } from '@/lib/labels';
-import { pagesIn, REPO_URL, STATIC_PAGES, type StaticPageId, X_URL } from '@/lib/pages';
+import { localePath } from '@/lib/i18n/locales';
+import { STATIC_PAGES, type StaticPageId, X_URL } from '@/lib/pages';
 import type { Destination } from '@/lib/route';
 import { cn } from '@/ui/lib/utils';
+import { buttonVariants } from '@/ui/components/Button';
 import { X_MARK_PATH } from '@/ui/components/ShareLinks';
 import {
   SiteFooter,
@@ -61,92 +64,164 @@ function linkToMaker(sentence: string) {
   );
 }
 
+/**
+ * The two halves of a conversion's label, "Markdown → Word", so a column headed "From Markdown" can
+ * say "Word". Every label in every language has the one arrow; one that ever lacks it is shown
+ * whole rather than cut.
+ */
+function sides(label: string): [string, string] {
+  const [from, to] = label.split(' → ');
+
+  return to === undefined ? [label, label] : [from, to];
+}
+
+/** A plain left click, which the app handles itself; anything else is the browser's. */
+function inApp(event: MouseEvent<HTMLAnchorElement>, go: () => void) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return;
+  }
+
+  event.preventDefault();
+  go();
+}
+
 export function AppFooter({
   onConversionChange,
   onViewChange,
   onOpenPage,
 }: AppFooterProps) {
   const t = useT();
-  const { content } = useI18n();
+  const { content, locale } = useI18n();
+
+  /*
+   * Every address in the reader's language. The footer used to hand out the English path whatever
+   * page it sat on, so a German reader's every footer link — about 38 of them — led out of German,
+   * and the app's own copy of the page disagreed with the prerendered one beneath it.
+   */
+  const at = (path: string) => localePath(locale, path);
 
   const page = (id: StaticPageId) => {
     const one = STATIC_PAGES.find((each) => each.id === id)!;
 
     return {
       label: content.pages[id].label,
-      href: one.path,
+      href: at(one.path),
       onNavigate: () => onOpenPage(id),
     };
   };
 
+  const conversion = (one: (typeof CONVERSIONS)[number], side: 0 | 1) => {
+    const label = content.conversions[one.id].label;
+
+    return {
+      label: sides(label)[side],
+      fullLabel: label,
+      href: at(one.path),
+      onNavigate: () => onConversionChange(one.id),
+    };
+  };
+
+  const fromMarkdown = CONVERSIONS.filter((one) => one.id.startsWith('markdown-to-'));
+  const toMarkdown = CONVERSIONS.filter((one) => !one.id.startsWith('markdown-to-'));
+
   const columns: FooterColumn[] = [
     {
-      heading: t('footer.converter'),
-      links: CONVERSIONS.map((one) => ({
-        label: boundArrow(content.conversions[one.id].label),
-        href: one.path,
-        onNavigate: () => onConversionChange(one.id),
-      })),
-      // Fifteen conversions in one list read as a wall; two columns read as a menu.
+      heading: t('footer.fromMarkdown'),
+      links: fromMarkdown.map((one) => conversion(one, 1)),
+    },
+    {
+      heading: t('footer.toMarkdown'),
+      links: toMarkdown.map((one) => conversion(one, 0)),
+      // Fourteen names in one list read as a wall; two columns read as a menu.
       twoLists: true,
     },
     {
-      heading: t('footer.resources'),
+      heading: t('footer.product'),
+      collapseUntilWide: true,
       links: [
         {
-          label: t('footer.docs'),
-          href: '/docs',
-          onNavigate: () => onViewChange('docs'),
-        },
-        {
-          label: t('footer.blog'),
-          href: '/blog',
-          onNavigate: () => onViewChange('blog'),
-        },
-        {
           label: t('footer.live'),
-          href: '/markdown-live-preview',
+          href: at('/markdown-live-preview'),
           onNavigate: () => onViewChange('livePreview'),
         },
         {
-          label: t('footer.changelog'),
-          href: '/changelog',
-          onNavigate: () => onViewChange('changelog'),
+          label: t('footer.docs'),
+          href: at('/docs'),
+          onNavigate: () => onViewChange('docs'),
         },
         /*
-         * The extension, which was reachable from the changelog and the sitemap and nowhere a
-         * person would look. This column is where the other ways in live — the documentation, the
-         * blog, the live preview — and it is the way in that has to be installed.
+         * Not the assistants page or the extension: the band above links both as its two buttons,
+         * and listing them again made this column two lines longer than every other one.
          */
-        page('extension'),
         page('obsidian'),
-        page('agents'),
-        /*
-         * The four things it did with no page of their own until October 2026: sharing as a link, the
-         * API, the command line and the Action. A page nothing links to is a page nobody finds.
-         */
         page('share-markdown'),
         page('api'),
         page('cli'),
         page('github-action'),
-        /*
-         * What this is, next to where to ask about it. `/about` had its own address and no way in
-         * from the chrome — the only links to it were the sitemap and a sentence on a blog page.
-         */
-        page('about'),
-        page('support'),
       ],
     },
     {
-      heading: t('footer.legal'),
-      links: [page('privacy'), page('terms'), page('cookies')],
+      heading: t('footer.company'),
+      collapseUntilWide: true,
+      links: [
+        page('about'),
+        {
+          label: t('footer.blog'),
+          href: blogPath(locale),
+          onNavigate: () => onViewChange('blog'),
+        },
+        {
+          label: t('footer.changelog'),
+          href: at('/changelog'),
+          onNavigate: () => onViewChange('changelog'),
+        },
+        page('support'),
+        page('privacy'),
+        page('terms'),
+        page('cookies'),
+      ],
     },
   ];
+
+  const agents = page('agents');
+  const extension = page('extension');
 
   return (
     <SiteFooter
       brand={<Logo />}
       tagline={t('footer.tagline')}
+      cta={
+        /*
+         * The two ways in that have to be set up rather than visited — an assistant connected, the
+         * extension installed — and so the two a reader who has scrolled this far is likeliest to
+         * have missed. One filled button, one outlined: two of the same would ask which matters.
+         */
+        <section
+          aria-label={t('footer.cta.title')}
+          className="flex flex-col gap-4 rounded-xl border border-stroke bg-surface-card p-5 md:flex-row md:items-center md:justify-between md:px-6"
+        >
+          <div className="flex flex-col gap-1">
+            <p className="font-semibold text-base text-ink-primary">{t('footer.cta.title')}</p>
+            <p className="text-ink-secondary text-sm">{t('footer.cta.body')}</p>
+          </div>
+          <div className="flex flex-wrap gap-2 md:shrink-0">
+            <a
+              href={agents.href}
+              onClick={(event) => inApp(event, agents.onNavigate)}
+              className={buttonVariants({ variant: 'primary', size: 'md', className: 'px-4 no-underline' })}
+            >
+              {t('footer.cta.connect')}
+            </a>
+            <a
+              href={extension.href}
+              onClick={(event) => inApp(event, extension.onNavigate)}
+              className={buttonVariants({ variant: 'outline', size: 'md', className: 'px-4 no-underline' })}
+            >
+              {t('footer.cta.extension')}
+            </a>
+          </div>
+        </section>
+      }
       follow={
         /*
          * The account, as its mark — the same one and the same round shape as the share links

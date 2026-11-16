@@ -191,6 +191,14 @@ export const DETAIL_LIMIT = 3000;
 const ENTRIES: ChangelogEntry[] = [
   {
     date: '2026-11-16',
+    title: 'A shorter footer that stays in your language',
+    body:
+      'The footer’s links on the German, French, Spanish and Italian pages led to the English ones. '
+      + 'They lead to your language now. The conversions are listed by direction, from Markdown and '
+      + 'to Markdown, and on a phone each list opens with a tap instead of filling a screen and a half.',
+  },
+  {
+    date: '2026-11-16',
     title: 'Summaries come from OpenAI, and the privacy policy says who gets what',
     body:
       'The Summary tab and the summarize tool now use OpenAI’s paid API instead of Gemini’s free tier, '

@@ -1,9 +1,15 @@
-import type { ReactNode } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { useId, useState, type ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 import { Typography } from '../Typography';
 
 export interface FooterLink {
   label: string;
+  /**
+   * What a screen reader hears instead of the label, when the label leans on its column heading
+   * to make sense: "Word" under "To Markdown" is a menu entry, but read out alone it is a word.
+   */
+  fullLabel?: string;
   /** A real address, so the link is a link: middle-clickable, copyable, crawlable. */
   href: string;
   /**
@@ -20,11 +26,36 @@ export interface FooterColumn {
   links: FooterLink[];
   /**
    * Splits this column's own list into two, side by side, once the layout has room for it (from
-   * `sm:` up). For a column with more links than the others — a growing list of conversions next
+   * `md:` up). For a column with more links than the others — a growing list of conversions next
    * to a handful of legal pages — one tall list reads as a wall; two shorter ones read as a menu.
    */
   twoLists?: boolean;
+  /**
+   * Stays a toggle on a tablet too, and opens only from `lg:` up. For the columns that are a list
+   * of pages rather than the reason somebody came: on a tablet the conversions are worth the room,
+   * and the about-and-legal list under them is not.
+   */
+  collapseUntilWide?: boolean;
 }
+
+/*
+ * The classes that differ between a column that opens from `md:` and one that opens from `lg:`,
+ * written out whole so Tailwind finds every one of them in the source.
+ */
+const OPENS = {
+  md: {
+    column: 'md:gap-3 md:border-t-0 md:pb-8 lg:pb-0',
+    toggle: 'md:hidden',
+    heading: 'md:block',
+    list: 'md:flex md:pb-0',
+  },
+  lg: {
+    column: 'md:col-span-3 lg:col-span-1 lg:gap-3 lg:border-t-0',
+    toggle: 'lg:hidden',
+    heading: 'lg:block',
+    list: 'lg:flex lg:pb-0',
+  },
+} as const;
 
 interface SiteFooterProps {
   /** The wordmark, as its own element so the footer does not need to know how it is drawn. */
@@ -35,6 +66,11 @@ interface SiteFooterProps {
   builtBy?: ReactNode;
   /** Where else the product speaks — its accounts elsewhere, as marks under the tagline. */
   follow?: ReactNode;
+  /**
+   * A band above the columns for the one thing the site would most like a reader at the bottom to
+   * do next. A node, because what it says and where its buttons go are the caller's business.
+   */
+  cta?: ReactNode;
   columns: FooterColumn[];
   /** The bottom line: a copyright, usually. A node, because the name in it can be a link. */
   note?: ReactNode;
@@ -65,11 +101,35 @@ export function SiteFooter({
   tagline,
   builtBy,
   follow,
+  cta,
   columns,
   note,
   externalLabel = ' (opens in a new tab)',
   className,
 }: SiteFooterProps) {
+  /*
+   * Which columns are open on a phone. Closed by default: twenty conversions and sixteen pages
+   * stacked one under another made the footer a screen and a half of links, and somebody at the
+   * bottom of a page on a phone is looking for one of them, not reading all of them. From `md:` up
+   * every column is open and the toggle is not drawn. The links stay in the document either way,
+   * so nothing a crawler follows depends on a tap.
+   */
+  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set());
+  const ids = useId();
+
+  const toggle = (heading: string) =>
+    setOpen((now) => {
+      const next = new Set(now);
+
+      if (next.has(heading)) {
+        next.delete(heading);
+      } else {
+        next.add(heading);
+      }
+
+      return next;
+    });
+
   return (
     <footer
       data-clarity-unmask="true"
@@ -78,10 +138,13 @@ export function SiteFooter({
         className
       )}
     >
-      <div className="mx-auto flex w-full max-w-content flex-col gap-10 px-6 pt-12 pb-8">
-        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
-          {/* The lead: what this is, and who stands behind it. */}
-          <div className="flex max-w-sm flex-col gap-3">
+      <div className="mx-auto flex w-full max-w-content flex-col gap-8 px-6 pt-10 pb-8 md:gap-10 md:pt-12">
+        {cta}
+
+        <div className="flex flex-col gap-8 xl:flex-row xl:justify-between xl:gap-12">
+          {/* The lead: what this is, and who stands behind it. One line across the top on a laptop,
+            * where it sits above the columns; a block of its own beside them from `xl:` up. */}
+          <div className="flex max-w-sm flex-col gap-3 lg:max-w-none lg:flex-row lg:items-center lg:gap-6 xl:max-w-[15rem] xl:flex-col xl:items-start xl:gap-3">
             {brand}
             <Typography variant="p" textColor="secondary" className="text-sm">
               {tagline}
@@ -95,87 +158,122 @@ export function SiteFooter({
           </div>
 
           {/*
-            * Four units wide and stretched to fill what the brand block leaves: the double column
-            * takes two, the two single ones take one each. It used to declare five while only four
-            * were ever occupied, so a unit of the row sat empty — which read as a gap on the right
-            * and squeezed the converter's labels onto two lines apiece.
+            * Four tracks from `lg:` up, sized to what they hold: the conversion names are single
+            * words, and the page names ("Estensione per il browser") are the long ones, so equal
+            * columns wrapped the pages while the formats sat in empty space. The brand sits above
+            * the columns until `xl:`, where there is room for both on one row. Three units on a
+            * tablet, where the two conversion columns fill the row. On a phone, one column of toggles.
             */}
           <nav
             aria-label="Site"
-            className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:flex-1 lg:gap-12"
+            className="grid grid-cols-1 md:grid-cols-3 md:gap-x-10 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.6fr)_minmax(0,1.35fr)_minmax(0,1.35fr)] lg:gap-y-8 xl:flex-1"
           >
-            {columns.map((column) => (
-              <div
-                key={column.heading}
-                className={cn(
-                  'flex flex-col gap-3',
-                  // Half the grid on its own: two lists of five need close to as much room as the
-                  // other three columns combined, or the longer labels wrap where nothing else does.
-                  column.twoLists && 'sm:col-span-2'
-                )}
-              >
-                <Typography
-                  variant="span"
-                  weight="semibold"
-                  textColor="light"
-                  className="text-xxs uppercase tracking-wide"
-                >
-                  {column.heading}
-                </Typography>
+            {columns.map((column, at) => {
+              const isOpen = open.has(column.heading);
+              const listId = `${ids}-${at}`;
+              const opens = OPENS[column.collapseUntilWide ? 'lg' : 'md'];
 
-                <ul
+              return (
+                <div
+                  key={column.heading}
                   className={cn(
-                    'flex flex-col gap-2',
-                    column.twoLists && 'sm:block sm:columns-2 sm:gap-x-8'
+                    'flex flex-col border-stroke border-t',
+                    opens.column,
+                    // Two lists of short names need close to as much room as two columns.
+                    column.twoLists && 'md:col-span-2 lg:col-span-1'
                   )}
                 >
-                  {column.links.map((link) => (
-                    <li
-                      key={`${column.heading}-${link.label}`}
-                      className={column.twoLists ? 'sm:mb-2 sm:break-inside-avoid' : undefined}
-                    >
-                      <a
-                        href={link.href}
-                        {...(link.external
-                          ? { target: '_blank', rel: 'noreferrer noopener' }
-                          : {})}
-                        onClick={(event) => {
-                          /*
-                           * Let the browser do its job when the person asked it to: a new tab, a
-                           * new window, a saved link. Only a plain left click is ours to handle.
-                           */
-                          if (
-                            !link.onNavigate ||
-                            link.external ||
-                            event.defaultPrevented ||
-                            event.button !== 0 ||
-                            event.metaKey ||
-                            event.ctrlKey ||
-                            event.shiftKey ||
-                            event.altKey
-                          ) {
-                            return;
-                          }
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-controls={listId}
+                    onClick={() => toggle(column.heading)}
+                    className={cn(
+                      'flex w-full items-center justify-between py-3 text-left text-ink-primary text-sm',
+                      opens.toggle,
+                      'focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand'
+                    )}
+                  >
+                    {column.heading}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={cn('size-4 text-ink-inactive transition-transform', isOpen && 'rotate-180')}
+                    />
+                  </button>
 
-                          event.preventDefault();
-                          link.onNavigate();
-                        }}
-                        className={cn(
-                          'text-ink-secondary text-sm no-underline transition-colors',
-                          'hover:text-brand-tertiary',
-                          'focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-offset-2'
-                        )}
+                  <Typography
+                    variant="span"
+                    weight="semibold"
+                    textColor="light"
+                    className={cn('hidden text-xxs uppercase tracking-wide', opens.heading)}
+                  >
+                    {column.heading}
+                  </Typography>
+
+                  <ul
+                    id={listId}
+                    className={cn(
+                      'flex-col gap-2',
+                      isOpen ? 'flex pb-4' : 'hidden',
+                      opens.list,
+                      column.twoLists && 'md:block md:columns-2 md:gap-x-8'
+                    )}
+                  >
+                    {column.links.map((link) => (
+                      <li
+                        key={`${column.heading}-${link.href}`}
+                        className={column.twoLists ? 'md:mb-2 md:break-inside-avoid' : undefined}
                       >
-                        {link.label}
-                        {link.external && (
-                          <span className="sr-only">{externalLabel}</span>
-                        )}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                        <a
+                          href={link.href}
+                          {...(link.external
+                            ? { target: '_blank', rel: 'noreferrer noopener' }
+                            : {})}
+                          onClick={(event) => {
+                            /*
+                             * Let the browser do its job when the person asked it to: a new tab, a
+                             * new window, a saved link. Only a plain left click is ours to handle.
+                             */
+                            if (
+                              !link.onNavigate ||
+                              link.external ||
+                              event.defaultPrevented ||
+                              event.button !== 0 ||
+                              event.metaKey ||
+                              event.ctrlKey ||
+                              event.shiftKey ||
+                              event.altKey
+                            ) {
+                              return;
+                            }
+
+                            event.preventDefault();
+                            link.onNavigate();
+                          }}
+                          className={cn(
+                            'text-ink-secondary text-sm no-underline transition-colors',
+                            'hover:text-brand-tertiary',
+                            'focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring-brand focus-visible:ring-offset-2'
+                          )}
+                        >
+                          {link.fullLabel ? (
+                            <>
+                              <span aria-hidden="true">{link.label}</span>
+                              <span className="sr-only">{link.fullLabel}</span>
+                            </>
+                          ) : (
+                            link.label
+                          )}
+                          {link.external && (
+                            <span className="sr-only">{externalLabel}</span>
+                          )}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </nav>
         </div>
 
