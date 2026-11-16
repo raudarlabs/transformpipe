@@ -801,9 +801,12 @@ check(
 
 /*
  * Every tool says what it is and carries all four hints as booleans — ChatGPT's review refused
- * v1.0.0 with some of them missing. The hints are checked against what each tool does, in the
- * specification's sense: destructive deletes or overwrites, open-world reaches people or systems
- * outside the account, idempotent means a repeat with the same arguments changes nothing more.
+ * v1.0.0 with some of them missing, and again on 14 November 2026 over values that leaned on "it can
+ * be undone". The hints are checked against what each tool does, in the sense OpenAI's review uses:
+ * destructive deletes, overwrites, revokes access or sends what cannot be recalled, in any mode;
+ * open-world makes content, a notice or data reach people or systems outside the account;
+ * idempotent means a repeat with the same arguments changes nothing more, which a folder given by
+ * path does not promise (the lookup can land on another folder the second time).
  */
 const tools = listed.body?.result?.tools ?? [];
 const HINTS = ['readOnlyHint', 'destructiveHint', 'idempotentHint', 'openWorldHint'];
@@ -830,17 +833,17 @@ const EXPECTED = {
   tp_get_document: 'TFTF',
   tp_document_versions: 'TFTF',
   tp_usage: 'TFTF',
-  tp_save_document: 'FFFT',
+  tp_save_document: 'FTFT',
   tp_update_document: 'FTTT',
-  tp_create_folder: 'FFTF',
-  tp_move_documents: 'FFTT',
-  tp_update_folder: 'FFTT',
+  tp_create_folder: 'FFTT',
+  tp_move_documents: 'FTTT',
+  tp_update_folder: 'FTFT',
   tp_share_document: 'FTTT',
   tp_share_folder: 'FTTT',
   tp_delete_document: 'FTTF',
   tp_restore_document: 'FFTT',
-  tp_delete_folder: 'FTTF',
-  tp_summarize_document: 'FFFT',
+  tp_delete_folder: 'FTFF',
+  tp_summarize_document: 'FTFT',
 };
 check(
   'each tool\'s hints match what it does',

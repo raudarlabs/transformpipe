@@ -190,6 +190,15 @@ export const DETAIL_LIMIT = 3000;
 
 const ENTRIES: ChangelogEntry[] = [
   {
+    date: '2026-11-16',
+    title: 'Summaries come from OpenAI, and the privacy policy says who gets what',
+    body:
+      'The Summary tab and the summarize tool now use OpenAI’s paid API instead of Gemini’s free tier, '
+      + 'so the text sent for a summary is not used to train anyone’s models. The privacy policy is '
+      + 'rewritten to name every service that receives data, what it receives and for how long. '
+      + 'Deleting an account now deletes its folders and their sharing too.',
+  },
+  {
     date: '2026-11-04',
     version: '2.2.1',
     title: 'The GitHub Action loads again',

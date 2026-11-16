@@ -140,7 +140,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Privacidad y cuestiones legales',
         body: [
-          'Las preguntas sobre qué se guarda, o la petición de borrar una cuenta y todo lo que contiene, van a las mismas incidencias. Con la sesión iniciada también puedes borrar cualquier documento tú mismo: espera 14 días en la papelera y después la fila y la fuente guardada se van a la vez.',
+          'Las preguntas sobre qué se guarda, o la petición de borrar una cuenta y todo lo que contiene, van a hello@transformpipe.com y no a una incidencia pública, para que nada sobre tu cuenta quede a la vista. Con la sesión iniciada también puedes borrar cualquier documento tú mismo: espera 14 días en la papelera y después la fila y la fuente guardada se van a la vez.',
         ],
       },
     ],
@@ -214,93 +214,233 @@ export const pages: Content['pages'] = {
   privacy: {
     label: 'Privacidad',
     title: 'Privacidad',
-    lede: 'Qué se guarda, dónde, y qué no se recoge en absoluto.',
+    lede: 'Qué se recoge, para qué, quién más lo recibe, cuánto tiempo se conserva y qué puede hacer usted al respecto — en el sitio web, la cuenta, la API, la extensión, el plugin de Obsidian y la app de ChatGPT.',
     sections: [
       {
-        heading: 'Sin la sesión iniciada, no nos llega ningún archivo',
+        heading: 'Quiénes somos y cómo contactarnos',
         body: [
-          'Convertir ocurre en tu navegador. El archivo se lee, se convierte y se muestra en tu propia máquina, y no se envía ninguna parte de él a un servidor. El historial que ves es el almacenamiento del propio navegador, no una cuenta.',
+          'TransformPipe (transformpipe.com) lo crea y lo gestiona Raudar Labs, que decide qué se recoge y con qué fin; en el lenguaje de la normativa de protección de datos, el responsable del tratamiento. Esta página abarca el sitio web, la cuenta, la API y la línea de comandos, la GitHub Action, la extensión del navegador, el plugin de Obsidian y el conector que usan ChatGPT, Claude y otros asistentes.',
+          'Para una pregunta sobre sus datos, una solicitud de acceso, rectificación, exportación o supresión, o una reclamación, escriba a hello@transformpipe.com. Lo lee una persona, y una solicitud enviada desde la dirección de su cuenta no necesita nada más para acreditar que es suya. Los problemas de seguridad se comunican al contacto que figura en `/.well-known/security.txt`.',
         ],
       },
       {
-        heading: 'Con la sesión iniciada, esto y nada más',
+        heading: 'Qué recogemos',
         body: [
-          'Una cuenta existe para que los documentos puedan seguirte entre dispositivos y compartirse. Contiene:',
+          'Aquí, en resumen; en detalle, en las secciones que siguen:',
         ],
         items: [
-          'Tu identidad, a través de nuestro proveedor de autenticación: una dirección de correo, un nombre cuando se ha dado uno y un identificador de cuenta. Al entrar con Google vienen de Google; al registrarte con una dirección y una contraseña, la contraseña queda en el proveedor de autenticación, como hash. En ninguno de los dos casos vemos ni guardamos una contraseña.',
-          'De cada documento que conservas: su nombre, qué conversión lo hizo, su tamaño, los recuentos de palabras, encabezados, enlaces, bloques de código, tablas e imágenes, y cuándo se creó.',
-          'El Markdown en sí, en un almacén de blobs privado — privado quiere decir que no tiene ninguna URL pública y solo se lee mediante una petición que autorizamos.',
-          'Las claves API como hashes, nunca la clave. Una clave se muestra una vez, al crearla, y después no se puede recuperar — ni tú ni nosotros.',
-          'Los ajustes de compartición: si un documento es privado, abierto por enlace o dirigido a direcciones de correo concretas, y el token que lleva un enlace, el día en que deja de funcionar si se fijó uno, y cuándo se ha abierto, y — si tiene contraseña — un hash de ella, nunca la contraseña.',
+          'Cuenta: su dirección de correo electrónico, un nombre y una foto de perfil si su método de acceso los proporcionó, un identificador de cuenta, si la dirección está verificada, cuándo se registró y cómo inicia sesión — con Google, o con una dirección y una contraseña, que nuestro proveedor de autenticación guarda solo como hash.',
+          'Documentos y archivos: lo que usted guarda — su nombre, el texto Markdown con las imágenes incrustadas en él, su tamaño, los recuentos de palabras, encabezados, enlaces, bloques de código, tablas e imágenes, qué conversión lo generó, su carpeta, cuándo se creó y se modificó, hasta diez versiones anteriores, un índice de búsqueda construido a partir del texto y un resumen si lo solicitó. También los nombres de las carpetas.',
+          'Comparticiones: si un documento o una carpeta es privado, está abierto a cualquiera con el enlace o se limita a personas concretas; el token del enlace, su fecha de caducidad y un hash de su contraseña; las direcciones de correo con las que lo compartió; y cuántas veces y cuándo se abrió — con la dirección del lector, en el caso de un documento compartido con personas concretas.',
+          'Uso: totales diarios anónimos de visitas y acciones, sin cuenta, dirección ni documento asociados; cuándo se usó por última vez una clave API o una app conectada; y contadores de llamadas por minuto que impiden el abuso.',
+          'Datos técnicos: la dirección IP y el navegador de cada sesión iniciada, que conserva nuestro proveedor de autenticación; direcciones IP retenidas durante aproximadamente un día para limitar el uso de los formularios que no requieren cuenta; y los registros de peticiones del alojamiento.',
+          'Correo electrónico: las direcciones de las personas con quienes usted comparte y, para una cuenta con dirección verificada, el registro de contacto que conserva nuestro servicio de correos de bienvenida, descrito en el apartado Correo electrónico.',
+          'Analítica y cookies: lo que Google Analytics y Microsoft Clarity registran sobre una visita, solo si usted permite la analítica. Sin ese permiso, las cookies necesarias para iniciar sesión y nada más.',
+          'Lo que usted mismo nos envía: un mensaje a hello@transformpipe.com, una denuncia sobre un documento compartido, una puntuación en un correo de opinión.',
+          'Nunca: datos de pago (aquí no se paga nada), documentos de identidad oficiales, datos de salud, su ubicación precisa ni sus conversaciones con un asistente de IA.',
         ],
       },
       {
-        heading: 'Contar, sin saber quién',
+        heading: 'El conversor del sitio web: sus archivos nunca nos llegan',
         body: [
-          'Contamos las visitas y unas pocas acciones — una página abierta, una conversión, una descarga, un guardado, un documento compartido — como totales diarios anónimos, en nuestro propio servidor y en nuestra propia base de datos. Contar no crea ninguna cookie ni guarda nada en tu navegador; los totales no conservan ningún identificador ni dirección IP, y de un documento nada más que la conversión o el formato. De dónde llegó una visita se registra solo como el nombre del sitio de procedencia — Product Hunt, Google, «directo» — o como la etiqueta de campaña del enlace que seguiste.',
-          'Un enlace compartido también registra sus aperturas, para que las vea su propietario: la hora de cada una, y si fue la página compartida o la app — nada sobre quién lo abrió. La página pide a nuestro servidor una imagen de un píxel, y esa petición es todo lo que se registra; no se crea ninguna cookie. Para que una misma máquina no pueda inflar la cuenta, se guarda un hash de un solo sentido de su dirección junto a un recuento por minuto, y se borra en menos de un día. Las aperturas se van con el enlace cuando se revoca, y ninguna se guarda más de un año. La única excepción es un documento compartido con personas concretas: quien lo lee ha iniciado sesión con una de las direcciones que nombró el propietario, así que cada apertura registra también cuál de esas direcciones fue — y la página le dice al lector que el propietario puede verlo.',
+          'La conversión en el sitio web se realiza en su navegador. El archivo se lee, se convierte y se muestra en su propio equipo, y ninguna parte de él se envía a un servidor salvo que usted decida guardarlo. El historial que ve sin iniciar sesión es el almacenamiento propio de su navegador — las 25 últimas conversiones, con su texto de hasta 400 KB cada una —, que se conserva allí y en ningún otro sitio, y se borra desde el historial o borrando los datos del sitio.',
+        ],
+      },
+      {
+        heading: 'Su cuenta',
+        body: [
+          'La cuenta existe para que los documentos le acompañen entre dispositivos y puedan compartirse. Al iniciar sesión con Google, su dirección, su nombre y su foto llegan desde Google; si se registra con una dirección y una contraseña, la contraseña queda en manos de nuestro proveedor de autenticación, Neon Auth, que la guarda como hash; pasa por nuestro servidor en el camino y nunca se almacena en él. Cada sesión iniciada registra el navegador y la dirección IP de procedencia, lo que mantiene su sesión abierta y nos permite detectar usos indebidos.',
+          'Lo que usted guarda se conserva en nuestra base de datos (Neon), y su texto en un almacén de archivos privado (Vercel Blob) — privado quiere decir que no tiene ninguna dirección pública y solo se lee mediante una petición que nosotros autorizamos. Al sustituir un documento se conserva el texto anterior, hasta diez versiones por documento. Las claves API se guardan como hashes, nunca la clave: una clave se muestra una sola vez, al crearla, y después no se puede recuperar — ni usted ni nosotros.',
+          'No leemos sus documentos. Las excepciones son un documento compartido que alguien nos denuncie y un documento que usted nos pida revisar para resolver un problema. Las personas que gestionan TransformPipe disponen de una página de administración que muestra, para cada cuenta, la dirección, el nombre, el método de acceso, la fecha de registro, los nombres y tamaños de los documentos, el estado de compartición, las apps conectadas, las claves, los webhooks y el navegador y la dirección IP de sus sesiones. Nunca muestra el texto de un documento.',
+          'Un webhook que usted configure recibe el id, el nombre, el tipo y el tamaño de un documento cuando se guarda, y su modo de compartición, su enlace y las direcciones avisadas cuando se comparte — en la dirección que usted indicó y en ninguna otra.',
+        ],
+      },
+      {
+        heading: 'La API y la línea de comandos',
+        body: [
+          'La API, y el comando `tp` construido sobre ella, actúan en su cuenta con una clave API o un token de app. Lo que usted envía — el texto y el nombre de un archivo, la ruta de una carpeta, las direcciones con las que compartir, una fecha de caducidad, una contraseña de compartición — se guarda como documento, exactamente igual que si lo hubiera guardado en la aplicación, y la contraseña de compartición se conserva solo como hash. El comando `tp` guarda su clave en su propio equipo, en `~/.config/tp/config.json`, salvo que usted se la proporcione de otra manera.',
+        ],
+      },
+      {
+        heading: 'La GitHub Action',
+        body: [
+          'La Action se ejecuta en su repositorio con una clave API que usted conserva como secreto del repositorio. Sube a su cuenta, como documentos, los archivos Markdown que modificó una pull request, o los que usted indique, y, si así lo pide, publica sus enlaces como comentario en la pull request con el token propio de GitHub — de modo que GitHub, y quien pueda leer esa pull request, ven los enlaces. Al eliminar el workflow, deja de funcionar; al revocar la clave, pierde el acceso.',
         ],
       },
       {
         heading: 'La extensión del navegador',
         body: [
-          'La extensión convierte la página en la que estás, dentro de esa página y en tu propio equipo. Solo lee una página después de que pulses su botón o abras el panel lateral sobre ella, nunca escribe en la página, y nada de ella sale a ninguna parte hasta que pulsas Guardar o Compartir: sin sesión iniciada no habla con nosotros en absoluto.',
+          'La extensión convierte la página en la que usted se encuentra, dentro de esa página y en su propio equipo. Solo lee una página después de que usted pulse su botón o abra el panel lateral sobre ella, nunca escribe en la página, y nada de ella sale a ninguna parte hasta que pulse Guardar o Compartir: sin sesión iniciada, no se comunica con nosotros en absoluto.',
         ],
         items: [
-          'De tu navegación no se recoge nada. La extensión no lleva analítica ni telemetría, y en ningún sitio queda registro de qué páginas has convertido.',
-          'Con sesión iniciada, un token de OAuth queda en el almacenamiento de extensiones del navegador: la misma autorización que aparece en tu página de cuenta y que allí se revoca. Es la única credencial que guarda la extensión, y no contiene ninguna contraseña.',
-          'Un documento convertido pasa del panel a la pestaña que lo muestra a través del almacenamiento de sesión, que el navegador vacía al cerrarse y nunca escribe en disco.',
-          'Leer la pestaña en la que estás se pide cuando activas el panel lateral, porque un panel que te sigue de pestaña en pestaña no puede volver a preguntar en cada una. El botón de la barra de herramientas no lo necesita: lee la única pestaña en la que lo pulsaste.',
-          'Guardar y Compartir envían ese único documento a tu cuenta, igual que la aplicación. Nada más sale del navegador.',
+          'De su navegación no se recoge nada. La extensión no incluye analítica ni telemetría, y en ningún sitio queda registro de qué páginas ha convertido.',
+          'Con la sesión iniciada, se guarda un token de OAuth en el almacenamiento de extensiones del navegador: la misma autorización que figura en su página de cuenta y que puede revocar allí. Es la única credencial que guarda la extensión, y no contiene ninguna contraseña.',
+          'Un documento convertido pasa del panel a la pestaña que lo muestra a través del almacenamiento de sesión, que el navegador vacía al cerrarse y que nunca escribe en disco.',
+          'El permiso para leer la pestaña en la que se encuentra se solicita al activar el panel lateral, porque un panel que le sigue de pestaña en pestaña no puede volver a preguntar en cada una. El botón de la barra de herramientas no necesita ese permiso: lee únicamente la pestaña en la que lo pulsó.',
+          'Guardar y Compartir envían a su cuenta ese único documento, y las direcciones con las que lo comparte, exactamente igual que la aplicación. Nada más sale del navegador.',
         ],
       },
       {
-        heading: 'Lo que no hacemos',
+        heading: 'El plugin de Obsidian',
         body: [
-          'No hay publicidad, ni píxel de seguimiento, y nada se vende. Google Tag Manager se carga en todas las páginas, y solo trae Google Analytics si permitiste la analítica en el aviso de cookies. Microsoft Clarity, que muestra dónde se hace clic y desplazamiento, se carga con la misma respuesta y solo cuando la página ha terminado de cargar: cada palabra y cada imagen se ocultan en tu navegador antes de enviar nada, y nunca funciona en un documento o carpeta compartidos. Si lo rechazas o no respondes, las etiquetas de Google no escriben nada en tu navegador y Clarity no se carga en absoluto. Nada se comparte con nadie salvo con la infraestructura que hace funcionar el servicio: la base de datos, el almacén de blobs, el proveedor de autenticación, los dos proveedores de correo y el alojamiento.',
-          'Nosotros no leemos tus documentos, y no se usan para entrenar nada.',
+          'El plugin envía una nota a su cuenta solo cuando usted la publica: el texto de la nota con las imágenes de su bóveda incrustadas, su nombre y las direcciones con las que la comparte. Escribe el id del documento en el front matter de la nota, de modo que al volver a publicarla se actualiza la misma página. Su token de acceso se guarda en el llavero del sistema mediante el almacenamiento de secretos de Obsidian; lo único más que almacena, en los ajustes del plugin, es la dirección del servidor y si ya le ha dado la bienvenida. No incluye analítica y no se comunica con nadie más que con nosotros.',
         ],
       },
       {
-        heading: 'El correo electrónico',
+        heading: 'ChatGPT, Claude y otros asistentes',
         body: [
-          'Se envía correo en estos casos y en ninguno más: para confirmar tu dirección y para restablecer una contraseña, que envía el proveedor de autenticación; para avisar a alguien de que se ha compartido un documento con él, que envía el proveedor de correo; y, si tienes una cuenta, unos pocos correos en las primeras semanas: una bienvenida, un par de consejos de uso y una pregunta sobre cómo te va. Esos los envía Brevo y cada uno lleva un enlace para darte de baja, igual que el resumen mensual del producto, que solo recibe quien se ha suscrito.',
-          'Al proveedor de correo se le da la dirección de quien recibe el mensaje, la de quien comparte cuando la hay, y el mensaje mismo. Nunca se le da un documento.',
-          'Brevo recibe tu dirección y tu nombre, el día en que te registraste y unos pocos números que deciden cuál de esos correos te resulta útil: cuántos documentos guardas y has compartido, cuántas veces se abrieron tus enlaces compartidos, qué aplicaciones conectaste y cuándo usaste TransformPipe por última vez. Nunca un documento, su nombre ni su texto. Si respondes a la pregunta del 1 al 10 en uno de ellos, la puntuación se guarda con tu cuenta, y quienes llevan TransformPipe saben quién la dio, para poder preguntar qué la mejoraría. Darte de baja en uno de esos correos los detiene todos; eliminar tu cuenta te quita también de Brevo. Si te suscribes al resumen mensual sin iniciar sesión, Brevo recibe solo la dirección que escribes, y no se le envía nada hasta que la confirmes desde el correo.',
+          'TransformPipe es una app en ChatGPT y un conector en Claude, y cualquier asistente compatible con el Model Context Protocol puede conectarse a él. Al conectarlo, se le dirige a nuestra página de acceso, donde usted autoriza al asistente; a partir de ahí, este dispone de un token que actúa en nombre de su cuenta y de nada más. Conservamos el registro del asistente — su nombre y la dirección a la que vuelve — y el token como hash. Nunca vemos su contraseña de OpenAI o de Anthropic, y el asistente nunca ve la suya de TransformPipe.',
+          'No recibimos su conversación. Recibimos únicamente lo que el asistente incluye en una llamada a una herramienta que decide hacer, junto con el token que indica a qué cuenta corresponde. Lo que devuelve una herramienta vuelve al asistente y se le muestra a usted allí; a partir de ese momento, OpenAI, Anthropic o quien desarrolle el asistente lo trata conforme a su propia política de privacidad. Cada llamada deja además un recuento anónimo con el nombre de la herramienta, un contador por minuto asociado al id de su cuenta que se borra al cabo de un día, y la hora en que se usó el token por última vez.',
+          'Las herramientas que publican una página, envían un correo a alguien, muestran documentos a los lectores de una carpeta compartida, modifican un documento compartido o eliminan algo no hacen nada hasta que usted lo confirma; antes, solo describen lo que ocurriría y a quién afectaría. Hacer algo privado y recuperar un documento de la Papelera no necesitan confirmación. Lo que recibe, devuelve y conserva cada grupo de herramientas:',
+        ],
+        items: [
+          'Convertir — tp_convert_to_markdown y tp_convert_from_markdown. Reciben el texto que se va a convertir, su formato y un nombre, y devuelven el texto convertido. La conversión se realiza en memoria en nuestro servidor y no se almacena nada, salvo que usted pida después guardar el resultado.',
+          'Guardar y organizar — tp_save_document, tp_update_document, tp_create_folder, tp_update_folder y tp_move_documents. Reciben el texto y el nombre de un documento, el nombre o la ruta de una carpeta e ids de documentos o carpetas, y devuelven el id del documento, su tamaño, su carpeta y, si está compartido, su enlace y sus lectores. Todo ello se almacena en su cuenta, igual que un documento guardado en la aplicación. tp_update_document conserva el texto anterior como versión y borra el resumen guardado. Guardar en una carpeta compartida, o mover algo dentro de una, lo hace legible para los lectores de esa carpeta, y una carpeta creada allí les muestra su nombre.',
+          'Compartir — tp_share_document, tp_share_folder, y tp_save_document cuando comparte. Reciben el modo de compartición y las direcciones de correo de los lectores, y devuelven el modo, el enlace, la lista de lectores y cuántas veces se abrió. «link» crea una página pública que puede abrir cualquiera que tenga su dirección. «people» la limita a las direcciones indicadas, las guarda en la compartición y envía a cada nueva dirección un enlace por correo a través de nuestro proveedor de correo, Resend, con usted como remitente. «private» revoca el enlace y, en el caso de un documento, borra su registro de aperturas. Un webhook que usted haya configurado recibe aviso cuando un documento se guarda o se comparte, como se describe en el apartado Su cuenta.',
+          'Resumir — tp_summarize_document. Recibe el id de un documento y devuelve un resumen. Para redactarlo se envían a la API de OpenAI, como máximo, los primeros 60.000 caracteres del documento (véase Quién lo recibe), y el resumen se conserva con el documento hasta que este cambie o se elimine. A OpenAI no se envía nada salvo que se solicite un resumen.',
+          'Eliminar y restaurar — tp_delete_document, tp_delete_folder y tp_restore_document. Reciben un id y una confirmación. Un documento eliminado, con sus versiones y su lista de lectores, pasa a la Papelera durante 14 días y después se borra definitivamente; su enlace deja de funcionar en el acto. Eliminar una carpeta sin sus documentos quita solo la carpeta y sube su contenido un nivel. tp_restore_document muestra el contenido de la Papelera o recupera un documento, con su enlace incluido.',
+          'Leer — tp_list_documents, tp_list_folders, tp_get_document, tp_document_versions, tp_usage y tp_search_documentation. No modifican nada. Reciben ids, una frase de búsqueda o una pregunta, y devuelven los nombres, las fechas, las carpetas y el estado de compartición de sus documentos; el texto de un documento, las direcciones con las que está compartido y cuántas veces se abrió; versiones anteriores; su uso de almacenamiento y sus límites; o secciones de nuestra documentación.',
+        ],
+      },
+      {
+        heading: 'Contar, sin saber quién',
+        body: [
+          'Contamos las visitas y unas pocas acciones — una página abierta, una conversión, una descarga, un guardado, una compartición, una llamada a una herramienta o a la API — como totales diarios anónimos, en nuestro propio servidor y en nuestra propia base de datos. El recuento no crea ninguna cookie ni guarda nada en su navegador; los totales no conservan ningún identificador ni dirección IP, y de un documento nada más que la conversión o el formato. La procedencia de una visita se registra solo como el nombre del sitio de origen — Product Hunt, Google, «directo» — o como la etiqueta de campaña del enlace que usted siguió.',
+          'Un enlace compartido también registra sus aperturas, para que las vea su propietario: la hora de cada una, y si fue la página compartida o la aplicación — nada sobre quién lo abrió. La página pide a nuestro servidor una imagen de un píxel, y esa petición es todo lo que se registra; no se crea ninguna cookie. Para que un mismo equipo no pueda inflar el recuento, se guarda un hash unidireccional de su dirección junto a un contador por minuto, y se borra al cabo de un día. Las aperturas desaparecen con el enlace cuando este se revoca, y se borran al cumplir un año. La única excepción es un documento compartido con personas concretas: quien lo lee ha iniciado sesión con una de las direcciones que indicó el propietario, así que cada apertura registra también cuál de esas direcciones fue — y la página informa al lector de que el propietario puede verlo.',
+        ],
+      },
+      {
+        heading: 'Analítica, solo si usted la permite',
+        body: [
+          'No hay publicidad y no se vende nada. Google Tag Manager se carga en todas las páginas del sitio web. Si usted permite la analítica en el aviso de cookies, este trae Google Analytics, que registra las páginas que abre — en el caso de un documento guardado o compartido, una dirección que contiene su id o su código de compartición, nunca su nombre ni su texto — y cuatro acciones: una conversión, una descarga, un guardado y una compartición, con la conversión o el formato de que se trate. Si lo rechaza o no responde, las etiquetas de Google no escriben nada en su navegador y, como mucho, envían pings sin cookies.',
+          'Microsoft Clarity, que muestra dónde hacen clic y se desplazan las personas, se carga con la misma respuesta y solo cuando la página ha terminado de cargarse, con cada palabra y cada imagen ocultas en su navegador antes de enviar nada. Nunca se carga en un documento o una carpeta abiertos o compartidos, en un contenido incrustado ni en los formularios de opinión y de denuncia; si lo rechaza o no responde, no se carga en absoluto.',
+          'Las páginas compartidas desde TransformPipe no llevan ninguno de los dos. Sí cargan la tipografía DM Sans desde Google Fonts, de modo que el navegador del lector la solicita a Google y Google ve su dirección IP; y una imagen que un documento enlaza, en lugar de incrustarla, se descarga de donde la haya alojado su autor.',
+        ],
+      },
+      {
+        heading: 'Correo electrónico',
+        body: [
+          'Se envían correos en estos casos y en ningún otro: para confirmar su dirección y para restablecer una contraseña, que envía nuestro proveedor de autenticación; para avisar a alguien de que se ha compartido con él un documento o una carpeta, que envía Resend; para avisar a las personas que gestionan TransformPipe de que alguien ha respondido a una pregunta de opinión, también a través de Resend; y, al titular de una cuenta con dirección verificada, unos pocos correos para empezar — una bienvenida, un recordatorio o dos si aún no ha empezado a usarlo, un par de consejos de uso, una pregunta sobre cómo le va y una invitación a la novedad mensual del producto — y esa novedad en sí para quienes se hayan suscrito, que envía Brevo. Todos los correos de Brevo incluyen un enlace para darse de baja, salvo el que le pide confirmar una suscripción, que se envía una sola vez y solo porque usted lo pidió.',
+          'Resend recibe la dirección del destinatario, la de quien comparte, que es también adonde llega una respuesta, el nombre del documento o de la carpeta y su enlace. Nunca recibe el texto de un documento. El aviso de compartición no incluye enlace de baja porque se envía una sola vez, cuando se le añade; si usted se retira de la compartición, no recibirá nada más.',
+          'Brevo recibe, de cada cuenta con dirección verificada: la dirección, un nombre de pila cuando lo tenemos, el id de la cuenta, un código firmado que permite a los enlaces de opinión saber que es usted, el día en que se registró, cómo llegó (el sitio web, ChatGPT, Claude, etc.) y unos pocos recuentos que deciden cuáles de esos correos le resultan útiles — cuántos documentos conserva y ha compartido, cuántas veces se abrieron sus enlaces compartidos, qué tipos de app ha conectado y cuándo usó TransformPipe por última vez. Nunca un documento, su nombre ni su texto. Esta información se actualiza cada diez minutos. Darse de baja detiene los correos, y el registro se mantiene para que Brevo sepa que no debe escribirle; eliminar su cuenta lo borra. Si responde a la pregunta del 1 al 10 en uno de ellos, la puntuación se guarda con su cuenta, y las personas que gestionan TransformPipe reciben por correo su nombre, su dirección y su puntuación para poder preguntarle qué la mejoraría.',
+          'Si se suscribe a la novedad mensual sin iniciar sesión, Brevo recibe solo la dirección que usted escribe, y no se envía nada hasta que la confirme desde el correo. Los mensajes que escribe a hello@transformpipe.com los reenvía ImprovMX a nuestro buzón, alojado por Google.',
         ],
       },
       {
         heading: 'Cookies y almacenamiento del navegador',
         body: [
-          'Una cookie de sesión, que pone nuestro proveedor de autenticación cuando inicias sesión, propia y HttpOnly. Existe otra de vida corta durante el ida y vuelta del inicio de sesión, que caduca en diez minutos. Otra solo se pone si abres un enlace compartido con contraseña y la escribes: recuerda, durante un día, que lo hiciste. Esas son todas — no hay nada opcional que desactivar. La página de cookies tiene el detalle.',
-          'Tu tema y, sin la sesión iniciada, tu historial viven en el almacenamiento local de tu navegador. Nunca salen de ahí.',
+          'Una cookie de sesión, que establece nuestro proveedor de autenticación cuando usted inicia sesión, propia y HttpOnly. Durante el proceso de inicio de sesión existe otra de corta duración, que caduca a los diez minutos. Una más se establece solo si abre un enlace compartido protegido con contraseña y la introduce: recuerda durante un día que lo hizo. Las cookies de analítica se establecen solo si usted permite la analítica. La página de cookies enumera cada una de ellas y tiene el botón para cambiar su respuesta.',
+          'Sus preferencias de tema, idioma y vista, la respuesta que dio al aviso de cookies y sus conversiones recientes se guardan en el almacenamiento local de su navegador. Nunca salen de él.',
         ],
       },
       {
-        heading: 'Eliminar cosas',
+        heading: 'Para qué lo usamos',
         body: [
-          'Un documento eliminado pasa a la papelera, donde espera 14 días por si lo quieres recuperar; después la fila y el Markdown guardado se borran a la vez. Vaciar la papelera, o borrar un documento desde ella, lo borra en el momento. Revocar una compartición descarta el token, así que un enlace ya enviado deja de funcionar.',
-          'Para eliminar una cuenta y todo lo que contiene, pídelo — mira la página de soporte. Llegar a un límite de almacenamiento rechaza la escritura; nunca elimina algo que decidiste conservar para hacer sitio.',
+          'Para estos fines y para ningún otro. No vendemos datos personales, no mostramos publicidad, no elaboramos perfiles para terceros ni usamos sus documentos para entrenar modelos de IA, y tampoco lo hace el proveedor que redacta los resúmenes.',
+        ],
+        items: [
+          'Para hacer lo que usted pidió — convertir, conservar, compartir, resumir y sincronizar documentos, iniciar su sesión y actuar en nombre de un asistente que haya conectado. Es el servicio en sí, que usted acepta al utilizarlo.',
+          'Para que funcione y sea seguro — sesiones, límites de uso, registros, el formulario de denuncia y la detección de usos indebidos. Es nuestro interés legítimo en un servicio que se mantenga disponible y no sufra abusos.',
+          'Para avisar a las personas de lo que usted compartió con ellas — el aviso de compartición, enviado porque usted lo pidió.',
+          'Para ayudarle a empezar y saber cómo le va — los correos de bienvenida y la pregunta de opinión. Es nuestro interés legítimo, y puede darse de baja en cualquier momento.',
+          'Para saber qué se usa — los totales diarios anónimos, que no identifican a nadie; y Google Analytics y Microsoft Clarity, solo con su consentimiento.',
+          'Para enviar la novedad mensual del producto — con su consentimiento, confirmado por correo.',
+          'Para cumplir una obligación legal, cuando la haya.',
+        ],
+      },
+      {
+        heading: 'Quién lo recibe',
+        body: [
+          'Los servicios que hacen funcionar TransformPipe, las personas con quienes usted decide compartir y las apps que conecta — cada uno nombrado aquí con lo que recibe:',
+        ],
+        items: [
+          'Vercel (alojamiento) — cada petición, con su dirección IP y su navegador; los registros del servidor, que pueden incluir la dirección a la que iba destinado un aviso de compartición fallido; y, en Vercel Blob, el texto de cada documento y versión guardados.',
+          'Neon (base de datos, y Neon Auth, nuestro proveedor de autenticación) — todo lo que se almacena de una cuenta: identidad, hashes de contraseñas, sesiones con su dirección IP y su navegador, datos de los documentos e índice de búsqueda, resúmenes, comparticiones y direcciones de lectores, registros de aperturas, carpetas, hashes de claves y tokens, webhooks, puntuaciones de opinión, denuncias y contadores de límites de uso. Neon Auth envía además los correos de confirmación y de restablecimiento de contraseña, a través del servicio de correo configurado con él.',
+          'Google — como proveedor de acceso, si usa Iniciar sesión con Google; como Google Analytics, si usted lo permite; como Google Fonts, para los lectores de páginas compartidas; y como proveedor del buzón al que se reenvía hello@transformpipe.com.',
+          'OpenAI (resúmenes) — como máximo los primeros 60.000 caracteres de un documento cuando se solicita un resumen, y el resumen que devuelve. Usamos la API de pago de OpenAI: OpenAI no usa lo que recibe por ella para entrenar sus modelos, y le pedimos que no guarde la respuesta. Puede conservar ambos hasta 30 días para detectar abusos, y después los elimina.',
+          'Microsoft (Clarity) — grabaciones enmascaradas de clics y desplazamientos, solo si usted permite la analítica.',
+          'Resend (correo electrónico) — para los avisos de compartición, las direcciones del destinatario y de quien comparte, el nombre del documento o de la carpeta y su enlace; y los avisos de opinión que se nos envían.',
+          'Brevo (correo electrónico) — el registro de contacto descrito en el apartado Correo electrónico, para las cuentas con dirección verificada, y la lista de la novedad del producto.',
+          'ImprovMX (reenvío de correo) — los mensajes que usted envía a una dirección de transformpipe.com.',
+          'GitHub — cualquier cosa que publique en una incidencia, que es pública, así que no incluya allí datos personales; y, si usa la Action, los enlaces que esta comenta en una pull request.',
+          'Las personas con quienes usted comparte — el documento o la carpeta, y su dirección en el aviso; en el caso de un enlace, cualquiera que lo tenga.',
+          'El asistente que usted conecte — OpenAI en el caso de ChatGPT, Anthropic en el de Claude, u otro — recibe lo que devuelven sus llamadas a herramientas, que puede incluir el texto de un documento, las direcciones con las que está compartido y cuántas veces se abrió.',
+          'La dirección de su propio webhook — los datos enumerados en el apartado Su cuenta.',
+          'Las autoridades, solo cuando la ley lo exija, y solo lo que exija.',
+        ],
+      },
+      {
+        heading: 'Cuánto tiempo lo conservamos',
+        body: [
+          'Algunas de estas limpiezas se ejecutan de forma programada y otras a medida que llegan peticiones, así que «al cabo de un día» significa poco después de un día, no al segundo.',
+        ],
+        items: [
+          'Documentos, carpetas y sus nombres — hasta que usted los elimine o se elimine la cuenta. Los límites de almacenamiento restringen el tamaño, nunca la antigüedad.',
+          'Versiones anteriores — las diez más recientes de cada documento; una undécima borra la más antigua. Se eliminan junto con el documento.',
+          'La Papelera — 14 días; después, una tarea que se ejecuta a diario borra el documento, sus versiones y su texto almacenado.',
+          'Resúmenes — hasta que el documento cambie, se solicite un nuevo resumen o se elimine el documento.',
+          'Ajustes de compartición y direcciones de lectores — el token de un enlace, su fecha de fin y su recuento de aperturas desaparecen cuando usted hace privado el documento o la carpeta. Las direcciones de los lectores y la contraseña de un enlace se quedan, para que volver a compartir las recupere, hasta que usted quite al lector o la contraseña, el lector se retire o se elimine el documento.',
+          'Registros de aperturas de un documento compartido — se borran cuando se revoca su enlace, y al cumplir un año.',
+          'Su cuenta, su perfil y sus puntuaciones de opinión — hasta que se elimine la cuenta.',
+          'Sesiones — mientras las conserve nuestro proveedor de autenticación, y como máximo hasta que se elimine la cuenta.',
+          'Apps conectadas — un token de acceso dura 30 días y un token de actualización 180, y cualquiera de los dos deja de funcionar en el momento en que usted lo revoca. El registro con el hash de un token caducado o revocado se conserva hasta que se elimine la cuenta.',
+          'Claves API y webhooks — hasta que usted los revoque. El registro con el hash de una clave revocada se mantiene hasta que la quite de la lista, y el de un webhook revocado, hasta que se elimine la cuenta.',
+          'Contadores de límites de uso, incluidas las direcciones IP de los formularios usados sin cuenta — se borran al cabo de un día; los contadores diarios de resúmenes y de correos, al cabo de siete días.',
+          'Denuncias sobre documentos compartidos — hasta que se tramitan; una denuncia tramitada se borra cuando cumple 90 días.',
+          'Totales diarios anónimos — se conservan indefinidamente; no describen a nadie.',
+          'Brevo — mientras la cuenta tenga una dirección verificada; un suscriptor de la novedad del producto sin cuenta, hasta que se dé de baja.',
+          'Google Analytics — durante el periodo fijado en nuestra propiedad, que Google limita a 2 o 14 meses. Microsoft Clarity, Resend, los registros de Vercel y OpenAI (30 días como máximo) conservan los datos según sus propios plazos, que no fijamos nosotros.',
+          'Los correos que usted nos envía — mientras sirvan para responderle; si lo pide, los borramos.',
+          'Su navegador — el historial, las preferencias y la respuesta de consentimiento hasta que usted los borre; la cookie de contraseña de compartición, durante un día.',
+        ],
+      },
+      {
+        heading: 'Qué puede hacer usted',
+        body: [
+          'Todo lo que sigue puede hacerse en cualquier momento, y nada de ello requiere justificación:',
+        ],
+        items: [
+          'Eliminar un documento — en la aplicación, mediante la API, con tp rm o pidiéndoselo a su asistente. Espera en la Papelera durante 14 días; vaciar la Papelera, o eliminar un documento desde ella, lo borra en el acto. Alcanzar un límite de almacenamiento rechaza la escritura; nunca elimina algo que usted decidió conservar para hacer sitio.',
+          'Revocar una compartición — hacer privado un documento o una carpeta descarta su token, de modo que un enlace ya enviado deja de funcionar y, en el caso de un documento, se borra su registro de aperturas. También puede quitar a los lectores de uno en uno, y un lector puede retirarse por sí mismo.',
+          'Descargar sus documentos — cualquier documento en Markdown, HTML, Word o PDF, una carpeta como .zip, o todos ellos mediante la API. Todavía no hay un único botón para toda la cuenta; pídalo y se lo enviamos.',
+          'Desconectar apps — su página de cuenta enumera los asistentes, la extensión y las conexiones de Obsidian que disponen de un token, y permite revocar cualquiera de ellos o todos. Cerrar sesión en la extensión o en el plugin también elimina su token.',
+          'Revocar claves API y webhooks — en el menú de la cuenta, con efecto inmediato.',
+          'Darse de baja — con el enlace de cualquier correo de Brevo, y con el interruptor de la novedad del producto en el menú de la cuenta.',
+          'Cambiar su respuesta sobre la analítica — con el botón de la página de cookies.',
+          'Borrar lo que guarda su navegador — desde el historial, o borrando los datos del sitio.',
+          'Eliminar su cuenta — escriba a hello@transformpipe.com desde la dirección asociada a ella. Eliminamos la cuenta, sus documentos, versiones y Papelera, su texto almacenado, sus claves, conexiones de apps y webhooks, sus sesiones, sus puntuaciones de opinión y su registro en Brevo, en un plazo de 30 días y normalmente mucho antes. Sus carpetas se eliminan en el mismo paso, con sus ajustes de compartición y sus listas de lectores. Los documentos que otras personas compartieron con usted son suyos y siguen con ellas, igual que su dirección en sus listas de lectores y en sus registros de aperturas, durante los plazos indicados arriba.',
+          'Acceder, rectificar u oponerse — escriba a hello@transformpipe.com para ver qué datos tenemos sobre usted, corregir su nombre o su dirección, u oponerse a un uso. En la UE y en el Reino Unido también puede presentar una reclamación ante su autoridad de protección de datos.',
+        ],
+      },
+      {
+        heading: 'Seguridad',
+        body: [
+          'Todo viaja por HTTPS. El texto de los documentos está en un almacén privado sin dirección pública. Las contraseñas — la suya y las de los enlaces compartidos — se conservan solo como hashes, igual que las claves API y los tokens de app, que no pueden recuperarse a partir de lo que almacenamos. Cada petición se comprueba contra la cuenta en cuyo nombre actúa, y un documento compartido con personas concretas solo se abre para quien haya iniciado sesión como una de ellas. Solo las personas que gestionan TransformPipe pueden acceder a la página de administración. Ningún sistema es perfectamente seguro; si ocurre algo que ponga en riesgo sus datos, se lo comunicaremos.',
         ],
       },
       {
         heading: 'Menores',
         body: [
-          'Esto es una herramienta de trabajo, no un servicio para niños, y no está dirigido a nadie menor de 16 años.',
+          'TransformPipe es una herramienta de trabajo y estudio y no está dirigida a niños. No está pensada para menores de 13 años, y allí donde la ley fija una edad mayor para consentir este tipo de tratamiento — hasta 16 años en algunas partes de la UE —, los menores de esa edad necesitan el consentimiento de su madre, padre o tutor. Si cree que un menor nos ha facilitado datos personales sin él, escriba a hello@transformpipe.com y los eliminaremos.',
+        ],
+      },
+      {
+        heading: 'Datos fuera de su país',
+        body: [
+          'Los servicios mencionados tratan datos en los Estados Unidos, la Unión Europea y otros países en los que operan, por lo que sus datos pueden tratarse fuera del país en el que usted reside. Cuando salen de la UE, el EEE o el Reino Unido, nos acogemos a las garantías que esos proveedores ofrecen para tales transferencias, como las cláusulas contractuales tipo de la Comisión Europea.',
         ],
       },
       {
         heading: 'Cambios',
         body: [
-          'Si esta página cambia de una forma que afecte a lo que se recoge, la fecha de arriba cambia con ella.',
+          'Si esta página cambia de una forma que afecte a qué se recoge, con qué fin o quién lo recibe, la fecha de arriba cambia con ella. El código fuente del sitio es público, así que cada versión anterior de esta página puede leerse en su historial.',
         ],
       },
     ],
     seo: {
       title: 'Privacidad — TransformPipe',
       description:
-        'Sin sesión iniciada, ningún archivo sale de tu navegador. Con sesión guardamos el documento, sus metadatos y tu identidad de cuenta: Google Analytics y Microsoft Clarity solo si los permites, sin píxeles de seguimiento y sin vender nada.',
+        'Qué recoge TransformPipe, para qué, quién lo recibe y durante cuánto tiempo — en la web, la cuenta, la API, la extensión, Obsidian y la app de ChatGPT — y cómo borrarlo.',
     },
   },
   terms: {

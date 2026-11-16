@@ -1131,7 +1131,7 @@ v1.post('/documents/:id/summary', async (c) => {
 
   if (!summaryEnabled()) {
     return c.json(
-      { error: 'This deployment has no Google AI key configured.' },
+      { error: 'This deployment has no OpenAI key configured.' },
       503
     );
   }

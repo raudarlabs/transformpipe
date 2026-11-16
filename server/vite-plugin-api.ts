@@ -9,7 +9,7 @@ const SERVER_ENV_KEYS = [
   'BLOB_STORE_ID',
   'VERCEL_OIDC_TOKEN',
   // The Summary tab — see server/summarize.ts.
-  'GOOGLE_GENERATIVE_AI_API_KEY',
+  'OPENAI_API_KEY',
   // Who may open /admin — see server/admin.ts.
   'ADMIN_EMAILS',
   // The onboarding emails — see server/brevo.ts.

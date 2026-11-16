@@ -505,12 +505,27 @@ mcp.delete('/', notPost);
  * confirm, and the directory's review asks for them, which is fair: "tp_delete_document" and
  * "tp_usage" look identical to a reader who has only the names.
  *
- * All four are required, so none can be left for a host to guess. ChatGPT's review of v1.0.0
- * refused the app with three of them on some tools and the fourth missing; a missing hint is read
- * as its riskiest default, and the reviewer cannot tell an omission from a decision. The meanings
- * are the specification's: destructive is deleting or overwriting — publishing is open-world, not
- * destructive, and a move that can be moved back is neither — and idempotent is "a repeat with the
- * same arguments changes nothing more".
+ * All four are required, so none can be left for a host to guess, and LISTED refuses to start
+ * with one that is not a boolean. ChatGPT's review of v1.0.0 refused the app with three of them on
+ * some tools and the fourth missing; a missing hint is read as its riskiest default, and the
+ * reviewer cannot tell an omission from a decision.
+ *
+ * The meanings are the specification's, read the way OpenAI's app review reads them (Apps SDK
+ * guidelines and app-review page, checked 14 November 2026); the review of 14 November 2026 refused
+ * the app over values that leaned on the older reading.
+ *
+ * - readOnly: changes nothing at all.
+ * - destructive: may delete, overwrite, revoke access or send something that cannot be recalled,
+ *   in any mode, through a default or as a side effect. That an action can be undone does not make
+ *   it non-destructive: a move out of a shared folder revokes its readers' access, a forced summary
+ *   replaces the stored one, a share notice cannot be unsent. False only for purely additive writes.
+ * - idempotent: a repeat with the same arguments changes nothing more. A folder given by path is
+ *   resolved again on every call, and the lookup falls back to any folder whose path ends in the
+ *   names (planFolder), so a repeated rename or delete by path can land on another folder.
+ * - openWorld: the call can make content, a notice or data reach someone or something outside the
+ *   account — a public link, an email to another person, a shared folder's readers, a third-party
+ *   model, a webhook URL. Taking something away from readers (a delete) reaches no one; it is
+ *   access revocation, which destructive covers.
  */
 interface ToolAnnotations {
   title: string;
@@ -1246,16 +1261,23 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_save_document: {
     description:
-      'Saves a new document to the user\'s TransformPipe account and returns its id, size and, when shared, its URL. Use it when the user asks to save, keep or store content, or to publish it as a link. The source is Markdown, or HTML, CSV, TSV, JSON, plain text, RTF or ENEX named in `from`, converted on save. `folder` saves it into a folder by id or path and creates missing folders on the path. `share` sets who can open it: "private" (default), "link" (anyone with the URL) or "people" (the addresses in `emails`, who are emailed a link). A `share` of "link" or "people", or a `folder` that is shared or inside a shared folder, requires `confirm: true`; without it nothing is saved and the response describes what would be disclosed. `replaces` records the new document as the next version of an earlier one. Each call creates a new document; to change the text of an existing document, call tp_update_document.',
+      'Saves a new document to the user\'s TransformPipe account and returns its id, size and, when shared, its URL. Use it when the user asks to save, keep or store content, or to publish it as a link. The source is Markdown, or HTML, CSV, TSV, JSON, plain text, RTF or ENEX named in `from`, converted on save. `folder` saves it into a folder by id or path and creates missing folders on the path. `share` sets who can open it: "private" (default), "link" (anyone with the URL) or "people" (the addresses in `emails`, who are emailed a link). A `share` of "link" or "people", or a `folder` that is shared or inside a shared folder, requires `confirm: true`; without it nothing is saved and the response describes what would be disclosed. `replaces` records the new document as the next version of an earlier one and leaves that one unchanged. If the account owner has registered webhooks, every save, private ones included, posts the new document\'s id, name, kind and size to them. Each call creates a new document; to change the text of an existing document, call tp_update_document.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Save a document',
       readOnlyHint: false,
-      /* It only adds: a new document, and any missing folders on its path. Nothing existing changes. */
-      destructiveHint: false,
-      /* Each call is a new document with a new id. */
+      /*
+       * No existing document changes, but "people" emails a notice that cannot be recalled, "link"
+       * publishes, and every save posts "document.created" to the owner's webhooks. Irreversible
+       * sends in any mode are destructive in the review's reading.
+       */
+      destructiveHint: true,
+      /* Each call is a new document with a new id, and its notifications go out again. */
       idempotentHint: false,
-      /* "link" publishes a page, "people" emails a notice, a shared folder shows it to its readers. */
+      /*
+       * "link" publishes a page, "people" emails a notice, a shared folder shows it to its readers,
+       * and the owner's webhook URLs are posted the new document's id, name, kind and size.
+       */
       openWorldHint: true,
     },
     writes: true,
@@ -1539,16 +1561,19 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_update_document: {
     description:
-      'Replaces the text of an existing document and keeps its id, link, sharing settings, password and expiry. Use it when the user asks to change, fix, extend or rewrite a document that is already on the account, including one they have shared. `markdown` is the complete new text. The previous text is kept as a revision; the ten most recent revisions are kept. When the document is shared by link or with people, `confirm: true` is required, because its readers will see the new text; without it nothing changes and the response says who would see it. Sending the current text again changes nothing.',
+      'Replaces the text of an existing document and keeps its id, link, sharing settings, password and expiry. Use it when the user asks to change, fix, extend or rewrite a document that is already on the account, including one they have shared. `markdown` is the complete new text. The previous text is kept as a revision; the ten most recent revisions are kept and older ones are deleted. The document\'s cached summary is cleared. When the document is shared by link or with people, `confirm: true` is required, because its readers will see the new text; without it nothing changes and the response says who would see it. Sending the current text again changes nothing.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Update a document',
       readOnlyHint: false,
-      /* It overwrites the text; older revisions beyond the newest ten are dropped. */
+      /*
+       * It overwrites the text and name, clears the cached summary, and deletes revisions beyond
+       * the newest ten for good.
+       */
       destructiveHint: true,
-      /* The same text again changes nothing. */
+      /* The same text and name again change nothing: no revision, no date moved. */
       idempotentHint: true,
-      /* A shared document's readers see the new text. */
+      /* A shared document's readers see the new text — gated by `confirm`. */
       openWorldHint: true,
     },
     writes: true,
@@ -1889,10 +1914,15 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Create a folder',
       readOnlyHint: false,
+      /* It only adds folders and sends nothing; nothing existing is changed. */
       destructiveHint: false,
-      /* Asking twice returns the folder the first call made. */
+      /* Asking twice returns the folder the first call made: the name is looked up under the parent. */
       idempotentHint: true,
-      openWorldHint: false,
+      /*
+       * Under a shared folder the new name shows at once on that folder's page at /f/… — the page
+       * lists every subfolder, empty ones included (server/folder-page.ts).
+       */
+      openWorldHint: true,
     },
     writes: true,
     inputSchema: {
@@ -1959,8 +1989,12 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Move documents to a folder',
       readOnlyHint: false,
-      /* A move is undone by moving back; nothing is removed or overwritten. */
-      destructiveHint: false,
+      /*
+       * It overwrites each document's folder. Out of a shared folder revokes its readers' access,
+       * into one discloses the documents; moving back does not make either non-destructive.
+       */
+      destructiveHint: true,
+      /* The same documents to the same folder again stay where they are. */
       idempotentHint: true,
       /* Into a shared folder shows the documents to its readers — gated by `confirm`. */
       openWorldHint: true,
@@ -2169,18 +2203,21 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_summarize_document: {
     description:
-      'Generates a summary of one document — a paragraph on what it is and what it concludes, then a short list of its specifics — and caches it on the account. Use it when the user asks for a summary or an overview of a saved document. The document\'s text is sent to Google\'s Gemini API to write the summary. A cached summary is returned without calling the model again unless `force: true` is passed. Summaries have their own daily limit per account.',
+      'Generates a summary of one document — a paragraph on what it is and what it concludes, then a short list of its specifics — and caches it on the account. Use it when the user asks for a summary or an overview of a saved document. The document\'s text is sent to OpenAI\'s API to write the summary. A cached summary is returned without calling the model again unless `force: true` is passed. Summaries have their own daily limit per account.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Summarise a document',
       readOnlyHint: false,
-      /* It writes a cached summary beside the document, which is derived and can be regenerated. */
-      destructiveHint: false,
+      /*
+       * With `force: true` it overwrites the stored summary, and the earlier one is not kept; a
+       * model's output differs from call to call. The document's text is never changed.
+       */
+      destructiveHint: true,
       /* Not with `force: true`: each repeat writes a new summary and spends the daily allowance. */
       idempotentHint: false,
       /*
        * Open-world: the summary is written by a model the account does not run — the document's
-       * text goes to Google's Gemini API (see server/summarize.ts). Flagged by ChatGPT's tool
+       * text goes to OpenAI's API (see server/summarize.ts). Flagged by ChatGPT's tool
        * review on 5 October 2026, and right: that is an outside system acting on the document.
        */
       openWorldHint: true,
@@ -2351,18 +2388,19 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_share_document: {
     description:
-      'Sets who can open a document and returns the sharing mode, URL and reader list. Use it when the user asks to share, publish or unshare a document, to make it private, or to add or remove a reader. Modes: "link" (anyone with the URL), "people" (the listed addresses, who sign in to read it) and "private" (revokes the link; a URL already sent stops working). "link" and "people" require `confirm: true`; without it nothing changes and the response describes what would be disclosed. "private" needs no confirmation. For "people", `emails` replaces the reader list, and `add` and `remove` change individual addresses. Addresses new to the list are emailed a link.',
+      'Sets who can open a document and returns the sharing mode, URL and reader list. Use it when the user asks to share, publish or unshare a document, to make it private, or to add or remove a reader. Modes: "link" (anyone with the URL), "people" (the listed addresses, who sign in to read it) and "private" (revokes the link and resets its open count; a URL already sent stops working). "link" and "people" require `confirm: true`; without it nothing changes and the response describes what would be disclosed. "private" needs no confirmation. For "people", `emails` replaces the reader list, and `add` and `remove` change individual addresses. Addresses new to the list are emailed a link.',
     ui: DOCUMENT_CARD_URI,
     annotations: {
       title: 'Share a document',
       readOnlyHint: false,
       /*
-       * "private" ends the link for good — a new share is a new URL — and `emails` or `remove`
-       * take readers off the list.
+       * "private" ends the link for good — a new share is a new URL — and erases its open count and
+       * history; `emails` or `remove` revoke readers; a notice once emailed cannot be recalled.
        */
       destructiveHint: true,
-      /* The same share again sends nothing: only addresses new to the list are emailed. */
+      /* The same share again sends nothing: the URL is kept and only addresses new to the list are emailed. */
       idempotentHint: true,
+      /* "link" publishes; "people" emails the addresses and posts "document.shared" to the owner's webhooks. */
       openWorldHint: true,
     },
     writes: true,
@@ -2529,9 +2567,14 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Share a folder',
       readOnlyHint: false,
-      /* As for a document: "private" ends the link for good, and readers can be taken off the list. */
+      /*
+       * As for a document: "private" ends the link for good and resets its open count, readers can
+       * be taken off the list, and a notice once emailed cannot be recalled.
+       */
       destructiveHint: true,
+      /* The same share again keeps the URL and emails no one: only addresses new to the list are. */
       idempotentHint: true,
+      /* "link" publishes the folder and everything in it; "people" emails the addresses. */
       openWorldHint: true,
     },
     writes: true,
@@ -2735,10 +2778,21 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Rename or move a folder',
       readOnlyHint: false,
-      /* A rename or a move is undone by renaming or moving back; nothing is removed. */
-      destructiveHint: false,
-      idempotentHint: true,
-      /* Under a shared folder shows what it holds to that folder's readers — gated by `confirm`. */
+      /*
+       * It overwrites the folder's name and place. Out of a shared folder revokes its readers'
+       * access; that it can be moved back does not make it non-destructive.
+       */
+      destructiveHint: true,
+      /*
+       * Not by path: the folder is looked up again on a repeat, and the lookup falls back to any
+       * folder whose path ends in the names, so after "Notes" is renamed the same call can rename
+       * "Archive › Notes". By id a repeat changes nothing more, but the hint covers every call.
+       */
+      idempotentHint: false,
+      /*
+       * Under a shared folder shows what it holds to that folder's readers — gated by `confirm` —
+       * and a rename inside a shared folder changes the page its readers see.
+       */
       openWorldHint: true,
     },
     writes: true,
@@ -2900,14 +2954,22 @@ const TOOLS: Record<McpToolName, Tool> = {
 
   tp_delete_folder: {
     description:
-      'Deletes a folder from the user\'s TransformPipe account. Use it when the user asks to delete or remove a folder. By default the folder alone is removed and its documents and subfolders move up one level, to its parent folder or the top level. With `with_documents: true`, every document in the folder and its subfolders is permanently deleted as well. A shared folder\'s link stops working. Deletion cannot be undone. `confirm: true` is required on every call and is set after the user has named the folder and agreed to delete it; without it nothing is deleted and the response describes what the folder contains and what would happen to it.',
+      'Deletes a folder from the user\'s TransformPipe account. Use it when the user asks to delete or remove a folder. By default the folder alone is removed and its documents and subfolders move up one level, to its parent folder or the top level. With `with_documents: true`, every document in the folder and its subfolders is moved to the Trash as well, where it is kept for 14 days and then deleted for good; tp_restore_document puts one back, outside any folder. The folder itself, its sharing settings and its reader list are deleted for good, and a shared folder\'s link stops working at once. `confirm: true` is required on every call and is set after the user has named the folder and agreed to delete it; without it nothing is deleted and the response describes what the folder contains and what would happen to it.',
     ui: FOLDER_CARD_URI,
     annotations: {
       title: 'Delete a folder',
       readOnlyHint: false,
-      /* With its documents it is tp_delete_document many times over: they go to the Trash. */
+      /*
+       * The folder, its sharing and its readers go for good; with its documents it is
+       * tp_delete_document many times over: they go to the Trash for 14 days.
+       */
       destructiveHint: true,
-      idempotentHint: true,
+      /*
+       * Not by path, as for tp_update_folder: after "Notes" is deleted the same path can match
+       * "Archive › Notes", or a same-named subfolder the first call moved up a level.
+       */
+      idempotentHint: false,
+      /* It sends and publishes nothing; a shared link stopping is access revocation, which is destructive. */
       openWorldHint: false,
     },
     writes: true,
@@ -3083,7 +3145,9 @@ const TOOLS: Record<McpToolName, Tool> = {
       readOnlyHint: false,
       /* Taken back only from the Trash, and only for 14 days; a share link stops at once. */
       destructiveHint: true,
+      /* By id: once it is in the Trash a repeat finds nothing. */
       idempotentHint: true,
+      /* It sends and publishes nothing; a shared link stopping is access revocation, which is destructive. */
       openWorldHint: false,
     },
     writes: true,
@@ -3171,10 +3235,14 @@ const TOOLS: Record<McpToolName, Tool> = {
     annotations: {
       title: 'Restore a deleted document',
       readOnlyHint: false,
-      /* Brings back what was there; removes nothing. */
+      /* Purely additive: it re-inserts the document, its readers and revisions; it overwrites, deletes and sends nothing. */
       destructiveHint: false,
+      /* Once restored it is out of the Trash, so a repeat finds nothing. */
       idempotentHint: true,
-      /* A document that was shared comes back shared: its public link opens again for whoever holds it. */
+      /*
+       * A document that was shared comes back shared: its public link opens again for whoever
+       * holds it, and a folder shared since the deletion shows it to that folder's readers.
+       */
       openWorldHint: true,
     },
     writes: true,
@@ -3227,12 +3295,35 @@ const TOOLS: Record<McpToolName, Tool> = {
   },
 };
 
+/*
+ * The four hints, each a literal boolean, whatever a later edit does to a tool's object. The type
+ * already requires them; this is the runtime half, so a hint that is somehow null or missing stops
+ * the server at start-up instead of reaching a host's tools/list, where review reads it as unset.
+ */
+const HINTS = ['readOnlyHint', 'destructiveHint', 'idempotentHint', 'openWorldHint'] as const;
+
+function explicitHints(name: string, annotations: ToolAnnotations): ToolAnnotations {
+  for (const hint of HINTS) {
+    if (typeof annotations[hint] !== 'boolean') {
+      throw new Error(`MCP tool ${name}: ${hint} must be true or false, not ${String(annotations[hint])}`);
+    }
+  }
+
+  return {
+    title: annotations.title,
+    readOnlyHint: annotations.readOnlyHint,
+    destructiveHint: annotations.destructiveHint,
+    idempotentHint: annotations.idempotentHint,
+    openWorldHint: annotations.openWorldHint,
+  };
+}
+
 const LISTED = MCP_TOOL_NAMES.map((name) => ({
   name,
   title: TOOLS[name].annotations.title,
   description: TOOLS[name].description,
   inputSchema: TOOLS[name].inputSchema,
-  annotations: TOOLS[name].annotations,
+  annotations: explicitHints(name, TOOLS[name].annotations),
   /*
    * Two spellings of one link. `ui.resourceUri` is what the extension specifies and what a host
    * reading the current spec looks for; `openai/outputTemplate` is the older flat key that ChatGPT

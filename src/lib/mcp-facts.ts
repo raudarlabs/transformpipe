@@ -79,7 +79,7 @@ export const MCP_TOOLS: Record<McpToolName, string> = {
     'Moves documents into a folder or out of all folders. Moving them into a shared folder requires an explicit confirmation.',
   tp_get_document: 'Returns one document as its Markdown source or as rendered HTML.',
   tp_summarize_document:
-    'Summarises a document with Google\'s Gemini model and caches the summary on the account.',
+    'Summarises a document with an OpenAI model and caches the summary on the account.',
   tp_document_versions:
     'Returns a document\'s history: the earlier texts its updates replaced, and any documents linked to it as versions.',
   tp_share_document:

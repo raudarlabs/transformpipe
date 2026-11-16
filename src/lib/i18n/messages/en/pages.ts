@@ -142,7 +142,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Privacy and legal',
         body: [
-          'Questions about what is stored, or a request to delete an account and everything in it, go to the same issues. Signed in, you can also delete any document yourself — it waits in the Trash for 14 days, then the row and the stored source go together.',
+          'Questions about what is stored, or a request to delete an account and everything in it, go to hello@transformpipe.com rather than a public issue, so nothing about your account is posted in the open. Signed in, you can also delete any document yourself — it waits in the Trash for 14 days, then the row and the stored source go together.',
         ],
       },
     ],
@@ -216,32 +216,57 @@ export const pages: Content['pages'] = {
   privacy: {
     label: 'Privacy',
     title: 'Privacy',
-    lede: 'What is stored, where, and what is never collected at all.',
+    lede: 'What is collected, why, who else receives it, how long it is kept, and what you can do about it — for the website, the account, the API, the extension, the Obsidian plugin and the ChatGPT app.',
     sections: [
       {
-        heading: 'Signed out, your files never reach us',
+        heading: 'Who we are, and how to reach us',
         body: [
-          'Converting happens in your browser. The file is read, converted and rendered on your own machine, and no part of it is sent to a server. The history you see is your browser’s own storage, not an account.',
+          'TransformPipe (transformpipe.com) is made and run by Raudar Labs, which decides what is collected and why — in the language of data-protection law, the controller. This page covers the website, the account, the API and the command line, the GitHub Action, the browser extension, the Obsidian plugin, and the connector that ChatGPT, Claude and other assistants use.',
+          'A question about your data, a request to see, correct, export or delete it, or a complaint: write to hello@transformpipe.com. A person reads it, and a request sent from the address on your account needs nothing more to show it is yours. Security problems go to the contact in `/.well-known/security.txt`.',
         ],
       },
       {
-        heading: 'Signed in, this much and no more',
+        heading: 'What we collect',
         body: [
-          'An account exists so documents can follow you between devices and be shared. It holds:',
+          'In short here, and in detail in the sections after this one:',
         ],
         items: [
-          'Your identity, through our authentication provider: an email address, a name where one was given, and an account id. Signing in with Google brings those from Google; signing up with an address and a password leaves the password with the authentication provider, as a hash. Either way we never see or store a password.',
-          'For each document you keep: its name, which conversion made it, its size, counts of words, headings, links, code blocks, tables and images, and when it was created.',
-          'The Markdown itself, in a private blob store — private meaning it has no public URL and is read only through a request we authorise.',
-          'API keys as hashes, never the key. A key is shown once, at creation, and cannot be recovered afterwards — not by you and not by us.',
-          'Share settings: whether a document is private, open by link, or addressed to particular email addresses, and the token that a link carries, the day it stops working if one was set, and when it has been opened, and — if it has a password — a hash of it, never the password.',
+          'Account: your email address, a name and profile picture if your sign-in gave one, an account id, whether the address is verified, when you signed up, and how you sign in — with Google, or with an address and a password, which our authentication provider keeps only as a hash.',
+          'Documents and files: what you save — its name, the Markdown text with any pictures embedded in it, its size, counts of words, headings, links, code blocks, tables and images, which conversion made it, its folder, when it was created and changed, up to ten earlier versions, a search index built from the text, and a summary if you asked for one. Folder names, too.',
+          'Shares: whether a document or folder is private, open to anyone with the link, or limited to named people; the link’s token, its end date and a hash of its password; the email addresses you shared with; and how often and when it was opened — with the reader’s address, for a document shared with named people.',
+          'Usage: anonymous daily totals of visits and actions, with no account, address or document attached; when an API key or a connected app was last used; and per-minute call counters that stop abuse.',
+          'Technical: the IP address and browser of each signed-in session, kept by our authentication provider; IP addresses held for about a day to rate-limit the forms that need no account; and the host’s request logs.',
+          'Email: the addresses of the people you share with, and, for an account with a verified address, the contact record our onboarding email service keeps, described under Email.',
+          'Analytics and cookies: what Google Analytics and Microsoft Clarity record about a visit, only if you allow analytics. Without that, the cookies needed to sign in and nothing else.',
+          'What you send us yourself: a message to hello@transformpipe.com, a report about a shared document, a score in a feedback email.',
+          'Never: payment details (nothing here is paid for), government ids, health data, your precise location, or your conversations with an AI assistant.',
         ],
       },
       {
-        heading: 'Counting, without knowing who',
+        heading: 'The website converter: your files never reach us',
         body: [
-          'We count visits and a handful of actions — a page opened, a conversion run, a download, a save, a share — as anonymous daily totals, on our own server and in our own database. Counting sets no cookie and stores nothing in your browser; the totals keep no identifier and no IP address, and nothing about a document beyond which conversion or format it was. Where a visit came from is recorded only as the referring site’s name — Product Hunt, Google, “direct” — or as the campaign tag in the link you followed.',
-          'A shared link also records its opens, for its owner to see: the time of each one, and whether it was the shared page or the app — nothing about who opened it. The page asks our server for a one-pixel picture, and that request is the whole of what is recorded; no cookie is set. So that one machine cannot run the count up, a one-way hash of its address is kept beside a per-minute tally and deleted within a day. The opens go with the link when it is revoked, and none is kept longer than a year. A document shared with specific people is the one exception: its reader signed in as one of the addresses the owner named, so each open also records which of those addresses it was — and the page tells the reader that the owner can see it.',
+          'Converting on the website happens in your browser. The file is read, converted and rendered on your own machine, and no part of it is sent to a server unless you choose to save it. The history you see when signed out is your browser’s own storage — the last 25 conversions, with their text up to 400 KB each — kept there and nowhere else, and cleared from the history or by clearing site data.',
+        ],
+      },
+      {
+        heading: 'Your account',
+        body: [
+          'An account exists so documents can follow you between devices and be shared. Signing in with Google brings your address, name and picture from Google; signing up with an address and a password leaves the password with our authentication provider, Neon Auth, which keeps it as a hash; it passes through our server on the way and is never stored there. Each signed-in session records the browser and IP address it came from, which keeps you signed in and lets us spot misuse.',
+          'What you save is kept in our database (Neon), and its text in a private file store (Vercel Blob) — private meaning it has no public address and is read only through a request we authorise. Replacing a document keeps the previous text, up to ten versions per document. API keys are kept as hashes, never the key: a key is shown once, when it is made, and cannot be recovered afterwards — not by you and not by us.',
+          'We do not read your documents. The exceptions are a shared document somebody reports to us, and a document you ask us to look at to fix a problem. The people who run TransformPipe have an administration page that lists each account’s address, name, sign-in method, sign-up date, document names and sizes, sharing state, connected apps, keys, webhooks, and its sessions’ browser and IP address. It never shows a document’s text.',
+          'A webhook you set up is sent the document’s id, name, kind and size when one is saved, and its sharing mode, link and the addresses notified when one is shared — to the address you gave, and nowhere else.',
+        ],
+      },
+      {
+        heading: 'The API and the command line',
+        body: [
+          'The API, and the `tp` command built on it, act on your account with an API key or an app token. What you send — a file’s text and name, a folder path, the addresses to share with, an end date, a share password — is saved as a document, exactly as if you had saved it in the app, and a share password is kept only as a hash. The `tp` command keeps your key on your own machine, in `~/.config/tp/config.json`, unless you give it another way.',
+        ],
+      },
+      {
+        heading: 'The GitHub Action',
+        body: [
+          'The Action runs in your repository with an API key you keep as a repository secret. It uploads the Markdown files a pull request changed, or the ones you name, to your account as documents, and if you ask, posts their links as a comment on the pull request using GitHub’s own token — so GitHub, and whoever can read that pull request, see the links. Removing the workflow stops it; revoking the key ends its access.',
         ],
       },
       {
@@ -254,55 +279,170 @@ export const pages: Content['pages'] = {
           'Signed in, an OAuth token is kept in the browser’s extension storage — the same grant listed on your account page and revocable there. It is the only credential the extension holds, and no password is in it.',
           'A converted document passes from the panel to the tab that shows it through session storage, which the browser empties when it closes and never writes to disk.',
           'Reading the tab you are on is asked for when you turn the side panel on, because a panel that follows you from tab to tab cannot ask again at every one. The toolbar button needs no such permission: it reads the single tab you pressed it on.',
-          'Save and Share send that one document to your account, exactly as the app does. Nothing else leaves the browser.',
+          'Save and Share send that one document, and the addresses you share it with, to your account, exactly as the app does. Nothing else leaves the browser.',
         ],
       },
       {
-        heading: 'What we do not do',
+        heading: 'The Obsidian plugin',
         body: [
-          'There is no advertising, no tracking pixel and nothing sold. Google Tag Manager loads on every page, and brings Google Analytics only if you allowed analytics in the cookie banner. Microsoft Clarity, which shows where people click and scroll, loads on the same answer and only once the page has finished loading — with every word and picture masked in your browser before anything is sent, and never on a shared document or folder. Refused or unanswered, Google’s tags write nothing to your browser and Clarity does not load at all. Nothing is shared with anyone except the infrastructure that runs the service: the database, the blob store, the authentication provider, the two email providers and the host.',
-          'Your documents are not read by us, and they are not used to train anything.',
+          'The plugin sends a note to your account only when you publish it: the note’s text with the pictures from your vault embedded, its name, and the addresses you share it with. It writes the document’s id into the note’s front matter, so publishing again updates the same page. Its sign-in token is kept in your system keychain through Obsidian’s secret storage; the only other things it stores are the server address and whether it has welcomed you, in the plugin’s settings. It has no analytics and talks to nobody but us.',
+        ],
+      },
+      {
+        heading: 'ChatGPT, Claude and other assistants',
+        body: [
+          'TransformPipe is an app in ChatGPT and a connector in Claude, and any assistant that speaks the Model Context Protocol can connect to it. Connecting sends you to our sign-in page, where you approve the assistant; it then holds a token that acts for your account and nothing else. We keep the assistant’s registration — its name and the address it returns to — and the token as a hash. We never see your OpenAI or Anthropic password, and the assistant never sees yours.',
+          'We do not receive your conversation. We receive only what the assistant puts into a tool call it decides to make, with the token that says which account it is for. What a tool returns goes back to the assistant and is shown to you there; from then on OpenAI, Anthropic or whoever makes the assistant handles it under its own privacy policy. Every call also leaves an anonymous count of the tool’s name, a per-minute counter keyed by your account id that is deleted after a day, and the time the token was last used.',
+          'Tools that publish a page, email somebody, show documents to a shared folder’s readers, change a shared document or delete something do nothing until you confirm; before that they only describe what would happen and to whom. Making something private, and putting a document back from the Trash, need no confirmation. What each group of tools receives, returns and keeps:',
+        ],
+        items: [
+          'Converting — tp_convert_to_markdown and tp_convert_from_markdown. They receive the text to convert, its format and a name, and return the converted text. The conversion runs in memory on our server and nothing is stored, unless you then ask for the result to be saved.',
+          'Saving and organising — tp_save_document, tp_update_document, tp_create_folder, tp_update_folder and tp_move_documents. They receive a document’s text and name, a folder name or path, and document or folder ids, and return the document’s id, size, folder and, if it is shared, its link and readers. All of it is stored in your account, like a document saved in the app. tp_update_document keeps the previous text as a version and clears a stored summary. Saving into a shared folder, or moving something under one, makes it readable to that folder’s readers, and a folder created there shows them its name.',
+          'Sharing — tp_share_document, tp_share_folder, and tp_save_document when it shares. They receive the sharing mode and readers’ email addresses, and return the mode, the link, the reader list and how often it was opened. “link” creates a public page anyone with its address can open. “people” limits it to the named addresses, stores them on the share, and emails each new one a link through our email provider, Resend, naming you as the sender. “private” revokes the link and, for a document, deletes its log of opens. A webhook you set up is told when a document is saved or shared, as described under Your account.',
+          'Summarising — tp_summarize_document. It receives a document id and returns a summary. Up to the first 60,000 characters of the document are sent to OpenAI’s API to write it (see Who receives it), and the summary is kept with the document until the document changes or is deleted. Nothing goes to OpenAI unless a summary is asked for.',
+          'Deleting and restoring — tp_delete_document, tp_delete_folder and tp_restore_document. They receive an id and a confirmation. A deleted document, with its versions and reader list, goes to the Trash for 14 days and is then deleted for good; its link stops working at once. Deleting a folder without its documents removes only the folder and moves its contents up a level. tp_restore_document lists the Trash, or puts a document back, link and all.',
+          'Reading — tp_list_documents, tp_list_folders, tp_get_document, tp_document_versions, tp_usage and tp_search_documentation. They change nothing. They receive ids, a search phrase or a question, and return your documents’ names, dates, folders and sharing state; a document’s text, the addresses it is shared with and how often it was opened; earlier versions; your storage use and limits; or sections of our documentation.',
+        ],
+      },
+      {
+        heading: 'Counting, without knowing who',
+        body: [
+          'We count visits and a handful of actions — a page opened, a conversion run, a download, a save, a share, a tool or API call — as anonymous daily totals, on our own server and in our own database. Counting sets no cookie and stores nothing in your browser; the totals keep no identifier and no IP address, and nothing about a document beyond which conversion or format it was. Where a visit came from is recorded only as the referring site’s name — Product Hunt, Google, “direct” — or as the campaign tag in the link you followed.',
+          'A shared link also records its opens, for its owner to see: the time of each one, and whether it was the shared page or the app — nothing about who opened it. The page asks our server for a one-pixel picture, and that request is the whole of what is recorded; no cookie is set. So that one machine cannot run the count up, a one-way hash of its address is kept beside a per-minute tally and deleted after a day. The opens go with the link when it is revoked, and are deleted once they are a year old. A document shared with specific people is the one exception: its reader signed in as one of the addresses the owner named, so each open also records which of those addresses it was — and the page tells the reader that the owner can see it.',
+        ],
+      },
+      {
+        heading: 'Analytics, only if you allow it',
+        body: [
+          'There is no advertising and nothing is sold. Google Tag Manager loads on every page of the website. If you allow analytics in the cookie banner, it brings Google Analytics, which records the pages you open — for a saved or shared document, an address that carries its id or its share code, never its name or text — and four actions, a conversion, a download, a save and a share, with which conversion or format it was. Refused or unanswered, Google’s tags write nothing to your browser and send cookieless pings at most.',
+          'Microsoft Clarity, which shows where people click and scroll, loads on the same answer and only once the page has finished loading, with every word and picture masked in your browser before anything is sent. It never loads on an opened or shared document or folder, an embed, or the feedback and report forms; refused or unanswered, it does not load at all.',
+          'Pages shared from TransformPipe carry neither. They do load the DM Sans typeface from Google Fonts, so a reader’s browser asks Google for it and Google sees its IP address; and a picture a document links to, rather than embeds, is fetched from wherever its author put it.',
         ],
       },
       {
         heading: 'Email',
         body: [
-          'Email is sent in these cases and no others: to confirm your address and to reset a password, which come from the authentication provider; to tell somebody that a document has been shared with them, which comes from the email provider; and, to an account holder, a few emails in the first weeks — a welcome, a couple of tips on using it, and a question about how it is going. Those come from Brevo and each carries an unsubscribe link — and so does the monthly product update, which goes only to people who subscribed to it.',
-          'What the email provider is given is the recipient’s address, the address of the person sharing where there is one, and the message itself. It is never given a document.',
-          'Brevo is given your address and name, the day you registered, and a few counts that decide which of those emails is useful to you: how many documents you keep and have shared, how often your shared links were opened, which apps you connected, and when you last used TransformPipe. Never a document, its name or its text. If you answer the 1-to-10 question in one of them, the score is kept with your account, and the people who run TransformPipe are told who gave it so they can ask what would make it better. Unsubscribing from one of these emails stops them all; deleting your account removes you from Brevo too. Subscribing to the monthly update while signed out gives Brevo only the address you type, and nothing is sent to it until you confirm from the email.',
+          'Email is sent in these cases and no others: to confirm your address and to reset a password, which come from our authentication provider; to tell somebody that a document or folder has been shared with them, which comes from Resend; to tell the people who run TransformPipe that somebody answered a feedback question, also through Resend; and, to an account holder with a verified address, a few emails about getting started — a welcome, a reminder or two if you have not started using it yet, a couple of tips on using it, a question about how it is going, and an invitation to the monthly product update — and that update itself for those who subscribed, which come from Brevo. Every Brevo email carries an unsubscribe link, except the one that asks you to confirm a subscription, which is sent once and only because you asked for it.',
+          'Resend is given the recipient’s address, the sharer’s address, which is also where a reply goes, the name of the document or folder and its link. It is never given a document’s text. A share notice has no unsubscribe link because it is sent once, when you are added; removing yourself from the share stops anything further.',
+          'Brevo is given, for every account with a verified address: the address, a first name where we have one, the account id, a signed code that lets the feedback links know it is you, the day you registered, how you arrived (the website, ChatGPT, Claude and so on), and a few counts that decide which of those emails is useful to you — how many documents you keep and have shared, how often your shared links were opened, which kinds of app you connected, and when you last used TransformPipe. Never a document, its name or its text. It is brought up to date every ten minutes. Unsubscribing stops the emails, and the record stays so that Brevo knows not to write; deleting your account removes it. If you answer the 1-to-10 question in one of them, the score is kept with your account, and the people who run TransformPipe are emailed your name, address and score so they can ask what would make it better.',
+          'Subscribing to the monthly update while signed out gives Brevo only the address you type, and nothing is sent until you confirm from the email. Messages you write to hello@transformpipe.com are forwarded by ImprovMX to our mailbox, which Google hosts.',
         ],
       },
       {
         heading: 'Cookies and browser storage',
         body: [
-          'One session cookie, set by our authentication provider when you sign in, first-party and HttpOnly. A short-lived cookie exists during the sign-in round trip and expires in ten minutes. One more is set only if you open a shared link that has a password and enter it: it remembers, for a day, that you did. That is all of them — there is nothing optional to turn off. The cookies page has the detail.',
-          'Your theme and, when signed out, your history live in your browser’s local storage. They never leave it.',
+          'One session cookie, set by our authentication provider when you sign in, first-party and HttpOnly. A short-lived cookie exists during the sign-in round trip and expires in ten minutes. One more is set only if you open a shared link that has a password and enter it: it remembers, for a day, that you did. Analytics cookies are set only if you allow analytics. The cookies page lists every one of them and has the button that changes your answer.',
+          'Your theme, language and view choices, the answer you gave the cookie banner, and your recent conversions live in your browser’s local storage. They never leave it.',
         ],
       },
       {
-        heading: 'Deleting things',
+        heading: 'Why we use it',
         body: [
-          'Deleting a document moves it to the Trash, where it waits for 14 days in case you want it back; then the row and the stored Markdown are deleted together. Emptying the Trash, or deleting a document from it, deletes it at once. Revoking a share drops the token, so a link already sent stops working.',
-          'To remove an account and everything in it, ask — see the support page. Reaching a storage limit refuses the write; it never deletes something you chose to keep to make room.',
+          'For these purposes and no others. We do not sell personal data, show advertising, build profiles for anybody else, or use your documents to train AI models, and neither does the provider that writes summaries.',
+        ],
+        items: [
+          'To do what you asked for — converting, keeping, sharing, summarising and syncing documents, signing you in, and acting for an assistant you connected. This is the service itself, which you agree to by using it.',
+          'To keep it working and safe — sessions, rate limits, logs, the report form, and spotting misuse. This is our legitimate interest in a service that stays up and is not abused.',
+          'To tell people what you shared with them — the share notice, sent because you asked for it.',
+          'To help you get started and hear how it is going — the onboarding emails and the feedback question. Our legitimate interest, and you can unsubscribe at any time.',
+          'To know what is used — the anonymous daily totals, which identify nobody; and Google Analytics and Microsoft Clarity, only with your consent.',
+          'To send the monthly product update — with your consent, confirmed by email.',
+          'To meet a legal obligation, when one applies.',
+        ],
+      },
+      {
+        heading: 'Who receives it',
+        body: [
+          'The services that run TransformPipe, the people you choose to share with, and the apps you connect — each named here with what it receives:',
+        ],
+        items: [
+          'Vercel (hosting) — every request, with its IP address and browser; the server’s logs, which can include the address a failed share notice was for; and, in Vercel Blob, the text of every saved document and version.',
+          'Neon (database, and Neon Auth, our authentication provider) — everything stored for an account: identity, password hashes, sessions with their IP address and browser, document details and search index, summaries, shares and reader addresses, logs of opens, folders, key and token hashes, webhooks, feedback scores, reports and rate-limit counters. Neon Auth also sends the confirmation and password-reset emails, through the email service configured with it.',
+          'Google — as the sign-in provider, if you use Sign in with Google; as Google Analytics, if you allow it; as Google Fonts, for readers of shared pages; and as the host of the mailbox hello@transformpipe.com forwards to.',
+          'OpenAI (summaries) — up to the first 60,000 characters of a document when a summary is asked for, and the summary it returns. We use OpenAI’s paid API: OpenAI does not use what is sent through it to train its models, and we ask it not to store the response. It may keep both for up to 30 days to detect abuse, and then deletes them.',
+          'Microsoft (Clarity) — masked recordings of clicks and scrolls, only if you allow analytics.',
+          'Resend (email) — for share notices, the recipient’s and the sharer’s addresses, the document or folder name and its link; and the feedback notices sent to us.',
+          'Brevo (email) — the contact record described under Email, for accounts with a verified address, and the product-update list.',
+          'ImprovMX (mail forwarding) — messages you send to an address at transformpipe.com.',
+          'GitHub — anything you post in an issue, which is public, so do not put personal details there; and, if you use the Action, the links it comments on a pull request.',
+          'The people you share with — the document or folder, and your address in the notice; for a link, anyone who has it.',
+          'The assistant you connect — OpenAI for ChatGPT, Anthropic for Claude, or another — receives what its tool calls return, which can include a document’s text, the addresses it is shared with and how often it was opened.',
+          'Your own webhook address — the details listed under Your account.',
+          'Authorities, only when the law requires it, and only what it requires.',
+        ],
+      },
+      {
+        heading: 'How long we keep it',
+        body: [
+          'Some of these clean-ups run on a schedule and some run as requests come in, so “after a day” means soon after a day, not to the second.',
+        ],
+        items: [
+          'Documents, folders and their names — until you delete them or the account is deleted. Storage limits cap size, never age.',
+          'Earlier versions — the ten newest per document; an eleventh deletes the oldest. They go with the document.',
+          'The Trash — 14 days, then the document, its versions and its stored text are deleted by a job that runs every day.',
+          'Summaries — until the document changes, a new summary is asked for, or the document is deleted.',
+          'Share settings and reader addresses — a link’s token, end date and open count go when you make the document or folder private. The reader addresses and a link’s password stay, so that sharing again picks them up, until you remove the reader or the password, the reader removes themselves, or the document is deleted.',
+          'Logs of opens of a shared document — deleted when its link is revoked, and once they are a year old.',
+          'Your account, profile and feedback scores — until the account is deleted.',
+          'Sessions — for as long as our authentication provider keeps them, and deleted with the account at the latest.',
+          'Connected apps — an access token lasts 30 days and a refresh token 180, and either stops working the moment you revoke it. The hashed record of an expired or revoked token is kept until the account is deleted.',
+          'API keys and webhooks — until you revoke them. A revoked key’s hashed record stays until you remove it from the list, and a revoked webhook’s until the account is deleted.',
+          'Rate-limit counters, including the IP addresses of forms used without an account — deleted after a day; the daily summary and email counters after seven days.',
+          'Reports about shared documents — until they are handled; a handled report is deleted once it is 90 days old.',
+          'Anonymous daily totals — kept indefinitely; they describe no one.',
+          'Brevo — while the account has a verified address; a signed-out product-update subscriber until they unsubscribe.',
+          'Google Analytics — for the period set in our property, which Google limits to 2 or 14 months. Microsoft Clarity, Resend, Vercel’s logs and OpenAI (at most 30 days) keep data under their own retention, which we do not set.',
+          'Email you send us — as long as it is useful for answering you; ask and we delete it.',
+          'Your browser — history, preferences and the consent answer until you clear them; the share-password cookie for a day.',
+        ],
+      },
+      {
+        heading: 'What you can do',
+        body: [
+          'Everything here works at any time, and none of it needs a reason:',
+        ],
+        items: [
+          'Delete a document — in the app, through the API, with tp rm, or by asking your assistant. It waits in the Trash for 14 days; emptying the Trash, or deleting a document from it, deletes it at once. Reaching a storage limit refuses the write; it never deletes something you chose to keep to make room.',
+          'Revoke a share — making a document or folder private drops its token, so a link already sent stops working, and for a document deletes its log of opens. You can also remove one reader at a time, and a reader can remove themselves.',
+          'Download your documents — any document as Markdown, HTML, Word or PDF, a folder as a .zip, or all of them through the API. There is no single button for a whole account yet; ask and we send it.',
+          'Disconnect apps — your account page lists the assistants, the extension and Obsidian connections that hold a token, and revokes any or all of them. Signing out of the extension or the plugin removes its token too.',
+          'Revoke API keys and webhooks — in the account menu, effective at once.',
+          'Unsubscribe — with the link in any Brevo email, and with the product-update switch in the account menu.',
+          'Change your analytics answer — with the button on the cookies page.',
+          'Clear what your browser keeps — from the history, or by clearing site data.',
+          'Delete your account — email hello@transformpipe.com from the address on it. We delete the account, its documents, versions and Trash, their stored text, its keys, app connections and webhooks, its sessions, its feedback scores and its Brevo record, within 30 days and usually much sooner. Its folders go in the same step, with their sharing settings and reader lists. Documents other people shared with you are theirs and stay with them, and so does your address on their reader lists and in their logs of opens, for the times given above.',
+          'See, correct or object — write to hello@transformpipe.com to see what we hold about you, correct your name or address, or object to a use. In the EU and the UK you can also complain to your data-protection authority.',
+        ],
+      },
+      {
+        heading: 'Security',
+        body: [
+          'Everything travels over HTTPS. Document text sits in a private store with no public address. Passwords — yours, and those on shared links — are kept only as hashes, and so are API keys and app tokens, which cannot be recovered from what we store. Every request is checked against the account it acts for, and a document shared with named people opens only for someone signed in as one of them. Only the people who run TransformPipe can reach the administration page. No system is perfectly secure; if something goes wrong that puts your data at risk, we will tell you.',
         ],
       },
       {
         heading: 'Children',
         body: [
-          'This is a tool for work, not a service for children, and it is not directed at anyone under 16.',
+          'TransformPipe is a tool for work and study and is not directed at children. It is not meant for anyone under 13, and where the law sets a higher age for agreeing to this kind of processing — up to 16 in parts of the EU — anyone younger needs a parent’s or guardian’s consent. If you think a child has given us personal data without it, write to hello@transformpipe.com and we will delete it.',
+        ],
+      },
+      {
+        heading: 'Data outside your country',
+        body: [
+          'The services named above process data in the United States, the European Union and other countries where they operate, so your data may be handled outside the country you live in. Where it leaves the EU, the EEA or the UK, we rely on the safeguards those providers offer for such transfers, such as the European Commission’s standard contractual clauses.',
         ],
       },
       {
         heading: 'Changes',
         body: [
-          'If this page changes in a way that affects what is collected, the date above changes with it.',
+          'If this page changes in a way that affects what is collected, why, or who receives it, the date above changes with it. The source of the site is public, so every earlier version of this page can be read in its history.',
         ],
       },
     ],
     seo: {
       title: 'Privacy — TransformPipe',
       description:
-        'Signed out, no file leaves your browser. Signed in, we store the document, its metadata and your account identity — Google Analytics and Microsoft Clarity only if you allow them, no tracking pixels, nothing sold.',
+        'What TransformPipe collects, why, who receives it and for how long — on the website, the account, the API, the extension, Obsidian and the ChatGPT app — and how to delete it.',
     },
   },
   terms: {

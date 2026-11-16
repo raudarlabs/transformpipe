@@ -35,7 +35,7 @@
     "store:check": "node scripts/check-store.mjs"
   },
   "dependencies": {
-    "@ai-sdk/google": "^4.0.67",
+    "@ai-sdk/openai": "^4.0.106",
     "@hono/node-server": "^2.1.1",
     "@mozilla/readability": "^0.6.0",
     "@neondatabase/serverless": "^1.1.0",
@@ -56,7 +56,7 @@
     "@radix-ui/react-toggle-group": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@vercel/blob": "^2.8.0",
-    "ai": "^7.0.97",
+    "ai": "^7.0.159",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "diff": "^9.0.0",

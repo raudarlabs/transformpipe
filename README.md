@@ -277,9 +277,9 @@ step; a deployment made before them needs a redeploy to see them. The build is a
   documents get a chain icon in the history and a line-level diff against the version before them.
 - **Sign-in** — Google, or an email and a password, through Neon Auth.
 - **Summary** — a saved document gets a third tab: a paragraph on what it is and where it lands,
-  then its specifics as a short list, from Gemini, streamed into the tab as it is written and called
-  directly with a Google AI Studio key (`GOOGLE_GENERATIVE_AI_API_KEY` — free tier, no card
-  needed). Generated once and cached on the row, so opening the tab again is free; "Regenerate"
+  then its specifics as a short list, from OpenAI's
+  mini model, streamed into the tab as it is written and called directly with a paid key
+  (`OPENAI_API_KEY`; OpenAI does not train on API traffic). Generated once and cached on the row, so opening the tab again is free; "Regenerate"
   asks again. Metered separately from the ordinary API limits — 20 a day per account — because
   unlike the rest of this app, it costs money per call. Without a key the tab says so rather than
   failing the save.

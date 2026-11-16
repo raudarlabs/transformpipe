@@ -1397,6 +1397,9 @@ async function deleteAccount(id: string): Promise<{ documents: number; files: nu
     // The trash goes too, and its files: an account deleted keeps nothing for a fortnight.
     db`delete from m2h_trash where user_id = ${id}
        returning coalesce(document->>'blob_path', '') as blob_path, revisions`,
+    // Folders, and with them (on delete cascade) their sub-folders and reader lists: a shared folder
+    // page must not outlive the account that made it.
+    db`delete from m2h_folder where user_id = ${id}`,
     db`delete from m2h_api_key where user_id = ${id}`,
     db`delete from m2h_webhook where user_id = ${id}`,
     db`delete from m2h_oauth_token where user_id = ${id}`,

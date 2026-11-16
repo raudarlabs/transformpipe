@@ -144,7 +144,7 @@ export const pages: Content['pages'] = {
       {
         heading: 'Datenschutz und Rechtliches',
         body: [
-          'Fragen dazu, was gespeichert wird, oder die Bitte, ein Konto samt allem darin zu löschen, gehen an dieselben Issues. Angemeldet können Sie jedes Dokument auch selbst löschen — es wartet 14 Tage im Papierkorb, dann gehen der Eintrag und die gespeicherte Quelle zusammen.',
+          'Fragen dazu, was gespeichert wird, oder die Bitte, ein Konto samt allem darin zu löschen, gehen an hello@transformpipe.com statt in ein öffentliches Issue, damit nichts über Ihr Konto offen sichtbar wird. Angemeldet können Sie jedes Dokument auch selbst löschen — es wartet 14 Tage im Papierkorb, dann gehen der Eintrag und die gespeicherte Quelle zusammen.',
         ],
       },
     ],
@@ -218,93 +218,233 @@ export const pages: Content['pages'] = {
   privacy: {
     label: 'Datenschutz',
     title: 'Datenschutz',
-    lede: 'Was gespeichert wird, wo, und was überhaupt nie erhoben wird.',
+    lede: 'Was erhoben wird, wozu, wer es außerdem erhält, wie lange es aufbewahrt wird und was Sie dagegen tun können — für die Website, das Konto, die API, die Erweiterung, das Obsidian-Plugin und die ChatGPT-App.',
     sections: [
       {
-        heading: 'Abgemeldet erreicht uns keine Datei',
+        heading: 'Wer wir sind und wie Sie uns erreichen',
         body: [
-          'Die Umwandlung geschieht im Browser. Die Datei wird auf dem eigenen Rechner gelesen, umgewandelt und gerendert, und kein Teil davon wird an einen Server gesendet. Der Verlauf, der zu sehen ist, ist der Speicher des Browsers, kein Konto.',
+          'TransformPipe (transformpipe.com) wird von Raudar Labs entwickelt und betrieben. Raudar Labs entscheidet, was erhoben wird und wozu — in der Sprache des Datenschutzrechts: der Verantwortliche. Diese Seite gilt für die Website, das Konto, die API und die Kommandozeile, die GitHub Action, die Browser-Erweiterung, das Obsidian-Plugin und den Konnektor, den ChatGPT, Claude und andere Assistenten nutzen.',
+          'Eine Frage zu Ihren Daten, der Wunsch, sie einzusehen, zu berichtigen, zu exportieren oder zu löschen, oder eine Beschwerde: Schreiben Sie an hello@transformpipe.com. Ein Mensch liest die Nachricht, und eine Anfrage von der Adresse Ihres Kontos braucht keinen weiteren Nachweis, dass es Ihres ist. Sicherheitsprobleme melden Sie bitte an den Kontakt in `/.well-known/security.txt`.',
         ],
       },
       {
-        heading: 'Angemeldet so viel und nicht mehr',
+        heading: 'Was wir erheben',
         body: [
-          'Ein Konto besteht, damit Dokumente einem von Gerät zu Gerät folgen und geteilt werden können. Es enthält:',
+          'Hier in Kürze, ausführlich in den folgenden Abschnitten:',
         ],
         items: [
-          'Ihre Identität, über unseren Authentifizierungsanbieter: eine E-Mail-Adresse, einen Namen, wo einer angegeben wurde, und eine Konto-id. Bei der Anmeldung mit Google kommen sie von Google; bei der Registrierung mit Adresse und Passwort bleibt das Passwort beim Authentifizierungsanbieter, als Hash. So oder so sehen und speichern wir ein Passwort nie.',
-          'Zu jedem behaltenen Dokument: seinen Namen, welche Umwandlung es gemacht hat, seine Größe, die Zahl der Wörter, Überschriften, Links, Codeblöcke, Tabellen und Bilder und den Zeitpunkt seiner Erstellung.',
-          'Das Markdown selbst, in einem privaten Blob-Speicher — privat heißt: er hat keine öffentliche URL und wird nur über eine Anfrage gelesen, die wir autorisieren.',
-          'API-Schlüssel als Hashes, nie den Schlüssel. Ein Schlüssel wird einmal gezeigt, bei der Erstellung, und ist danach nicht wiederherstellbar — nicht durch Sie und nicht durch uns.',
-          'Freigabe-Einstellungen: ob ein Dokument privat, per Link offen oder an bestimmte E-Mail-Adressen gerichtet ist, und das Token, das ein Link trägt, der Tag, an dem er endet, falls einer gesetzt wurde, und wann er geöffnet wurde, und — falls er ein Passwort hat — ein Hash davon, nie das Passwort.',
+          'Konto: Ihre E-Mail-Adresse, ein Name und ein Profilbild, falls Ihre Anmeldung sie mitbringt, eine Konto-ID, ob die Adresse bestätigt ist, wann Sie sich registriert haben und wie Sie sich anmelden — mit Google oder mit Adresse und Passwort, das unser Authentifizierungsanbieter nur als Hash speichert.',
+          'Dokumente und Dateien: was Sie speichern — den Namen, den Markdown-Text samt den darin eingebetteten Bildern, die Größe, die Zahl der Wörter, Überschriften, Links, Codeblöcke, Tabellen und Bilder, welche Umwandlung es erzeugt hat, den Ordner, wann es erstellt und geändert wurde, bis zu zehn frühere Versionen, einen aus dem Text erstellten Suchindex und eine Zusammenfassung, falls Sie eine angefordert haben. Außerdem die Namen Ihrer Ordner.',
+          'Freigaben: ob ein Dokument oder Ordner privat ist, für jeden mit dem Link offen oder auf benannte Personen beschränkt; das Token des Links, sein Ablaufdatum und ein Hash seines Passworts; die E-Mail-Adressen, mit denen Sie geteilt haben; und wie oft und wann er geöffnet wurde — bei einem Dokument, das mit benannten Personen geteilt ist, samt der Adresse der lesenden Person.',
+          'Nutzung: anonyme Tagessummen von Besuchen und Aktionen, ohne Konto, Adresse oder Dokument; wann ein API-Schlüssel oder eine verbundene App zuletzt benutzt wurde; und Aufrufzähler pro Minute, die Missbrauch verhindern.',
+          'Technisches: IP-Adresse und Browser jeder angemeldeten Sitzung, gespeichert von unserem Authentifizierungsanbieter; IP-Adressen, die etwa einen Tag lang aufbewahrt werden, um die Formulare ohne Konto zu drosseln; und die Anfrageprotokolle des Hosters.',
+          'E-Mail: die Adressen der Personen, mit denen Sie teilen, und bei einem Konto mit bestätigter Adresse der Kontakteintrag, den unser Dienst für die Onboarding-E-Mails führt — beschrieben unter E-Mail.',
+          'Analyse und Cookies: was Google Analytics und Microsoft Clarity über einen Besuch aufzeichnen, und nur, wenn Sie der Analyse zustimmen. Ohne Zustimmung nur die Cookies, die für die Anmeldung nötig sind, und sonst keine.',
+          'Was Sie uns selbst schicken: eine Nachricht an hello@transformpipe.com, eine Meldung zu einem geteilten Dokument, eine Bewertung in einer Feedback-E-Mail.',
+          'Nie: Zahlungsdaten (hier ist nichts kostenpflichtig), Ausweisnummern oder andere amtliche Kennungen, Gesundheitsdaten, Ihren genauen Standort oder Ihre Gespräche mit einem KI-Assistenten.',
         ],
       },
       {
-        heading: 'Gezählt, ohne zu wissen, wer',
+        heading: 'Der Konverter auf der Website: Ihre Dateien erreichen uns nie',
         body: [
-          'Wir zählen Besuche und einige wenige Aktionen — eine aufgerufene Seite, eine Umwandlung, einen Download, ein Speichern, ein Teilen — als anonyme Tagessummen, auf unserem eigenen Server und in unserer eigenen Datenbank. Dafür wird kein Cookie gesetzt und nichts in Ihrem Browser gespeichert; die Summen enthalten keine Kennung und keine IP-Adresse und über ein Dokument nichts außer der Umwandlung oder dem Format. Woher ein Besuch kam, wird nur als Name der verweisenden Website festgehalten — Product Hunt, Google, „direkt“ — oder als Kampagnenkennzeichen des Links, dem Sie gefolgt sind.',
-          'Ein geteilter Link hält außerdem fest, wann er geöffnet wurde, damit sein Besitzer es sieht: die Uhrzeit jedes Aufrufs und ob es die geteilte Seite oder die App war — nichts darüber, wer ihn geöffnet hat. Die Seite ruft bei unserem Server ein Bild von einem Pixel ab, und dieser Abruf ist alles, was festgehalten wird; es wird kein Cookie gesetzt. Damit ein einzelner Rechner die Zahl nicht hochtreiben kann, wird ein Einweg-Hash seiner Adresse neben einer Zählung pro Minute gespeichert und innerhalb eines Tages gelöscht. Die Aufrufe verschwinden mit dem Link, wenn er widerrufen wird, und keiner wird länger als ein Jahr aufbewahrt. Die einzige Ausnahme ist ein Dokument, das mit bestimmten Personen geteilt wurde: Wer es liest, hat sich mit einer der Adressen angemeldet, die der Besitzer genannt hat, also hält jeder Aufruf auch fest, welche dieser Adressen es war — und die Seite sagt dem Leser, dass der Besitzer das sieht.',
+          'Die Umwandlung auf der Website geschieht in Ihrem Browser. Die Datei wird auf Ihrem eigenen Rechner gelesen, umgewandelt und dargestellt, und kein Teil davon geht an einen Server, es sei denn, Sie entscheiden sich, sie zu speichern. Der Verlauf, den Sie abgemeldet sehen, liegt im Speicher Ihres Browsers — die letzten 25 Umwandlungen mit jeweils bis zu 400 KB Text —, nur dort und nirgends sonst, und Sie entfernen ihn über den Verlauf oder indem Sie die Websitedaten löschen.',
+        ],
+      },
+      {
+        heading: 'Ihr Konto',
+        body: [
+          'Ein Konto gibt es, damit Ihre Dokumente Ihnen von Gerät zu Gerät folgen und geteilt werden können. Bei der Anmeldung mit Google kommen Adresse, Name und Bild von Google; bei der Registrierung mit Adresse und Passwort bleibt das Passwort bei unserem Authentifizierungsanbieter Neon Auth, der es als Hash speichert; auf dem Weg dorthin läuft es durch unseren Server und wird dort nie gespeichert. Jede angemeldete Sitzung hält den Browser und die IP-Adresse fest, von denen sie kam — damit Sie angemeldet bleiben und wir Missbrauch erkennen können.',
+          'Was Sie speichern, liegt in unserer Datenbank (Neon), sein Text in einem privaten Dateispeicher (Vercel Blob) — privat heißt: Er hat keine öffentliche Adresse und wird nur über eine Anfrage gelesen, die wir autorisieren. Ersetzen Sie ein Dokument, bleibt der vorherige Text erhalten, bis zu zehn Versionen pro Dokument. API-Schlüssel werden als Hashes gespeichert, nie der Schlüssel selbst: Ein Schlüssel wird einmal angezeigt, bei der Erstellung, und lässt sich danach nicht wiederherstellen — weder von Ihnen noch von uns.',
+          'Wir lesen Ihre Dokumente nicht. Ausnahmen sind ein geteiltes Dokument, das uns jemand meldet, und ein Dokument, das wir uns auf Ihren Wunsch ansehen, um ein Problem zu beheben. Die Betreiber von TransformPipe haben eine Verwaltungsseite, die zu jedem Konto Adresse, Name, Anmeldeart, Registrierungsdatum, Namen und Größen der Dokumente, Freigabestatus, verbundene Apps, Schlüssel, Webhooks sowie Browser und IP-Adresse seiner Sitzungen auflistet. Den Text eines Dokuments zeigt sie nie.',
+          'Ein Webhook, den Sie einrichten, erhält beim Speichern eines Dokuments dessen ID, Namen, Art und Größe und beim Teilen den Freigabemodus, den Link und die benachrichtigten Adressen — an die Adresse, die Sie angegeben haben, und nirgendwohin sonst.',
+        ],
+      },
+      {
+        heading: 'Die API und die Kommandozeile',
+        body: [
+          'Die API und der darauf aufbauende Befehl `tp` handeln mit einem API-Schlüssel oder einem App-Token für Ihr Konto. Was Sie senden — Text und Name einer Datei, einen Ordnerpfad, die Adressen, mit denen geteilt werden soll, ein Ablaufdatum, ein Freigabepasswort —, wird als Dokument gespeichert, genau so, als hätten Sie es in der App gespeichert; ein Freigabepasswort nur als Hash. Der Befehl `tp` bewahrt Ihren Schlüssel auf Ihrem eigenen Rechner auf, in `~/.config/tp/config.json`, sofern Sie ihn nicht auf anderem Weg übergeben.',
+        ],
+      },
+      {
+        heading: 'Die GitHub Action',
+        body: [
+          'Die Action läuft in Ihrem Repository mit einem API-Schlüssel, den Sie als Repository-Secret hinterlegen. Sie lädt die Markdown-Dateien, die ein Pull Request geändert hat, oder die von Ihnen genannten als Dokumente in Ihr Konto und postet auf Wunsch deren Links als Kommentar im Pull Request, mit dem Token von GitHub selbst — GitHub und alle, die diesen Pull Request lesen können, sehen also die Links. Entfernen Sie den Workflow, hört sie auf; widerrufen Sie den Schlüssel, endet ihr Zugriff.',
         ],
       },
       {
         heading: 'Die Browser-Erweiterung',
         body: [
-          'Die Erweiterung wandelt die Seite um, auf der Sie gerade sind – in dieser Seite, auf Ihrem eigenen Rechner. Sie liest eine Seite erst, wenn Sie ihre Schaltfläche drücken oder die Seitenleiste darauf öffnen, sie schreibt nie in eine Seite, und nichts aus einer Seite geht irgendwohin, bevor Sie Speichern oder Teilen drücken – abgemeldet spricht sie überhaupt nicht mit uns.',
+          'Die Erweiterung wandelt die Seite um, auf der Sie gerade sind — in dieser Seite, auf Ihrem eigenen Rechner. Sie liest eine Seite erst, wenn Sie ihre Schaltfläche drücken oder die Seitenleiste darauf öffnen, sie schreibt nie in eine Seite, und nichts aus einer Seite geht irgendwohin, bevor Sie Speichern oder Teilen drücken — abgemeldet spricht sie überhaupt nicht mit uns.',
         ],
         items: [
           'Aus Ihrem Surfen wird nichts erhoben. In der Erweiterung steckt keine Analyse, keine Telemetrie und nirgends eine Aufzeichnung darüber, welche Seiten Sie umgewandelt haben.',
-          'Angemeldet liegt ein OAuth-Token im Erweiterungsspeicher des Browsers – dieselbe Freigabe, die auf Ihrer Kontoseite steht und dort widerrufbar ist. Es ist die einzige Anmeldeinformation der Erweiterung, ein Passwort steckt nicht darin.',
+          'Angemeldet liegt ein OAuth-Token im Erweiterungsspeicher des Browsers — dieselbe Freigabe, die auf Ihrer Kontoseite steht und dort widerrufbar ist. Es ist die einzige Anmeldeinformation der Erweiterung, und ein Passwort steckt nicht darin.',
           'Ein umgewandeltes Dokument geht über den Sitzungsspeicher von der Leiste in den Tab, der es zeigt; der Browser leert ihn beim Schließen und schreibt ihn nie auf die Festplatte.',
           'Den Tab zu lesen, auf dem Sie sind, wird beim Einschalten der Seitenleiste erfragt, weil eine Leiste, die Ihnen von Tab zu Tab folgt, nicht bei jedem erneut fragen kann. Die Schaltfläche in der Symbolleiste braucht das nicht: Sie liest genau den einen Tab, auf dem Sie sie gedrückt haben.',
-          'Speichern und Teilen senden dieses eine Dokument an Ihr Konto, genau wie die App. Sonst verlässt nichts den Browser.',
+          'Speichern und Teilen senden dieses eine Dokument und die Adressen, mit denen Sie es teilen, an Ihr Konto, genau wie die App. Sonst verlässt nichts den Browser.',
         ],
       },
       {
-        heading: 'Was wir nicht tun',
+        heading: 'Das Obsidian-Plugin',
         body: [
-          'Es gibt keine Werbung, kein Tracking-Pixel und nichts wird verkauft. Der Google Tag Manager lädt auf jeder Seite und bringt Google Analytics nur mit, wenn Sie im Cookie-Banner der Analyse zugestimmt haben. Microsoft Clarity, das zeigt, wo geklickt und gescrollt wird, lädt mit derselben Zustimmung und erst, wenn die Seite fertig geladen ist — jedes Wort und jedes Bild wird schon in Ihrem Browser unkenntlich gemacht, bevor etwas gesendet wird, und auf einem geteilten Dokument oder Ordner läuft es nie. Bei Ablehnung oder ohne Antwort schreiben Googles Tags nichts in Ihren Browser, und Clarity lädt gar nicht. Nichts wird mit irgendjemandem geteilt außer mit der Infrastruktur, die den Dienst betreibt: der Datenbank, dem Blob-Speicher, dem Authentifizierungsanbieter, den beiden E-Mail-Anbietern und dem Hoster.',
-          'Ihre Dokumente werden von uns nicht gelesen, und sie werden nicht dazu benutzt, irgendetwas zu trainieren.',
+          'Das Plugin sendet eine Notiz nur dann an Ihr Konto, wenn Sie sie veröffentlichen: den Text der Notiz mit den eingebetteten Bildern aus Ihrem Vault, ihren Namen und die Adressen, mit denen Sie sie teilen. Es schreibt die ID des Dokuments in das Front Matter der Notiz, sodass erneutes Veröffentlichen dieselbe Seite aktualisiert. Sein Anmelde-Token liegt über den geheimen Speicher von Obsidian im Schlüsselbund Ihres Systems; daneben speichert es in den Plugin-Einstellungen nur die Serveradresse und ob es Sie schon begrüßt hat. Es enthält keine Analyse und spricht mit niemandem außer uns.',
+        ],
+      },
+      {
+        heading: 'ChatGPT, Claude und andere Assistenten',
+        body: [
+          'TransformPipe ist eine App in ChatGPT und ein Konnektor in Claude, und jeder Assistent, der das Model Context Protocol beherrscht, kann sich damit verbinden. Beim Verbinden landen Sie auf unserer Anmeldeseite, wo Sie den Assistenten zulassen; danach hält er ein Token, das für Ihr Konto handelt und für nichts anderes. Wir speichern die Registrierung des Assistenten — seinen Namen und die Adresse, zu der er zurückkehrt — und das Token als Hash. Ihr Passwort bei OpenAI oder Anthropic sehen wir nie, und der Assistent sieht Ihr Passwort bei uns nie.',
+          'Ihr Gespräch erhalten wir nicht. Wir erhalten nur, was der Assistent in einen Tool-Aufruf schreibt, den er zu machen beschließt, zusammen mit dem Token, das sagt, für welches Konto er gilt. Was ein Tool zurückgibt, geht an den Assistenten und wird Ihnen dort angezeigt; von da an behandelt es OpenAI, Anthropic oder wer auch immer den Assistenten anbietet nach der eigenen Datenschutzerklärung. Jeder Aufruf hinterlässt außerdem eine anonyme Zählung des Tool-Namens, einen Zähler pro Minute, der an Ihre Konto-ID geknüpft ist und nach einem Tag gelöscht wird, und den Zeitpunkt, zu dem das Token zuletzt benutzt wurde.',
+          'Tools, die eine Seite veröffentlichen, jemandem eine E-Mail schicken, den Lesern eines geteilten Ordners Dokumente zeigen, ein geteiltes Dokument ändern oder etwas löschen, tun nichts, bevor Sie bestätigen; bis dahin beschreiben sie nur, was geschehen würde und wen es betrifft. Etwas auf privat zu stellen und ein Dokument aus dem Papierkorb zurückzuholen braucht keine Bestätigung. Was jede Gruppe von Tools erhält, zurückgibt und speichert:',
+        ],
+        items: [
+          'Umwandeln — tp_convert_to_markdown und tp_convert_from_markdown. Sie erhalten den umzuwandelnden Text, sein Format und einen Namen und geben den umgewandelten Text zurück. Die Umwandlung läuft im Arbeitsspeicher unseres Servers, und nichts wird gespeichert, es sei denn, Sie lassen das Ergebnis anschließend speichern.',
+          'Speichern und Ordnen — tp_save_document, tp_update_document, tp_create_folder, tp_update_folder und tp_move_documents. Sie erhalten Text und Namen eines Dokuments, einen Ordnernamen oder -pfad sowie Dokument- oder Ordner-IDs und geben die ID des Dokuments, seine Größe, seinen Ordner und, falls es geteilt ist, seinen Link und seine Leser zurück. All das wird in Ihrem Konto gespeichert wie ein Dokument, das Sie in der App speichern. tp_update_document bewahrt den vorherigen Text als Version auf und verwirft eine gespeicherte Zusammenfassung. Wer in einen geteilten Ordner speichert oder etwas darunter verschiebt, macht es für dessen Leser lesbar, und ein dort angelegter Ordner zeigt ihnen seinen Namen.',
+          'Teilen — tp_share_document, tp_share_folder und tp_save_document, wenn es teilt. Sie erhalten den Freigabemodus und die E-Mail-Adressen der Leser und geben den Modus, den Link, die Leserliste und die Zahl der Aufrufe zurück. „link“ erstellt eine öffentliche Seite, die jeder mit ihrer Adresse öffnen kann. „people“ beschränkt sie auf die genannten Adressen, speichert diese bei der Freigabe und schickt jeder neuen über unseren E-Mail-Anbieter Resend einen Link, mit Ihnen als Absender. „private“ widerruft den Link und löscht bei einem Dokument das Protokoll seiner Aufrufe. Ein Webhook, den Sie eingerichtet haben, erfährt, wenn ein Dokument gespeichert oder geteilt wird, wie unter Ihr Konto beschrieben.',
+          'Zusammenfassen — tp_summarize_document. Es erhält eine Dokument-ID und gibt eine Zusammenfassung zurück. Höchstens die ersten 60.000 Zeichen des Dokuments gehen dafür an die API von OpenAI (siehe Wer die Daten erhält), und die Zusammenfassung bleibt beim Dokument, bis es geändert oder gelöscht wird. An OpenAI geht nichts, solange keine Zusammenfassung angefordert wird.',
+          'Löschen und Wiederherstellen — tp_delete_document, tp_delete_folder und tp_restore_document. Sie erhalten eine ID und eine Bestätigung. Ein gelöschtes Dokument kommt mit seinen Versionen und seiner Leserliste für 14 Tage in den Papierkorb und wird danach endgültig gelöscht; sein Link funktioniert sofort nicht mehr. Wird ein Ordner ohne seine Dokumente gelöscht, verschwindet nur der Ordner, und sein Inhalt rückt eine Ebene nach oben. tp_restore_document listet den Papierkorb auf oder holt ein Dokument zurück, samt Link.',
+          'Lesen — tp_list_documents, tp_list_folders, tp_get_document, tp_document_versions, tp_usage und tp_search_documentation. Sie ändern nichts. Sie erhalten IDs, einen Suchbegriff oder eine Frage und geben Namen, Datumsangaben, Ordner und Freigabestatus Ihrer Dokumente zurück; den Text eines Dokuments, die Adressen, mit denen es geteilt ist, und wie oft es geöffnet wurde; frühere Versionen; Ihren Speicherverbrauch und Ihre Limits; oder Abschnitte unserer Dokumentation.',
+        ],
+      },
+      {
+        heading: 'Gezählt, ohne zu wissen, wer',
+        body: [
+          'Wir zählen Besuche und einige wenige Aktionen — eine aufgerufene Seite, eine Umwandlung, einen Download, ein Speichern, ein Teilen, einen Tool- oder API-Aufruf — als anonyme Tagessummen, auf unserem eigenen Server und in unserer eigenen Datenbank. Dafür wird kein Cookie gesetzt und nichts in Ihrem Browser gespeichert; die Summen enthalten keine Kennung und keine IP-Adresse und über ein Dokument nichts außer der Umwandlung oder dem Format. Woher ein Besuch kam, wird nur als Name der verweisenden Website festgehalten — Product Hunt, Google, „direkt“ — oder als Kampagnenkennzeichen des Links, dem Sie gefolgt sind.',
+          'Ein geteilter Link hält außerdem fest, wann er geöffnet wurde, damit sein Besitzer es sieht: die Uhrzeit jedes Aufrufs und ob es die geteilte Seite oder die App war — nichts darüber, wer ihn geöffnet hat. Die Seite ruft bei unserem Server ein Bild von einem Pixel ab, und dieser Abruf ist alles, was festgehalten wird; es wird kein Cookie gesetzt. Damit ein einzelner Rechner die Zahl nicht hochtreiben kann, wird ein Einweg-Hash seiner Adresse neben einer Zählung pro Minute gespeichert und nach einem Tag gelöscht. Die Aufrufe verschwinden mit dem Link, wenn er widerrufen wird, und werden gelöscht, sobald sie ein Jahr alt sind. Die einzige Ausnahme ist ein Dokument, das mit bestimmten Personen geteilt wurde: Wer es liest, hat sich mit einer der Adressen angemeldet, die der Besitzer genannt hat, also hält jeder Aufruf auch fest, welche dieser Adressen es war — und die Seite sagt der lesenden Person, dass der Besitzer das sieht.',
+        ],
+      },
+      {
+        heading: 'Analyse, nur mit Ihrer Zustimmung',
+        body: [
+          'Es gibt keine Werbung, und nichts wird verkauft. Der Google Tag Manager lädt auf jeder Seite der Website. Stimmen Sie im Cookie-Banner der Analyse zu, bringt er Google Analytics mit, das die Seiten aufzeichnet, die Sie öffnen — bei einem gespeicherten oder geteilten Dokument eine Adresse mit seiner ID oder seinem Freigabecode, nie seinen Namen oder Text — sowie vier Aktionen, eine Umwandlung, einen Download, ein Speichern und ein Teilen, jeweils mit der Umwandlung oder dem Format. Bei Ablehnung oder ohne Antwort schreiben die Tags von Google nichts in Ihren Browser und senden höchstens Pings ohne Cookies.',
+          'Microsoft Clarity, das zeigt, wo geklickt und gescrollt wird, lädt mit derselben Zustimmung und erst, wenn die Seite fertig geladen ist; jedes Wort und jedes Bild wird schon in Ihrem Browser unkenntlich gemacht, bevor etwas gesendet wird. Auf einem geöffneten oder geteilten Dokument oder Ordner, in einer Einbettung und in den Feedback- und Meldeformularen lädt es nie; bei Ablehnung oder ohne Antwort lädt es überhaupt nicht.',
+          'Seiten, die aus TransformPipe geteilt werden, enthalten keines von beiden. Sie laden allerdings die Schrift DM Sans von Google Fonts, sodass der Browser der lesenden Person sie bei Google anfragt und Google ihre IP-Adresse sieht; und ein Bild, das ein Dokument verlinkt statt einbettet, wird von dort geladen, wo sein Autor es abgelegt hat.',
         ],
       },
       {
         heading: 'E-Mail',
         body: [
-          'E-Mails gehen in diesen Fällen hinaus und in keinem anderen: zur Bestätigung Ihrer Adresse und zum Zurücksetzen eines Passworts, beides vom Authentifizierungsanbieter; um jemandem mitzuteilen, dass ein Dokument mit ihm geteilt wurde, vom E-Mail-Anbieter; und an Kontoinhaber einige wenige E-Mails in den ersten Wochen — eine Begrüßung, ein paar Tipps zur Nutzung und die Frage, wie es läuft. Diese kommen von Brevo und enthalten jeweils einen Abmeldelink — ebenso das monatliche Produkt-Update, das nur erhält, wer es abonniert hat.',
-          'Der E-Mail-Anbieter erhält die Adresse des Empfängers, die Adresse der teilenden Person, wo es eine gibt, und die Nachricht selbst. Ein Dokument erhält er nie.',
-          'Brevo erhält Ihre Adresse und Ihren Namen, den Tag der Registrierung und einige Zahlen, nach denen sich richtet, welche dieser E-Mails für Sie sinnvoll ist: wie viele Dokumente Sie aufbewahren und geteilt haben, wie oft Ihre geteilten Links geöffnet wurden, welche Apps Sie verbunden haben und wann Sie TransformPipe zuletzt genutzt haben. Nie ein Dokument, seinen Namen oder seinen Text. Wer in einer davon die Frage von 1 bis 10 beantwortet, dessen Bewertung wird mit dem Konto gespeichert, und die Betreiber von TransformPipe erfahren, von wem sie stammt, um nachfragen zu können, was sie verbessern würde. Eine Abmeldung in einer dieser E-Mails beendet sie alle; wer sein Konto löscht, wird auch bei Brevo entfernt. Wer das monatliche Update ohne Anmeldung abonniert, gibt Brevo nur die eingegebene Adresse, und dorthin geht nichts, bevor sie aus der E-Mail heraus bestätigt wurde.',
+          'E-Mails gehen in diesen Fällen hinaus und in keinem anderen: zur Bestätigung Ihrer Adresse und zum Zurücksetzen eines Passworts, beides von unserem Authentifizierungsanbieter; um jemandem mitzuteilen, dass ein Dokument oder Ordner mit ihm geteilt wurde, über Resend; um den Betreibern von TransformPipe mitzuteilen, dass jemand eine Feedback-Frage beantwortet hat, ebenfalls über Resend; und an Kontoinhaber mit bestätigter Adresse einige E-Mails zum Einstieg — eine Begrüßung, ein oder zwei Erinnerungen, falls Sie noch nicht losgelegt haben, ein paar Tipps zur Nutzung, die Frage, wie es läuft, und eine Einladung zum monatlichen Produkt-Update — sowie dieses Update selbst für alle, die es abonniert haben, beides über Brevo. Jede E-Mail von Brevo enthält einen Abmeldelink, außer der einen, mit der Sie ein Abonnement bestätigen: Sie geht nur einmal hinaus und nur, weil Sie darum gebeten haben.',
+          'Resend erhält die Adresse des Empfängers, die Adresse der teilenden Person, an die auch eine Antwort geht, den Namen des Dokuments oder Ordners und seinen Link. Den Text eines Dokuments erhält Resend nie. Eine Freigabe-Benachrichtigung hat keinen Abmeldelink, weil sie nur einmal verschickt wird, wenn Sie hinzugefügt werden; wer sich aus der Freigabe entfernt, erhält danach nichts mehr.',
+          'Brevo erhält für jedes Konto mit bestätigter Adresse: die Adresse, einen Vornamen, sofern wir einen haben, die Konto-ID, einen signierten Code, an dem die Feedback-Links erkennen, dass Sie es sind, den Tag der Registrierung, wie Sie zu uns gekommen sind (über die Website, ChatGPT, Claude und so weiter) und einige Zahlen, nach denen sich richtet, welche dieser E-Mails für Sie sinnvoll ist — wie viele Dokumente Sie aufbewahren und geteilt haben, wie oft Ihre geteilten Links geöffnet wurden, welche Arten von Apps Sie verbunden haben und wann Sie TransformPipe zuletzt genutzt haben. Nie ein Dokument, seinen Namen oder seinen Text. Der Eintrag wird alle zehn Minuten aktualisiert. Eine Abmeldung beendet die E-Mails, und der Eintrag bleibt bestehen, damit Brevo weiß, dass es Ihnen nicht schreiben soll; löschen Sie Ihr Konto, wird er entfernt. Beantworten Sie in einer dieser E-Mails die Frage von 1 bis 10, wird Ihre Bewertung mit Ihrem Konto gespeichert, und die Betreiber von TransformPipe erhalten Ihren Namen, Ihre Adresse und Ihre Bewertung per E-Mail, um nachfragen zu können, was es besser machen würde.',
+          'Wer das monatliche Update ohne Anmeldung abonniert, gibt Brevo nur die eingegebene Adresse, und nichts wird verschickt, bevor sie aus der E-Mail heraus bestätigt wurde. Nachrichten, die Sie an hello@transformpipe.com schreiben, leitet ImprovMX an unser Postfach weiter, das bei Google liegt.',
         ],
       },
       {
         heading: 'Cookies und Browser-Speicher',
         body: [
-          'Ein Sitzungscookie, gesetzt von unserem Authentifizierungsanbieter bei der Anmeldung, First-Party und HttpOnly. Ein kurzlebiges Cookie besteht während des Hin und Her der Anmeldung und läuft nach zehn Minuten ab. Ein weiteres wird nur gesetzt, wenn Sie einen geteilten Link mit Passwort öffnen und es eingeben: Es merkt sich einen Tag lang, dass Sie das getan haben. Das sind alle — es gibt nichts Optionales zum Abschalten. Die Cookie-Seite hat die Einzelheiten.',
-          'Ihr Design und, abgemeldet, Ihr Verlauf liegen im lokalen Speicher Ihres Browsers. Sie verlassen ihn nie.',
+          'Ein Sitzungscookie, gesetzt von unserem Authentifizierungsanbieter bei der Anmeldung, First-Party und HttpOnly. Ein kurzlebiges Cookie besteht während des Hin und Her der Anmeldung und läuft nach zehn Minuten ab. Ein weiteres wird nur gesetzt, wenn Sie einen geteilten Link mit Passwort öffnen und es eingeben: Es merkt sich einen Tag lang, dass Sie das getan haben. Analyse-Cookies werden nur gesetzt, wenn Sie der Analyse zustimmen. Die Cookie-Seite führt jedes einzelne auf und hat die Schaltfläche, mit der Sie Ihre Antwort ändern.',
+          'Ihr Design, Ihre Sprache und Ihre Ansichtseinstellungen, Ihre Antwort auf das Cookie-Banner und Ihre letzten Umwandlungen liegen im lokalen Speicher Ihres Browsers. Sie verlassen ihn nie.',
         ],
       },
       {
-        heading: 'Dinge löschen',
+        heading: 'Wozu wir sie verwenden',
         body: [
-          'Ein gelöschtes Dokument kommt in den Papierkorb und wartet dort 14 Tage, falls Sie es zurückhaben möchten; danach werden die Zeile und das gespeicherte Markdown zusammen gelöscht. Wer den Papierkorb leert oder ein Dokument daraus löscht, löscht es sofort. Ein Widerruf einer Freigabe verwirft das Token, ein schon verschickter Link hört also auf zu funktionieren.',
-          'Um ein Konto samt allem darin zu entfernen, fragen Sie nach — siehe die Support-Seite. Eine erreichte Speichergrenze weist den Schreibvorgang ab; sie löscht nie etwas, das Sie behalten wollten, um Platz zu machen.',
+          'Zu diesen Zwecken und zu keinen anderen. Wir verkaufen keine personenbezogenen Daten, zeigen keine Werbung, erstellen keine Profile für Dritte und verwenden Ihre Dokumente nicht zum Training von KI-Modellen; der Anbieter, der die Zusammenfassungen schreibt, tut es ebenso wenig.',
+        ],
+        items: [
+          'Um zu tun, worum Sie gebeten haben — Dokumente umwandeln, aufbewahren, teilen, zusammenfassen und synchronisieren, Sie anmelden und für einen Assistenten handeln, den Sie verbunden haben. Das ist der Dienst selbst, dem Sie mit der Nutzung zustimmen.',
+          'Um den Dienst funktionsfähig und sicher zu halten — Sitzungen, Ratenbegrenzungen, Protokolle, das Meldeformular und das Erkennen von Missbrauch. Das ist unser berechtigtes Interesse an einem Dienst, der erreichbar bleibt und nicht missbraucht wird.',
+          'Um Menschen mitzuteilen, was Sie mit ihnen geteilt haben — die Freigabe-Benachrichtigung, verschickt, weil Sie darum gebeten haben.',
+          'Um Ihnen den Einstieg zu erleichtern und zu erfahren, wie es läuft — die Onboarding-E-Mails und die Feedback-Frage. Unser berechtigtes Interesse; Sie können sich jederzeit abmelden.',
+          'Um zu wissen, was genutzt wird — die anonymen Tagessummen, die niemanden identifizieren; Google Analytics und Microsoft Clarity nur mit Ihrer Einwilligung.',
+          'Um das monatliche Produkt-Update zu verschicken — mit Ihrer Einwilligung, per E-Mail bestätigt.',
+          'Um eine rechtliche Pflicht zu erfüllen, wenn eine besteht.',
+        ],
+      },
+      {
+        heading: 'Wer die Daten erhält',
+        body: [
+          'Die Dienste, die TransformPipe betreiben, die Personen, mit denen Sie teilen, und die Apps, die Sie verbinden — hier jeweils genannt, mit dem, was sie erhalten:',
+        ],
+        items: [
+          'Vercel (Hosting) — jede Anfrage mit ihrer IP-Adresse und ihrem Browser; die Serverprotokolle, die die Adresse enthalten können, an die eine fehlgeschlagene Freigabe-Benachrichtigung gehen sollte; und in Vercel Blob den Text jedes gespeicherten Dokuments und jeder Version.',
+          'Neon (Datenbank und Neon Auth, unser Authentifizierungsanbieter) — alles, was zu einem Konto gespeichert wird: Identität, Passwort-Hashes, Sitzungen mit IP-Adresse und Browser, Dokumentangaben und Suchindex, Zusammenfassungen, Freigaben und Leseradressen, Aufrufprotokolle, Ordner, Hashes von Schlüsseln und Tokens, Webhooks, Feedback-Bewertungen, Meldungen und Zähler der Ratenbegrenzung. Neon Auth verschickt außerdem die E-Mails zur Bestätigung und zum Zurücksetzen des Passworts, über den damit eingerichteten E-Mail-Dienst.',
+          'Google — als Anmeldeanbieter, wenn Sie „Mit Google anmelden“ nutzen; als Google Analytics, wenn Sie zustimmen; als Google Fonts, für die Leser geteilter Seiten; und als Anbieter des Postfachs, an das hello@transformpipe.com weitergeleitet wird.',
+          'OpenAI (Zusammenfassungen) — bei einer angeforderten Zusammenfassung höchstens die ersten 60.000 Zeichen eines Dokuments und die zurückgegebene Zusammenfassung. Wir nutzen die kostenpflichtige API von OpenAI: OpenAI verwendet darüber Gesendetes nicht zum Training seiner Modelle, und wir weisen OpenAI an, die Antwort nicht zu speichern. Zur Erkennung von Missbrauch darf OpenAI beides bis zu 30 Tage aufbewahren und löscht es danach.',
+          'Microsoft (Clarity) — unkenntlich gemachte Aufzeichnungen von Klicks und Scrollbewegungen, nur wenn Sie der Analyse zustimmen.',
+          'Resend (E-Mail) — für Freigabe-Benachrichtigungen die Adressen von Empfänger und teilender Person, den Namen des Dokuments oder Ordners und seinen Link; außerdem die Feedback-Benachrichtigungen an uns.',
+          'Brevo (E-Mail) — den unter E-Mail beschriebenen Kontakteintrag für Konten mit bestätigter Adresse sowie die Liste für das Produkt-Update.',
+          'ImprovMX (E-Mail-Weiterleitung) — Nachrichten, die Sie an eine Adresse bei transformpipe.com schicken.',
+          'GitHub — alles, was Sie in einem Issue schreiben; das ist öffentlich, schreiben Sie dort also keine persönlichen Angaben hinein; und, wenn Sie die Action nutzen, die Links, die sie als Kommentar in einen Pull Request schreibt.',
+          'Die Personen, mit denen Sie teilen — das Dokument oder den Ordner und Ihre Adresse in der Benachrichtigung; bei einem Link jeder, der ihn hat.',
+          'Der Assistent, den Sie verbinden — OpenAI für ChatGPT, Anthropic für Claude oder ein anderer — erhält, was seine Tool-Aufrufe zurückgeben; das kann den Text eines Dokuments, die Adressen, mit denen es geteilt ist, und die Zahl seiner Aufrufe einschließen.',
+          'Ihre eigene Webhook-Adresse — die unter Ihr Konto aufgeführten Angaben.',
+          'Behörden, nur wenn das Gesetz es verlangt, und nur so viel, wie es verlangt.',
+        ],
+      },
+      {
+        heading: 'Wie lange wir sie aufbewahren',
+        body: [
+          'Manche dieser Aufräumarbeiten laufen nach Zeitplan, andere, sobald Anfragen eingehen; „nach einem Tag“ heißt also kurz nach einem Tag, nicht auf die Sekunde genau.',
+        ],
+        items: [
+          'Dokumente, Ordner und ihre Namen — bis Sie sie löschen oder das Konto gelöscht wird. Speichergrenzen begrenzen die Größe, nie das Alter.',
+          'Frühere Versionen — die zehn neuesten pro Dokument; eine elfte löscht die älteste. Sie verschwinden mit dem Dokument.',
+          'Der Papierkorb — 14 Tage; danach löscht ein täglich laufender Vorgang das Dokument, seine Versionen und seinen gespeicherten Text.',
+          'Zusammenfassungen — bis sich das Dokument ändert, eine neue Zusammenfassung angefordert wird oder das Dokument gelöscht wird.',
+          'Freigabe-Einstellungen und Leseradressen — Token, Enddatum und Aufrufzähler eines Links verschwinden, wenn Sie das Dokument oder den Ordner auf privat stellen. Die Leseradressen und ein Link-Passwort bleiben, damit eine erneute Freigabe sie wieder aufnimmt, bis Sie die lesende Person oder das Passwort entfernen, diese sich selbst entfernt oder das Dokument gelöscht wird.',
+          'Aufrufprotokolle eines geteilten Dokuments — gelöscht, wenn sein Link widerrufen wird, und sobald sie ein Jahr alt sind.',
+          'Ihr Konto, Ihr Profil und Ihre Feedback-Bewertungen — bis das Konto gelöscht wird.',
+          'Sitzungen — so lange, wie unser Authentifizierungsanbieter sie aufbewahrt, und spätestens mit dem Konto gelöscht.',
+          'Verbundene Apps — ein Zugriffstoken gilt 30 Tage, ein Aktualisierungstoken 180, und beide hören in dem Moment auf zu funktionieren, in dem Sie sie widerrufen. Der gehashte Eintrag eines abgelaufenen oder widerrufenen Tokens bleibt bis zur Löschung des Kontos.',
+          'API-Schlüssel und Webhooks — bis Sie sie widerrufen. Der gehashte Eintrag eines widerrufenen Schlüssels bleibt, bis Sie ihn aus der Liste entfernen, der eines widerrufenen Webhooks bis zur Löschung des Kontos.',
+          'Zähler der Ratenbegrenzung, einschließlich der IP-Adressen von Formularen, die ohne Konto benutzt wurden — nach einem Tag gelöscht; die Tageszähler für Zusammenfassungen und E-Mails nach sieben Tagen.',
+          'Meldungen zu geteilten Dokumenten — bis sie bearbeitet sind; eine bearbeitete Meldung wird gelöscht, sobald sie 90 Tage alt ist.',
+          'Anonyme Tagessummen — unbegrenzt; sie beschreiben niemanden.',
+          'Brevo — solange das Konto eine bestätigte Adresse hat; wer das Produkt-Update ohne Anmeldung abonniert hat, bis zur Abmeldung.',
+          'Google Analytics — für den in unserer Property eingestellten Zeitraum, den Google auf 2 oder 14 Monate beschränkt. Microsoft Clarity, Resend, die Protokolle von Vercel und OpenAI (höchstens 30 Tage) bewahren Daten nach ihren eigenen Fristen auf, die wir nicht festlegen.',
+          'E-Mails, die Sie uns schicken — so lange, wie sie für die Antwort nützlich sind; auf Wunsch löschen wir sie.',
+          'Ihr Browser — Verlauf, Einstellungen und die Antwort auf das Cookie-Banner, bis Sie sie löschen; das Cookie für Freigabepasswörter einen Tag lang.',
+        ],
+      },
+      {
+        heading: 'Was Sie tun können',
+        body: [
+          'All das geht jederzeit, und nichts davon braucht eine Begründung:',
+        ],
+        items: [
+          'Ein Dokument löschen — in der App, über die API, mit tp rm oder indem Sie Ihren Assistenten darum bitten. Es wartet 14 Tage im Papierkorb; wer den Papierkorb leert oder ein Dokument daraus löscht, löscht es sofort. Eine erreichte Speichergrenze weist den Schreibvorgang ab; sie löscht nie etwas, das Sie behalten wollten, um Platz zu schaffen.',
+          'Eine Freigabe widerrufen — wird ein Dokument oder Ordner auf privat gestellt, verfällt sein Token, ein schon verschickter Link funktioniert also nicht mehr, und bei einem Dokument wird das Protokoll seiner Aufrufe gelöscht. Sie können auch einzelne Leser entfernen, und Leser können sich selbst entfernen.',
+          'Ihre Dokumente herunterladen — jedes Dokument als Markdown, HTML, Word oder PDF, einen Ordner als .zip oder alle über die API. Eine einzelne Schaltfläche für das ganze Konto gibt es noch nicht; fragen Sie, und wir schicken es Ihnen.',
+          'Apps trennen — Ihre Kontoseite listet die Assistenten, die Erweiterung und die Obsidian-Verbindungen auf, die ein Token halten, und widerruft einzelne oder alle. Wer sich in der Erweiterung oder im Plugin abmeldet, entfernt dessen Token ebenfalls.',
+          'API-Schlüssel und Webhooks widerrufen — im Konto-Menü, mit sofortiger Wirkung.',
+          'Abmelden — mit dem Link in jeder E-Mail von Brevo und mit dem Schalter für Produkt-Updates im Konto-Menü.',
+          'Ihre Antwort zur Analyse ändern — mit der Schaltfläche auf der Cookie-Seite.',
+          'Löschen, was Ihr Browser speichert — über den Verlauf oder indem Sie die Websitedaten löschen.',
+          'Ihr Konto löschen — schreiben Sie von der Adresse des Kontos an hello@transformpipe.com. Wir löschen das Konto, seine Dokumente, Versionen und den Papierkorb, deren gespeicherten Text, seine Schlüssel, App-Verbindungen und Webhooks, seine Sitzungen, seine Feedback-Bewertungen und seinen Eintrag bei Brevo, innerhalb von 30 Tagen und meist deutlich schneller. Im selben Schritt gehen auch seine Ordner, mit ihren Freigabe-Einstellungen und Leserlisten. Dokumente, die andere mit Ihnen geteilt haben, gehören ihnen und bleiben bei ihnen, ebenso Ihre Adresse auf deren Leserlisten und in deren Aufrufprotokollen, mit den oben genannten Fristen.',
+          'Einsehen, berichtigen oder widersprechen — schreiben Sie an hello@transformpipe.com, um zu sehen, was wir über Sie gespeichert haben, Ihren Namen oder Ihre Adresse zu berichtigen oder einer Verwendung zu widersprechen. In der EU und im Vereinigten Königreich können Sie sich außerdem bei Ihrer Datenschutzaufsichtsbehörde beschweren.',
+        ],
+      },
+      {
+        heading: 'Sicherheit',
+        body: [
+          'Alles wird über HTTPS übertragen. Der Text von Dokumenten liegt in einem privaten Speicher ohne öffentliche Adresse. Passwörter — Ihres und die von geteilten Links — werden nur als Hashes gespeichert, ebenso API-Schlüssel und App-Tokens, die sich aus dem Gespeicherten nicht wiederherstellen lassen. Jede Anfrage wird gegen das Konto geprüft, für das sie handelt, und ein Dokument, das mit benannten Personen geteilt ist, öffnet sich nur für jemanden, der als eine von ihnen angemeldet ist. Die Verwaltungsseite erreichen nur die Betreiber von TransformPipe. Kein System ist vollkommen sicher; geht etwas schief, das Ihre Daten gefährdet, sagen wir es Ihnen.',
         ],
       },
       {
         heading: 'Kinder',
         body: [
-          'Das ist ein Werkzeug für die Arbeit, kein Dienst für Kinder, und es richtet sich an niemanden unter 16.',
+          'TransformPipe ist ein Werkzeug für Arbeit und Studium und richtet sich nicht an Kinder. Es ist für niemanden unter 13 gedacht, und wo das Gesetz für die Einwilligung in diese Art der Verarbeitung ein höheres Alter festlegt — in Teilen der EU bis zu 16 —, braucht, wer jünger ist, die Einwilligung eines Elternteils oder Erziehungsberechtigten. Wenn Sie glauben, dass uns ein Kind ohne diese Einwilligung personenbezogene Daten gegeben hat, schreiben Sie an hello@transformpipe.com, und wir löschen sie.',
+        ],
+      },
+      {
+        heading: 'Daten außerhalb Ihres Landes',
+        body: [
+          'Die oben genannten Dienste verarbeiten Daten in den Vereinigten Staaten, der Europäischen Union und anderen Ländern, in denen sie tätig sind; Ihre Daten können also außerhalb des Landes verarbeitet werden, in dem Sie leben. Wo sie die EU, den EWR oder das Vereinigte Königreich verlassen, stützen wir uns auf die Garantien, die diese Anbieter für solche Übermittlungen bieten, etwa die Standardvertragsklauseln der Europäischen Kommission.',
         ],
       },
       {
         heading: 'Änderungen',
         body: [
-          'Ändert sich diese Seite in einer Weise, die betrifft, was erhoben wird, ändert sich das Datum darüber mit.',
+          'Ändert sich diese Seite in einer Weise, die betrifft, was erhoben wird, wozu oder wer es erhält, ändert sich das Datum darüber mit. Der Quellcode der Website ist öffentlich, sodass sich jede frühere Fassung dieser Seite in seiner Historie nachlesen lässt.',
         ],
       },
     ],
     seo: {
       title: 'Datenschutz — TransformPipe',
       description:
-        'Abgemeldet verlässt keine Datei den Browser. Angemeldet speichern wir Dokument, Metadaten und Konto-Identität — Google Analytics und Microsoft Clarity nur mit Ihrer Zustimmung, keine Tracking-Pixel, nichts wird verkauft.',
+        'Was TransformPipe erhebt, wozu, wer es erhält und wie lange — auf der Website, im Konto, in der API, der Erweiterung, Obsidian und der ChatGPT-App — und wie Sie es löschen.',
     },
   },
   terms: {

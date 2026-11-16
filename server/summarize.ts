@@ -1,19 +1,21 @@
+import type { OpenAILanguageModelResponsesOptions } from '@ai-sdk/openai';
+
 /*
  * The AI half of the app: one call, one model, cached on the row it describes.
  *
- * Talks to Google's Generative Language API directly, not through the Vercel AI Gateway. The
- * Gateway was tried first — one line, no separate key, since the app already runs on Vercel — but
- * its free tier refuses Anthropic outright and rate-limits everything else under a quota shared
- * across every free Vercel account, not just this one, which made even a single summary
- * unreliable before a payment method was ever on file. A key from Google AI Studio is free,
- * generous, and counted against this account alone. Loaded lazily, like `mammoth` in `v1.ts`, so
- * no request that isn't asking for a summary pays for it.
+ * Talks to OpenAI's API directly with a paid key. It was Google's Gemini on a free AI Studio key
+ * until November 2026, and the free tier was the problem: Google's terms for it let Google use what
+ * is sent to improve its products, and a privacy policy has to say so — which is not something to
+ * say about other people's documents, and not something an app review lets pass. OpenAI does not
+ * train on API traffic, and `store: false` below keeps the response off its servers too. (The
+ * Vercel AI Gateway was tried before Gemini and rate-limited free accounts together.) Loaded
+ * lazily, like `mammoth` in `v1.ts`, so no request that isn't asking for a summary pays for it.
  */
 
 /** Without a key the endpoint refuses cleanly, the way sign-in does when `NEON_AUTH_BASE_URL` is
  * unset — see `server/auth.ts`. */
 export function summaryEnabled(): boolean {
-  return Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+  return Boolean(process.env.OPENAI_API_KEY);
 }
 
 /*
@@ -35,37 +37,38 @@ const INSTRUCTIONS = [
 ].join(' ');
 
 /*
- * Flash first, and Flash-Lite when Flash will not answer.
+ * The mini model first, and the nano one when the mini will not answer.
  *
- * Flash is the one whose summaries were right: in a side-by-side on the same document, Lite put a
- * budget of 12,000 in the paragraph as 2,000. But Flash thinks before it writes whatever it is
- * told, so it answers in three to six seconds, all at once — and at busy times Google refuses it
- * outright ("currently experiencing high demand"), which left the tab with nothing. Lite answers
- * in under a second and streams, so it is the fallback rather than the default: a summary a
- * little less careful beats an error, and a careful one beats a fast one.
+ * Both are reasoning models told not to reason: a summary is reading, not working something out,
+ * and reasoning is time before the first word, which a reader watching an empty tab notices. The
+ * nano model is the fallback rather than the default for the reason Flash-Lite was under Gemini: a
+ * smaller model gets figures wrong more often, and a careful summary beats a fast one, but a
+ * slightly less careful one beats an error.
  *
- * The aliases rather than dated versions: gemini-2.5-flash stopped being offered to new projects
- * mid-project, and an alias is Google's own answer to that churn. Each model gets the options it
- * accepts — Flash refuses a thinking level of `minimal`, Lite refuses a thinking budget.
+ * `store: false` because OpenAI otherwise keeps a response for later retrieval, and nothing here
+ * ever asks for one back.
  */
-const MODELS = [
-  { id: 'gemini-flash-latest', google: { thinkingConfig: { thinkingBudget: 0 } } },
-  { id: 'gemini-flash-lite-latest', google: {} },
-] as const;
+const MODELS = ['gpt-5.4-mini', 'gpt-5.4-nano'] as const;
+
+const OPTIONS = {
+  reasoningEffort: 'none',
+  textVerbosity: 'low',
+  store: false,
+} satisfies OpenAILanguageModelResponsesOptions;
 
 /* The slice is a token budget, not a judgement about long documents: a summary only needs to have
  * read the thing once. */
 async function request(markdown: string, model: (typeof MODELS)[number]) {
-  const { google } = await import('@ai-sdk/google');
+  const { openai } = await import('@ai-sdk/openai');
 
   return {
-    model: google(model.id),
+    model: openai(model),
     system: INSTRUCTIONS,
     prompt: markdown.slice(0, 60_000),
     maxOutputTokens: 1200,
     // One retry, not the default two: past that the next model is the better bet than a third wait.
     maxRetries: 1,
-    providerOptions: { google: model.google },
+    providerOptions: { openai: OPTIONS },
   };
 }
 
@@ -137,7 +140,7 @@ export async function* summarizeStream(markdown: string): AsyncGenerator<string>
  * Why a summary did not happen, in a sentence for the person who asked.
  *
  * What the provider says is written for a developer — "Failed after 3 attempts. Last error:
- * AI_APICallError: You exceeded your current quota… generate_content_free_tier_requests" — and it
+ * AI_APICallError: You exceeded your current quota, please check your plan and billing details" — and it
  * went onto the screen as it was. The two failures that are nobody's fault and pass on their own
  * are named as that; anything else keeps a short form of the provider's words, and the whole of
  * them goes to the log, where the person who can act on it will look.
@@ -147,7 +150,7 @@ export function summaryFailure(cause: unknown): string {
 
   console.warn('summary: %s', said);
 
-  if (/quota|rate.?limit|RESOURCE_EXHAUSTED|\b429\b/i.test(said)) {
+  if (/quota|rate.?limit|RESOURCE_EXHAUSTED|insufficient_quota|\b429\b/i.test(said)) {
     return 'The summariser has used up its allowance for the moment. Try again in a minute.';
   }
 
