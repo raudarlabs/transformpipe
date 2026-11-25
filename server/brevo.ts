@@ -6,7 +6,12 @@ import { rateToken } from './rate-token.js';
  *
  * Brevo sends the emails and decides which one from contact attributes; this file keeps those
  * attributes current and puts each account into the one list that starts its flow. It runs from
- * the cron every ten minutes (`GET /api/cron/brevo`) and from the admin page's "Sync to Brevo now".
+ * the cron once an hour (`GET /api/cron/brevo`) and from the admin page's "Sync to Brevo now".
+ *
+ * Hourly, not every ten minutes as it was until November 2026: each run reads the database, and a
+ * run every ten minutes kept the Neon compute from ever sleeping, which used up the free plan's
+ * monthly hours by the 25th and took sign-in and every saved document down with it. A welcome
+ * email an hour late costs nothing; a database awake all night costs the whole service.
  *
  * What goes to Brevo is what the privacy page says goes: the address and name, the day of sign-up,
  * and counts — documents, shares, opens, connected apps, last use. Never a document or its name.
